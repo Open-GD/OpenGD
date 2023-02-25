@@ -54,25 +54,35 @@ bool CreatorLayer::init() {
     corn4->setAnchorPoint({1, 0});
     corn4->setFlippedX(true);
 
-    auto createBtn = MenuItemSpriteExtra::create("GJ_createBtn_001.png", [&](Node*) {
-        GameToolbox::log("on create");
-    });
-    auto savedBtn = MenuItemSpriteExtra::create("GJ_savedBtn_001.png", [&](Node*) {
+    auto createBtnSpr = Sprite::createWithSpriteFrameName("GJ_createBtn_001.png");
+    auto savedBtnSpr = Sprite::createWithSpriteFrameName("GJ_savedBtn_001.png");
+    auto featuredBtnSpr = Sprite::createWithSpriteFrameName("GJ_featuredBtn_001.png");
+    auto searchBtnSpr = Sprite::createWithSpriteFrameName("GJ_searchBtn_001.png");
+
+    auto savedBtn = MenuItemSpriteExtra::createWithNode(savedBtnSpr, [&](Node*) {
         GameToolbox::log("on saved");
     });
-    auto featuredBtn = MenuItemSpriteExtra::create("GJ_featuredBtn_001.png", [&](Node*) {
+    auto featuredBtn = MenuItemSpriteExtra::createWithNode(featuredBtnSpr, [&](Node*) {
         GameToolbox::log("on featured");
     });
-    auto searchBtn = MenuItemSpriteExtra::create("GJ_searchBtn_001.png", [&](Node*) {
+    auto searchBtn = MenuItemSpriteExtra::createWithNode(searchBtnSpr, [&](Node*) {
         GameToolbox::log("on search");
     });
+    auto createBtn = MenuItemSpriteExtra::createWithNode(createBtnSpr, [&](Node*) {
+        GameToolbox::log("on create");
+    });
+
+    createBtn->setScale(1.1f);
+    savedBtn->setScale(1.1f);
+    featuredBtn->setScale(1.1f);
+    searchBtn->setScale(1.1f);
 
     auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [&](Node*) {
         Director::getInstance()->replaceScene(TransitionFade::create(.5, MenuLayer::scene()));
     });
 
     auto menu = Menu::create(createBtn, savedBtn, featuredBtn, searchBtn, nullptr);
-    GameToolbox::alignItemsInColumnsWithPadding(menu, 2, 250, 300);
+    GameToolbox::alignItemsInColumnsWithPadding(menu, 2, 290, 290);
     menu->addChild(backBtn);
     backBtn->setPosition(menu->convertToNodeSpace({48, winSize.height - 46}));
     

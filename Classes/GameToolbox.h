@@ -9,6 +9,12 @@
 
 namespace GameToolbox
 {
+
+    enum GTRes {
+        Low = 0,
+        Medium,
+        High
+    };
     
     int randomInt(int min, int max);
     int randomInt(int max);
