@@ -12,7 +12,7 @@ private:
     ax::Node* m_pSprite;
     float m_fAnimDuration;
     std::function<void(ax::Node*)> m_fCallback;
-    AX_SYNTHESIZE(float, m_fNewScale, NewScale);
+    AX_SYNTHESIZE(float, m_fNewScale, NewScale)
 
 public:
     /// @brief Create a funny scaling button like in gd

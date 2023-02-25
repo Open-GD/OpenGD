@@ -1,10 +1,10 @@
 #include "MenuLayer.h"
 /*
 #include "GarageLayer.h"
-#include "GroundLayer.h"
 #include "PlayLayer.h"
-#include "MenuGameLayer.h"
 */
+#include "MenuGameLayer.h"
+
 #include "CreatorLayer.h"
 #include "AlertLayer.h"
 #include "AudioEngine.h"
@@ -32,7 +32,7 @@ bool MenuLayer::init(){
         AudioEngine::play2d("audiotracks/menuLoop.mp3", true, 0.5f);
         music = false;
     }
-    //  addChild(MenuGameLayer::create(), -1);
+    addChild(MenuGameLayer::create(), -1);
     
     float offsetScale = 1.13F;
     auto winSize = Director::getInstance()->getWinSize();
