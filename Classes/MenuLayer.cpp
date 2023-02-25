@@ -1,8 +1,9 @@
 #include "MenuLayer.h"
-/*
-#include "GarageLayer.h"
+
+//#include "GarageLayer.h"
+
 #include "PlayLayer.h"
-*/
+
 #include "MenuGameLayer.h"
 
 #include "CreatorLayer.h"
@@ -10,11 +11,11 @@
 #include "AudioEngine.h"
 #include "MenuItemSpriteExtra.h"
 #include "GameToolbox.h"
-/*
-#include "ColoursPalette.h"
-#include "ListLayer.h"
-#include "GJMoreGamesLayer.h"
-*/
+
+// #include "ColoursPalette.h"
+// #include "ListLayer.h"
+// #include "GJMoreGamesLayer.h"
+
 USING_NS_AX;
 
 bool music = true;
@@ -42,8 +43,8 @@ bool MenuLayer::init(){
     log_oSpr->setPosition({ winSize.width / 2, winSize.height - 110 });
     this->addChild(log_oSpr);
     auto playBtn = MenuItemSpriteExtra::create("GJ_playBtn_001.png", [&](Node* btn) {
-        //auto scene = PlayLayer::scene();
-        //Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
+        auto scene = PlayLayer::scene();
+        Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
     });
     auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
         //Director::getInstance()->replaceScene(TransitionFade::create(0.5f, GarageLayer::scene()));

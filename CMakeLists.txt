@@ -22,7 +22,6 @@
 # THE SOFTWARE.
 # ****************************************************************************/
 
-
 cmake_minimum_required(VERSION 3.10)
 
 set(APP_NAME OpenGD)

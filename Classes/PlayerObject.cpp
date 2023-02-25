@@ -1,15 +1,11 @@
 #include "PlayerObject.h"
 #include "GameToolbox.h"
-USING_NS_AX;
 
-template <typename T>
-inline T inRange(T value, T min, T max) {
-    return MIN(MAX(value, min), max);
-}
+USING_NS_AX;
 
 bool PlayerObject::init(int playerFrame, Layer* gameLayer_) {
     // cap the icon limit
-    int frame = inRange(playerFrame, 1, 13);
+    int frame = GameToolbox::inRange(playerFrame, 1, 13);
 
     auto sprStr1 = StringUtils::format("player_%02d_001.png", frame);
     auto sprStr2 = StringUtils::format("player_%02d_2_001.png", frame);

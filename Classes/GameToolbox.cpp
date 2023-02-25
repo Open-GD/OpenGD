@@ -94,11 +94,6 @@ void GameToolbox::alignItemsInColumnsWithPadding(ax::Menu* menu, const int rows,
     }
 }
 
-
-void GameToolbox::log(const char* simpleStr) {
-    fmt::print("[{:%H:%M:%S}] {}\n", fmt::gmtime(std::time(NULL)), simpleStr);
-}
-
 void GameToolbox::alignItemsHorizontallyWithPadding(ax::Vector<ax::Node*> _children, float padding)
 {
     float width = -padding;
