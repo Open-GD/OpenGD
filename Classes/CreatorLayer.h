@@ -5,5 +5,5 @@ public:
     CREATE_FUNC(CreatorLayer)
     bool init();
     static ax::Scene* scene();
-	void onDrawImGui();
+    void onDrawImGui();
 };

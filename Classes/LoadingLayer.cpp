@@ -1,127 +1,127 @@
 #include "LoadingLayer.h"
 #include "GameToolbox.h"
-#include "CreatorLayer.h"
+#include "MenuLayer.h"
 #include <array>
 
 USING_NS_AX;
 using GameToolbox::getTextureString, GameToolbox::log;
 
 constexpr static auto splashes = std::to_array <const char*>({
-	"Listen to the music to help time your jumps", 
-	"Back for more are ya?", 
-	"Use practice mode to learn the layout of a level", 
-	"Build your own levels using the level editor", 
-	"Go online to play other players levels!", 
-	"If at first you don't succeed, try, try again...",
-	"Can you beat them all?",
-	"Customize your character's icon and color!",
-	"You can download all songs from the level select page!",
-	"Spikes are not your friends, don't forget to jump",
-	"Unlock new icons and colors by completing achievements!"
+    "Listen to the music to help time your jumps", 
+    "Back for more are ya?", 
+    "Use practice mode to learn the layout of a level", 
+    "Build your own levels using the level editor", 
+    "Go online to play other players levels!", 
+    "If at first you don't succeed, try, try again...",
+    "Can you beat them all?",
+    "Customize your character's icon and color!",
+    "You can download all songs from the level select page!",
+    "Spikes are not your friends, don't forget to jump",
+    "Unlock new icons and colors by completing achievements!"
 });
 
 constexpr static auto pngs = std::to_array<const char*>({
-	"GJ_GameSheet.png", "GJ_gradientBG.png", "edit_barBG_001.png", "GJ_button_01.png",
-	"gravityOverlay.png", "goldFont.png", "bigFont.png", "chatFont.png", "CCControlColourPickerSpriteSheet.png"
+    "GJ_GameSheet.png", "GJ_gradientBG.png", "edit_barBG_001.png", "GJ_button_01.png",
+    "gravityOverlay.png", "goldFont.png", "bigFont.png", "chatFont.png", "CCControlColourPickerSpriteSheet.png"
 });
 
 constexpr static auto fonts = std::to_array<const char*>({
-	"bigFont.fnt", "chatFont.fnt", "goldFont.fnt"
+    "bigFont.fnt", "chatFont.fnt", "goldFont.fnt"
 });
-	
+    
 constexpr static auto plists = std::to_array<const char*>({
-	"GJ_GameSheet.plist", "CCControlColourPickerSpriteSheet.plist",
+    "GJ_GameSheet.plist", "CCControlColourPickerSpriteSheet.plist",
 });
-	
-	
+    
+    
 const char* LoadingLayer::getSplash() {
-	return splashes[rand() % (splashes.size()-1)];
+    return splashes[rand() % (splashes.size()-1)];
 }
 
 Scene* LoadingLayer::scene() {
-	auto scene = Scene::create();
-	scene->addChild(LoadingLayer::create());
-	return scene;
+    auto scene = Scene::create();
+    scene->addChild(LoadingLayer::create());
+    return scene;
 }
 
 bool LoadingLayer::init() {
-	if (!Layer::init()) return false;
-	
-	size_t totalAssets = fonts.size() + plists.size() + pngs.size();
-	this->m_nTotalAssets = static_cast<int>(totalAssets);
-	
-	Director::getInstance()->getTextureCache()->addImage(getTextureString("GJ_LaunchSheet.png"));
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(getTextureString("GJ_LaunchSheet.plist"));
+    if (!Layer::init()) return false;
+    
+    size_t totalAssets = fonts.size() + plists.size() + pngs.size();
+    this->m_nTotalAssets = static_cast<int>(totalAssets);
+    
+    Director::getInstance()->getTextureCache()->addImage(getTextureString("GJ_LaunchSheet.png"));
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile(getTextureString("GJ_LaunchSheet.plist"));
 
-	auto winSize = Director::getInstance()->getWinSize();
+    auto winSize = Director::getInstance()->getWinSize();
 
-	auto bgSpr = Sprite::create(getTextureString("game_bg_01_001.png"));
-	bgSpr->setPosition(winSize / 2);
-	bgSpr->setScale(winSize.width / bgSpr->getContentSize().width);
-	bgSpr->setColor({ 0, 102, 255 });
-	this->addChild(bgSpr);
+    auto bgSpr = Sprite::create(getTextureString("game_bg_01_001.png"));
+    bgSpr->setPosition(winSize / 2);
+    bgSpr->setScale(winSize.width / bgSpr->getContentSize().width);
+    bgSpr->setColor({ 0, 102, 255 });
+    this->addChild(bgSpr);
 
-	auto logoSpr = Sprite::createWithSpriteFrameName("GJ_logo_001.png");
-	logoSpr->setPosition(winSize / 2);
-	logoSpr->setScale(1.05f);
-	this->addChild(logoSpr);
-	
-	auto robLogoSpr = Sprite::createWithSpriteFrameName("RobTopLogoBig_001.png");
-	robLogoSpr->setPosition({ winSize.width / 2, winSize.height / 2 + 190 });
-	this->addChild(robLogoSpr);
+    auto logoSpr = Sprite::createWithSpriteFrameName("GJ_logo_001.png");
+    logoSpr->setPosition(winSize / 2);
+    logoSpr->setScale(1.05f);
+    this->addChild(logoSpr);
+    
+    auto robLogoSpr = Sprite::createWithSpriteFrameName("RobTopLogoBig_001.png");
+    robLogoSpr->setPosition({ winSize.width / 2, winSize.height / 2 + 190 });
+    this->addChild(robLogoSpr);
 
-	auto splash = this->getSplash();
-	auto splashText = Label::createWithBMFont(getTextureString("goldFont.fnt"), splash);
-	splashText->setPosition({ winSize.width / 2, winSize.height / 2 - 200});
-	splashText->setScale(0.7f);
+    auto splash = this->getSplash();
+    auto splashText = Label::createWithBMFont(getTextureString("goldFont.fnt"), splash);
+    splashText->setPosition({ winSize.width / 2, winSize.height / 2 - 200});
+    splashText->setScale(0.7f);
 
-	this->addChild(splashText);
-	m_pGrooveSprite = Sprite::create(getTextureString("slidergroove.png"));
-	m_pGrooveSprite->setPosition({ winSize.width / 2, splashText->getPositionY() + 70 });
-	this->m_fTotalBarWidth = m_pGrooveSprite->getContentSize().width - 8;
-	this->addChild(m_pGrooveSprite);
+    this->addChild(splashText);
+    m_pGrooveSprite = Sprite::create(getTextureString("slidergroove.png"));
+    m_pGrooveSprite->setPosition({ winSize.width / 2, splashText->getPositionY() + 70 });
+    this->m_fTotalBarWidth = m_pGrooveSprite->getContentSize().width - 8;
+    this->addChild(m_pGrooveSprite);
 
-	m_pBarSprite = Sprite::create(getTextureString("sliderBar.png"));
-	m_pBarSprite->getTexture()->setTexParameters({ backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT });
-	m_pBarSprite->setAnchorPoint({0, 0});
-	m_pBarSprite->setPosition({ 4.0, 8.0 });
-	m_pGrooveSprite->addChild(m_pBarSprite, -1);
-	
-	this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([&]() { this->loadAssets(); }), nullptr));
-	
+    m_pBarSprite = Sprite::create(getTextureString("sliderBar.png"));
+    m_pBarSprite->getTexture()->setTexParameters({ backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT });
+    m_pBarSprite->setAnchorPoint({0, 0});
+    m_pBarSprite->setPosition({ 4.0, 8.0 });
+    m_pGrooveSprite->addChild(m_pBarSprite, -1);
+    
+    this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([&]() { this->loadAssets(); }), nullptr));
+    
 
-	
-	return true;
+    
+    return true;
 }
 
 
 
 void LoadingLayer::loadAssets() {
-	
-	auto textureCache = Director::getInstance()->getTextureCache();
-	for(auto image : pngs) {
-		textureCache->addImageAsync(getTextureString(image), AX_CALLBACK_1(LoadingLayer::assetLoaded, this));
-	}
-	
-	auto frameCache = SpriteFrameCache::getInstance();
-	for(auto plist : plists) {
-		frameCache->addSpriteFramesWithFile(getTextureString(plist));
-		this->assetLoaded(nullptr);
-	}
-	
-	for(auto fnt : fonts) {
-		auto label = Label::createWithBMFont(getTextureString(fnt), "someText");
-		this->assetLoaded(nullptr);
-	}
+    
+    auto textureCache = Director::getInstance()->getTextureCache();
+    for(auto image : pngs) {
+        textureCache->addImageAsync(getTextureString(image), AX_CALLBACK_1(LoadingLayer::assetLoaded, this));
+    }
+    
+    auto frameCache = SpriteFrameCache::getInstance();
+    for(auto plist : plists) {
+        frameCache->addSpriteFramesWithFile(getTextureString(plist));
+        this->assetLoaded(nullptr);
+    }
+    
+    for(auto fnt : fonts) {
+        auto label = Label::createWithBMFont(getTextureString(fnt), "someText");
+        this->assetLoaded(nullptr);
+    }
 }
 
 void LoadingLayer::assetLoaded(ax::Ref*) {
-	
-	this->m_nAssetsLoaded++;
-	GameToolbox::log("loading asset {}", m_nAssetsLoaded);
-	m_pBarSprite->setTextureRect({0, 0, m_fTotalBarWidth * (this->m_nAssetsLoaded / this->m_nTotalAssets), m_pBarSprite->getContentSize().height});
-	
-	if(m_nAssetsLoaded == m_nTotalAssets) {
-        Director::getInstance()->replaceScene(CreatorLayer::scene());
-	}
+    
+    this->m_nAssetsLoaded++;
+    GameToolbox::log("loading asset {}", m_nAssetsLoaded);
+    m_pBarSprite->setTextureRect({0, 0, m_fTotalBarWidth * (this->m_nAssetsLoaded / this->m_nTotalAssets), m_pBarSprite->getContentSize().height});
+    
+    if(m_nAssetsLoaded == m_nTotalAssets) {
+        Director::getInstance()->replaceScene(MenuLayer::scene());
+    }
 }

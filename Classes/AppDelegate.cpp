@@ -29,7 +29,7 @@
 #define USE_AUDIO_ENGINE 1
 
 #if USE_AUDIO_ENGINE
-#	include <audio/AudioEngine.h>
+#include <audio/AudioEngine.h>
 #endif
 
 USING_NS_AX;
@@ -47,101 +47,101 @@ AppDelegate::~AppDelegate() {}
 // it will affect all platforms
 void AppDelegate::initGLContextAttrs()
 {
-	// set OpenGL context attributes: red,green,blue,alpha,depth,stencil,multisamplesCount
-	GLContextAttrs glContextAttrs = {8, 8, 8, 8, 24, 8, 0};
+    // set OpenGL context attributes: red,green,blue,alpha,depth,stencil,multisamplesCount
+    GLContextAttrs glContextAttrs = {8, 8, 8, 8, 24, 8, 0};
 
-	GLView::setGLContextAttrs(glContextAttrs);
+    GLView::setGLContextAttrs(glContextAttrs);
 }
 
 // if you want to use the package manager to install more packages,
 // don't modify or remove this function
 static int register_all_packages()
 {
-	return 0;  // flag for packages manager
+    return 0;  // flag for packages manager
 }
 
 int AppDelegate::applicationGetRefreshRate() {
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
-	auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	return mode->refreshRate;
+    auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    return mode->refreshRate;
 #else
-	return 60;
+    return 60;
 #endif
 }
 
 bool AppDelegate::applicationDidFinishLaunching()
 {
-	// initialize director
-	auto director = Director::getInstance();
-	auto glView   = director->getOpenGLView();
-	if (!glView)
-	{
+    // initialize director
+    auto director = Director::getInstance();
+    auto glView   = director->getOpenGLView();
+    if (!glView)
+    {
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
-	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
-		glView = GLViewImpl::createWithRect(
-			"OpenGD", ax::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
+    (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+        glView = GLViewImpl::createWithRect(
+            "OpenGD", ax::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
 #else
-		glView = GLViewImpl::create("OpenGD");
+        glView = GLViewImpl::create("OpenGD");
 #endif
-		director->setOpenGLView(glView);
-	}
+        director->setOpenGLView(glView);
+    }
 
-	// turn on display FPS
-	director->setStatsDisplay(true);
+    // turn on display FPS
+    director->setStatsDisplay(true);
 
-	// set FPS. the default value is 1.0/60 if you don't call this
-	director->setAnimationInterval(1.0f / applicationGetRefreshRate());
+    // set FPS. the default value is 1.0/60 if you don't call this
+    director->setAnimationInterval(1.0f / applicationGetRefreshRate());
 
-	// Set the design resolution
-	glView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height,
-									ResolutionPolicy::NO_BORDER);
-	auto frameSize = glView->getFrameSize();
-	
-	// if the frame's height is larger than the height of medium size.
-	if (frameSize.height > mediumResolutionSize.height)
-	{
-		director->setContentScaleFactor(MIN(largeResolutionSize.height / designResolutionSize.height,
-											largeResolutionSize.width / designResolutionSize.width));
-	}
-	// if the frame's height is larger than the height of small size.
-	else if (frameSize.height > smallResolutionSize.height)
-	{
-		director->setContentScaleFactor(MIN(mediumResolutionSize.height / designResolutionSize.height,
-											mediumResolutionSize.width / designResolutionSize.width));
-	}
-	// if the frame's height is smaller than the height of medium size.
-	else
-	{
-		director->setContentScaleFactor(MIN(smallResolutionSize.height / designResolutionSize.height,
-											smallResolutionSize.width / designResolutionSize.width));
-	}
+    // Set the design resolution
+    glView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height,
+                                    ResolutionPolicy::NO_BORDER);
+    auto frameSize = glView->getFrameSize();
+    /*
+    // if the frame's height is larger than the height of medium size.
+    if (frameSize.height > mediumResolutionSize.height)
+    {
+        director->setContentScaleFactor(MIN(largeResolutionSize.height / designResolutionSize.height,
+                                            largeResolutionSize.width / designResolutionSize.width));
+    }
+    // if the frame's height is larger than the height of small size.
+    else if (frameSize.height > smallResolutionSize.height)
+    {
+        director->setContentScaleFactor(MIN(mediumResolutionSize.height / designResolutionSize.height,
+                                            mediumResolutionSize.width / designResolutionSize.width));
+    }
+    // if the frame's height is smaller than the height of medium size.
+    else
+    {
+        director->setContentScaleFactor(MIN(smallResolutionSize.height / designResolutionSize.height,
+                                            smallResolutionSize.width / designResolutionSize.width));
+    }
+*/
+    register_all_packages();
 
-	register_all_packages();
+    // create a scene. it's an autorelease object
+    auto scene = ax::Scene::create();
+    scene->addChild(LoadingLayer::create());
+    director->runWithScene(scene);
 
-	// create a scene. it's an autorelease object
-	auto scene = ax::Scene::create();
-	scene->addChild(LoadingLayer::create());
-	director->runWithScene(scene);
-
-	return true;
+    return true;
 }
 
 // This function will be called when the app is inactive. Note, when receiving a phone call it is invoked.
 void AppDelegate::applicationDidEnterBackground()
 {
-	Director::getInstance()->stopAnimation();
+    Director::getInstance()->stopAnimation();
 
 #if USE_AUDIO_ENGINE
-	AudioEngine::pauseAll();
+    AudioEngine::pauseAll();
 #endif
 }
 
 // this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground()
 {
-	Director::getInstance()->startAnimation();
+    Director::getInstance()->startAnimation();
 
 #if USE_AUDIO_ENGINE
-	AudioEngine::resumeAll();
+    AudioEngine::resumeAll();
 #endif
 }
