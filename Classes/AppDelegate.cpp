@@ -60,6 +60,15 @@ static int register_all_packages()
 	return 0;  // flag for packages manager
 }
 
+int AppDelegate::applicationGetRefreshRate() {
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+	auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	return mode->refreshRate;
+#else
+	return 60;
+#endif
+}
+
 bool AppDelegate::applicationDidFinishLaunching()
 {
 	// initialize director
@@ -81,12 +90,13 @@ bool AppDelegate::applicationDidFinishLaunching()
 	director->setStatsDisplay(true);
 
 	// set FPS. the default value is 1.0/60 if you don't call this
-	director->setAnimationInterval(1.0f / 60);
+	director->setAnimationInterval(1.0f / applicationGetRefreshRate());
 
 	// Set the design resolution
 	glView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height,
 									ResolutionPolicy::NO_BORDER);
 	auto frameSize = glView->getFrameSize();
+	
 	// if the frame's height is larger than the height of medium size.
 	if (frameSize.height > mediumResolutionSize.height)
 	{

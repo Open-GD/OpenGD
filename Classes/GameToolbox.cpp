@@ -36,16 +36,18 @@ ax::Color3B GameToolbox::randomColor3B() {
 //take string by copy, reference or string_view is not possible because we actually modify the string
 std::string GameToolbox::getTextureString(std::string texture)
 {
+    std::string nTexture = "Resources/";
+    nTexture += texture;
 	bool low = false;
 	bool medium = true;
 	bool high = false;
 
-	size_t pos = texture.find(".");
+	size_t pos = nTexture.find(".");
 	if(!low && pos != std::string::npos) {
-		texture.insert(pos, high ? "-uhd" : "-hd");
+		nTexture.insert(pos, high ? "-uhd" : "-hd");
 	}
-	GameToolbox::log("texture: {}", texture);
-	return texture;
+	GameToolbox::log("texture: {}", nTexture);
+	return nTexture;
 }
 void GameToolbox::alignItemsInColumnsWithPadding(ax::Menu* menu, const int rows, const int x_padding, const int y_padding)
 {

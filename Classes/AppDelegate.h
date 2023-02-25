@@ -59,6 +59,12 @@ public:
 	@param  the pointer of the application
 	*/
 	void applicationWillEnterForeground() override;
+
+	/**
+	@brief  Crossplatform solution. Gets refresh rate of the device.
+	@return Refresh rate in Hz
+	*/
+	int applicationGetRefreshRate();
 };
 
 #endif  // _APP_DELEGATE_H_
