@@ -36,7 +36,10 @@ struct GJGameLevel
 class PlayLayer : public ax::Layer {
 private:
 	bool init(GJGameLevel* level);
-
+    void onEnter() override;
+    void onExit() override;
+    void onDrawImGui();
+    
 	ax::Sprite* m_pBG;
 	GroundLayer* m_pGround;
 	PlayerObject* m_pPlayer;
@@ -49,15 +52,20 @@ private:
 	bool m_bMoveCameraX;
 	bool m_bMoveCameraY;
 	bool m_bShakingCamera;
-	float m_fEndOfLevel = INT_MAX;
+	float m_fEndOfLevel = FLT_MAX;
 	float m_fShakeIntensity = 1;
+    
+    //----IMGUI DEBUG MEMBERS----
+    float m_testFloat = 0.2f;
+    bool m_freezePlayer;
 
 public:
 	void update(float delta);
 	void updateCamera(float dt);
 
 	// dt?
-	void checkCollisions(float dtMaybe);
+	void checkCollisions(float delta);
+
 	
 	static ax::Scene* scene(GJGameLevel* level);
 	static PlayLayer* create(GJGameLevel* level)
@@ -73,4 +81,3 @@ public:
 		return nullptr;
 	}
 };
-

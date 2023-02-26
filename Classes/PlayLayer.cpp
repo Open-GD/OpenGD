@@ -1,8 +1,11 @@
 #include "PlayLayer.h"
 #include "GameToolbox.h"
 #include "MenuItemSpriteExtra.h"
+#include "ImGui/ImGuiPresenter.h"
+#include "ImGui/imgui/imgui.h"
 
 USING_NS_AX;
+USING_NS_AX_EXT;
 
 Scene* PlayLayer::scene(GJGameLevel* level) {
     auto scene = Scene::create();
@@ -68,13 +71,14 @@ bool PlayLayer::init(GJGameLevel* level) {
 
 void PlayLayer::update(float dt) {
     float step = std::min(2.0f, dt * 60.0f);
-
+    step *= m_testFloat;
+    
     m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), { 60, 60 }));
     m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(30, 30), {15, 15}));
 
     auto winSize = Director::getInstance()->getWinSize();
 
-    if (!this->m_pPlayer->isDead()) {
+    if (!m_freezePlayer && !this->m_pPlayer->isDead()) {
         step /= 4.0f;
         for (int i = 0; i < 4; i++) {
             this->m_pPlayer->update(step);
@@ -146,7 +150,7 @@ void PlayLayer::updateCamera(float dt) {
 
 void PlayLayer::checkCollisions(float dt)
 {
-    unsigned int childCount = _pObjects.size();
+    size_t childCount = _pObjects.size();
     
     for (unsigned int i = 0; i < childCount; i++)
     {
@@ -162,4 +166,34 @@ void PlayLayer::checkCollisions(float dt)
 
         }
     }
+}
+
+
+void PlayLayer::onDrawImGui()
+{
+    // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+    ImGui::Text("Hello, world!");
+    
+    ImGui::SliderFloat("Player Speed", &m_testFloat, 0.2f, 3.0f);
+    ImGui::Checkbox("Freeze Player", &m_freezePlayer);
+    
+    if (ImGui::Button("Back to menu"))
+            Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
+        ImGui::GetIO().Framerate);
+}
+
+void PlayLayer::onEnter()
+{
+    Layer::onEnter();
+
+    auto current = Director::getInstance()->getRunningScene();
+    ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(PlayLayer::onDrawImGui, this), current);
+}
+
+void PlayLayer::onExit()
+{
+    ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
+    Layer::onExit();
 }

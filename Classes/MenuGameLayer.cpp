@@ -89,20 +89,17 @@ bool MenuGameLayer::init(){
     return true;
 }
 void MenuGameLayer::processPlayerMovement(float delta) {
-    if(this->player) {
-         if (this->player->getPositionX() == 500.f) {
-             this->player->jump();
-         }
-        if(this->player->getPositionX() >= 1300.f) {
-            player->removeFromParentAndCleanup(true);
-            auto playerTest = PlayerObject::create(GameToolbox::randomInt(1, 13), this);
-            playerTest->setPosition({-300, 232});
-            this->player = playerTest;
-            playerTest->setMainColor(GameToolbox::randomColor3B());
-            playerTest->setSecondaryColor(GameToolbox::randomColor3B());
-            playerTest->setShipColor(playerTest->getMainColor());
-            addChild(playerTest);
-        }
+    float step = std::min(2.0f, delta * 60.0f);
+    auto winSize = Director::getInstance()->getWinSize();
+    step /= 4.0f;
+
+    if(this->player->getPositionX() >= 1300.f) {
+        player->setPosition({-300, 232});
+        auto mainColor = GameToolbox::randomColor3B();
+        auto secondaryColor = GameToolbox::randomColor3B();
+        player->setMainColor(mainColor);
+        player->setShipColor(mainColor);
+        player->setSecondaryColor(secondaryColor);
     }
 }
 void MenuGameLayer::processBackground(float delta) {
@@ -118,5 +115,5 @@ void MenuGameLayer::processBackground(float delta) {
 
 void MenuGameLayer::update(float delta) {
     processBackground(delta);
-    //processPlayerMovement(delta);
+    processPlayerMovement(delta);
 }

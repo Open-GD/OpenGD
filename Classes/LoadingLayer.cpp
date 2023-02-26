@@ -1,6 +1,8 @@
 #include "LoadingLayer.h"
 #include "GameToolbox.h"
 #include "MenuLayer.h"
+#include "CocosExplorer.h"
+
 #include <array>
 
 USING_NS_AX;
@@ -47,6 +49,7 @@ Scene* LoadingLayer::scene() {
 bool LoadingLayer::init() {
     if (!Layer::init()) return false;
     
+    
     size_t totalAssets = fonts.size() + plists.size() + pngs.size();
     this->m_nTotalAssets = static_cast<int>(totalAssets);
     
@@ -89,7 +92,7 @@ bool LoadingLayer::init() {
     
     this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([&]() { this->loadAssets(); }), nullptr));
     
-
+    CocosExplorer::openForever();
     
     return true;
 }
