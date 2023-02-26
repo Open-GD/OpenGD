@@ -15,8 +15,8 @@ bool SimplePlayer::init(int cubeID) {
         this->m_pMainSprite = Sprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
     }
     this->addChild(m_pMainSprite);
-    m_pMainSprite->setAnchorPoint({0, 0});
-    
+    m_pMainSprite->setAnchorPoint({ 0, 0 });
+
     this->m_pSecondarySprite = Sprite::createWithSpriteFrameName(secFrame);
     if (this->m_pSecondarySprite == nullptr) {
         this->m_pSecondarySprite = Sprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
@@ -24,7 +24,7 @@ bool SimplePlayer::init(int cubeID) {
     this->addChild(m_pSecondarySprite, -1);
     m_pSecondarySprite->setPosition(this->m_pMainSprite->getContentSize() / 2);
 
-    this->setContentSize({60, 60});
+    this->setContentSize({ 60, 60 });
 
     return true;
 }
@@ -40,7 +40,7 @@ void SimplePlayer::setSecondaryColor(Color3B col) {
 SimplePlayer* SimplePlayer::create(int cubeID) {
     auto pRet = new (std::nothrow) SimplePlayer();
 
-    if(pRet && pRet->init(cubeID)) {
+    if (pRet && pRet->init(cubeID)) {
         pRet->autorelease();
         return pRet;
     }

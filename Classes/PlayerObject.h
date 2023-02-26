@@ -37,7 +37,7 @@ private:
     bool m_bOnGround;
 
     float m_fSpeed = 0.9f;
-    
+
     bool m_bIsDead;
     bool m_bIsLocked;
 
@@ -49,8 +49,9 @@ private:
 
 public:
     static PlayerObject* create(int, ax::Layer*);
-     
+
     bool onTouchBegan(ax::Touch* touch, ax::Event* event);
+    void onTouchEnded(ax::Touch* touch, ax::Event* event);
 
     void setMainColor(ax::Color3B col);
     void setSecondaryColor(ax::Color3B col);
@@ -65,7 +66,13 @@ public:
     bool isFlying();
     bool isUpsideDown();
     bool isDead();
-    
+    bool isOnGround();
+
+
+    inline void setDead(bool const& value) { m_bIsDead = value; }
+    inline void setOnGround(bool const& value) { m_bOnGround = value; }
+
+
     ax::Vec2 getLastGroundPos();
     void update(float dt);
 };

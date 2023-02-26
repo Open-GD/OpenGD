@@ -7,7 +7,7 @@ private:
 
     ax::Sprite* m_pMainSprite;
     ax::Sprite* m_pSecondarySprite;
-    
+
 public:
     static SimplePlayer* create(int cubeID);
 

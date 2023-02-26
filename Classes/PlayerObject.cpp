@@ -1,5 +1,6 @@
 #include "PlayerObject.h"
 #include "GameToolbox.h"
+#include "PlayLayer.h"
 
 USING_NS_AX;
 
@@ -12,15 +13,15 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_) {
     GameToolbox::log("1: {}, 2: {}", sprStr1, sprStr2);
 
     // initialize
-    if(!GameObject::init(sprStr1)) return false;
+    if (!GameObject::init(sprStr1)) return false;
 
-    if(gameLayer_ != nullptr) {
-        gameLayer = gameLayer_;
+    gameLayer = gameLayer_;
+    
+    // Check if layer is playlayer
+    if (dynamic_cast<PlayLayer*>(gameLayer_) == nullptr) {
         inPlayLayer = false;
     }
     else {
-        // to do after game manager
-        //this->gameLayer = ;
         inPlayLayer = true;
     }
 
@@ -35,7 +36,7 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_) {
     //secondarySprite->setPosition(mainSprite->convertToNodeSpace(Vec2(0, 0))); // this shit DONT WORK!! cuz rob made it a global var
     //secondarySprite->setPosition(mainSprite->convertToNodeSpace(Vec2(15, 15)));
     m_pSecondarySprite->setPosition(Vec2(30, 30));
-    
+
     m_pShipSprite = Sprite::createWithSpriteFrameName("ship_01_001.png");
     m_pShipSprite->setVisible(false);
     addChild(m_pShipSprite, 2);
@@ -71,11 +72,11 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_) {
     dragEffect3->setStartSize(dragEffect3->getStartSize() * 1.5f);
     dragEffect3->setStartSizeVar(dragEffect3->getStartSizeVar() * 1.5f);
 
-    dragEffect2->setStartColor({255, 255, 255, 100});
-    dragEffect2->setEndColor({255, 255, 255, 0});
+    dragEffect2->setStartColor({ 255, 255, 255, 100 });
+    dragEffect2->setEndColor({ 255, 255, 255, 0 });
 
-    dragEffect3->setStartColor({255, 255, 255, 190});
-    dragEffect3->setEndColor({255, 255, 255, 0});
+    dragEffect3->setStartColor({ 255, 255, 255, 190 });
+    dragEffect3->setEndColor({ 255, 255, 255, 0 });
 
     // other particles
     shipDragEffect = ParticleSystemQuad::create("shipDragEffect.plist");
@@ -97,7 +98,7 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_) {
     gameLayer->addChild(landEffect2, 1);
 
     // streak
-    motionStreak = MotionStreak::create(0.3f, 3, 10, {255, 255, 255}, "streak.png");
+    motionStreak = MotionStreak::create(0.3f, 3, 10, { 255, 255, 255 }, "streak.png");
     motionStreak->setBlendFunc(BlendFunc::ADDITIVE);
 
     gameLayer->addChild(motionStreak);
@@ -114,6 +115,7 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_) {
 
     // trigger when you start touch
     listener->onTouchBegan = AX_CALLBACK_2(PlayerObject::onTouchBegan, this);
+    listener->onTouchEnded = AX_CALLBACK_2(PlayerObject::onTouchEnded, this);
 
     dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
@@ -149,18 +151,18 @@ void PlayerObject::update(float dt) {
 
     if (this->m_bIsDead)
         return;
-        
+
     if (this->getPositionY() <= 236) { // TEMP ON GROUND CHECK
         this->m_bOnGround = true;
         this->stopRotation();
-        this->setPositionY(236);
+        this->m_dYVel = 0.f;
         this->m_obLastGroundPos = this->getPosition();
     }
 
-    if (this->getPositionX() >= 500) {
+    if (this->getPositionX() >= 500 && !this->inPlayLayer) {
         this->m_bIsHolding = true;
     }
-    
+
     if (!this->m_bIsLocked) {
         this->updateJump(dt * 0.9f);
 
@@ -177,16 +179,24 @@ void PlayerObject::update(float dt) {
 }
 
 void PlayerObject::updateJump(float dt) {
-    
+
     if (this->m_bIsHolding && this->m_bOnGround) {
         this->m_bOnGround = false;
-        this->m_dYVel = this->m_dJumpHeight; // 0.43
+        
+        this->jump();
         this->runRotateAction();
+        
         return;
     }
 
     if (!this->m_bOnGround)
+    {
         this->m_dYVel -= this->m_dGravity * dt;
+    }
+    else {
+        this->stopRotation();
+        this->m_dYVel = 0;
+    }
 }
 
 bool PlayerObject::isFlying() {
@@ -199,6 +209,11 @@ bool PlayerObject::isUpsideDown() {
 
 bool PlayerObject::isDead() {
     return this->m_bIsDead;
+}
+
+bool PlayerObject::isOnGround()
+{
+    return this->m_bOnGround;
 }
 
 ax::Vec2 PlayerObject::getLastGroundPos() {
@@ -226,8 +241,8 @@ void PlayerObject::stopRotation() {
 }
 
 void PlayerObject::jump() {
-      this->m_dYVel = this->m_dJumpHeight;
- }
+    this->m_dYVel = this->m_dJumpHeight;
+}
 
 // void PlayerObject::jump() {
     // this->runAction(
@@ -259,15 +274,24 @@ void PlayerObject::jump() {
 bool PlayerObject::onTouchBegan(ax::Touch* touch, ax::Event* event)
 {
     if (this->inPlayLayer) {
-        GameToolbox::log("Touch began.");
+        m_bIsHolding = true;
         return true;
     }
     return false;
 }
+
+void PlayerObject::onTouchEnded(ax::Touch* touch, ax::Event* event)
+{
+    if (this->inPlayLayer)
+    {
+        m_bIsHolding = false;
+    }
+}
+
 PlayerObject* PlayerObject::create(int playerFrame, Layer* gameLayer) {
     auto pRet = new (std::nothrow) PlayerObject();
 
-    if(pRet && pRet->init(playerFrame, gameLayer)) {
+    if (pRet && pRet->init(playerFrame, gameLayer)) {
         pRet->autorelease();
         return pRet;
     }

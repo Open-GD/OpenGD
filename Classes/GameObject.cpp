@@ -10,8 +10,27 @@ bool GameObject::init(std::string_view frame) {
     // so this part is empty
 
     // avoid player lol
-    if(frame.find("player") != std::string::npos) return true;
+    if (frame.find("player") != std::string::npos)
+    {
+        _pObjectType = GameObjectType::kObjectTypePlayer;
+        return true;
+    }
+
     if(!Sprite::initWithSpriteFrameName(frame)) return false;
+
+
+    if (frame.find("d_spikes_") != std::string::npos)
+    {
+        _pObjectType = GameObjectType::kObjectTypeTile;
+    }
+    else if (frame.find("square_") != std::string::npos)
+    {
+        _pObjectType = GameObjectType::kObjectTypeTile;
+    }
+
+
+    _pOuterBounds = Rect();
+    _pInnerBounds = Rect();
 
     return true;
 }
