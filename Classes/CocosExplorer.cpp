@@ -34,7 +34,7 @@ static void generateTree(Node* node, unsigned int i = 0) {
     const auto childrenCount = node->getChildrenCount();
     if (childrenCount)
         stream << " {" << childrenCount << "}";
-    if (ImGui::TreeNode(node, stream.str().c_str())) {
+    if (ImGui::TreeNode(node, "%s", stream.str().c_str())) {
         if (ImGui::TreeNode(node + 1, "Attributes")) {
             if (ImGui::Button("Delete")) {
                 node->removeFromParentAndCleanup(true);
@@ -128,7 +128,7 @@ static void generateTree(Node* node, unsigned int i = 0) {
                 auto labelStr = labelNode->getString();
                 char text[256];
                 auto clabel = std::string(labelStr).c_str();
-                strcpy_s(text, clabel);
+                strcpy(text, clabel);
                 ImGui::InputText("Text", text, 256);
                 if (strcmp(text, clabel)) {
                     threadFunctionsMutex.lock();

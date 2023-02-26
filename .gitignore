@@ -40,6 +40,9 @@ build
 build-docs/
 bin
 out
+/proj.android/.idea/*
+/proj.android/app/.cxx/*
+/proj.android/app/src/org/axmol/lib
 
 Resources
 Resources/*
