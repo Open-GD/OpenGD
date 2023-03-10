@@ -7,9 +7,12 @@ bool GroundLayer::init(int groundID) {
     if (!Layer::init()) return false;
 
     auto winSize = Director::getInstance()->getWinSize();
+
+    setPositionY(12);
     
     auto name = fmt::format("groundSquare_{:03}.png", groundID);
     this->m_pSprite = Sprite::create(GameToolbox::getTextureString(name));
+    m_pSprite->setStretchEnabled(false);
     this->m_fOneGroundSize = this->m_pSprite->getTextureRect().size.width;
     this->m_pSprite->getTexture()->setTexParameters({ backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT });
     this->m_pSprite->setTextureRect({0, 0, winSize.width + this->m_fOneGroundSize, this->m_pSprite->getTextureRect().size.height });
@@ -19,14 +22,17 @@ bool GroundLayer::init(int groundID) {
     this->addChild(this->m_pSprite);
 
     auto line = Sprite::create(GameToolbox::getTextureString("floor.png"));
+    line->setStretchEnabled(false);
     this->addChild(line);
     line->setPosition({winSize.width / 2, this->m_pSprite->getContentSize().height + this->m_pSprite->getPositionY()});
        
     auto gradient1 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
+    gradient1->setStretchEnabled(false);
     this->addChild(gradient1);
     gradient1->setScale(1.6f);
     
     auto gradient2 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
+    gradient2->setStretchEnabled(false);
     this->addChild(gradient2);
     gradient2->setScale(1.6f);
     gradient2->setFlippedX(true);

@@ -24,6 +24,7 @@ bool CreatorLayer::init() {
     auto winSize = Director::getInstance()->getWinSize();
 
     auto bg = Sprite::create(getTextureString("GJ_gradientBG.png"));
+    bg->setStretchEnabled(false);
     bg->setScaleX(winSize.width / bg->getContentSize().width);
     bg->setScaleY(winSize.height / bg->getContentSize().height);
     bg->setAnchorPoint({0, 0});
@@ -31,17 +32,20 @@ bool CreatorLayer::init() {
     this->addChild(bg);
     
     auto corn1 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    corn1->setStretchEnabled(false);
     this->addChild(corn1);
     corn1->setPosition({0, 0});
     corn1->setAnchorPoint({0.0, 0.0});
 
     auto corn2 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    corn2->setStretchEnabled(false);
     this->addChild(corn2);
     corn2->setPosition({0, winSize.height});
     corn2->setAnchorPoint({0, 1});
     corn2->setFlippedY(true);
 
     auto corn3 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    corn3->setStretchEnabled(false);
     this->addChild(corn3);
     corn3->setPosition(winSize);
     corn3->setAnchorPoint({1, 1});
@@ -49,15 +53,20 @@ bool CreatorLayer::init() {
     corn3->setFlippedY(true);
 
     auto corn4 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    corn4->setStretchEnabled(false);
     this->addChild(corn4);
     corn4->setPosition({winSize.width, 0});
     corn4->setAnchorPoint({1, 0});
     corn4->setFlippedX(true);
 
     auto createBtnSpr = Sprite::createWithSpriteFrameName("GJ_createBtn_001.png");
+    createBtnSpr->setStretchEnabled(false);
     auto savedBtnSpr = Sprite::createWithSpriteFrameName("GJ_savedBtn_001.png");
+    savedBtnSpr->setStretchEnabled(false);
     auto featuredBtnSpr = Sprite::createWithSpriteFrameName("GJ_featuredBtn_001.png");
+    featuredBtnSpr->setStretchEnabled(false);
     auto searchBtnSpr = Sprite::createWithSpriteFrameName("GJ_searchBtn_001.png");
+    searchBtnSpr->setStretchEnabled(false);
 
     auto savedBtn = MenuItemSpriteExtra::createWithNode(savedBtnSpr, [&](Node*) {
         GameToolbox::log("on saved");
