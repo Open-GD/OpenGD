@@ -4,12 +4,12 @@ USING_NS_AX;
 
 
 #define SETUP_SWALLOW_LISTENER(node) auto listener = EventListenerTouchOneByOne::create();\
-	listener->setEnabled(true);\
-	listener->setSwallowTouches(true);\
+    listener->setEnabled(true);\
+    listener->setSwallowTouches(true);\
     listener->onTouchBegan = [=](Touch*, Event*) -> bool {\
         return true;\
     };\
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, node)
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, node)
 
 #define REMOVE_SWALLOW_LISTENER(node) Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(node)
 

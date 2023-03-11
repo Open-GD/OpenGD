@@ -37,6 +37,7 @@
 # Ignore build folders
 **/build
 build
+*build
 build-docs/
 bin
 out

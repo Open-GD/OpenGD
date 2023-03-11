@@ -33,9 +33,9 @@ ax::Color3B GameToolbox::randomColor3B()
 //if low or no "." found, return existing
 //if high, add -uhd otherwise add -hd (medium default)
 //take string by copy, reference or string_view is not possible because we actually modify the string
-std::string GameToolbox::getTextureString(std::string texture)
-{
-    std::string nTexture = "Resources/"; // Just leave it empty if this crap crashes the game
+
+static inline std::string getTextureString_AppendResources(std::string texture) {
+    std::string nTexture = "Resources/";
     nTexture += texture;
     bool low = false;
     bool medium = true;
@@ -47,6 +47,26 @@ std::string GameToolbox::getTextureString(std::string texture)
     }
     GameToolbox::log("texture: {}", nTexture);
     return nTexture;
+}
+
+static inline std::string getTextureString_WithoutResources(std::string texture)
+{
+    bool low = false;
+    bool medium = true;
+    bool high = false;
+
+    size_t pos = texture.find(".");
+    if(!low && pos != std::string::npos) {
+        texture.insert(pos, high ? "-uhd" : "-hd");
+    }
+    GameToolbox::log("texture: {}", texture);
+    return texture;
+}
+
+std::string GameToolbox::getTextureString(std::string texture)
+{
+    return getTextureString_WithoutResources(texture);
+    //return getTextureString_AppendResources(texture);
 }
 
 
