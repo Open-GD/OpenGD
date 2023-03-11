@@ -33,16 +33,14 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 
     m_pMainSprite = Sprite::createWithSpriteFrameName(sprStr1);
     m_pMainSprite->setStretchEnabled(false);
-    m_pMainSprite->setContentSize({30, 30});
     addChild(m_pMainSprite, 1);
 
     m_pSecondarySprite = Sprite::createWithSpriteFrameName(sprStr2);
     m_pSecondarySprite->setStretchEnabled(false);
-    m_pSecondarySprite->setContentSize({30, 30});
 
     m_pMainSprite->addChild(m_pSecondarySprite, -1);
     // secondarySprite->setPosition(mainSprite->convertToNodeSpace(Vec2(0, 0))); // this shit DONT WORK!! cuz rob made it a global var
-    m_pSecondarySprite->setPosition({15, 7.5});
+    m_pSecondarySprite->setPosition({15, 15});
 
     m_pShipSprite = Sprite::createWithSpriteFrameName("ship_01_001.png");
     m_pShipSprite->setStretchEnabled(false);

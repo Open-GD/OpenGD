@@ -27,9 +27,7 @@ bool MenuGameLayer::init(){
     playerTest->setPosition({-300, 232});
     addChild(playerTest);
     this->player = playerTest;
-    
-    auto bg = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
-    bg->setStretchEnabled(false);
+
     const Texture2D::TexParams texParams = {
         backend::SamplerFilter::LINEAR, 
         backend::SamplerFilter::LINEAR, 
@@ -65,6 +63,8 @@ bool MenuGameLayer::init(){
     this->bgStartPos = bgSprites->getPositionX();
     this->addChild(bgSprites, -3);
     sep = 0.5f;
+    bgSprites->setScale(1.185f);
+    bgSprites->setPositionY(0);
 
     //this is not how it works lol
     //this->bgSpr->setColor(GameToolbox::randomColor3B());

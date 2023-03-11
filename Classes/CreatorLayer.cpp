@@ -91,7 +91,7 @@ bool CreatorLayer::init() {
     });
 
     auto menu = Menu::create(createBtn, savedBtn, featuredBtn, searchBtn, nullptr);
-    GameToolbox::alignItemsInColumnsWithPadding(menu, 2, 290, 290);
+    GameToolbox::alignItemsInColumnsWithPadding(menu, 2, 130, 130);
     menu->addChild(backBtn);
     backBtn->setPosition(menu->convertToNodeSpace({48, winSize.height - 46}));
     

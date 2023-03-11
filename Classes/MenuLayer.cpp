@@ -42,18 +42,21 @@ bool MenuLayer::init(){
     auto log_oSpr = Sprite::createWithSpriteFrameName("GJ_logo_001.png");
     log_oSpr->setStretchEnabled(false);
     //log_oSpr->setPosition({ winSize.width / 2, winSize.height - 100 });
-    log_oSpr->setPosition({ winSize.width / 2, winSize.height - 110 });
+    log_oSpr->setPosition({284.5, 270 });
     this->addChild(log_oSpr);
     auto playBtn = MenuItemSpriteExtra::create("GJ_playBtn_001.png", [&](Node* btn) {
         auto scene = PlayLayer::scene(new GJGameLevel("My awesome level", "MikaKC", 1));
         Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
     });
     playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
+    playBtn->setPosition({0, 0});
     static_cast<ax::Sprite*>(playBtn->getSprite())->setStretchEnabled(false);
     
     auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
         //Director::getInstance()->replaceScene(TransitionFade::create(0.5f, GarageLayer::scene()));
     });
+
+    garageBtn->setPosition({-110, 0});
     
     garageBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
     static_cast<ax::Sprite*>(garageBtn->getSprite())->setStretchEnabled(false);
@@ -62,35 +65,42 @@ bool MenuLayer::init(){
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
     });
 
+    creatorBtn->setPosition({110, 0});
+
     creatorBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
     static_cast<ax::Sprite*>(creatorBtn->getSprite())->setStretchEnabled(false);
 
     auto mainButtonMenu = Menu::create(garageBtn, playBtn, creatorBtn, nullptr);
 
-    mainButtonMenu->setPositionY(mainButtonMenu->getPositionY() -10);
-    mainButtonMenu->alignItemsHorizontallyWithPadding(50);
+    mainButtonMenu->setPosition({282.5f, 170});
     addChild(mainButtonMenu);
     
 
     auto robBtn = MenuItemSpriteExtra::create("robtoplogo_small.png", [&](Node* btn) {
         Application::getInstance()->openURL("http://www.robtopgames.com");
     });
+
+    robBtn->setPosition({0, 0});
+    robBtn->setContentSize({120, 33.6});
+    static_cast<ax::Sprite*>(robBtn->getSprite())->setStretchEnabled(false);
+    static_cast<ax::Sprite*>(robBtn->getSprite())->setPosition({60, 16.8f});
+    static_cast<ax::Sprite*>(robBtn->getSprite())->setScale(0.8f);
     
     auto otherMenu = Menu::create();
+    otherMenu->setPosition({50, 24});
     otherMenu->addChild(robBtn);
     addChild(otherMenu);
-    
-    robBtn->setPosition(otherMenu->convertToNodeSpace({190, 90}));
-    robBtn->setScale(0.9f);    
     
     auto achievementsBtn = MenuItemSpriteExtra::create("GJ_achBtn_001.png", [&](Node* btn) {
         AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
     });
     achievementsBtn->setScale(1.f);
+    static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
     
     auto optionsBtn = MenuItemSpriteExtra::create("GJ_optionsBtn_001.png", [&](Node* btn) {
         
     });
+    static_cast<ax::Sprite*>(optionsBtn->getSprite())->setStretchEnabled(false);
 
     auto statsBtn = MenuItemSpriteExtra::create("GJ_statsBtn_001.png", [&](Node* btn) {
         auto alert = AlertLayer::create("WIP!", "This feature is not yet supported!", "Close", "Click me!", NULL, NULL);
@@ -102,10 +112,11 @@ bool MenuLayer::init(){
         });
         alert->show();
     });
+    static_cast<ax::Sprite*>(statsBtn->getSprite())->setStretchEnabled(false);
 
     auto bottomMenu = Menu::create(achievementsBtn, optionsBtn, statsBtn, nullptr);    
 
-    bottomMenu->setPositionY(90);
+    bottomMenu->setPosition({284.5, 45});
     //bottomMenu->setPositionY(100);
     bottomMenu->alignItemsHorizontallyWithPadding(10);
 
@@ -115,14 +126,16 @@ bool MenuLayer::init(){
         //auto a = GJMoreGamesLayer::create();
         //addChild(a);
     });
-    otherMenu->addChild(moreGamesBtn);
-    //moreGamesBtn->setPosition(menu->convertToNodeSpace({winSize.width - 86, 90}));
-    moreGamesBtn->setPosition(otherMenu->convertToNodeSpace({winSize.width - 175, 130}));
-    moreGamesBtn->setScale(1.f);
 
-    // To make it close to GD
-    otherMenu->setScale(offsetScale);
-    otherMenu->setPosition({(winSize.width / 2) + 82, (winSize.height / 2) + 47});
+    auto moreMenu = Menu::create();
+    moreMenu->setPosition({526, 45});
+    moreMenu->addChild(moreGamesBtn);
+    addChild(moreMenu);
+
+    moreGamesBtn->setContentSize({74.25f, 63});
+    static_cast<ax::Sprite*>(moreGamesBtn->getSprite())->setStretchEnabled(false);
+    static_cast<ax::Sprite*>(moreGamesBtn->getSprite())->setPosition({37.125f, 31.5f});
+    static_cast<ax::Sprite*>(moreGamesBtn->getSprite())->setScale(0.9f);
 
     auto lctest = LoadingCircle::create();
     lctest->setVisible(false);

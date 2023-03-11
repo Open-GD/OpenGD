@@ -91,7 +91,6 @@ void PlayLayer::update(float dt)
     m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(15, 15), {7.5, 7.5}));
 
     auto winSize = Director::getInstance()->getWinSize();
-    GameToolbox::log("dt: {}", m_pPlayer->getOuterBounds().getMaxX() - m_pPlayer->getOuterBounds().getMinX());
 
     if (!m_freezePlayer && !this->m_pPlayer->isDead())
     {
@@ -106,7 +105,6 @@ void PlayLayer::update(float dt)
             if (this->m_pPlayer->isDead())
                 break;
         }
-        GameToolbox::log("yDifference: {}", m_pPlayer->getYVel() - lastY);
     }
 
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * 62);

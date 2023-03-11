@@ -29,14 +29,16 @@ bool GroundLayer::init(int groundID) {
     auto gradient1 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
     gradient1->setStretchEnabled(false);
     this->addChild(gradient1);
-    gradient1->setScale(1.6f);
+    gradient1->setScale(0.7f);
+    gradient1->setPositionY(33);
     
     auto gradient2 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
     gradient2->setStretchEnabled(false);
     this->addChild(gradient2);
-    gradient2->setScale(1.6f);
+    gradient2->setScale(0.7f);
     gradient2->setFlippedX(true);
     gradient2->setPositionX(winSize.width);
+    gradient2->setPositionY(33);
 
     this->m_fSpeed = 700;
     
