@@ -7,7 +7,7 @@
 USING_NS_AX;
 USING_NS_AX_EXT;
 
-bool showDn = false;
+bool showDn = false, noclip;
 
 Scene *PlayLayer::scene(GJGameLevel *level)
 {
@@ -45,24 +45,35 @@ bool PlayLayer::init(GJGameLevel *level)
         backend::SamplerFilter::LINEAR,
         backend::SamplerFilter::LINEAR,
         backend::SamplerAddressMode::REPEAT,
-        backend::SamplerAddressMode::REPEAT
-    };
+        backend::SamplerAddressMode::REPEAT};
     this->m_pBG->getTexture()->setTexParameters(texParams);
     this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
     this->m_pBG->setPosition(winSize / 2);
     this->m_pBG->setColor({0, 102, 255});
     this->addChild(this->m_pBG, -1);
 
-    auto testObject = GameObject::create("square_01_001.png");
-    testObject->setStretchEnabled(false);
-    testObject->setPosition(winSize.width / 2, 150);
-    auto testObject2 = GameObject::create("square_01_001.png");
-    testObject2->setStretchEnabled(false);
-    testObject2->setPosition(winSize.width / 2, 120);
-    _pObjects = {testObject, testObject2};
+    for (size_t i = 0; i < 10; i++)
+    {
+        for (size_t j = 0; j < GameToolbox::randomInt(1, 3); j++)
+        {
+            auto testObject = GameObject::create("square_01_001.png");
+            testObject->setStretchEnabled(false);
+            testObject->setPosition(i * 100, 120 + (j * 30));
+            testObject->setActive(true);
+            _pObjects.push_back(testObject);
+        }
+    }
+
+    for (size_t i = 0; i < sectionForPos(_pObjects[_pObjects.size() - 1]->getPositionX()); i++)
+    {
+        std::vector<GameObject *> vec;
+        m_pSectionObjects.push_back(vec);
+    }
 
     for (GameObject *object : _pObjects)
     {
+        int section = sectionForPos(object->getPositionX());
+        m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
         object->setOuterBounds(Rect(object->getPosition(), Vec2(30, 30)));
         object->setInnerBounds(Rect(object->getPosition(), Vec2(30, 30)));
         object->setContentSize(Vec2(30, 30));
@@ -88,7 +99,8 @@ void PlayLayer::update(float dt)
     step *= m_testFloat;
 
     m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), {30, 30}));
-    m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(15, 15), {7.5, 7.5}));
+    m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), {7.5, 7.5}));
+    m_pPlayer->noclip = noclip;
 
     auto winSize = Director::getInstance()->getWinSize();
 
@@ -177,7 +189,8 @@ void PlayLayer::checkCollisions(float dt)
     {
         if (m_pPlayer->isGravityFlipped())
         {
-            m_pPlayer->setDead(true);
+            if (!noclip)
+                m_pPlayer->setDead(true);
             return;
         }
 
@@ -187,49 +200,117 @@ void PlayLayer::checkCollisions(float dt)
     }
     else if (m_pPlayer->getPositionY() > 1290.0f)
     {
-        m_pPlayer->setDead(true);
+        if (!noclip)
+            m_pPlayer->setDead(true);
         return;
     }
-
-    size_t childCount = _pObjects.size();
 
     dn->setVisible(showDn);
     dn->clear();
 
-    dn->drawRect({m_pPlayer->getOuterBounds().getMinX(), m_pPlayer->getOuterBounds().getMinY()}, {m_pPlayer->getOuterBounds().getMaxX(), m_pPlayer->getOuterBounds().getMaxY()}, ax::Color4B::RED);
-    dn->drawRect({m_pPlayer->getInnerBounds().getMinX(), m_pPlayer->getInnerBounds().getMinY()}, {m_pPlayer->getInnerBounds().getMaxX(), m_pPlayer->getInnerBounds().getMaxY()}, ax::Color4B::RED);
+    renderRect(m_pPlayer->getOuterBounds(), ax::Color4B::RED);
+    renderRect(m_pPlayer->getInnerBounds(), ax::Color4B::GREEN);
 
-    for (unsigned int i = 0; i < childCount; i++)
+    int current_section = this->sectionForPos(m_pPlayer->getPositionX());
+
+    std::vector<GameObject *> m_pHazards;
+
+    for (int i = current_section - 1; i < current_section + 1; i++)
     {
-        auto object = _pObjects[i];
-
-        dn->drawRect({object->getOuterBounds().getMinX(), object->getOuterBounds().getMinY()}, {object->getOuterBounds().getMaxX(), object->getOuterBounds().getMaxY()}, ax::Color4B::RED);
-
-        if (object->getOuterBounds().intersectsRect(m_pPlayer->getOuterBounds()))
+        if (i < m_pSectionObjects.size() && i >= 0)
         {
-            switch (object->getGameObjectType())
-            {
-            case GameObjectType::kObjectTypeTile:
-                m_pPlayer->setOnGround(true);
-                break;
+            std::vector<GameObject *> section = m_pSectionObjects[i];
 
-            default:
-                break;
-            }
-        }
-        if (object->getOuterBounds().intersectsRect(m_pPlayer->getInnerBounds()))
-        {
-            switch (object->getGameObjectType())
+            for (int j = 0; j < section.size(); j++)
             {
-            case GameObjectType::kObjectTypeTile:
-                m_pPlayer->setDead(true);
-                break;
+                GameObject *obj = section[j];
 
-            default:
-                break;
+                renderRect(obj->getOuterBounds(), ax::Color4B::BLUE);
+
+                if (obj->getGameObjectType() == GameObjectType::kObjectTypeHazard)
+                {
+                    m_pHazards.push_back(obj);
+                }
+                else if (obj->isActive())
+                {
+
+                    if (m_pPlayer->getOuterBounds().intersectsRect(obj->getOuterBounds()))
+                    {
+                        switch (obj->getGameObjectType())
+                        {
+                        /* case GameObjectType::kInvertGravity:
+                            if (!this->getPlayer()->getGravityFlipped())
+                                this->playGravityEffect(true);
+
+                            this->getPlayer()->setPortal(obj->getPosition());
+
+                            this->getPlayer()->flipGravity(true);
+                            break;
+
+                        case GameObjectType::kNormalGravity:
+                            if (this->getPlayer()->getGravityFlipped())
+                                this->playGravityEffect(false);
+
+                            this->getPlayer()->setPortal(obj->getPosition());
+
+                            this->getPlayer()->flipGravity(false);
+                            break;
+
+                        case GameObjectType::kShipPortal:
+                            this->switchToFlyMode(obj, false);
+                            break;
+
+                        case GameObjectType::kCubePortal:
+                            this->getPlayer()->setPortal(obj->getPosition());
+
+                            this->getPlayer()->toggleFlyMode(false);
+                            this->toggleGlitter(false);
+                            this->animateOutGround(false);
+
+                            this->moveCameraY = false;
+                            break;
+
+                        case GameObjectType::kYellowJumpPad:
+                            if (!obj->hasBeenActivated())
+                            {
+                                this->getPlayer()->setPortal(obj->getPosition() - cocos2d::CCPoint(0, 10));
+                                obj->triggerActivated();
+
+                                this->getPlayer()->propellPlayer();
+                            }
+                            break;
+
+                        case GameObjectType::kYellowJumpRing:
+                            if (!obj->hasBeenActivated())
+                            {
+                                this->getPlayer()->setTouchedRing(obj);
+                                obj->powerOnObject();
+
+                                this->getPlayer()->ringJump();
+                            }
+                            break; */
+                        default:
+                            // this->getPlayer()->collidedWithObject(unk, obj);
+                            m_pPlayer->collidedWithObject(dt, obj);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
+
+    for (unsigned int i = 0; i < m_pHazards.size(); ++i)
+    {
+        GameObject *hazard = m_pHazards[i];
+
+        if (m_pPlayer->getOuterBounds().intersectsRect(hazard->getOuterBounds()))
+        {
+            m_pPlayer->setDead(true);
+            return;
+        }
+    }
+    m_pHazards.clear();
 }
 
 void PlayLayer::onDrawImGui()
@@ -249,9 +330,14 @@ void PlayLayer::onDrawImGui()
     ImGui::Text("yVel %.3f", m_pPlayer->getYVel());
 
     ImGui::Checkbox("Show Hitboxes", &showDn);
+    ImGui::Checkbox("Gain the power of invincibility", &noclip);
 
     if (ImGui::Button("Speed"))
         Director::getInstance()->getScheduler()->setTimeScale(0.1f);
+
+    ImGui::Text("Sections: %i", m_pSectionObjects.size());
+    if (m_pSectionObjects.size() > 0 && sectionForPos(m_pPlayer->getPositionX()) - 1 < m_pSectionObjects.size())
+        ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1].size());
 
     if (ImGui::Button("Reset"))
     {
@@ -261,6 +347,11 @@ void PlayLayer::onDrawImGui()
         m_pPlayer->setDead(false);
         m_pBG->setPositionX(0);
     }
+}
+
+void PlayLayer::renderRect(ax::Rect rect, ax::Color4B col)
+{
+    dn->drawRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, col);
 }
 
 void PlayLayer::onEnter()

@@ -65,6 +65,7 @@ public:
     ax::Color3B getShipColor();
 
     void jump();
+    void collidedWithObject(float dt, GameObject* obj);
 
     bool isFlying();
     bool isUpsideDown();
@@ -78,10 +79,9 @@ public:
     inline void setOnGround(bool const &value)
     {
         m_bOnGround = value;
-        stopRotation();
-        m_dYVel = 0.f;
-        m_obLastGroundPos = getPosition();
     }
+
+    bool noclip;
 
     ax::Vec2 getLastGroundPos();
     void update(float dt);

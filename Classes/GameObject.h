@@ -14,6 +14,8 @@ private:
     ax::Rect _pOuterBounds;
     ax::Rect _pInnerBounds;
 
+    bool m_bActive;
+
     GameObjectType _pObjectType;
 
 public:
@@ -33,4 +35,8 @@ public:
 
     GameObjectType getGameObjectType() { return _pObjectType; }
     void setGameObjectType(const GameObjectType& value) { _pObjectType = value; }
+
+    void setActive(bool active) { m_bActive = active; }
+
+    bool isActive() {return m_bActive;}
 };

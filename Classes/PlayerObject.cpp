@@ -179,7 +179,7 @@ void PlayerObject::update(float dt)
         float velY = (float)((double)dtSlow * m_dYVel);
         float velX = (float)((double)dt * m_dXVel * (double)m_fSpeed);
 
-        ax::Vec2 velocity {velX, velY};
+        ax::Vec2 velocity{velX, velY};
 
         setPosition(getPosition() + velocity);
     }
@@ -193,7 +193,7 @@ void PlayerObject::update(float dt)
     // this->motionStreak->setPosition(this->getPosition() + ccp({-10, 0}));
 
     // auto particle = Sprite::create("square.png");
-    //particle->setStretchEnabled(false);
+    // particle->setStretchEnabled(false);
     // particle->setScale(0.05);
     // particle->setPosition(this->getPosition());
     // this->gameLayer->addChild(particle, 999);
@@ -209,7 +209,7 @@ void PlayerObject::updateJump(float dt)
 
     bool shouldJump = m_bIsHolding;
 
-    if(shouldJump && isOnGround())
+    if (shouldJump && isOnGround())
     {
         m_bIsRising = true;
         m_bOnGround = false;
@@ -224,11 +224,11 @@ void PlayerObject::updateJump(float dt)
     {
         float tfIsThisGravity = m_dGravity;
 
-        if(m_bIsRising)
+        if (m_bIsRising)
         {
             m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
             bool condition;
-            if(!isGravityFlipped())
+            if (!isGravityFlipped())
             {
                 condition = m_dYVel <= tfIsThisGravity * 2.0f;
             }
@@ -237,30 +237,30 @@ void PlayerObject::updateJump(float dt)
                 condition = m_dYVel >= m_dGravity * 2.0f;
             }
 
-            if(condition)
+            if (condition)
             {
                 m_bIsRising = false;
             }
         }
         else
         {
-            if(!isGravityFlipped())
+            if (!isGravityFlipped())
             {
-                if(m_dYVel < tfIsThisGravity * 2.0f)
+                if (m_dYVel < tfIsThisGravity * 2.0f)
                 {
                     m_bOnGround = false;
                 }
             }
             else
             {
-                if(m_dYVel > m_dGravity * 2.0f)
+                if (m_dYVel > m_dGravity * 2.0f)
                 {
                     m_bOnGround = false;
                 }
             }
 
             m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
-            if(!isGravityFlipped())
+            if (!isGravityFlipped())
             {
                 m_dYVel = std::max(m_dYVel, -15.0);
             }
@@ -268,33 +268,51 @@ void PlayerObject::updateJump(float dt)
             {
                 m_dYVel = std::min(m_dYVel, 15.0);
             }
-            if(!isUpsideDown())
+            if (!isUpsideDown())
             {
-                if(m_dYVel >= tfIsThisGravity * 2.0f) return;
+                if (m_dYVel >= tfIsThisGravity * 2.0f)
+                    return;
             }
             else
             {
-                if(m_dYVel <= m_dGravity * 2.0f) return;
+                if (m_dYVel <= m_dGravity * 2.0f)
+                    return;
             }
 
-            if(getActionByTag(0) == nullptr) runRotateAction();
+            if (getActionByTag(0) == nullptr)
+                runRotateAction();
 
-            if(isUpsideDown())
+            if (isUpsideDown())
             {
-                if(m_dYVel >= -4.0)
+                if (m_dYVel >= -4.0)
                 {
                     return;
                 }
             }
             else
             {
-                if(m_dYVel <= 4.0)
+                if (m_dYVel <= 4.0)
                 {
                     return;
                 }
             }
         }
     }
+}
+
+void PlayerObject::collidedWithObject(float dt, GameObject *obj)
+{
+
+    if(getInnerBounds().intersectsRect(obj->getOuterBounds()))
+    {
+        if(!noclip) setDead(true);
+        return;
+    }
+
+    setOnGround(true);
+    stopRotation();
+    m_dYVel = 0.f;
+    m_obLastGroundPos = getPosition();
 }
 
 bool PlayerObject::isGravityFlipped()

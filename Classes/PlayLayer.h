@@ -7,47 +7,48 @@
 #include "MenuLayer.h"
 
 // temporary
-struct GJGameLevel 
+struct GJGameLevel
 {
     std::string _pLevelName;
     std::string _pLevelCreator;
     std::string _pLevelData;
     unsigned int _pLevelID;
 
-    GJGameLevel() 
-        : _pLevelName(""), 
-        _pLevelCreator(""), 
-        _pLevelData(""), 
-        _pLevelID(1) 
+    GJGameLevel()
+        : _pLevelName(""),
+          _pLevelCreator(""),
+          _pLevelData(""),
+          _pLevelID(1)
     {
-
     }
 
     GJGameLevel(std::string_view levelName, std::string_view levelCreator, unsigned int levelID)
         : _pLevelName(levelName),
-        _pLevelCreator(levelCreator),
-        _pLevelData(""),
-        _pLevelID(levelID)
+          _pLevelCreator(levelCreator),
+          _pLevelData(""),
+          _pLevelID(levelID)
     {
-
     }
 };
 
-class PlayLayer : public ax::Layer {
+class PlayLayer : public ax::Layer
+{
 private:
-    bool init(GJGameLevel* level);
+    bool init(GJGameLevel *level);
     void onEnter() override;
     void onExit() override;
     void onDrawImGui();
-    
-    ax::Sprite* m_pBG;
-    GroundLayer* m_pGround;
-    PlayerObject* m_pPlayer;
+
+    ax::Sprite *m_pBG;
+    GroundLayer *m_pGround;
+    PlayerObject *m_pPlayer;
     ax::Vec2 m_obCamPos;
 
     ax::DrawNode *dn;
-    
-    std::vector<GameObject*> _pObjects;
+
+    std::vector<GameObject *> _pObjects;
+
+    std::vector<std::vector<GameObject*>> m_pSectionObjects;
 
     float m_fCameraYCenter;
     bool m_bFirstAttempt = true;
@@ -56,7 +57,7 @@ private:
     bool m_bShakingCamera;
     float m_fEndOfLevel = FLT_MAX;
     float m_fShakeIntensity = 1;
-    
+
     //----IMGUI DEBUG MEMBERS----
     float m_testFloat = 1.0f;
     bool m_freezePlayer;
@@ -68,12 +69,21 @@ public:
     // dt?
     void checkCollisions(float delta);
     void renderRect(ax::Rect rect, ax::Color4B col);
-    static ax::Scene* scene(GJGameLevel* level);
-    static PlayLayer* create(GJGameLevel* level)
+
+    int sectionForPos(float x)
+    {
+        int section = x / 100;
+        if (section < 0)
+            section = 0;
+        return section;
+    }
+
+    static ax::Scene *scene(GJGameLevel *level);
+    static PlayLayer *create(GJGameLevel *level)
     {
         auto ret = new (std::nothrow) PlayLayer();
-        if(ret && ret->init(level))
-        { 
+        if (ret && ret->init(level))
+        {
             ret->autorelease();
             return ret;
         }
