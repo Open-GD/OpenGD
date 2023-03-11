@@ -10,6 +10,7 @@
 #include "MenuItemSpriteExtra.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
+#include "LoadingCircle.h"
 
 /*
 #include "ColoursPalette.h"
@@ -121,9 +122,12 @@ bool MenuLayer::init(){
 
     // To make it close to GD
     otherMenu->setScale(offsetScale);
-
-    
     otherMenu->setPosition({(winSize.width / 2) + 82, (winSize.height / 2) + 47});
+
+    auto lctest = LoadingCircle::create();
+    lctest->setVisible(false);
+    lctest->setPosition({winSize.width / 2, winSize.height / 2});
+    this->addChild(lctest, 1024);    
 
     return true;
 }
