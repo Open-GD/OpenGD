@@ -30,10 +30,8 @@ namespace GameToolbox
         return MIN(MAX(value, min), max);
     }
     
-    template <typename... Args>
-    void log(std::string_view f, Args... args)
-    {
-        auto formatted = fmt::vformat(f, fmt::make_format_args(args ...));
-        fmt::print("[{:%H:%M:%S}] {}\n", fmt::gmtime(std::time(NULL)), formatted);
+    template <typename... T>
+        void log(fmt::format_string<T...> fmt, T&&... args) {
+        return fmt::print("[{:%H:%M:%S}] {}\n", fmt::gmtime(std::time(NULL)), fmt::format(fmt, std::forward<T>(args)...));
     }
 };

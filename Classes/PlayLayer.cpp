@@ -45,7 +45,8 @@ bool PlayLayer::init(GJGameLevel *level)
         backend::SamplerFilter::LINEAR,
         backend::SamplerFilter::LINEAR,
         backend::SamplerAddressMode::REPEAT,
-        backend::SamplerAddressMode::REPEAT};
+        backend::SamplerAddressMode::REPEAT
+    };
     this->m_pBG->getTexture()->setTexParameters(texParams);
     this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
     this->m_pBG->setPosition(winSize / 2);
@@ -90,7 +91,7 @@ void PlayLayer::update(float dt)
     m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(15, 15), {7.5, 7.5}));
 
     auto winSize = Director::getInstance()->getWinSize();
-    GameToolbox::log("dt" + std::to_string(m_pPlayer->getOuterBounds().getMaxX() - m_pPlayer->getOuterBounds().getMinX()));
+    GameToolbox::log("dt: {}", m_pPlayer->getOuterBounds().getMaxX() - m_pPlayer->getOuterBounds().getMinX());
 
     if (!m_freezePlayer && !this->m_pPlayer->isDead())
     {
@@ -105,7 +106,7 @@ void PlayLayer::update(float dt)
             if (this->m_pPlayer->isDead())
                 break;
         }
-        GameToolbox::log("yDifference: " + std::to_string(m_pPlayer->getYVel() - lastY));
+        GameToolbox::log("yDifference: {}", m_pPlayer->getYVel() - lastY);
     }
 
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * 62);
