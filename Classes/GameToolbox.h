@@ -24,6 +24,8 @@ namespace GameToolbox
     void alignItemsInColumnsWithPadding(ax::Menu* menu, const int rows, const int x_padding, const int y_padding);
     void alignItemsVerticallyWithPadding(ax::Vector<ax::Node*> children, float padding);
     void alignItemsHorizontallyWithPadding(ax::Vector<ax::Node*> children, float padding);
+    void createCorners(ax::Node* layer, bool topRight, bool topLeft, bool botLeft, bool botRight);
+    inline void createAllCorners(ax::Node* self) { return createCorners(self, true, true, true, true); }
     
     template <typename T>
     inline T inRange(T value, T min, T max) {

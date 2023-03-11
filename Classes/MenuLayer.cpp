@@ -59,7 +59,6 @@ bool MenuLayer::init(){
     garageBtn->setPosition({-110, 0});
     
     garageBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
-    static_cast<ax::Sprite*>(garageBtn->getSprite())->setStretchEnabled(false);
 
     auto creatorBtn = MenuItemSpriteExtra::create("GJ_creatorBtn_001.png", [&](Node* btn) {
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
@@ -68,7 +67,6 @@ bool MenuLayer::init(){
     creatorBtn->setPosition({110, 0});
 
     creatorBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
-    static_cast<ax::Sprite*>(creatorBtn->getSprite())->setStretchEnabled(false);
 
     auto mainButtonMenu = Menu::create(garageBtn, playBtn, creatorBtn, nullptr);
 
@@ -79,12 +77,7 @@ bool MenuLayer::init(){
     auto robBtn = MenuItemSpriteExtra::create("robtoplogo_small.png", [&](Node* btn) {
         Application::getInstance()->openURL("http://www.robtopgames.com");
     });
-
-    robBtn->setPosition({0, 0});
-    robBtn->setContentSize({120, 33.6});
-    static_cast<ax::Sprite*>(robBtn->getSprite())->setStretchEnabled(false);
-    static_cast<ax::Sprite*>(robBtn->getSprite())->setPosition({60, 16.8f});
-    static_cast<ax::Sprite*>(robBtn->getSprite())->setScale(0.8f);
+    robBtn->setScale(.8f);
     
     auto otherMenu = Menu::create();
     otherMenu->setPosition({50, 24});

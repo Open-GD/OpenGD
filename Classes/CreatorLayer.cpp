@@ -30,61 +30,26 @@ bool CreatorLayer::init() {
     bg->setAnchorPoint({0, 0});
     bg->setColor({0, 102, 255});
     this->addChild(bg);
-    
-    auto corn1 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
-    corn1->setStretchEnabled(false);
-    this->addChild(corn1);
-    corn1->setPosition({0, 0});
-    corn1->setAnchorPoint({0.0, 0.0});
 
-    auto corn2 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
-    corn2->setStretchEnabled(false);
-    this->addChild(corn2);
-    corn2->setPosition({0, winSize.height});
-    corn2->setAnchorPoint({0, 1});
-    corn2->setFlippedY(true);
-
-    auto corn3 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
-    corn3->setStretchEnabled(false);
-    this->addChild(corn3);
-    corn3->setPosition(winSize);
-    corn3->setAnchorPoint({1, 1});
-    corn3->setFlippedX(true);
-    corn3->setFlippedY(true);
-
-    auto corn4 = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
-    corn4->setStretchEnabled(false);
-    this->addChild(corn4);
-    corn4->setPosition({winSize.width, 0});
-    corn4->setAnchorPoint({1, 0});
-    corn4->setFlippedX(true);
+    GameToolbox::createAllCorners(this);
 
     auto createBtnSpr = Sprite::createWithSpriteFrameName("GJ_createBtn_001.png");
-    createBtnSpr->setStretchEnabled(false);
     auto savedBtnSpr = Sprite::createWithSpriteFrameName("GJ_savedBtn_001.png");
-    savedBtnSpr->setStretchEnabled(false);
     auto featuredBtnSpr = Sprite::createWithSpriteFrameName("GJ_featuredBtn_001.png");
-    featuredBtnSpr->setStretchEnabled(false);
     auto searchBtnSpr = Sprite::createWithSpriteFrameName("GJ_searchBtn_001.png");
-    searchBtnSpr->setStretchEnabled(false);
 
-    auto savedBtn = MenuItemSpriteExtra::createWithNode(savedBtnSpr, [&](Node*) {
+    auto savedBtn = MenuItemSpriteExtra::create(savedBtnSpr, [&](Node*) {
         GameToolbox::log("on saved");
     });
-    auto featuredBtn = MenuItemSpriteExtra::createWithNode(featuredBtnSpr, [&](Node*) {
+    auto featuredBtn = MenuItemSpriteExtra::create(featuredBtnSpr, [&](Node*) {
         GameToolbox::log("on featured");
     });
-    auto searchBtn = MenuItemSpriteExtra::createWithNode(searchBtnSpr, [&](Node*) {
+    auto searchBtn = MenuItemSpriteExtra::create(searchBtnSpr, [&](Node*) {
         GameToolbox::log("on search");
     });
-    auto createBtn = MenuItemSpriteExtra::createWithNode(createBtnSpr, [&](Node*) {
+    auto createBtn = MenuItemSpriteExtra::create(createBtnSpr, [&](Node*) {
         GameToolbox::log("on create");
     });
-
-    createBtn->setScale(1.1f);
-    savedBtn->setScale(1.1f);
-    featuredBtn->setScale(1.1f);
-    searchBtn->setScale(1.1f);
 
     auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [&](Node*) {
         Director::getInstance()->replaceScene(TransitionFade::create(.5, MenuLayer::scene()));
@@ -93,7 +58,7 @@ bool CreatorLayer::init() {
     auto menu = Menu::create(createBtn, savedBtn, featuredBtn, searchBtn, nullptr);
     GameToolbox::alignItemsInColumnsWithPadding(menu, 2, 130, 130);
     menu->addChild(backBtn);
-    backBtn->setPosition(menu->convertToNodeSpace({48, winSize.height - 46}));
+    backBtn->setPosition(menu->convertToNodeSpace({25, winSize.height - 25}));
     
     this->addChild(menu);
 

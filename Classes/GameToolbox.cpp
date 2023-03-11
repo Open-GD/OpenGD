@@ -1,6 +1,7 @@
 #include "GameToolbox.h"
 #include <fmt/format.h>
 
+USING_NS_AX;
 
 //general purpose class for helper functions that can be useful anywhere
 
@@ -29,6 +30,35 @@ ax::Color3B GameToolbox::randomColor3B()
     uint8_t b = GameToolbox::randomInt(255);
     
     return {r, g, b};
+}
+
+void GameToolbox::createCorners(ax::Node* self, bool topLeft, bool topRight, bool botLeft, bool botRight)
+{
+    const std::array<bool, 4> corners { botLeft, topLeft, topRight, botRight };
+  
+    const auto winSize = Director::getInstance()->getWinSize();
+    for(int i = 0; 4 > i; i++) {
+        if(!corners[i]) continue;
+        
+        std::tuple<constexpr ax::Vec2, constexpr ax::Vec2, constexpr bool, constexpr bool> settings;
+        
+        switch(i) {
+            case 0: settings = { {0,0}, {0,0}, false, false };                  break;
+            case 1: settings = { {0, winSize.height}, {0, 1}, false, true };    break;
+            case 2: settings = { {winSize}, {1, 1}, true, true };               break;
+            case 3: settings = { {winSize.width, 0}, {1, 0}, true, false };     break;
+            //more cases
+        }
+        
+        const auto [pos, anchor, flipX, flipY] = settings;
+        auto corner = ax::Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+        corner->setStretchEnabled(false);
+        corner->setPosition(pos);
+        corner->setAnchorPoint(anchor);
+        corner->setFlippedX(flipX);
+        corner->setFlippedY(flipY);
+        self->addChild(corner);
+    }
 }
 //if low or no "." found, return existing
 //if high, add -uhd otherwise add -hd (medium default)
