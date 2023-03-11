@@ -29,6 +29,7 @@ bool MenuGameLayer::init(){
     this->player = playerTest;
     
     auto bg = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
+    bg->setStretchEnabled(false);
     const Texture2D::TexParams texParams = {
         backend::SamplerFilter::LINEAR, 
         backend::SamplerFilter::LINEAR, 
@@ -45,6 +46,7 @@ bool MenuGameLayer::init(){
 
     for(int i = 0; i < 4; i++) {
         auto gr = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
+        gr->setStretchEnabled(false);
         gr->getTexture()->setTexParameters(texParams);
         gr->setTextureRect(Rect(0, 0, 2048, 1024));
         gr->setPosition(winSize / 2);

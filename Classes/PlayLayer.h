@@ -44,6 +44,8 @@ private:
 	GroundLayer* m_pGround;
 	PlayerObject* m_pPlayer;
 	ax::Vec2 m_obCamPos;
+
+	ax::DrawNode *dn;
 	
 	std::vector<GameObject*> _pObjects;
 
@@ -56,7 +58,7 @@ private:
 	float m_fShakeIntensity = 1;
     
     //----IMGUI DEBUG MEMBERS----
-    float m_testFloat = 0.2f;
+    float m_testFloat = 1.0f;
     bool m_freezePlayer;
 
 public:
@@ -65,8 +67,7 @@ public:
 
 	// dt?
 	void checkCollisions(float delta);
-
-	
+	void renderRect(ax::Rect rect, ax::Color4B col);
 	static ax::Scene* scene(GJGameLevel* level);
 	static PlayLayer* create(GJGameLevel* level)
 	{

@@ -21,4 +21,5 @@ public:
     /// @return The button
     static MenuItemSpriteExtra* create(const char* sprite, std::function<void(Node*)> callback);
     static MenuItemSpriteExtra* createWithNode(ax::Node* sprite, std::function<void(Node*)> callback);
+    ax::Node* getSprite() {return m_pSprite;}
 };

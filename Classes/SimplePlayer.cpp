@@ -16,6 +16,7 @@ bool SimplePlayer::init(int cubeID) {
     }
     this->addChild(m_pMainSprite);
     m_pMainSprite->setAnchorPoint({ 0, 0 });
+    m_pMainSprite->setStretchEnabled(false);
 
     this->m_pSecondarySprite = Sprite::createWithSpriteFrameName(secFrame);
     if (this->m_pSecondarySprite == nullptr) {
@@ -23,6 +24,7 @@ bool SimplePlayer::init(int cubeID) {
     }
     this->addChild(m_pSecondarySprite, -1);
     m_pSecondarySprite->setPosition(this->m_pMainSprite->getContentSize() / 2);
+    m_pSecondarySprite->setStretchEnabled(false);
 
     this->setContentSize({ 60, 60 });
 

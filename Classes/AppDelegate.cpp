@@ -25,6 +25,7 @@
 
 #include "AppDelegate.h"
 #include "LoadingLayer.h"
+#include "GameToolbox.h"
 
 #define USE_AUDIO_ENGINE 1
 
@@ -96,6 +97,9 @@ bool AppDelegate::applicationDidFinishLaunching()
     glView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height,
                                     ResolutionPolicy::NO_BORDER);
     auto frameSize = glView->getFrameSize();
+
+    director->setContentScaleFactor(2.0f);
+
     /*
     // if the frame's height is larger than the height of medium size.
     if (frameSize.height > mediumResolutionSize.height)

@@ -39,6 +39,7 @@ bool MenuLayer::init(){
     auto winSize = Director::getInstance()->getWinSize();
     
     auto log_oSpr = Sprite::createWithSpriteFrameName("GJ_logo_001.png");
+    log_oSpr->setStretchEnabled(false);
     //log_oSpr->setPosition({ winSize.width / 2, winSize.height - 100 });
     log_oSpr->setPosition({ winSize.width / 2, winSize.height - 110 });
     this->addChild(log_oSpr);
@@ -46,13 +47,22 @@ bool MenuLayer::init(){
         auto scene = PlayLayer::scene(new GJGameLevel("My awesome level", "MikaKC", 1));
         Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
     });
+    playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
+    static_cast<ax::Sprite*>(playBtn->getSprite())->setStretchEnabled(false);
+    
     auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
         //Director::getInstance()->replaceScene(TransitionFade::create(0.5f, GarageLayer::scene()));
-    });    
+    });
+    
+    garageBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
+    static_cast<ax::Sprite*>(garageBtn->getSprite())->setStretchEnabled(false);
 
     auto creatorBtn = MenuItemSpriteExtra::create("GJ_creatorBtn_001.png", [&](Node* btn) {
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
     });
+
+    creatorBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
+    static_cast<ax::Sprite*>(creatorBtn->getSprite())->setStretchEnabled(false);
 
     auto mainButtonMenu = Menu::create(garageBtn, playBtn, creatorBtn, nullptr);
 

@@ -17,6 +17,7 @@ bool AlertLayer::init(std::string title, std::string desc, std::string btn1, std
     auto descHeight = std::max(descLabel->getContentSize().height + 240, 280.f);
 
     auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("square01_001.png"));
+    bg->setStretchEnabled(false);
     bg->setContentSize({width, descHeight});
     bg->setPosition(winSize / 2);
     this->m_pMainLayer->addChild(bg, -1);

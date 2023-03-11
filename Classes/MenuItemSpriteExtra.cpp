@@ -4,6 +4,7 @@ USING_NS_AX;
 
 MenuItemSpriteExtra::MenuItemSpriteExtra(const char* sprite, Node* sprNode, std::function<void(Node*)> callback) {
     this->m_pSprite = (sprite == "") ? sprNode : Sprite::createWithSpriteFrameName(sprite);
+    static_cast<ax::Sprite*>(m_pSprite)->setStretchEnabled(false);
     this->m_fNewScale = 1.26f;
     this->m_fAnimDuration = 0.3f;
     this->m_fCallback = callback;
