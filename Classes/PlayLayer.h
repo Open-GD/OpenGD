@@ -5,31 +5,10 @@
 #include "PlayerObject.h"
 #include "GroundLayer.h"
 #include "MenuLayer.h"
+#include "SimpleProgressBar.h"
+#include "MenuItemSpriteExtra.h"
 
-// temporary
-struct GJGameLevel
-{
-    std::string _pLevelName;
-    std::string _pLevelCreator;
-    std::string _pLevelData;
-    unsigned int _pLevelID;
-
-    GJGameLevel()
-        : _pLevelName(""),
-          _pLevelCreator(""),
-          _pLevelData(""),
-          _pLevelID(1)
-    {
-    }
-
-    GJGameLevel(std::string_view levelName, std::string_view levelCreator, unsigned int levelID)
-        : _pLevelName(levelName),
-          _pLevelCreator(levelCreator),
-          _pLevelData(""),
-          _pLevelID(levelID)
-    {
-    }
-};
+#include "GJGameLevel.h"
 
 class PlayLayer : public ax::Layer
 {
@@ -43,6 +22,8 @@ private:
     GroundLayer *m_pGround;
     PlayerObject *m_pPlayer;
     ax::Vec2 m_obCamPos;
+
+    MenuItemSpriteExtra *backbtn;
 
     ax::DrawNode *dn;
 
@@ -58,11 +39,15 @@ private:
     float m_fEndOfLevel = FLT_MAX;
     float m_fShakeIntensity = 1;
 
+    SimpleProgressBar *m_pBar;
+
     //----IMGUI DEBUG MEMBERS----
     float m_testFloat = 1.0f;
     bool m_freezePlayer;
 
 public:
+    AX_SYNTHESIZE(GJGameLevel *, _pLevel, Level);
+
     void update(float delta);
     void updateCamera(float dt);
 

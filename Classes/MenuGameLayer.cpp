@@ -16,8 +16,10 @@ bool MenuGameLayer::init(){
 
     auto dir = Director::getInstance();
     auto winSize = dir->getWinSize();
+
+    groundLayer = GroundLayer::create(1);
     
-    addChild(GroundLayer::create(1), 2);
+    addChild(groundLayer, 2);
     
     //should work but doesnt?
     auto playerTest = PlayerObject::create(GameToolbox::randomInt(1,13), this);
@@ -118,4 +120,5 @@ void MenuGameLayer::processBackground(float delta) {
 void MenuGameLayer::update(float delta) {
     processBackground(delta);
     processPlayerMovement(delta);
+    groundLayer->update(delta);
 }

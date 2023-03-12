@@ -1,5 +1,6 @@
 #include "GameToolbox.h"
 #include <fmt/format.h>
+#include <fstream>
 
 USING_NS_AX;
 
@@ -93,10 +94,82 @@ static inline std::string getTextureString_WithoutResources(std::string texture)
     return texture;
 }
 
+std::string GameToolbox::getStringForMusicID(int id) {
+    switch(id) {
+        case 0: return "StereoMadness.mp3";
+        case 1: return "BackOnTrack.mp3";
+        case 2: return "Polargeist.mp3";
+        case 3: return "DryOut.mp3";
+        case 4: return "BaseAfterBase.mp3";
+        case 5: return "CantLetGo.mp3";
+        case 6: return "Jumper.mp3";
+        default: return "StereoMadness.mp3";
+    }
+}
+
 std::string GameToolbox::getTextureString(std::string texture)
-{
+{ 
+    // // this code would try to access texture using six different ways. if last way fails, this function returns '-' for error handling
+
+    // // attempt to create sprite without resources path (sprite frame name and without it)
+    // ax::Sprite *spr = ax::Sprite::create(getTextureString_WithoutResources(texture));
+    // if(!spr) {
+    //     // not found, try with sprite frame name
+    //     spr = ax::Sprite::createWithSpriteFrameName(getTextureString_WithoutResources(texture));
+    //     if(!spr) {
+    //         // not found, switch to resources path attempt
+    //         goto withResourcesPath;
+    //     } else {
+    //         spr->release();
+    //         return getTextureString_WithoutResources(texture);
+    //     }
+    // } else {
+    //     return getTextureString_WithoutResources(texture);
+    // }
+
+    // withResourcesPath:
+    // // attempt to create sprite with resources path (sprite frame name and without it)
+    // spr = ax::Sprite::create(getTextureString_AppendResources(texture));
+    // if(!spr) {
+    //     // not found, try with sprite frame name
+    //     spr = ax::Sprite::createWithSpriteFrameName(getTextureString_AppendResources(texture));
+    //     if(!spr) {
+    //         goto tryDifferentFormats;
+    //     } else {
+    //         spr->release();
+    //         return getTextureString_AppendResources(texture);
+    //     }
+    // } else {
+    //     spr->release();
+    //     return getTextureString_AppendResources(texture);
+    // }
+
+    // tryDifferentFormats:
+    // // every way was checked with no result, check if it plist file
+    // if(texture.ends_with(".plist") || texture.ends_with(".fnt")) {
+    //     #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+    //         // try to find requested file
+    //         std::string s1 = getTextureString_WithoutResources(texture);
+    //         std::string s2 = getTextureString_AppendResources(texture);
+
+    //         std::ifstream f1(s1);
+    //         std::ifstream f2(s2);
+
+    //         if(f1.good()) return s1;
+    //         if(f2.good()) return s2;
+
+    //         GameToolbox::log("File not found: -");
+    //         return "-";
+            
+    //     #else
+    //         return getTextureString_WithoutResources(texture);
+    //     #endif
+    // } else {
+    //     // return '-' for error handling
+    //     GameToolbox::log("Worst case: -");
+    //     return "-";
+    // }
     return getTextureString_WithoutResources(texture);
-    //return getTextureString_AppendResources(texture);
 }
 
 

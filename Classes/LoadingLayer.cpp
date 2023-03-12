@@ -107,16 +107,19 @@ void LoadingLayer::loadAssets() {
     
     auto textureCache = Director::getInstance()->getTextureCache();
     for(auto image : pngs) {
+        GameToolbox::log("image {}", image);
         textureCache->addImageAsync(getTextureString(image), AX_CALLBACK_1(LoadingLayer::assetLoaded, this));
     }
     
     auto frameCache = SpriteFrameCache::getInstance();
     for(auto plist : plists) {
+        GameToolbox::log("plist {}", plist);
         frameCache->addSpriteFramesWithFile(getTextureString(plist));
         this->assetLoaded(nullptr);
     }
     
     for(auto fnt : fonts) {
+        GameToolbox::log("font {}", fnt);
         auto label = Label::createWithBMFont(getTextureString(fnt), "someText");
         this->assetLoaded(nullptr);
     }

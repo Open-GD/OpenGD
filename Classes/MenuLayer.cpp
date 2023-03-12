@@ -11,6 +11,7 @@
 #include "GameToolbox.h"
 #include "PlayLayer.h"
 #include "LoadingCircle.h"
+#include "SimpleProgressBar.h"
 
 /*
 #include "ColoursPalette.h"
@@ -31,7 +32,7 @@ bool MenuLayer::init(){
     if (!Layer::init()) return false;
     
     if(music){
-        AudioEngine::play2d("audiotracks/menuLoop.mp3", true, 0.5f);
+        AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
         music = false;
     }
     addChild(MenuGameLayer::create(), -1);
@@ -45,7 +46,9 @@ bool MenuLayer::init(){
     log_oSpr->setPosition({284.5, 270 });
     this->addChild(log_oSpr);
     auto playBtn = MenuItemSpriteExtra::create("GJ_playBtn_001.png", [&](Node* btn) {
-        auto scene = PlayLayer::scene(new GJGameLevel("My awesome level", "MikaKC", 1));
+        AudioEngine::stopAll();
+        AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
+        auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 1));
         Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
     });
     playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
@@ -61,7 +64,7 @@ bool MenuLayer::init(){
     garageBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
 
     auto creatorBtn = MenuItemSpriteExtra::create("GJ_creatorBtn_001.png", [&](Node* btn) {
-        Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
+        Director::getInstance()->pushScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
     });
 
     creatorBtn->setPosition({110, 0});
@@ -77,10 +80,10 @@ bool MenuLayer::init(){
     auto robBtn = MenuItemSpriteExtra::create("robtoplogo_small.png", [&](Node* btn) {
         Application::getInstance()->openURL("http://www.robtopgames.com");
     });
-    robBtn->setScale(.8f);
+    robBtn->setScale(1.f);
     
     auto otherMenu = Menu::create();
-    otherMenu->setPosition({50, 24});
+    otherMenu->setPosition({58, 24});
     otherMenu->addChild(robBtn);
     addChild(otherMenu);
     
@@ -111,7 +114,7 @@ bool MenuLayer::init(){
 
     bottomMenu->setPosition({284.5, 45});
     //bottomMenu->setPositionY(100);
-    bottomMenu->alignItemsHorizontallyWithPadding(10);
+    bottomMenu->alignItemsHorizontallyWithPadding(5);
 
     this->addChild(bottomMenu);
 
@@ -121,19 +124,25 @@ bool MenuLayer::init(){
     });
 
     auto moreMenu = Menu::create();
-    moreMenu->setPosition({526, 45});
+    moreMenu->setPosition({524, 45});
     moreMenu->addChild(moreGamesBtn);
     addChild(moreMenu);
 
     moreGamesBtn->setContentSize({74.25f, 63});
-    static_cast<ax::Sprite*>(moreGamesBtn->getSprite())->setStretchEnabled(false);
-    static_cast<ax::Sprite*>(moreGamesBtn->getSprite())->setPosition({37.125f, 31.5f});
-    static_cast<ax::Sprite*>(moreGamesBtn->getSprite())->setScale(0.9f);
+    moreGamesBtn->getSprite()->setStretchEnabled(false);
+    moreGamesBtn->getSprite()->setPosition({37.125f, 31.5f});
+    moreGamesBtn->getSprite()->setScale(1.f);
 
-    auto lctest = LoadingCircle::create();
-    lctest->setVisible(false);
-    lctest->setPosition({winSize.width / 2, winSize.height / 2});
-    this->addChild(lctest, 1024);    
+    // auto lctest = LoadingCircle::create();
+    // lctest->setVisible(false);
+    // lctest->setPosition({winSize.width / 2, winSize.height / 2});
+    // this->addChild(lctest, 1024);   
+
+    auto pbtest = SimpleProgressBar::create();
+    pbtest->setPercentage(10.f);
+    pbtest->setPosition({winSize.width / 2, winSize.height / 2});
+    pbtest->setVisible(false);
+    this->addChild(pbtest, 1024);
 
     return true;
 }

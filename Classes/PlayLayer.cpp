@@ -3,11 +3,12 @@
 #include "MenuItemSpriteExtra.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
+#include "AudioEngine.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
 
-bool showDn = false, noclip;
+bool showDn = false, noclip = false;
 
 Scene *PlayLayer::scene(GJGameLevel *level)
 {
@@ -21,6 +22,8 @@ bool PlayLayer::init(GJGameLevel *level)
     if (!Layer::init())
         return false;
 
+    setLevel(level);
+
     auto winSize = Director::getInstance()->getWinSize();
 
     this->m_pGround = GroundLayer::create(1);
@@ -28,8 +31,13 @@ bool PlayLayer::init(GJGameLevel *level)
     this->m_pGround->setSpeed(623);
 
     // temp back button
-    auto backbtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [&](Node *btn)
-                                               { Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene())); });
+    backbtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [&](Node *btn) { 
+        AudioEngine::stopAll();
+        AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
+        music = true;
+
+        Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene())); 
+    });
     auto menu = Menu::create();
     menu->addChild(backbtn);
     menu->setPosition({50, winSize.height - 50});
@@ -52,22 +60,23 @@ bool PlayLayer::init(GJGameLevel *level)
     this->m_pBG->setColor({0, 102, 255});
     this->addChild(this->m_pBG, -1);
 
-    for (size_t i = 0; i < 10; i++)
-    {
-        for (size_t j = 0; j < GameToolbox::randomInt(1, 3); j++)
+    // for (size_t i = 0; i <= 10; i++)
+    // {
+    //     for (size_t j = 0; j < GameToolbox::randomInt(1, 3); j++)
+    //     {
+    //         auto testObject = GameObject::create("square_01_001.png");
+    //         testObject->setStretchEnabled(false);
+    //         testObject->setPosition(i * 100, 120 + (j * 30));
+    //         testObject->setActive(true);
+    //         _pObjects.push_back(testObject);
+    //     }
+    // }
+    if(_pObjects.size() != 0) {
+        for (size_t i = 0; i < sectionForPos(_pObjects[_pObjects.size() - 1]->getPositionX()); i++)
         {
-            auto testObject = GameObject::create("square_01_001.png");
-            testObject->setStretchEnabled(false);
-            testObject->setPosition(i * 100, 120 + (j * 30));
-            testObject->setActive(true);
-            _pObjects.push_back(testObject);
+            std::vector<GameObject *> vec;
+            m_pSectionObjects.push_back(vec);
         }
-    }
-
-    for (size_t i = 0; i < sectionForPos(_pObjects[_pObjects.size() - 1]->getPositionX()); i++)
-    {
-        std::vector<GameObject *> vec;
-        m_pSectionObjects.push_back(vec);
     }
 
     for (GameObject *object : _pObjects)
@@ -82,11 +91,24 @@ bool PlayLayer::init(GJGameLevel *level)
     }
 
     this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
-    this->m_pPlayer->setPosition({0, 105});
+    this->m_pPlayer->setPosition({-20, 105});
     this->addChild(this->m_pPlayer);
     this->m_pPlayer->setAnchorPoint({0, 0});
 
-    this->scheduleUpdate();
+    this->m_pBar = SimpleProgressBar::create();
+    this->m_pBar->setPercentage(0.f);
+    this->m_pBar->setPosition({winSize.width / 2, winSize.height - 20});
+    this->addChild(m_pBar);
+
+    m_pBar->setPosition(this->m_obCamPos + winSize / 2);
+    m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
+
+    scheduleOnce([=](float d) {
+        AudioEngine::play2d(GameToolbox::getStringForMusicID(getLevel()->_MusicID), false, 0.1f);
+        scheduleUpdate();
+        // m_pPlayer->setPosition({2, 230});
+        m_pPlayer->setDead(false);
+    }, 1.f, "k");
 
     return true;
 }
@@ -94,7 +116,9 @@ bool PlayLayer::init(GJGameLevel *level)
 double lastY = 0;
 
 void PlayLayer::update(float dt)
-{
+{   
+    //_pGround->update(dt);
+
     float step = std::min(2.0f, dt * 60.0f);
     step *= m_testFloat;
 
@@ -118,6 +142,13 @@ void PlayLayer::update(float dt)
                 break;
         }
     }
+
+    float sSize = 570.f; // after this point level end layer is called
+    if(this->_pObjects.size() != 0) {
+        sSize = this->_pObjects[this->_pObjects.size() - 1]->getPositionX();
+    }
+
+    m_pBar->setPercentage(m_pPlayer->getPositionX() / sSize * 100.f);
 
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * 62);
     if (this->m_pBG->getPositionX() <= -1024)
@@ -180,6 +211,9 @@ void PlayLayer::updateCamera(float dt)
     this->m_obCamPos = cam;
     // GameToolbox::log("camPosX: {}, camPosY: {}", m_obCamPos.x, m_obCamPos.y);
     Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
+
+    m_pBar->setPosition(this->m_obCamPos + winSize / 2);
+    m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 }
 
 void PlayLayer::checkCollisions(float dt)
@@ -321,8 +355,13 @@ void PlayLayer::onDrawImGui()
     ImGui::SliderFloat("Player Speed", &m_testFloat, 0.2f, 3.0f);
     ImGui::Checkbox("Freeze Player", &m_freezePlayer);
 
-    if (ImGui::Button("Back to menu"))
+    if (ImGui::Button("Back to menu")) {
+        AudioEngine::stopAll();
+        AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
+        music = true;
+
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+    }
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
                 ImGui::GetIO().Framerate);
