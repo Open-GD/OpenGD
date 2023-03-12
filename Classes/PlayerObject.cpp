@@ -302,7 +302,16 @@ void PlayerObject::updateJump(float dt)
 
 void PlayerObject::collidedWithObject(float dt, GameObject *obj)
 {
+    Rect hitbox = getOuterBounds();
+    float MaxY = hitbox.getMaxY();
+    float MinY = hitbox.getMinY();
 
+    if (m_bGravityFlipped)
+    {
+        if(!m_bFlying)
+    }
+
+    /*
     if(getInnerBounds().intersectsRect(obj->getOuterBounds()))
     {
         if(!noclip) setDead(true);
@@ -312,7 +321,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     setOnGround(true);
     stopRotation();
     m_dYVel = 0.f;
-    m_obLastGroundPos = getPosition();
+    m_obLastGroundPos = getPosition();*/
 }
 
 bool PlayerObject::isGravityFlipped()

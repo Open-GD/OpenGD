@@ -324,7 +324,7 @@ void PlayLayer::checkCollisions(float dt)
                             }
                             break; */
                         default:
-                            // this->getPlayer()->collidedWithObject(unk, obj);
+                            //this->getPlayer()->collidedWithObject(unk, obj);
                             m_pPlayer->collidedWithObject(dt, obj);
                             break;
                         }
