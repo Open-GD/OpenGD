@@ -229,6 +229,7 @@ static void draw()
     ImGui::EndChild();
 
     ImGui::End();
+    ImGui::PopStyleVar();
 }
 
 void CocosExplorer::openForever()

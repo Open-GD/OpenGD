@@ -10,7 +10,7 @@
 USING_NS_AX;
 USING_NS_AX_EXT;
 
-bool showDn = false, noclip = false;
+bool showDn = false, noclip = false, ship = false;
 
 Scene *PlayLayer::scene(GJGameLevel *level)
 {
@@ -455,6 +455,8 @@ void PlayLayer::onDrawImGui()
     ImGui::Text("Sections: %i", m_pSectionObjects.size());
     if (m_pSectionObjects.size() > 0 && sectionForPos(m_pPlayer->getPositionX()) - 1 < m_pSectionObjects.size())
         ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1].size());
+
+    if(ImGui::Checkbox("Become ship", &ship)) this->m_pPlayer->setShip(ship);
 
     if (ImGui::Button("Reset"))
     {

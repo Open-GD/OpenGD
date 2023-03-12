@@ -66,12 +66,15 @@ public:
     float checkSnapJumpToObject(GameObject* obj);
 
     bool isShip();
+    void setShip(bool ship) {m_bIsShip = ship;}
     bool isUpsideDown();
     bool isDead();
     bool isOnGround();
     bool isGravityFlipped();
     void stopRotation();
     float flipMod();
+
+    bool playerIsFalling();
 
     double getYVel() { return m_dYVel; }
 

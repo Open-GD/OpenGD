@@ -36,9 +36,9 @@
 USING_NS_AX;
 
 static ax::Size designResolutionSize = ax::Size(1280, 720);
-static ax::Size smallResolutionSize  = ax::Size(480, 320);
+static ax::Size smallResolutionSize = ax::Size(480, 320);
 static ax::Size mediumResolutionSize = ax::Size(1024, 768);
-static ax::Size largeResolutionSize  = ax::Size(2048, 1536);
+static ax::Size largeResolutionSize = ax::Size(2048, 1536);
 
 AppDelegate::AppDelegate() {}
 
@@ -58,10 +58,11 @@ void AppDelegate::initGLContextAttrs()
 // don't modify or remove this function
 static int register_all_packages()
 {
-    return 0;  // flag for packages manager
+    return 0; // flag for packages manager
 }
 
-int AppDelegate::applicationGetRefreshRate() {
+int AppDelegate::applicationGetRefreshRate()
+{
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
     auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     return mode->refreshRate;
@@ -74,7 +75,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 {
     // initialize director
     auto director = Director::getInstance();
-    auto glView   = director->getOpenGLView();
+    auto glView = director->getOpenGLView();
     if (!glView)
     {
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
@@ -84,6 +85,8 @@ bool AppDelegate::applicationDidFinishLaunching()
 #else
         glView = GLViewImpl::create("OpenGD");
 #endif
+        /* auto full = dynamic_cast<GLViewImpl *>(glView);
+        full->setFullscreen(); */
         director->setOpenGLView(glView);
     }
 

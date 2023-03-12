@@ -197,103 +197,155 @@ void PlayerObject::updateJump(float dt)
 
     const int flipGravityMult = flipMod();
 
-    float gravityMultiplier = 1.0f;
+    //leave this here so we dont have to rewrite stuff in the future
+    float playerSize = 1.0;
 
-    bool shouldJump = m_bIsHolding;
-
-    if (shouldJump && isOnGround())
+    if (this->isShip()/* || this->m_isUFO || this->m_isWave*/)
     {
-        m_bIsRising = true;
-        m_bOnGround = false;
+        float upperVelocityLimit = 8.0 / playerSize;
+        float lowerVelocityLimit = -6.4 / playerSize;
 
-        float jumpAccel = m_dJumpHeight;
-
-        m_dYVel = flipGravityMult * jumpAccel;
-
-        runRotateAction();
-    }
-    else
-    {
-        float tfIsThisGravity = m_dGravity;
-
-        if (m_bIsRising)
+        if(this->isShip())
         {
-            m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
-            bool condition;
-            if (!isGravityFlipped())
+            float shipAccel = 0.8f;
+
+            if(this->m_bIsHolding) shipAccel = -1.0f;
+
+            if(!this->m_bIsHolding && !this->playerIsFalling())
             {
-                condition = m_dYVel <= tfIsThisGravity * 2.0f;
-            }
-            else
-            {
-                condition = m_dYVel >= m_dGravity * 2.0f;
+                shipAccel = 1.2f;
             }
 
-            if (condition)
-            {
-                m_bIsRising = false;
-            }
+            float extraBoost = 0.4f;
+            if(this->m_bIsHolding && this->playerIsFalling())
+                extraBoost = 0.5;
+
+            this->m_dYVel -= localGravity * dt * flipGravityMult * shipAccel * extraBoost / playerSize;
+        }
+        if(!this->isGravityFlipped())
+        {
+            if(this->m_dYVel <= lowerVelocityLimit) this->m_dYVel = lowerVelocityLimit;
         }
         else
         {
-            if (!isGravityFlipped())
+            if(this->m_dYVel <= -upperVelocityLimit) this->m_dYVel = -upperVelocityLimit;
+
+            upperVelocityLimit = 6.4f / playerSize;
+        }
+        if(this->m_dYVel >= upperVelocityLimit) this->m_dYVel = upperVelocityLimit;
+    }
+    else
+    {
+        float gravityMultiplier = 1.0f;
+
+        bool shouldJump = m_bIsHolding;
+
+        if (shouldJump && isOnGround())
+        {
+            m_bIsRising = true;
+            m_bOnGround = false;
+
+            float jumpAccel = m_dJumpHeight;
+
+            m_dYVel = flipGravityMult * jumpAccel;
+
+            runRotateAction();
+        }
+        else
+        {
+            float tfIsThisGravity = m_dGravity;
+
+            if (m_bIsRising)
             {
-                if (m_dYVel < tfIsThisGravity * 2.0f)
+                m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
+                bool condition;
+                if (!isGravityFlipped())
                 {
-                    m_bOnGround = false;
+                    condition = m_dYVel <= tfIsThisGravity * 2.0f;
+                }
+                else
+                {
+                    condition = m_dYVel >= m_dGravity * 2.0f;
+                }
+
+                if (condition)
+                {
+                    m_bIsRising = false;
                 }
             }
             else
             {
-                if (m_dYVel > m_dGravity * 2.0f)
+                if (!isGravityFlipped())
                 {
-                    m_bOnGround = false;
+                    if (m_dYVel < tfIsThisGravity * 2.0f)
+                    {
+                        m_bOnGround = false;
+                    }
                 }
-            }
-
-            m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
-            if (!isGravityFlipped())
-            {
-                m_dYVel = std::max(m_dYVel, -15.0);
-            }
-            else
-            {
-                m_dYVel = std::min(m_dYVel, 15.0);
-            }
-            if (!isUpsideDown())
-            {
-                if (m_dYVel >= tfIsThisGravity * 2.0f)
-                    return;
-            }
-            else
-            {
-                if (m_dYVel <= m_dGravity * 2.0f)
-                    return;
-            }
-
-            if (getActionByTag(0) == nullptr)
-                runRotateAction();
-
-            if (isUpsideDown())
-            {
-                if (m_dYVel >= -4.0)
+                else
                 {
-                    return;
+                    if (m_dYVel > m_dGravity * 2.0f)
+                    {
+                        m_bOnGround = false;
+                    }
                 }
-            }
-            else
-            {
-                if (m_dYVel <= 4.0)
+
+                m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
+                if (!isGravityFlipped())
                 {
-                    return;
+                    m_dYVel = std::max(m_dYVel, -15.0);
+                }
+                else
+                {
+                    m_dYVel = std::min(m_dYVel, 15.0);
+                }
+                if (!isUpsideDown())
+                {
+                    if (m_dYVel >= tfIsThisGravity * 2.0f)
+                        return;
+                }
+                else
+                {
+                    if (m_dYVel <= m_dGravity * 2.0f)
+                        return;
+                }
+
+                if (getActionByTag(0) == nullptr)
+                    runRotateAction();
+
+                if (isUpsideDown())
+                {
+                    if (m_dYVel >= -4.0)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (m_dYVel <= 4.0)
+                    {
+                        return;
+                    }
                 }
             }
         }
     }
 }
 
+bool PlayerObject::playerIsFalling()
+{
+    if(this->isGravityFlipped())
+    {
+        return this->m_dYVel > this->m_dGravity;
+    }
+    else
+    {
+        return this->m_dYVel < this->m_dGravity;
+    }
+}
+
 // i didnt understand some things in IDA Pseudocode so i just did my own code k? - Tr1Ngle
-void PlayerObject::collidedWithObject(float dt, GameObject* obj)
+void PlayerObject::collidedWithObject(float dt, GameObject *obj)
 {
     Vec2 pos = getPosition();
     Rect rect = obj->getOuterBounds();
@@ -316,8 +368,6 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 
     float t = topP;
     float b = bottomP;
-
-    
 
     if (isGravityFlipped())
     {
@@ -346,7 +396,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
         }
         else
         {
-            //checkSnapJumpToObject(obj);
+            // checkSnapJumpToObject(obj);
             setPositionY(MaxY); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
             hitGround(isGravityFlipped());
         }
@@ -354,15 +404,15 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
             return;
     }
 
-    death:
+death:
     if (playerRectI.intersectsRect(rect))
     {
-        if(!noclip) setDead(true);
+        if (!noclip)
+            setDead(true);
         return;
     }
-    
 }
-float PlayerObject::checkSnapJumpToObject(GameObject* obj)
+float PlayerObject::checkSnapJumpToObject(GameObject *obj)
 {
     return 0.0f;
 }
