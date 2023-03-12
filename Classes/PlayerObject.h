@@ -9,7 +9,6 @@ private:
     void updateJump(float dt);
     bool init(int, ax::Layer *);
     void runRotateAction();
-    void stopRotation();
 
     void logValues();
 
@@ -71,6 +70,7 @@ public:
     bool isDead();
     bool isOnGround();
     bool isGravityFlipped();
+    void stopRotation();
     float flipMod();
 
     double getYVel() { return m_dYVel; }
@@ -83,5 +83,6 @@ public:
     bool noclip;
 
     ax::Vec2 getLastGroundPos();
+    void setLastGroundPos(ax::Vec2 pos) {m_obLastGroundPos = pos;}
     void update(float dt);
 };

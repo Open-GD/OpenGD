@@ -5,6 +5,7 @@
 #include "ImGui/imgui/imgui.h"
 #include "AudioEngine.h"
 #include "LevelTools.h"
+#include <fstream>
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -16,6 +17,18 @@ Scene *PlayLayer::scene(GJGameLevel *level)
     auto scene = Scene::create();
     scene->addChild(PlayLayer::create(level));
     return scene;
+}
+
+std::vector<std::string> split(std::string &tosplit, char splitter)
+{
+    std::vector<std::string> vec;
+    std::istringstream ss(tosplit);
+    std::string token;
+    while (std::getline(ss, token, splitter))
+    {
+        vec.push_back(token);
+    }
+    return vec;
 }
 
 bool PlayLayer::init(GJGameLevel *level)
@@ -47,7 +60,83 @@ bool PlayLayer::init(GJGameLevel *level)
     this->m_pBG->setColor({0, 102, 255});
     this->addChild(this->m_pBG, -1);
 
-    if(_pObjects.size() != 0) {
+    std::string levelStr = FileUtils::getInstance()->getStringFromFile("Resources/level.txt");
+
+    std::vector<std::string> objData = split(levelStr, ';'), levelData;
+
+    levelData = split(objData[0], ',');
+    objData.erase(objData.begin());
+
+    for (std::string data : objData)
+    {
+        auto d = split(data, ',');
+
+        GameObject *obj = nullptr;
+
+        Hitbox hb = {0, 0, 0, 0};
+
+        for (size_t i = 0; i < d.size(); i += 2)
+        {
+            int key = std::stoi(d[i]);
+
+            if (key != 1 && obj == nullptr)
+                break;
+
+            switch (key)
+            {
+            case 1:
+            {
+                int id = std::stoi(d[i + 1]);
+
+                obj = GameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
+
+                if (obj == nullptr)
+                    break;
+
+                obj->setStretchEnabled(false);
+                obj->setActive(true);
+                obj->setID(id);
+
+                if (GameObject::_pHitboxes.contains(id))
+                {
+                    hb = GameObject::_pHitboxes.at(id);
+                }
+
+                _pObjects.push_back(obj);
+            }
+            break;
+            case 2:
+                obj->setPositionX(std::stof(d[i + 1]));
+                break;
+            case 3:
+                obj->setPositionY(std::stof(d[i + 1]) + 90.0f);
+                break;
+            case 4:
+                obj->setFlippedX(std::stoi(d[i + 1]));
+                break;
+            case 5:
+                obj->setFlippedY(std::stoi(d[i + 1]));
+                break;
+            case 6:
+                obj->setRotation(std::stof(d[i + 1]));
+                break;
+            case 25:
+                obj->setGlobalZOrder(std::stoi(d[i + 1]));
+            }
+        }
+        if (obj)
+        {
+            obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
+
+            if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), obj->getID()) != std::end(GameObject::_pSolids))
+                obj->setGameObjectType(kGameObjectTypeSolid);
+            else
+                obj->setGameObjectType(kGameObjectTypeHazard);
+        }
+    }
+
+    if (_pObjects.size() != 0)
+    {
         for (size_t i = 0; i < sectionForPos(_pObjects[_pObjects.size() - 1]->getPositionX()); i++)
         {
             std::vector<GameObject *> vec;
@@ -59,9 +148,6 @@ bool PlayLayer::init(GJGameLevel *level)
     {
         int section = sectionForPos(object->getPositionX());
         m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
-        object->setOuterBounds(Rect(object->getPosition(), Vec2(30, 30)));
-        object->setInnerBounds(Rect(object->getPosition(), Vec2(30, 30)));
-        object->setContentSize(Vec2(30, 30));
 
         this->addChild(object);
     }
@@ -79,11 +165,12 @@ bool PlayLayer::init(GJGameLevel *level)
     m_pBar->setPosition(this->m_obCamPos + winSize / 2);
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 
-    scheduleOnce([=](float d) {
+    scheduleOnce([=](float d)
+                 {
         AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
         scheduleUpdate();
-        m_pPlayer->setDead(false);
-    }, 1.f, "k");
+        m_pPlayer->setDead(false); },
+                 1.f, "k");
 
     return true;
 }
@@ -92,6 +179,7 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
+
     float step = std::min(2.0f, dt * 60.0f);
 
     m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), {30, 30}));
@@ -115,7 +203,7 @@ void PlayLayer::update(float dt)
     }
 
     float sSize = 570.f; // after this point level end layer is called
-    if(this->_pObjects.size() != 0)
+    if (this->_pObjects.size() != 0)
         sSize = this->_pObjects[this->_pObjects.size() - 1]->getPositionX();
 
     m_pBar->setPercentage(m_pPlayer->getPositionX() / sSize * 100.f);
@@ -136,7 +224,7 @@ void PlayLayer::updateCamera(float dt)
     float unk4 = 0;
 
     if (player->getPositionY() <= cam.y + winSize.height - 180)
-    { 
+    {
         if (player->getPosition().y < cam.y + 240)
             unk4 = player->getPosition().y - 240;
     }
@@ -169,7 +257,6 @@ void PlayLayer::updateCamera(float dt)
         m_pGround->update(dt * .9f);
         cam.x += dt * .9f * 5.770002f;
     }
-        
 
     this->m_pGround->setPositionX(this->m_pGround->getPositionX() + (cam.x - m_obCamPos.x));
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
@@ -214,7 +301,7 @@ void PlayLayer::checkCollisions(float dt)
 
     std::vector<GameObject *> m_pHazards;
 
-    for (int i = current_section - 1; i < current_section + 1; i++)
+    for (int i = current_section - 2; i < current_section + 1; i++)
     {
         if (i < m_pSectionObjects.size() && i >= 0)
         {
@@ -224,14 +311,16 @@ void PlayLayer::checkCollisions(float dt)
             {
                 GameObject *obj = section[j];
 
-                renderRect(obj->getOuterBounds(), ax::Color4B::BLUE);
+                if(obj->getOuterBounds().size.width <= 0 || obj->getOuterBounds().size.height <= 0) continue;
 
-                if (obj->getGameObjectType() == GameObjectType::kObjectTypeHazard)
+                if (obj->getGameObjectType() == kGameObjectTypeHazard)
                 {
                     m_pHazards.push_back(obj);
+                    renderRect(obj->getOuterBounds(), ax::Color4B::RED);
                 }
                 else if (obj->isActive())
                 {
+                    renderRect(obj->getOuterBounds(), ax::Color4B::BLUE);
                     if (m_pPlayer->getOuterBounds().intersectsRect(obj->getOuterBounds()))
                     {
                         switch (obj->getGameObjectType())
@@ -302,7 +391,7 @@ void PlayLayer::checkCollisions(float dt)
 
         if (m_pPlayer->getOuterBounds().intersectsRect(hazard->getOuterBounds()))
         {
-            m_pPlayer->setDead(true);
+            if(!noclip) m_pPlayer->setDead(true);
             return;
         }
     }
@@ -316,7 +405,8 @@ void PlayLayer::onDrawImGui()
 
     ImGui::Checkbox("Freeze Player", &m_freezePlayer);
 
-    if (ImGui::Button("Back to menu")) {
+    if (ImGui::Button("Back to menu"))
+    {
         AudioEngine::stopAll();
         AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
         unscheduleUpdate();
