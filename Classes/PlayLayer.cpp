@@ -60,7 +60,7 @@ bool PlayLayer::init(GJGameLevel *level)
     this->m_pBG->setColor({0, 102, 255});
     this->addChild(this->m_pBG, -1);
 
-    std::string levelStr = FileUtils::getInstance()->getStringFromFile("Resources/level.txt");
+    std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
 
     std::vector<std::string> objData = split(levelStr, ';'), levelData;
 
@@ -182,8 +182,6 @@ void PlayLayer::update(float dt)
 
     float step = std::min(2.0f, dt * 60.0f);
 
-    m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), {30, 30}));
-    m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), {7.5, 7.5}));
     m_pPlayer->noclip = noclip;
 
     auto winSize = Director::getInstance()->getWinSize();
@@ -195,6 +193,9 @@ void PlayLayer::update(float dt)
         for (int i = 0; i < 4; i++)
         {
             this->m_pPlayer->update(step);
+
+            m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), { 30, 30 }));
+            m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), { 7.5, 7.5 }));
 
             this->checkCollisions(step);
             if (this->m_pPlayer->isDead())
