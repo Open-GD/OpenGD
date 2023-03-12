@@ -93,20 +93,6 @@ static inline std::string getTextureString_WithoutResources(std::string texture)
     GameToolbox::log("texture: {}", texture);
     return texture;
 }
-
-std::string GameToolbox::getStringForMusicID(int id) {
-    switch(id) {
-        case 0: return "StereoMadness.mp3";
-        case 1: return "BackOnTrack.mp3";
-        case 2: return "Polargeist.mp3";
-        case 3: return "DryOut.mp3";
-        case 4: return "BaseAfterBase.mp3";
-        case 5: return "CantLetGo.mp3";
-        case 6: return "Jumper.mp3";
-        default: return "StereoMadness.mp3";
-    }
-}
-
 std::string GameToolbox::getTextureString(std::string texture)
 { 
     // // this code would try to access texture using six different ways. if last way fails, this function returns '-' for error handling

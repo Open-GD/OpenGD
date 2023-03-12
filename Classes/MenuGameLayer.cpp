@@ -64,7 +64,7 @@ bool MenuGameLayer::init(){
     this->bgSprites->alignItemsHorizontallyWithPadding(0);
     this->bgStartPos = bgSprites->getPositionX();
     this->addChild(bgSprites, -3);
-    sep = 0.5f;
+    sep = 0.3f;
     bgSprites->setScale(1.185f);
     bgSprites->setPositionY(0);
 

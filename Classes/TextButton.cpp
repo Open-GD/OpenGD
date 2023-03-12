@@ -28,7 +28,8 @@ bool TextButton::init(std::string_view text, std::string_view font, float width,
     this->m_pText = Label::createWithBMFont(font, text);
 
     this->m_pBG = ui::Scale9Sprite::create(bgTexture);
-    m_pBG->setStretchEnabled(false);
+    m_pBG->setStretchEnabled(true);
+    
     this->m_pBG->setContentSize({
         (width == 0) ? this->m_pText->getContentSize().width + 16 : width,
         (height == 0) ? this->m_pText->getContentSize().height + 16 : height
@@ -45,7 +46,8 @@ bool TextButton::init(std::string_view text, std::string_view font, float width,
 
     this->setContentSize(this->m_pBG->getContentSize());
 
-    this->setNewScale(1.25f);
+    this->setScale(0.9);
+    this->setNewScale(1.15f);
 
     this->m_fCallback = callback;
 

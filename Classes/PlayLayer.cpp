@@ -4,6 +4,7 @@
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
 #include "AudioEngine.h"
+#include "LevelTools.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -35,6 +36,8 @@ bool PlayLayer::init(GJGameLevel *level)
         AudioEngine::stopAll();
         AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
         music = true;
+
+        unscheduleUpdate();
 
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene())); 
     });
@@ -104,9 +107,8 @@ bool PlayLayer::init(GJGameLevel *level)
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 
     scheduleOnce([=](float d) {
-        AudioEngine::play2d(GameToolbox::getStringForMusicID(getLevel()->_MusicID), false, 0.1f);
+        AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
         scheduleUpdate();
-        // m_pPlayer->setPosition({2, 230});
         m_pPlayer->setDead(false);
     }, 1.f, "k");
 
@@ -117,7 +119,7 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {   
-    //_pGround->update(dt);
+    m_pGround->update(dt);
 
     float step = std::min(2.0f, dt * 60.0f);
     step *= m_testFloat;
@@ -358,6 +360,7 @@ void PlayLayer::onDrawImGui()
     if (ImGui::Button("Back to menu")) {
         AudioEngine::stopAll();
         AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
+        unscheduleUpdate();
         music = true;
 
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
