@@ -4,6 +4,8 @@
 
 USING_NS_AX;
 
+bool _showDebugImgui = true;
+
 //general purpose class for helper functions that can be useful anywhere
 
 int GameToolbox::randomInt(int min, int max)

@@ -270,6 +270,26 @@ void PlayLayer::updateCamera(float dt)
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 }
 
+void PlayLayer::moveCameraToPos(Vec2 pos)
+{
+    auto moveX = [this](float a, float b, float c) -> void {
+        this->stopActionByTag(0);
+        auto tweenAction = ActionTween::create(b, "cTX", m_obCamPos.x, a);
+        auto easeAction = EaseInOut::create(tweenAction, c);
+        easeAction->setTag(0);
+        this->runAction(easeAction);
+    };
+    auto moveY = [this](float a, float b, float c) -> void {
+        this->stopActionByTag(1);
+        auto tweenAction = ActionTween::create(b, "cTY", m_obCamPos.y, a);
+        auto easeAction = EaseInOut::create(tweenAction, c);
+        easeAction->setTag(1);
+        this->runAction(easeAction);
+    };
+    moveX(pos.x, 1.2f, 1.8f);
+    moveY(pos.y, 1.2f, 1.8f);
+}
+
 void PlayLayer::checkCollisions(float dt)
 {
     if (m_pPlayer->getPositionY() < 105.0f)
@@ -401,7 +421,12 @@ void PlayLayer::checkCollisions(float dt)
 
 void PlayLayer::onDrawImGui()
 {
+    extern bool _showDebugImgui;
+    if(!_showDebugImgui) return;
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+    ImGui::SetNextWindowPos({1000.0f, 200.0f},ImGuiCond_FirstUseEver);
+    
+    ImGui::Begin("PlayLayer Debug");
     ImGui::Text("Hello, world!");
 
     ImGui::Checkbox("Freeze Player", &m_freezePlayer);
@@ -433,14 +458,19 @@ void PlayLayer::onDrawImGui()
 
     if (ImGui::Button("Reset"))
     {
-        m_pPlayer->setPosition({2, 105});
-        m_obCamPos.x = 0;
-        m_pGround->setPositionX(0);
-        m_pPlayer->setDead(false);
-        m_pBG->setPositionX(0);
+        this->resetLevel();
     }
+    ImGui::End();
 }
 
+void PlayLayer::resetLevel()
+{
+    m_pPlayer->setPosition({2, 105});
+    m_obCamPos.x = 0;
+    m_pGround->setPositionX(0);
+    m_pPlayer->setDead(false);
+    m_pBG->setPositionX(0);
+}
 void PlayLayer::renderRect(ax::Rect rect, ax::Color4B col)
 {
     dn->drawRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, col);
@@ -450,12 +480,43 @@ void PlayLayer::onEnter()
 {
     Layer::onEnter();
 
-    auto current = Director::getInstance()->getRunningScene();
+    auto listener = EventListenerKeyboard::create();
+    auto dir = Director::getInstance();
+    
+    listener->onKeyPressed = AX_CALLBACK_2(PlayLayer::onKeyPressed, this);
+    listener->onKeyReleased = AX_CALLBACK_2(PlayLayer::onKeyReleased, this);
+    dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+    
+    auto current = dir->getRunningScene();
     ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(PlayLayer::onDrawImGui, this), current);
 }
 
 void PlayLayer::onExit()
 {
+    Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
     ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
     Layer::onExit();
+}
+
+void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+{
+    GameToolbox::log("Key with keycode {} pressed", static_cast<int>(keyCode));
+    switch(keyCode)
+    {
+        case EventKeyboard::KeyCode::KEY_R:
+        {
+            this->resetLevel();
+        }
+        break;
+        case EventKeyboard::KeyCode::KEY_F:
+        {
+            extern bool _showDebugImgui;
+            _showDebugImgui = !_showDebugImgui;
+        }
+    }
+}
+
+void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+{
+    GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
 }

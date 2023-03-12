@@ -203,6 +203,11 @@ static void generateTree(Node *node, unsigned int i = 0)
 
 static void draw()
 {
+    extern bool _showDebugImgui;
+    if(!_showDebugImgui) return;
+    
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 300));
+
     auto current = Director::getInstance()->getRunningScene();
     ImGui::Begin("Cocos Explorer");
     const auto avail = ImGui::GetContentRegionAvail();

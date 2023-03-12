@@ -17,6 +17,9 @@ private:
     void onEnter() override;
     void onExit() override;
     void onDrawImGui();
+    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+    void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+    void resetLevel();
 
     ax::Sprite *m_pBG;
     GroundLayer *m_pGround;
@@ -49,6 +52,7 @@ public:
 
     void update(float delta);
     void updateCamera(float dt);
+    void moveCameraToPos(ax::Vec2);
 
     // dt?
     void checkCollisions(float delta);
