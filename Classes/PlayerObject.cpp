@@ -415,20 +415,26 @@ void PlayerObject::logValues()
 
 void PlayerObject::runRotateAction()
 {
-    this->stopRotation();
+    stopRotation();
     auto action = RotateBy::create(0.43333f, 180);
     action->setTag(0);
-    this->runAction(action);
+    runAction(action);
 }
 
 void PlayerObject::stopRotation()
 {
-    this->stopActionByTag(0);
+    stopActionByTag(0);
 
-    if (this->getRotation() != 0)
+    if (getActionByTag(1) == nullptr)
     {
-        auto degrees = (int)this->getRotation() % 360;
-        this->setRotation(90 * roundf(degrees / 90.0f));
+        if (getRotation() != 0)
+        {
+            auto degrees = (int)getRotation() % 360;
+
+            auto action = RotateTo::create(0.075f, (90 * roundf(degrees / 90.0f)));
+            action->setTag(1);
+            runAction(action);
+        }
     }
 }
 
@@ -436,34 +442,6 @@ void PlayerObject::jump()
 {
     this->m_dYVel = this->m_dJumpHeight;
 }
-
-// void PlayerObject::jump() {
-// this->runAction(
-//     Sequence::create(
-//         Spawn::create(
-//             Sequence::create(
-//                 RotateBy::create(0.15, 80.f),
-//                 RotateBy::create(0.025, 0.f),
-//                 RotateBy::create(0.225, 80.f),
-//                 RotateBy::create(0, -160),
-//                 nullptr
-//             ),
-//             Sequence::create(
-//                 //MoveBy::create(0.025, { 0, 80.f }),
-//                 //MoveBy::create(0.15, { 0, 50.f }),
-//                 //MoveBy::create(0.05, { 0.f, 0.f }),
-//                 //MoveBy::create(0.15, { 0, -80.f }),
-//                 //MoveBy::create(0.025, { 0, -50.f }),
-//                 MoveBy::create(0.2, {0, 130.f}),
-//                 MoveBy::create(0.2, { 0, -130.f }),
-//                 nullptr
-//             ),
-//             nullptr
-//         ),
-//         nullptr
-//     )
-// );
-// }
 bool PlayerObject::onTouchBegan(ax::Touch *touch, ax::Event *event)
 {
     if (this->inPlayLayer)
