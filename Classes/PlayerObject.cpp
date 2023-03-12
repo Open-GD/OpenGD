@@ -163,21 +163,13 @@ void PlayerObject::update(float dt)
     if (this->m_bIsDead)
         return;
 
-    /* if (this->getPositionY() <= 221)
-    { // TEMP ON GROUND CHECK
-        this->m_bOnGround = true;
-        this->stopRotation();
-        this->m_dYVel = 0.f;
-        this->m_obLastGroundPos = this->getPosition();
-    } */
-
     if (!this->m_bIsLocked)
     {
         float dtSlow = dt * 0.9f;
         this->updateJump(dtSlow);
 
         float velY = (float)((double)dtSlow * m_dYVel);
-        float velX = (float)((double)dt * m_dXVel * (double)m_fSpeed);
+        float velX = (float)((double)dtSlow * m_dXVel);
 
         ax::Vec2 velocity{velX, velY};
 
@@ -203,7 +195,7 @@ void PlayerObject::updateJump(float dt)
 {
     float localGravity = m_dGravity;
 
-    const int flipGravityMult = isGravityFlipped() ? -1 : 1;
+    const int flipGravityMult = flipMod();
 
     float gravityMultiplier = 1.0f;
 
@@ -300,28 +292,90 @@ void PlayerObject::updateJump(float dt)
     }
 }
 
-void PlayerObject::collidedWithObject(float dt, GameObject *obj)
+// i didnt understand some things in IDA Pseudocode so i just did my own code k? - Tr1Ngle
+void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 {
-    Rect hitbox = getOuterBounds();
-    float MaxY = hitbox.getMaxY();
-    float MinY = hitbox.getMinY();
+    Vec2 pos = getPosition();
+    Rect rect = obj->getOuterBounds();
 
-    if (m_bGravityFlipped)
+    Rect playerRectO = getOuterBounds();
+    Rect playerRectI = getInnerBounds();
+
+    float flipModV = flipMod();
+
+    float mod = flipModV * 10.0f;
+
+    if (isShip())
+        mod = flipModV * 6.0f;
+
+    float topP = (pos.y + (playerRectO.origin.height * -0.5f * -flipMod())) - mod;
+    float bottomP = (pos.y + (playerRectO.origin.height * -0.5f * flipMod())) + mod;
+
+    float MaxY = rect.getMaxY();
+    float MinY = rect.getMinY();
+
+    float t = topP;
+    float b = bottomP;
+
+    
+
+    if (isGravityFlipped())
     {
-        if(!m_bFlying)
+        if (!isShip())
+        {
+            if (b <= MinY || t <= MinY)
+            {
+                if (m_dYVel > 0.0)
+                {
+                    checkSnapJumpToObject(obj);
+                    setPositionY(MinY); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
+                    hitGround(isGravityFlipped());
+                }
+                return;
+            }
+        }
+        t = bottomP;
+        b = topP;
     }
 
-    /*
-    if(getInnerBounds().intersectsRect(obj->getOuterBounds()))
+    if (b >= MaxY || t >= MaxY)
+    {
+        if (m_dYVel >= 0.0f)
+        {
+            goto death;
+        }
+        else
+        {
+            //checkSnapJumpToObject(obj);
+            setPositionY(MaxY); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
+            hitGround(isGravityFlipped());
+        }
+        if (isGravityFlipped() || !isShip())
+            return;
+    }
+
+    death:
+    if (playerRectI.intersectsRect(rect))
     {
         if(!noclip) setDead(true);
         return;
     }
-
+    
+}
+float PlayerObject::checkSnapJumpToObject(GameObject* obj)
+{
+    return 0.0f;
+}
+void PlayerObject::hitGround(bool reverseGravity)
+{
     setOnGround(true);
+    m_dYVel = 0.0f;
     stopRotation();
-    m_dYVel = 0.f;
-    m_obLastGroundPos = getPosition();*/
+    m_obLastGroundPos = getPosition();
+}
+float PlayerObject::flipMod()
+{
+    return this->m_bGravityFlipped ? -1.0f : 1.0f;
 }
 
 bool PlayerObject::isGravityFlipped()
@@ -329,9 +383,9 @@ bool PlayerObject::isGravityFlipped()
     return this->m_bGravityFlipped;
 }
 
-bool PlayerObject::isFlying()
+bool PlayerObject::isShip()
 {
-    return this->m_bFlying;
+    return this->m_bIsShip;
 }
 
 bool PlayerObject::isUpsideDown()

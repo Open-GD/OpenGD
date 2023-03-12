@@ -37,8 +37,6 @@ private:
     bool m_bUpsideDown;
     bool m_bOnGround;
 
-    float m_fSpeed = 0.9;
-
     bool m_bIsDead;
     bool m_bIsLocked;
     bool m_bIsRising;
@@ -46,7 +44,7 @@ private:
 
     bool m_bGravityFlipped;
 
-    bool m_bFlying;
+    bool m_bIsShip;
 
     ax::Vec2 m_obLastGroundPos;
 
@@ -66,20 +64,21 @@ public:
 
     void jump();
     void collidedWithObject(float dt, GameObject* obj);
+    float checkSnapJumpToObject(GameObject* obj);
 
-    bool isFlying();
+    bool isShip();
     bool isUpsideDown();
     bool isDead();
     bool isOnGround();
     bool isGravityFlipped();
+    float flipMod();
 
     double getYVel() { return m_dYVel; }
 
     inline void setDead(bool const &value) { m_bIsDead = value; }
-    inline void setOnGround(bool const &value)
-    {
-        m_bOnGround = value;
-    }
+    inline void setOnGround(bool const &value) { m_bOnGround = value; }
+
+    void hitGround(bool reverseGravity);
 
     bool noclip;
 

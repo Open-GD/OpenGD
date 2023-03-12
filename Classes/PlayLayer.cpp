@@ -29,22 +29,6 @@ bool PlayLayer::init(GJGameLevel *level)
 
     this->m_pGround = GroundLayer::create(1);
     this->addChild(this->m_pGround);
-    this->m_pGround->setSpeed(623);
-
-    // temp back button
-    backbtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [&](Node *btn) { 
-        AudioEngine::stopAll();
-        AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
-        music = true;
-
-        unscheduleUpdate();
-
-        Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene())); 
-    });
-    auto menu = Menu::create();
-    menu->addChild(backbtn);
-    menu->setPosition({50, winSize.height - 50});
-    addChild(menu, 99999);
 
     dn = ax::DrawNode::create();
     dn->setPosition({-15, -15});
@@ -59,21 +43,10 @@ bool PlayLayer::init(GJGameLevel *level)
         backend::SamplerAddressMode::REPEAT};
     this->m_pBG->getTexture()->setTexParameters(texParams);
     this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
-    this->m_pBG->setPosition(winSize / 2);
+    this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
     this->m_pBG->setColor({0, 102, 255});
     this->addChild(this->m_pBG, -1);
 
-    // for (size_t i = 0; i <= 10; i++)
-    // {
-    //     for (size_t j = 0; j < GameToolbox::randomInt(1, 3); j++)
-    //     {
-    //         auto testObject = GameObject::create("square_01_001.png");
-    //         testObject->setStretchEnabled(false);
-    //         testObject->setPosition(i * 100, 120 + (j * 30));
-    //         testObject->setActive(true);
-    //         _pObjects.push_back(testObject);
-    //     }
-    // }
     if(_pObjects.size() != 0) {
         for (size_t i = 0; i < sectionForPos(_pObjects[_pObjects.size() - 1]->getPositionX()); i++)
         {
@@ -118,11 +91,8 @@ bool PlayLayer::init(GJGameLevel *level)
 double lastY = 0;
 
 void PlayLayer::update(float dt)
-{   
-    m_pGround->update(dt);
-
+{
     float step = std::min(2.0f, dt * 60.0f);
-    step *= m_testFloat;
 
     m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), {30, 30}));
     m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), {7.5, 7.5}));
@@ -139,24 +109,21 @@ void PlayLayer::update(float dt)
             this->m_pPlayer->update(step);
 
             this->checkCollisions(step);
-
             if (this->m_pPlayer->isDead())
                 break;
         }
     }
 
     float sSize = 570.f; // after this point level end layer is called
-    if(this->_pObjects.size() != 0) {
+    if(this->_pObjects.size() != 0)
         sSize = this->_pObjects[this->_pObjects.size() - 1]->getPositionX();
-    }
 
     m_pBar->setPercentage(m_pPlayer->getPositionX() / sSize * 100.f);
 
-    this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * 62);
     if (this->m_pBG->getPositionX() <= -1024)
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024);
 
-    this->updateCamera(dt);
+    this->updateCamera(step * 4.f);
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -169,14 +136,10 @@ void PlayLayer::updateCamera(float dt)
     float unk4 = 0;
 
     if (player->getPositionY() <= cam.y + winSize.height - 180)
-    {
         if (player->getPosition().y < cam.y + 240)
             unk4 = player->getPosition().y - 240;
-    }
     else
-    {
         unk4 = player->getPosition().y - winSize.height + 180;
-    }
 
     if (player->getLastGroundPos().y == 236 && player->getPositionY() <= cam.y + winSize.height - 180)
         unk4 = 0;
@@ -190,22 +153,21 @@ void PlayLayer::updateCamera(float dt)
     //     cam.y -= winSize.height;
 
     if (this->m_bFirstAttempt)
-    {
         if (cam.x <= 30.0f)
             cam.x = 30.0f;
-    }
 
     float temp = this->m_fEndOfLevel - winSize.width;
     if (this->m_fEndOfLevel > 0.0f)
-    {
         if (cam.x >= temp)
             cam.x = temp;
-    }
 
-    if (player->getPositionX() >= winSize.width / 2)
-    { // wrong but works for now
-        cam.x += static_cast<float>(dt * 60 * .9 * 5.77);
+    if (player->getPositionX() >= winSize.width / 2.5f && !player->isDead()) // wrong but works for now
+    {
+        this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * .9f * m_pGround->getSpeed() * 0.1175f);
+        m_pGround->update(dt * .9f);
+        cam.x += dt * .9f * 5.770002f;
     }
+        
 
     this->m_pGround->setPositionX(this->m_pGround->getPositionX() + (cam.x - m_obCamPos.x));
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
@@ -220,7 +182,6 @@ void PlayLayer::updateCamera(float dt)
 
 void PlayLayer::checkCollisions(float dt)
 {
-
     if (m_pPlayer->getPositionY() < 105.0f)
     {
         if (m_pPlayer->isGravityFlipped())
@@ -232,7 +193,7 @@ void PlayLayer::checkCollisions(float dt)
 
         m_pPlayer->setPositionY(105.0f);
 
-        m_pPlayer->setOnGround(true);
+        m_pPlayer->hitGround(false);
     }
     else if (m_pPlayer->getPositionY() > 1290.0f)
     {
@@ -269,7 +230,6 @@ void PlayLayer::checkCollisions(float dt)
                 }
                 else if (obj->isActive())
                 {
-
                     if (m_pPlayer->getOuterBounds().intersectsRect(obj->getOuterBounds()))
                     {
                         switch (obj->getGameObjectType())
@@ -326,7 +286,6 @@ void PlayLayer::checkCollisions(float dt)
                             }
                             break; */
                         default:
-                            //this->getPlayer()->collidedWithObject(unk, obj);
                             m_pPlayer->collidedWithObject(dt, obj);
                             break;
                         }
@@ -335,7 +294,6 @@ void PlayLayer::checkCollisions(float dt)
             }
         }
     }
-
     for (unsigned int i = 0; i < m_pHazards.size(); ++i)
     {
         GameObject *hazard = m_pHazards[i];
@@ -354,7 +312,6 @@ void PlayLayer::onDrawImGui()
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
     ImGui::Text("Hello, world!");
 
-    ImGui::SliderFloat("Player Speed", &m_testFloat, 0.2f, 3.0f);
     ImGui::Checkbox("Freeze Player", &m_freezePlayer);
 
     if (ImGui::Button("Back to menu")) {
@@ -383,7 +340,7 @@ void PlayLayer::onDrawImGui()
 
     if (ImGui::Button("Reset"))
     {
-        m_pPlayer->setPosition({2, 230});
+        m_pPlayer->setPosition({2, 105});
         m_obCamPos.x = 0;
         m_pGround->setPositionX(0);
         m_pPlayer->setDead(false);

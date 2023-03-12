@@ -50,11 +50,7 @@ bool MenuGameLayer::init(){
         gr->getTexture()->setTexParameters(texParams);
         gr->setTextureRect(Rect(0, 0, 2048, 1024));
         gr->setPosition(winSize / 2);
-        auto cl = gr->getColor();
-        cl.r = 0;
-        cl.g = 102;
-        cl.b = 255;
-        gr->setColor(cl);
+        gr->setColor({ 0, 102, 255 });
         // bg scale
         gr->setScale(1.185f); // epic hardcore (please fix lmao)
         bsizeX = gr->getContentSize().width;
@@ -120,5 +116,5 @@ void MenuGameLayer::processBackground(float delta) {
 void MenuGameLayer::update(float delta) {
     processBackground(delta);
     processPlayerMovement(delta);
-    groundLayer->update(delta);
+    groundLayer->update(delta * 60.0f);
 }

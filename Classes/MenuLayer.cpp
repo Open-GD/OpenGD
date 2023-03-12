@@ -138,11 +138,12 @@ bool MenuLayer::init(){
     // lctest->setPosition({winSize.width / 2, winSize.height / 2});
     // this->addChild(lctest, 1024);   
 
-    auto pbtest = SimpleProgressBar::create();
+    /*auto pbtest = SimpleProgressBar::create();
     pbtest->setPercentage(10.f);
     pbtest->setPosition({winSize.width / 2, winSize.height / 2});
     pbtest->setVisible(false);
     this->addChild(pbtest, 1024);
+    */
 
     return true;
 }

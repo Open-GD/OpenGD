@@ -42,7 +42,6 @@ private:
     SimpleProgressBar *m_pBar;
 
     //----IMGUI DEBUG MEMBERS----
-    float m_testFloat = 1.0f;
     bool m_freezePlayer;
 
 public:
