@@ -136,8 +136,10 @@ void PlayLayer::updateCamera(float dt)
     float unk4 = 0;
 
     if (player->getPositionY() <= cam.y + winSize.height - 180)
+    { 
         if (player->getPosition().y < cam.y + 240)
             unk4 = player->getPosition().y - 240;
+    }
     else
         unk4 = player->getPosition().y - winSize.height + 180;
 
