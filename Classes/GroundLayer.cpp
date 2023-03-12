@@ -40,7 +40,7 @@ bool GroundLayer::init(int groundID) {
     gradient2->setPositionX(winSize.width);
     gradient2->setPositionY(33);
 
-    this->m_fSpeed = 400;
+    this->m_fSpeed = 300;
     
     //scheduleUpdate();
     

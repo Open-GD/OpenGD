@@ -17,7 +17,7 @@ set BUILD_CFG=%1
 rem Determine which build config to run
 if not defined BUILD_CFG if exist %cacheFile% set /p BUILD_CFG=< %cacheFile%
 if not defined BUILD_CFG set /p BUILD_CFG=Please input Build config(Debug,Release,MinSizeRel,RelWithDebInfo):
-if not defined BUILD_CFG set BUILD_CFG=Release
+if not defined BUILD_CFG set BUILD_CFG=Debug
 
 rem Save run config to run.bat.txt
 echo %BUILD_CFG%>%cacheFile%
