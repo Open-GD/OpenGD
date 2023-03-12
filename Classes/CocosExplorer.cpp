@@ -107,7 +107,7 @@ static void drawProperties()
 
     auto contect = selected_node->getContentSize();
     float _cont[2] = {contect.x, contect.y};
-    ImGui::DragFloat2("Contect", _cont);
+    ImGui::DragFloat2("Content Size", _cont);
     selected_node->setContentSize({_cont[0], _cont[1]});
 
     auto anchor = selected_node->getAnchorPoint();

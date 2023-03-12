@@ -10,21 +10,22 @@ bool AlertLayer::init(std::string title, std::string desc, std::string btn1, std
     auto winSize = Director::getInstance()->getWinSize();
 
     auto descLabel = Label::createWithBMFont(GameToolbox::getTextureString("chatFont.fnt"), desc, TextHAlignment::CENTER);
+    width = descLabel->getContentSize().width + 32;
     // descLabel->setAnchorPoint({0.5, 1});
-    descLabel->setDimensions(width - 120, 0);
-    descLabel->setPosition(Point(winSize / 2) + Vec2(0, 10));
+    descLabel->setDimensions(width, 0);
+    descLabel->setPosition(Point(winSize / 2));
     this->m_pMainLayer->addChild(descLabel);
-    auto descHeight = std::max(descLabel->getContentSize().height + 240, 280.f);
+    auto descHeight = std::max(descLabel->getContentSize().height, 150.f);
 
     auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("square01_001.png"));
-    bg->setStretchEnabled(false);
+    bg->setStretchEnabled(true);
     bg->setContentSize({width, descHeight});
     bg->setPosition(winSize / 2);
     this->m_pMainLayer->addChild(bg, -1);
 
     auto titleLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), title);
     titleLabel->setAnchorPoint({0.5, 1.0});
-    titleLabel->setPosition({winSize.width / 2, (winSize.height - descHeight) / 2 + descHeight - 30});
+    titleLabel->setPosition({winSize.width / 2, (winSize.height - descHeight) / 2 + descHeight - 15});
     titleLabel->setScale(0.9f);
     this->m_pMainLayer->addChild(titleLabel);
 
@@ -32,14 +33,14 @@ bool AlertLayer::init(std::string title, std::string desc, std::string btn1, std
     this->m_pMainLayer->addChild(menu);
     menu->setPositionY((winSize.height - descHeight) / 2 + 60);
 
-    auto button1 = TextButton::create(btn1, GameToolbox::getTextureString("goldFont.fnt"), 180, 0, (btn1Callback == NULL) ? [=](TextButton*) {
+    auto button1 = TextButton::create(btn1, GameToolbox::getTextureString("goldFont.fnt"), 0, 0, (btn1Callback == NULL) ? [=](TextButton*) {
         this->close();
     } : btn1Callback);
     menu->addChild(button1);
     this->m_pBtn1 = button1;
 
     if (btn2 != "") {
-        auto button2 = TextButton::create(btn2, GameToolbox::getTextureString("goldFont.fnt"), 180, 0, (btn2Callback == NULL) ? [=](TextButton*) {
+        auto button2 = TextButton::create(btn2, GameToolbox::getTextureString("goldFont.fnt"), 0, 0, (btn2Callback == NULL) ? [=](TextButton*) {
             this->close();
         } : btn2Callback);
         menu->addChild(button2);
@@ -47,6 +48,7 @@ bool AlertLayer::init(std::string title, std::string desc, std::string btn1, std
 
         menu->alignItemsHorizontallyWithPadding(MIN((width - (button1->getContentSize().width + button2->getContentSize().width)) / 2, 30));
     }
+    menu->setPositionY(descHeight - 32);
 
     return true;
 }
