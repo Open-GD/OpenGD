@@ -12,6 +12,8 @@ USING_NS_AX_EXT;
 
 bool showDn = false, noclip = false, ship = false;
 
+float gameSpeed;
+
 Scene *PlayLayer::scene(GJGameLevel *level)
 {
     auto scene = Scene::create();
@@ -66,6 +68,7 @@ bool PlayLayer::init(GJGameLevel *level)
 
     levelData = split(objData[0], ',');
     objData.erase(objData.begin());
+    // objData.erase(objData.end() - 1);
 
     for (std::string data : objData)
     {
@@ -96,6 +99,7 @@ bool PlayLayer::init(GJGameLevel *level)
                 obj->setStretchEnabled(false);
                 obj->setActive(true);
                 obj->setID(id);
+                obj->updateObjectType();
 
                 if (GameObject::_pHitboxes.contains(id))
                 {
@@ -120,36 +124,79 @@ bool PlayLayer::init(GJGameLevel *level)
             case 6:
                 obj->setRotation(std::stof(d[i + 1]));
                 break;
+            case 7:
+            {
+            }
             case 25:
                 obj->setGlobalZOrder(std::stoi(d[i + 1]));
             }
         }
         if (obj)
         {
-            obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
-
             if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), obj->getID()) != std::end(GameObject::_pSolids))
                 obj->setGameObjectType(kGameObjectTypeSolid);
+            else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), obj->getID()) != std::end(GameObject::_pTriggers))
+            {
+                obj->setGameObjectType(kGameObjectTypeSpecial);
+            }
             else
-                obj->setGameObjectType(kGameObjectTypeHazard);
+            {
+                switch (obj->getID())
+                {
+                case 12:
+                    obj->setGameObjectType(kGameObjectTypeCubePortal);
+                    break;
+                case 13:
+                    obj->setGameObjectType(kGameObjectTypeShipPortal);
+                    break;
+                default:
+                    obj->setGameObjectType(kGameObjectTypeHazard);
+                    break;
+                }
+            }
+
+            switch (obj->getGameObjectType())
+            {
+            case kGameObjectTypeCubePortal:
+            case kGameObjectTypeShipPortal:
+            case kGameObjectTypeSolid:
+            case kGameObjectTypeHazard:
+            {
+                obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
+                break;
+            }
+            }
         }
     }
 
     if (_pObjects.size() != 0)
     {
-        for (size_t i = 0; i < sectionForPos(_pObjects[_pObjects.size() - 1]->getPositionX()); i++)
+
+        this->m_lastObjXPos = std::numeric_limits<float>().min();
+
+        for (GameObject *object : _pObjects)
+        {
+            if(this->m_lastObjXPos < object->getPositionX()) this->m_lastObjXPos = object->getPositionX();
+        }
+
+        if (this->m_lastObjXPos < 570.f)
+        {
+            this->m_lastObjXPos = 570.f;
+        }
+
+        for (size_t i = 0; i < sectionForPos(this->m_lastObjXPos); i++)
         {
             std::vector<GameObject *> vec;
             m_pSectionObjects.push_back(vec);
         }
-    }
 
-    for (GameObject *object : _pObjects)
-    {
-        int section = sectionForPos(object->getPositionX());
-        m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
+        for (GameObject *object : _pObjects)
+        {
+            int section = sectionForPos(object->getPositionX());
+            m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
-        this->addChild(object);
+            this->addChild(object);
+        }
     }
 
     this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
@@ -179,6 +226,21 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
+<<<<<<< HEAD
+=======
+    if (m_freezePlayer)
+    {
+        AudioEngine::pauseAll();
+        return;
+    }
+    else
+    {
+        AudioEngine::resumeAll();
+    }
+
+    Vec2 playerPosOld = m_pPlayer->getPosition();
+
+>>>>>>> 68324c71049444618de80485e19bb13a1d607070
     float step = std::min(2.0f, dt * 60.0f);
 
     m_pPlayer->m_bIsPlatformer = m_platformerMode;
@@ -194,8 +256,8 @@ void PlayLayer::update(float dt)
         {
             this->m_pPlayer->update(step);
 
-            m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), { 30, 30 }));
-            m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), { 7.5, 7.5 }));
+            m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), {30, 30}));
+            m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), {7.5, 7.5}));
 
             this->checkCollisions(step);
             if (this->m_pPlayer->isDead())
@@ -203,16 +265,14 @@ void PlayLayer::update(float dt)
         }
     }
 
-    float sSize = 570.f; // after this point level end layer is called
-    if (this->_pObjects.size() != 0)
-        sSize = this->_pObjects[this->_pObjects.size() - 1]->getPositionX();
-
-    m_pBar->setPercentage(m_pPlayer->getPositionX() / sSize * 100.f);
+    m_pBar->setPercentage(m_pPlayer->getPositionX() / this->m_lastObjXPos * 100.f);
 
     if (this->m_pBG->getPositionX() <= -1024)
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024);
 
     this->updateCamera(step * 4.f);
+
+    Vec2 playerPosNew = m_pPlayer->getPosition();
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -222,20 +282,42 @@ void PlayLayer::updateCamera(float dt)
 
     auto player = this->m_pPlayer;
 
-    float unk4 = 0;
+    float playerPosY = player->getPositionY(), playerPosX = player->getPositionX();
 
-    if (player->getPositionY() <= cam.y + winSize.height - 180)
+    float unk4 = 0;
+    float unk5 = 20;
+
+    if (!player->isShip())
     {
-        if (player->getPosition().y < cam.y + 240)
-            unk4 = player->getPosition().y - 240;
+
+        float unk2 = 180.0f;
+        float unk3 = 120.0f;
+
+        if (player->isGravityFlipped())
+        {
+            std::swap(unk2, unk3);
+        }
+
+        if (playerPosY <= cam.y + winSize.height - unk2)
+        {
+            if (playerPosY < cam.y + unk3)
+                unk4 = playerPosY - unk3;
+        }
+        else
+            unk4 = playerPosY - winSize.height + unk2;
+
+        if (player->getLastGroundPos().y == 105 && playerPosY <= cam.y + winSize.height - unk2)
+            unk4 = 0;
     }
     else
-        unk4 = player->getPosition().y - winSize.height + 180;
+    {
+        unk4 = 0.0f;
+        if (this->m_fCameraYCenter + (winSize.height / -2.0f > 0.0f))
+            unk4 = this->m_fCameraYCenter + (winSize.height / -2.0f);
+        unk5 = 30.0f;
+    }
 
-    if (player->getLastGroundPos().y == 236 && player->getPositionY() <= cam.y + winSize.height - 180)
-        unk4 = 0;
-
-    cam.y += (unk4 - cam.y) / 20;
+    cam.y += (unk4 - cam.y) / unk5;
 
     if (cam.y < 0)
         cam.y = 0;
@@ -252,7 +334,11 @@ void PlayLayer::updateCamera(float dt)
         if (cam.x >= temp)
             cam.x = temp;
 
+<<<<<<< HEAD
     if (player->getPositionX() >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
+=======
+    if (playerPosX >= winSize.width / 2.5f && !player->isDead()) // wrong but works for now
+>>>>>>> 68324c71049444618de80485e19bb13a1d607070
     {
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * .9f * m_pGround->getSpeed() * 0.1175f);
         m_pGround->update(dt * .9f);
@@ -276,14 +362,16 @@ void PlayLayer::updateCamera(float dt)
 
 void PlayLayer::moveCameraToPos(Vec2 pos)
 {
-    auto moveX = [this](float a, float b, float c) -> void {
+    auto moveX = [this](float a, float b, float c) -> void
+    {
         this->stopActionByTag(0);
         auto tweenAction = ActionTween::create(b, "cTX", m_obCamPos.x, a);
         auto easeAction = EaseInOut::create(tweenAction, c);
         easeAction->setTag(0);
         this->runAction(easeAction);
     };
-    auto moveY = [this](float a, float b, float c) -> void {
+    auto moveY = [this](float a, float b, float c) -> void
+    {
         this->stopActionByTag(1);
         auto tweenAction = ActionTween::create(b, "cTY", m_obCamPos.y, a);
         auto easeAction = EaseInOut::create(tweenAction, c);
@@ -294,14 +382,35 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
     moveY(pos.y, 1.2f, 1.8f);
 }
 
+void PlayLayer::processTriggers()
+{
+    int current_section = this->sectionForPos(m_pPlayer->getPositionX());
+    if (m_pSectionObjects.size() == 0)
+        return;
+
+    std::vector<GameObject *> section = m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
+
+    int i = 0;
+    while (i < section.size())
+    {
+        i++;
+    }
+}
+
 void PlayLayer::checkCollisions(float dt)
 {
+
+    auto playerOuterBounds = this->m_pPlayer->getOuterBounds();
+
     if (m_pPlayer->getPositionY() < 105.0f)
     {
         if (m_pPlayer->isGravityFlipped())
         {
             if (!noclip)
+            {
                 m_pPlayer->setDead(true);
+                m_pPlayer->playDeathEffect();
+            }
             return;
         }
 
@@ -312,19 +421,22 @@ void PlayLayer::checkCollisions(float dt)
     else if (m_pPlayer->getPositionY() > 1290.0f)
     {
         if (!noclip)
+        {
             m_pPlayer->setDead(true);
+            m_pPlayer->playDeathEffect();
+        }
         return;
     }
 
     dn->setVisible(showDn);
     dn->clear();
 
-    renderRect(m_pPlayer->getOuterBounds(), ax::Color4B::RED);
+    renderRect(playerOuterBounds, ax::Color4B::RED);
     renderRect(m_pPlayer->getInnerBounds(), ax::Color4B::GREEN);
 
     int current_section = this->sectionForPos(m_pPlayer->getPositionX());
 
-    std::vector<GameObject *> m_pHazards;
+    std::deque<GameObject *> m_pHazards;
 
     for (int i = current_section - 2; i < current_section + 1; i++)
     {
@@ -336,53 +448,59 @@ void PlayLayer::checkCollisions(float dt)
             {
                 GameObject *obj = section[j];
 
-                if(obj->getOuterBounds().size.width <= 0 || obj->getOuterBounds().size.height <= 0) continue;
+                auto objBounds = obj->getOuterBounds();
+
+                if (objBounds.size.width <= 0 || objBounds.size.height <= 0)
+                    continue;
 
                 if (obj->getGameObjectType() == kGameObjectTypeHazard)
                 {
                     m_pHazards.push_back(obj);
-                    renderRect(obj->getOuterBounds(), ax::Color4B::RED);
+                    renderRect(objBounds, ax::Color4B::RED);
                 }
+
                 else if (obj->isActive())
                 {
-                    renderRect(obj->getOuterBounds(), ax::Color4B::BLUE);
-                    if (m_pPlayer->getOuterBounds().intersectsRect(obj->getOuterBounds()))
+                    renderRect(objBounds, ax::Color4B::BLUE);
+                    if (playerOuterBounds.intersectsRect(objBounds))
                     {
+                        GameToolbox::log("game object type 2: {}", obj->getGameObjectType());
                         switch (obj->getGameObjectType())
                         {
-                        /* case GameObjectType::kInvertGravity:
-                            if (!this->getPlayer()->getGravityFlipped())
-                                this->playGravityEffect(true);
+                        /*  case GameObjectType::kInvertGravity:
+                        //     if (!this->getPlayer()->getGravityFlipped())
+                        //         this->playGravityEffect(true);
 
-                            this->getPlayer()->setPortal(obj->getPosition());
+                        //     this->getPlayer()->setPortal(obj->getPosition());
 
-                            this->getPlayer()->flipGravity(true);
-                            break;
+                        //     this->getPlayer()->flipGravity(true);
+                        //     break;
 
-                        case GameObjectType::kNormalGravity:
-                            if (this->getPlayer()->getGravityFlipped())
-                                this->playGravityEffect(false);
+                        // case GameObjectType::kNormalGravity:
+                        //     if (this->getPlayer()->getGravityFlipped())
+                        //         this->playGravityEffect(false);
 
-                            this->getPlayer()->setPortal(obj->getPosition());
+                        //     this->getPlayer()->setPortal(obj->getPosition());
 
                             this->getPlayer()->flipGravity(false);
                             break;
-
-                        case GameObjectType::kShipPortal:
-                            this->switchToFlyMode(obj, false);
+                            */
+                        case GameObjectType::kGameObjectTypeShipPortal:
+                            this->m_pPlayer->setShip(true);
+                            this->m_fCameraYCenter = obj->getPositionY(); // TODO check if portal is lower than certan y pos, if so set center to predefined pointS
                             break;
 
-                        case GameObjectType::kCubePortal:
-                            this->getPlayer()->setPortal(obj->getPosition());
+                        case GameObjectType::kGameObjectTypeCubePortal:
+                            // this->getPlayer()->setPortal(obj->getPosition());
 
-                            this->getPlayer()->toggleFlyMode(false);
-                            this->toggleGlitter(false);
+                            this->m_pPlayer->setShip(false);
+                            /* this->toggleGlitter(false);
                             this->animateOutGround(false);
 
-                            this->moveCameraY = false;
+                            this->moveCameraY = false; */
                             break;
 
-                        case GameObjectType::kYellowJumpPad:
+                        /* case GameObjectType::kYellowJumpPad:
                             if (!obj->hasBeenActivated())
                             {
                                 this->getPlayer()->setPortal(obj->getPosition() - cocos2d::CCPoint(0, 10));
@@ -401,6 +519,8 @@ void PlayLayer::checkCollisions(float dt)
                                 this->getPlayer()->ringJump();
                             }
                             break; */
+                        case GameObjectType::kGameObjectTypeSpecial:
+                            break;
                         default:
                             m_pPlayer->collidedWithObject(dt, obj);
                             break;
@@ -414,9 +534,13 @@ void PlayLayer::checkCollisions(float dt)
     {
         GameObject *hazard = m_pHazards[i];
 
-        if (m_pPlayer->getOuterBounds().intersectsRect(hazard->getOuterBounds()))
+        if (playerOuterBounds.intersectsRect(hazard->getOuterBounds()))
         {
-            if(!noclip) m_pPlayer->setDead(true);
+            if (!noclip)
+            {
+                m_pPlayer->setDead(true);
+                m_pPlayer->playDeathEffect();
+            }
             return;
         }
     }
@@ -426,10 +550,11 @@ void PlayLayer::checkCollisions(float dt)
 void PlayLayer::onDrawImGui()
 {
     extern bool _showDebugImgui;
-    if(!_showDebugImgui) return;
+    if (!_showDebugImgui)
+        return;
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
-    ImGui::SetNextWindowPos({1000.0f, 200.0f},ImGuiCond_FirstUseEver);
-    
+    ImGui::SetNextWindowPos({1000.0f, 200.0f}, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("PlayLayer Debug");
     ImGui::Text("Hello, world!");
 
@@ -454,14 +579,15 @@ void PlayLayer::onDrawImGui()
     ImGui::Checkbox("Show Hitboxes", &showDn);
     ImGui::Checkbox("Gain the power of invincibility", &noclip);
 
-    if (ImGui::Button("Speed"))
-        Director::getInstance()->getScheduler()->setTimeScale(0.1f);
+    if (ImGui::InputFloat("Speed", &gameSpeed))
+        Director::getInstance()->getScheduler()->setTimeScale(gameSpeed);
 
     ImGui::Text("Sections: %i", m_pSectionObjects.size());
     if (m_pSectionObjects.size() > 0 && sectionForPos(m_pPlayer->getPositionX()) - 1 < m_pSectionObjects.size())
         ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1].size());
 
-    if(ImGui::Checkbox("Become ship", &ship)) this->m_pPlayer->setShip(ship);
+    if (ImGui::Checkbox("Become ship", &ship))
+        this->m_pPlayer->setShip(ship);
 
     if (ImGui::Button("Reset"))
     {
@@ -476,11 +602,16 @@ void PlayLayer::resetLevel()
     m_obCamPos.x = 0;
     m_pGround->setPositionX(0);
     m_pPlayer->setDead(false);
+    m_pPlayer->setShip(false);
     m_pBG->setPositionX(0);
+    AudioEngine::stopAll();
+    AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
+    scheduleUpdate();
 }
 void PlayLayer::renderRect(ax::Rect rect, ax::Color4B col)
 {
     dn->drawRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, col);
+    dn->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, Color4B(col.r, col.g, col.b, 100));
 }
 
 void PlayLayer::onEnter()
@@ -489,11 +620,11 @@ void PlayLayer::onEnter()
 
     auto listener = EventListenerKeyboard::create();
     auto dir = Director::getInstance();
-    
+
     listener->onKeyPressed = AX_CALLBACK_2(PlayLayer::onKeyPressed, this);
     listener->onKeyReleased = AX_CALLBACK_2(PlayLayer::onKeyReleased, this);
     dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-    
+
     auto current = dir->getRunningScene();
     ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(PlayLayer::onDrawImGui, this), current);
 }
@@ -505,32 +636,57 @@ void PlayLayer::onExit()
     Layer::onExit();
 }
 
-void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event *event)
 {
     GameToolbox::log("Key with keycode {} pressed", static_cast<int>(keyCode));
-    switch(keyCode)
+    switch (keyCode)
     {
-        case EventKeyboard::KeyCode::KEY_R:
-        {
-            this->resetLevel();
-        }
-        break;
-        case EventKeyboard::KeyCode::KEY_F:
-        {
-            extern bool _showDebugImgui;
-            _showDebugImgui = !_showDebugImgui;
-        }
+    case EventKeyboard::KeyCode::KEY_R:
+    {
+        this->resetLevel();
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_F:
+    {
+        extern bool _showDebugImgui;
+        _showDebugImgui = !_showDebugImgui;
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_SPACE:
+    {
+        m_pPlayer->onTouchBegan(nullptr, nullptr);
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_UP_ARROW:
+    {
+        m_pPlayer->onTouchBegan(nullptr, nullptr);
+    }
     }
     if (keyCode == EventKeyboard::KeyCode::KEY_A) m_pPlayer->direction = -1.f;
     else if (keyCode == EventKeyboard::KeyCode::KEY_D) m_pPlayer->direction = 1.f;
 }
 
-void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event)
 {
     GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
+<<<<<<< HEAD
     if (
         (keyCode == EventKeyboard::KeyCode::KEY_A && m_pPlayer->direction == -1.f)
         || (keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->direction == 1.f)
         ) 
         m_pPlayer->direction = 0.f;
+=======
+    switch (keyCode)
+    {
+    case EventKeyboard::KeyCode::KEY_SPACE:
+    {
+        m_pPlayer->onTouchEnded(nullptr, nullptr);
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_UP_ARROW:
+    {
+        m_pPlayer->onTouchEnded(nullptr, nullptr);
+    }
+    }
+>>>>>>> 68324c71049444618de80485e19bb13a1d607070
 }

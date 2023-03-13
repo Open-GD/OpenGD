@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include <fmt/format.h>
+#include "GameToolbox.h"
 
 USING_NS_AX;
 
@@ -494,15 +495,15 @@ const std::map<int, const char *> GameObject::_pBlocks = std::map<int, const cha
     {8, "spike_01_001"},
     {39, "spike_02_001"},
     {103, "spike_03_001"},
-    {10, "portal_01_front_001"},
-    {11, "portal_02_front_001"},
-    {12, "portal_03_front_001"},
-    {13, "portal_04_front_001"},
-    {45, "portal_05_front_001"},
-    {46, "portal_06_front_001"},
-    {47, "portal_07_front_001"},
-    {99, "portal_08_front_001"},
-    {101, "portal_09_front_001"},
+    {10, "portal_01_front_001"}, // set gravity to default portal
+    {11, "portal_02_front_001"}, // reverse gravity portal
+    {12, "portal_03_front_001"}, // player portal
+    {13, "portal_04_front_001"}, // ship portal
+    {45, "portal_05_front_001"}, // reverse level portal
+    {46, "portal_06_front_001"}, // reverse level to default portal
+    {47, "portal_07_front_001"}, // ball portal
+    {99, "portal_08_front_001"}, // big player portal
+    {101, "portal_09_front_001"}, // small player portal
     {9, "pit_01_001"},
     {1715, "pit_01_001"},
     {18, "d_spikes_01_001"},
@@ -2104,6 +2105,9 @@ const std::vector<int> GameObject::_pSolids = std::vector<int>{
     343, 345, 349, 351, 353, 355, 369, 370, 371, 372, 374, 467, 468, 469, 470, 471, 475, 483, 484,
     492, 493};
 
+const std::vector<int> GameObject::_pTriggers = std::vector<int>{29,30,31,32,33,34,104,105,221,717,718,743,744,899,900,915,901,1006,1007,1049,1268,1346,1347,1520,1585,1595,1611,1612,1613,1616,1811,1812,1814,1815,1817,1818,1819,22,24,23,25,26,27,28,55,56,57,58,59,1912,1913,1914,1916,1917,1931,1932,1934,1935,2015,2016,2062,2067,2068,2701,2702
+};
+
 bool GameObject::init(std::string_view frame)
 {
     // so ObjectManager is supposed to do some shit here
@@ -2135,11 +2139,79 @@ GameObject *GameObject::objectFromString(std::string str)
         return nullptr; // you obviously can't do anything if there's no object ID
 
     int ID = stoi(values["1"]);
+
     auto frame = keyToFrame(ID);
 
     auto obj = createObject(frame);
 
+    GameToolbox::log("GameObject::objectFromString");
+
+    obj->updateObjectType();
+
     return obj;
+}
+
+void GameObject::updateObjectType() {
+    switch(getID()) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7: 
+        case 40: {
+            setGameObjectType(kGameObjectTypeSolid);
+            break;
+        }
+
+        case 8:
+        case 9:
+        case 39: {
+            setGameObjectType(kGameObjectTypeHazard);
+            break;
+        }
+
+        case 15:
+        case 16:
+        case 17:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 41: {
+            setGameObjectType(kGameObjectTypeDecoration);
+            break;
+        }
+
+
+        case 10: {
+            setGameObjectType(kGameObjectTypeNormalGravityPortal);
+            break;
+        }
+        case 11: {
+            setGameObjectType(kGameObjectTypeInverseGravityPortal);
+            break;
+        }
+        case 12: {
+            setGameObjectType(kGameObjectTypeCubePortal);
+            break;
+        }
+        case 13: {
+            setGameObjectType(kGameObjectTypeShipPortal);
+            break;
+        }
+
+        case 29: {
+            setGameObjectType(kGameObjectTypeBGTrigger);
+            break;
+        }
+        case 30: {
+            setGameObjectType(kGameObjectTypeGTrigger);
+            break;
+        }
+        
+    }
 }
 
 GameObject *GameObject::createObject(std::string_view frame)

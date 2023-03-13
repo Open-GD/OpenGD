@@ -1,8 +1,23 @@
 #include "PlayerObject.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
+#include "AudioEngine.h"
+#include "PlayLayer.h"
 
 USING_NS_AX;
+
+void PlayerObject::playDeathEffect() {
+    AudioEngine::stopAll();
+    AudioEngine::play2d("explode_11.ogg", false, 0.1f);
+
+    getPlayLayer()->unscheduleUpdate();
+
+    scheduleOnce([=](float d) {
+        static_cast<PlayLayer *>(getPlayLayer())->resetLevel();
+    }, 1.f, "playerdeath");
+
+    runAction(FadeTo::create(0.2f, 0));
+}
 
 bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 {
@@ -403,8 +418,10 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     death:
     if (playerRectI.intersectsRect(rect))
     {
-        if (!noclip)
+        if (!noclip) {
             setDead(true);
+            playDeathEffect();
+        }
         return;
     }
 }
