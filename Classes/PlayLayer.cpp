@@ -478,11 +478,7 @@ void PlayLayer::checkCollisions(float dt)
     {
         if (m_pPlayer->isGravityFlipped())
         {
-            if (!noclip)
-            {
-                m_pPlayer->setIsDead(true);
-                m_pPlayer->playDeathEffect();
-            }
+            destroyPlayer();
             return;
         }
 
@@ -492,11 +488,7 @@ void PlayLayer::checkCollisions(float dt)
     }
     else if (m_pPlayer->getPositionY() > 1290.0f)
     {
-        if (!noclip)
-        {
-            m_pPlayer->setIsDead(true);
-            m_pPlayer->playDeathEffect();
-        }
+        destroyPlayer();
         return;
     }
 
@@ -580,12 +572,12 @@ void PlayLayer::checkCollisions(float dt)
                             break;
 
                         case GameObjectType::kGameObjectTypeYellowJumpPad:
-                            //if (!obj->hasBeenActivated())
-                            //{
-                                //obj->setActive(true);
+                            if (!obj->hasBeenActivated())
+                            {
+                                //obj->triggerActivated();
 
                                 m_pPlayer->propellPlayer();
-                            //}
+                            }
                             break;
 
                         case GameObjectType::kGameObjectTypeYellowJumpRing:

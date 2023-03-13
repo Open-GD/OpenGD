@@ -8,8 +8,8 @@ USING_NS_AX;
 
 void PlayerObject::reset()
 {
-    setDead(false);
-    setShip(false);
+    setIsDead(false);
+    setIsShip(false);
     flipGravity(false);
     m_snappedObject = nullptr;
     m_snapDifference = 0;
@@ -253,7 +253,7 @@ void PlayerObject::updateShipRotation()
 void PlayerObject::propellPlayer()
 {
     m_isRising = true;
-    setOnGround(false);
+    setIsOnGround(false);
     m_dYVel = flipMod() * 16.0f;
     runRotateAction();
     m_obLastGroundPos = getPosition();
@@ -504,6 +504,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
 void PlayerObject::setIsShip(bool val)
 {
     m_bIsShip = val;
+    setIsOnGround(false);
 }
 
 void PlayerObject::checkSnapJumpToObject(GameObject *obj)
