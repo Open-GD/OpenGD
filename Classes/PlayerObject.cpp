@@ -175,6 +175,7 @@ Color3B PlayerObject::getShipColor()
 
 void PlayerObject::update(float dt)
 {
+    m_prevPos = getPosition();
     if (this->m_bIsDead)
         return;
 
@@ -184,7 +185,7 @@ void PlayerObject::update(float dt)
         this->updateJump(dtSlow);
 
         float velY = (float)((double)dtSlow * m_dYVel);
-        float velX = (float)((double)dtSlow * m_dXVel * (!m_bIsPlatformer ? 1.f : direction));
+        float velX = (float)((double)dt * m_dXVel * (!m_bIsPlatformer ? 1.f : direction) * getPlayerSpeed());
 
         ax::Vec2 velocity{velX, velY};
 
@@ -195,6 +196,9 @@ void PlayerObject::update(float dt)
     {
         this->m_bIsHolding = true;
     }
+
+    if (isShip())
+        updateShipRotation();
 
     // if (!this->m_bFlyMode)
     // this->motionStreak->setPosition(this->getPosition() + ccp({-10, 0}));
@@ -207,8 +211,22 @@ void PlayerObject::update(float dt)
 }
 void PlayerObject::updateShipRotation()
 {
+    float angleRad, curAngleRad, newAngleDeg;
+
     Vec2 pos = getPosition();
 
+    Vec2 d = pos - m_prevPos;
+
+    if (GameToolbox::SquareDistance(pos, m_prevPos) >= 1.2f)
+    {
+        angleRad = atan2f(d.x, d.y);
+
+        curAngleRad = getRotation() * 0.017453f;
+
+        newAngleDeg = GameToolbox::slerp(curAngleRad, angleRad, 0.15f) * 57.296f;
+
+        setRotation(newAngleDeg);
+    }
 }
 void PlayerObject::updateJump(float dt)
 {

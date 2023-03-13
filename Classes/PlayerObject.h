@@ -51,6 +51,8 @@ private:
 
     GameObject* m_snappedObject;
     float m_snapDifference;
+
+    ax::Vec2 m_prevPos;
 public:
     bool m_bIsPlatformer;
     float direction;

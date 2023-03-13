@@ -7,11 +7,11 @@ bool SimpleProgressBar::init() {
 
     // config 
     _pGroove->setStretchEnabled(false);
-    _pBarWidth = _pGroove->getContentSize().width - 8;
+    _pBarWidth = _pGroove->getContentSize().width - 4;
     _pBar->setStretchEnabled(false);
     _pBar->getTexture()->setTexParameters({ ax::backend::SamplerFilter::NEAREST, ax::backend::SamplerFilter::NEAREST, ax::backend::SamplerAddressMode::REPEAT, ax::backend::SamplerAddressMode::REPEAT });
     _pBar->setAnchorPoint({0, 0});
-    _pBar->setPosition({2.f, 4.f});
+    _pBar->setPosition({2.f, 1.25f});
 
     // add everything
     _pGroove->addChild(_pBar, -1);

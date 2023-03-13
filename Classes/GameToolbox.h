@@ -28,8 +28,8 @@ namespace GameToolbox
     inline float SquareDistance(float xa, float ya, float xb, float yb);
     float SquareDistance(ax::Vec2 a, ax::Vec2 b);
 
-    inline float slerp(float a, float b, float ratio);
-    inline float repeat(float a, float length);
+    float slerp(float a, float b, float ratio);
+    float repeat(float a, float length);
 
     template <typename T>
     inline T inRange(T value, T min, T max) {
