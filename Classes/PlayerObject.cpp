@@ -142,11 +142,7 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 
     return true;
 }
-void PlayerObject::setShip(bool ship)
-{
-    m_bIsShip = ship;
-    m_bOnGround = false;
-}
+
 void PlayerObject::setMainColor(Color3B col)
 {
     this->m_pMainSprite->setColor(col);
@@ -175,6 +171,16 @@ Color3B PlayerObject::getSecondaryColor()
 Color3B PlayerObject::getShipColor()
 {
     return this->m_pShipSprite->getColor();
+}
+
+void PlayerObject::setIsDead(bool value)
+{ 
+    m_bIsDead = value;
+}
+
+void PlayerObject::setIsOnGround(bool value)
+{
+    m_bOnGround = value; 
 }
 
 void PlayerObject::update(float dt)
@@ -471,6 +477,11 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
         ((PlayLayer*)getPlayLayer())->destroyPlayer();
 }
 
+void PlayerObject::setIsShip(bool val)
+{
+    m_bIsShip = val;
+}
+
 void PlayerObject::checkSnapJumpToObject(GameObject *obj)
 {
     if (obj) 
@@ -557,7 +568,7 @@ void PlayerObject::checkSnapJumpToObject(GameObject *obj)
 }
 void PlayerObject::hitGround(bool reverseGravity)
 {
-    setOnGround(true);
+    setIsOnGround(true);
     m_dYVel = 0.0f;
     if(getActionByTag(0))
         stopRotation();

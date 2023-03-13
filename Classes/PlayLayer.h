@@ -63,7 +63,7 @@ public:
     void update(float delta);
     void updateCamera(float dt);
     void moveCameraToPos(ax::Vec2);
-
+    void changeGameMode(GameObject*, int);
     void resetLevel();
 
     // dt?
@@ -72,27 +72,10 @@ public:
 
     void processTriggers();
 
-    int sectionForPos(float x)
-    {
-        int section = x / 100;
-        if (section < 0)
-            section = 0;
-        return section;
-    }
+    int sectionForPos(float x);
 
     static ax::Scene *scene(GJGameLevel *level);
-    static PlayLayer *create(GJGameLevel *level)
-    {
-        auto ret = new (std::nothrow) PlayLayer();
-        if (ret && ret->init(level))
-        {
-            ret->autorelease();
-            return ret;
-        }
-
-        AX_SAFE_DELETE(ret);
-        return nullptr;
-    }
+    static PlayLayer *create(GJGameLevel *level);
 
     static PlayLayer *getInstance();
 };

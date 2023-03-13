@@ -24,6 +24,28 @@ Scene *PlayLayer::scene(GJGameLevel *level)
     return scene;
 }
 
+
+int PlayLayer::sectionForPos(float x)
+{
+    int section = x / 100;
+    if (section < 0)
+        section = 0;
+    return section;
+}
+    
+PlayLayer* PlayLayer::create(GJGameLevel *level)
+{
+    auto ret = new (std::nothrow) PlayLayer();
+    if (ret && ret->init(level))
+    {
+        ret->autorelease();
+        return ret;
+    }
+    
+    AX_SAFE_DELETE(ret);
+    return nullptr;
+}
+    
 std::vector<std::string> split(std::string &tosplit, char splitter)
 {
     std::vector<std::string> vec;
@@ -233,7 +255,7 @@ bool PlayLayer::init(GJGameLevel *level)
                  {
         AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
         scheduleUpdate();
-        m_pPlayer->setDead(false); },
+        m_pPlayer->setIsDead(false); },
                  1.f, "k");
 
     return true;
@@ -295,7 +317,7 @@ void PlayLayer::update(float dt)
 void PlayLayer::destroyPlayer()
 {
     if (m_pPlayer->noclip) return;
-    m_pPlayer->setDead(true);
+    m_pPlayer->setIsDead(true);
     m_pPlayer->playDeathEffect();
 }
 
@@ -306,7 +328,8 @@ void PlayLayer::updateCamera(float dt)
 
     auto player = this->m_pPlayer;
 
-    float playerPosY = player->getPositionY(), playerPosX = player->getPositionX();
+    float playerPosY = player->getPositionY();
+    float playerPosX = player->getPositionX();
 
     float unk4 = 0;
     float unk5 = 20;
@@ -365,7 +388,7 @@ void PlayLayer::updateCamera(float dt)
         cam.x += dt * .9f * 5.770002f;
     }
     else if (player->m_bIsPlatformer)
-        cam.x = player->getPositionX() - winSize.width / 2.f;
+        cam.x = playerPosX - winSize.width / 2.f;
 
     this->m_pGround->setPositionX(this->m_pGround->getPositionX() + (cam.x - m_obCamPos.x));
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
@@ -373,11 +396,27 @@ void PlayLayer::updateCamera(float dt)
     this->m_obCamPos = cam;
     // GameToolbox::log("camPosX: {}, camPosY: {}", m_obCamPos.x, m_obCamPos.y);
     Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
-
+    
     m_pBar->setPosition(this->m_obCamPos + winSize / 2);
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 }
 
+void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
+{
+    switch(gameMode)
+    {
+        case 0:
+        {
+            this->m_pPlayer->setIsShip(false);
+        }
+        break;
+        case 1:
+        {
+            this->m_fCameraYCenter = obj->getPositionY(); // TODO check if portal is lower than certan y pos, if so set center to predefined pointS
+            this->m_pPlayer->setIsShip(true);
+        }
+    }
+}
 void PlayLayer::moveCameraToPos(Vec2 pos)
 {
     auto moveX = [this](float a, float b, float c) -> void
@@ -425,7 +464,7 @@ void PlayLayer::checkCollisions(float dt)
         {
             if (!noclip)
             {
-                m_pPlayer->setDead(true);
+                m_pPlayer->setIsDead(true);
                 m_pPlayer->playDeathEffect();
             }
             return;
@@ -439,7 +478,7 @@ void PlayLayer::checkCollisions(float dt)
     {
         if (!noclip)
         {
-            m_pPlayer->setDead(true);
+            m_pPlayer->setIsDead(true);
             m_pPlayer->playDeathEffect();
         }
         return;
@@ -510,14 +549,14 @@ void PlayLayer::checkCollisions(float dt)
                             break;
                             */
                         case GameObjectType::kGameObjectTypeShipPortal:
-                            this->m_pPlayer->setShip(true);
-                            this->m_fCameraYCenter = obj->getPositionY(); // TODO check if portal is lower than certan y pos, if so set center to predefined pointS
+                            this->changeGameMode(obj, 1);
                             break;
 
                         case GameObjectType::kGameObjectTypeCubePortal:
+                            this->changeGameMode(obj, 0);
                             // this->getPlayer()->setPortal(obj->getPosition());
 
-                            this->m_pPlayer->setShip(false);
+                            //this->m_pPlayer->setIsShip(false);
                             /* this->toggleGlitter(false);
                             this->animateOutGround(false);
 
@@ -607,7 +646,7 @@ void PlayLayer::onDrawImGui()
         ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1].size());
 
     if (ImGui::Checkbox("Become ship", &ship))
-        this->m_pPlayer->setShip(ship);
+        this->m_pPlayer->setIsShip(ship);
 
     if (ImGui::Button("Reset"))
     {
@@ -621,8 +660,8 @@ void PlayLayer::resetLevel()
     m_pPlayer->setPosition({2, 105});
     m_obCamPos.x = 0;
     m_pGround->setPositionX(0);
-    m_pPlayer->setDead(false);
-    m_pPlayer->setShip(false);
+    m_pPlayer->setIsDead(false);
+    m_pPlayer->setIsShip(false);
     m_pBG->setPositionX(0);
     AudioEngine::stopAll();
     AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
