@@ -208,6 +208,7 @@ void PlayerObject::update(float dt)
 void PlayerObject::updateShipRotation()
 {
     Vec2 pos = getPosition();
+
 }
 void PlayerObject::updateJump(float dt)
 {
