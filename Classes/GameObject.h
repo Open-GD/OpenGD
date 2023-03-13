@@ -18,6 +18,7 @@ enum GameObjectType
     // opengd additions //
     kGameObjectTypeBGTrigger = 12,
     kGameObjectTypeGTrigger = 13,
+    kGameObjectTypeSpecial = 40
 };
 
 struct Hitbox
@@ -48,7 +49,7 @@ public:
     // from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35
     static const std::map<int, const char *> _pBlocks;
 
-    static const std::vector<int> _pSolids;
+    static const std::vector<int> _pSolids, _pTriggers;
 
     static GameObject *create(std::string_view frame);
     static GameObject *createObject(std::string_view frame);
