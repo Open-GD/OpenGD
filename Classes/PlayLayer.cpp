@@ -226,8 +226,7 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
-<<<<<<< HEAD
-=======
+
     if (m_freezePlayer)
     {
         AudioEngine::pauseAll();
@@ -240,7 +239,6 @@ void PlayLayer::update(float dt)
 
     Vec2 playerPosOld = m_pPlayer->getPosition();
 
->>>>>>> 68324c71049444618de80485e19bb13a1d607070
     float step = std::min(2.0f, dt * 60.0f);
 
     m_pPlayer->m_bIsPlatformer = m_platformerMode;
