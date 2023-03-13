@@ -21,6 +21,8 @@ private:
     void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
     void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
 
+    void fillColorChannel(std::vector<std::string> &colorString, int id);
+
     ax::Sprite *m_pBG;
     GroundLayer *m_pGround;
     PlayerObject *m_pPlayer;
@@ -43,6 +45,8 @@ private:
     float m_fEndOfLevel = FLT_MAX;
     float m_fShakeIntensity = 1;
 
+    int _prevSection, _nextSection;
+
     bool m_bIsJumpPressed;
 
     SimpleProgressBar *m_pBar;
@@ -62,6 +66,7 @@ public:
 
     void update(float delta);
     void updateCamera(float dt);
+    void updateVisibility();
     void moveCameraToPos(ax::Vec2);
     void changeGameMode(GameObject*, int);
     void resetLevel();

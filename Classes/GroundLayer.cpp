@@ -1,5 +1,6 @@
 #include "GroundLayer.h"
 #include "GameToolbox.h"
+#include "PlayLayer.h"
 
 USING_NS_AX;
 
@@ -49,6 +50,12 @@ bool GroundLayer::init(int groundID) {
 
 
 void GroundLayer::update(float dt) {
+
+    if(auto pl = PlayLayer::getInstance())
+    {
+        if(pl->m_pColorChannels.contains(1001)) m_pSprite->setColor(pl->m_pColorChannels.at(1001));
+    }
+
     this->m_pSprite->setPositionX(this->m_pSprite->getPositionX() - dt * this->m_fSpeed);
 
     if (this->m_pSprite->getPositionX() <= -this->m_fOneGroundSize)

@@ -13,7 +13,7 @@ USING_NS_AX_EXT;
 
 bool showDn = false, noclip = false, ship = false;
 
-float gameSpeed;
+float gameSpeed = 1, fps = 0;
 
 static PlayLayer *Instance = nullptr;
 
@@ -58,21 +58,120 @@ std::vector<std::string> split(std::string &tosplit, char splitter)
     return vec;
 }
 
+void PlayLayer::fillColorChannel(std::vector<std::string> &colorString, int id)
+{
+    for (size_t j = 0; j < colorString.size() - 1; j += 2)
+    {
+        switch (std::stoi(colorString[j]))
+        {
+        case 1:
+            m_pColorChannels.insert({1001, ax::Color3B(std::stof(colorString[j + 1]), 0, 0)});
+            break;
+        case 2:
+            m_pColorChannels.at(1001).g = std::stof(colorString[j + 1]);
+            break;
+        case 3:
+            m_pColorChannels.at(1001).b = std::stof(colorString[j + 1]);
+            break;
+        }
+    }
+}
+
 void PlayLayer::loadLevel(std::string levelStr)
 {
     std::vector<std::string> objData = split(levelStr, ';'), levelData;
 
     levelData = split(objData[0], ',');
     objData.erase(objData.begin());
-    // objData.erase(objData.end() - 1);
+
+    for (size_t i = 0; i < levelData.size(); i += 2)
+    {
+        if (levelData[i] == "kS1")
+        {
+            m_pColorChannels.insert({1000, ax::Color3B(std::stof(levelData[i + 1]), 0, 0)});
+        }
+        else if (levelData[i] == "kS2")
+        {
+            m_pColorChannels.at(1000).g = std::stof(levelData[i + 1]);
+        }
+        else if (levelData[i] == "kS3")
+        {
+            m_pColorChannels.at(1000).b = std::stof(levelData[i + 1]);
+        }
+        else if (levelData[i] == "kS4")
+        {
+            m_pColorChannels.insert({1001, ax::Color3B(std::stof(levelData[i + 1]), 0, 0)});
+        }
+        else if (levelData[i] == "kS5")
+        {
+            m_pColorChannels.at(1001).g = std::stof(levelData[i + 1]);
+        }
+        else if (levelData[i] == "kS6")
+        {
+            m_pColorChannels.at(1001).b = std::stof(levelData[i + 1]);
+        }
+        else if (levelData[i] == "kS29")
+        {
+            auto colorString = split(levelData[i + 1], '_');
+            fillColorChannel(colorString, 1000);
+        }
+        else if (levelData[i] == "kS30")
+        {
+            auto colorString = split(levelData[i + 1], '_');
+            fillColorChannel(colorString, 1001);
+        }
+        else if (levelData[i] == "kS31")
+        {
+            auto colorString = split(levelData[i + 1], '_');
+            fillColorChannel(colorString, 1002);
+        }
+        else if (levelData[i] == "kS32")
+        {
+            auto colorString = split(levelData[i + 1], '_');
+            fillColorChannel(colorString, 1004);
+        }
+        else if (levelData[i] == "kS37")
+        {
+            auto colorString = split(levelData[i + 1], '_');
+            fillColorChannel(colorString, 1003);
+        }
+        else if (levelData[i] == "kS38")
+        {
+            auto colorString = split(levelData[i + 1], '|');
+            for (std::string colorData : colorString)
+            {
+                auto innerData = split(colorData, '_');
+                int key;
+                Color3B col;
+                for (size_t j = 0; j < innerData.size() - 1; j += 2)
+                {
+                    switch (std::stoi(innerData[j]))
+                    {
+                    case 1:
+                        col.r = std::stof(innerData[j + 1]);
+                        break;
+                    case 2:
+                        col.g = std::stof(innerData[j + 1]);
+                        break;
+                    case 3:
+                        col.b = std::stof(innerData[j + 1]);
+                        break;
+                    case 6:
+                        key = std::stoi(innerData[j + 1]);
+                    }
+                }
+                m_pColorChannels.insert({key, col});
+            }
+        }
+    }
 
     for (std::string data : objData)
     {
         auto d = split(data, ',');
 
-        GameObject* obj = nullptr;
+        GameObject *obj = nullptr;
 
-        Hitbox hb = { 0, 0, 0, 0 };
+        Hitbox hb = {0, 0, 0, 0};
 
         for (size_t i = 0; i < d.size(); i += 2)
         {
@@ -135,6 +234,15 @@ void PlayLayer::loadLevel(std::string levelStr)
             case 10:
                 dynamic_cast<EffectGameObject *>(obj)->m_fDuration = std::stof(d[i + 1]);
                 break;
+            case 21:
+                obj->_mainColorChannel = std::stoi(d[i + 1]);
+                break;
+            case 22:
+                obj->_secColorChannel = std::stoi(d[i + 1]);
+                break;
+            case 23:
+                dynamic_cast<EffectGameObject *>(obj)->m_nTargetColorId = std::stof(d[i + 1]);
+                break;
             case 25:
                 obj->setGlobalZOrder(std::stoi(d[i + 1]));
                 break;
@@ -189,7 +297,7 @@ void PlayLayer::loadLevel(std::string levelStr)
             case kGameObjectTypeSpecial:
             case kGameObjectTypeHazard:
             {
-                obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), { hb.w, hb.h }));
+                obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
                 break;
             }
             }
@@ -203,6 +311,8 @@ bool PlayLayer::init(GJGameLevel *level)
         return false;
 
     setLevel(level);
+
+    Instance = this;
 
     auto winSize = Director::getInstance()->getWinSize();
 
@@ -234,7 +344,8 @@ bool PlayLayer::init(GJGameLevel *level)
         this->m_lastObjXPos = std::numeric_limits<float>().min();
 
         for (GameObject *object : _pObjects)
-            if(this->m_lastObjXPos < object->getPositionX()) this->m_lastObjXPos = object->getPositionX();
+            if (this->m_lastObjXPos < object->getPositionX())
+                this->m_lastObjXPos = object->getPositionX();
 
         if (this->m_lastObjXPos < 570.f)
             this->m_lastObjXPos = 570.f;
@@ -417,6 +528,71 @@ void PlayLayer::updateCamera(float dt)
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 }
 
+void PlayLayer::updateVisibility()
+{
+    auto winSize = ax::Director::getInstance()->getWinSize();
+
+    float unk = 70.0f;
+
+    int prevSection = floorf(this->m_obCamPos.x / 100) - 1.0f;
+    int nextSection = ceilf((this->m_obCamPos.x + winSize.width) / 100) + 1.0f;
+
+    for (size_t i = prevSection; i < nextSection; i++)
+    {
+        if (i > 0)
+        {
+            if (i < m_pSectionObjects.size())
+            {
+                auto section = m_pSectionObjects[i];
+                for (size_t j = 0; j < section.size(); j++)
+                {
+
+                    GameObject *obj = section[j];
+
+                    obj->setActive(true);
+
+                    // if (obj->getType() == GameObjectType::kBallFrame || obj->getType() == GameObjectType::kYellowJumpRing)
+                    //     obj->setScale(this->getAudioEffectsLayer()->getAudioScale())
+
+                    // auto pos = obj->getPosition();
+
+                    // float unk2 = 0.0f;
+
+                    // if (obj->getGameObjectType == GameObjectType::)
+                    // {
+                    //     unk2 = obj->getTextureRect().origin.x * obj->getScaleX() * 0.4f;
+                    // }
+
+                    // unsigned char opacity = this->getRelativeMod(pos, unk, unk2) * 255.0f;
+
+                    // if (!obj->getDontTransform())
+                    // {
+                    //     obj->setOpacity(opacity);
+                    //     this->applyEnterEffect(obj);
+                    // }
+                }
+            }
+        }
+    }
+
+    for (size_t i = this->_prevSection; i < this->_nextSection; i++)
+    {
+        if (i > 0)
+        {
+            if (i < this->m_pSectionObjects.size())
+            {
+                auto section = m_pSectionObjects[i];
+                for (size_t j = 0; j < section.size(); j++)
+                {
+                    section[j]->setActive(false);
+                }
+            }
+        }
+    }
+    this->_prevSection = prevSection;
+    this->_nextSection = nextSection;
+}
+
 void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
 {
     switch(gameMode)
@@ -524,18 +700,18 @@ void PlayLayer::checkCollisions(float dt)
                 }
                 else if (obj->isActive())
                 {
-                    if (!obj->hasBeenActivated())
+                    if (!obj->m_bHasBeenActivated)
                     {
-                        /*if (auto trigger = dynamic_cast<EffectGameObject*>(obj))
+                        if (auto trigger = dynamic_cast<EffectGameObject *>(obj))
                         {
                             if (trigger->getPositionX() <= m_pPlayer->getPositionX())
                                 trigger->triggerActivated(dt);
-                        }*/
+                        }
                     }
                     renderRect(objBounds, ax::Color4B::BLUE);
                     if (playerOuterBounds.intersectsRect(objBounds))
                     {
-                        //GameToolbox::log("game object type 2: {}", obj->getGameObjectType());
+                        // GameToolbox::log("game object type 2: {}", obj->getGameObjectType());
                         switch (obj->getGameObjectType())
                         {
                         case GameObjectType::kGameObjectTypeInverseGravityPortal:
@@ -572,7 +748,7 @@ void PlayLayer::checkCollisions(float dt)
                             break;
 
                         case GameObjectType::kGameObjectTypeYellowJumpPad:
-                            if (!obj->hasBeenActivated())
+                            if (!obj->m_bHasBeenActivated)
                             {
                                 //obj->triggerActivated();
 
@@ -581,7 +757,7 @@ void PlayLayer::checkCollisions(float dt)
                             break;
 
                         case GameObjectType::kGameObjectTypeYellowJumpRing:
-                            if (!obj->hasBeenActivated())
+                            if (!obj->m_bHasBeenActivated)
                             {
                                 //this->getPlayer()->setTouchedRing(obj);
                                 //obj->powerOnObject();
@@ -633,6 +809,7 @@ void PlayLayer::onDrawImGui()
         AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
         unscheduleUpdate();
         music = true;
+        Instance = nullptr;
 
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
     }
@@ -647,6 +824,9 @@ void PlayLayer::onDrawImGui()
 
     if (ImGui::InputFloat("Speed", &gameSpeed))
         Director::getInstance()->getScheduler()->setTimeScale(gameSpeed);
+
+    if (ImGui::InputFloat("FPS", &fps))
+        Director::getInstance()->setAnimationInterval(1.0f / fps);
 
     ImGui::Text("Sections: %i", m_pSectionObjects.size());
     if (m_pSectionObjects.size() > 0 && sectionForPos(m_pPlayer->getPositionX()) - 1 < m_pSectionObjects.size())
@@ -669,6 +849,13 @@ void PlayLayer::resetLevel()
     m_pGround->setPositionX(0);
     m_pPlayer->reset();
     m_pBG->setPositionX(0);
+
+    for (auto obj : this->_pObjects)
+    {
+        obj->m_bHasBeenActivated = false;
+        obj->setActive(false);
+    }
+
     AudioEngine::stopAll();
     AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
     scheduleUpdate();
@@ -727,17 +914,17 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event *event)
         m_pPlayer->onTouchBegan(nullptr, nullptr);
     }
     }
-    if (keyCode == EventKeyboard::KeyCode::KEY_A) m_pPlayer->direction = -1.f;
-    else if (keyCode == EventKeyboard::KeyCode::KEY_D) m_pPlayer->direction = 1.f;
+    if (keyCode == EventKeyboard::KeyCode::KEY_A)
+        m_pPlayer->direction = -1.f;
+    else if (keyCode == EventKeyboard::KeyCode::KEY_D)
+        m_pPlayer->direction = 1.f;
 }
 
 void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event)
 {
     GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
     if (
-        (keyCode == EventKeyboard::KeyCode::KEY_A && m_pPlayer->direction == -1.f)
-        || (keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->direction == 1.f)
-        ) 
+        (keyCode == EventKeyboard::KeyCode::KEY_A && m_pPlayer->direction == -1.f) || (keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->direction == 1.f))
         m_pPlayer->direction = 0.f;
     switch (keyCode)
     {

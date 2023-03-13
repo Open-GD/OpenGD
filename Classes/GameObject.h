@@ -28,8 +28,6 @@ struct Hitbox
 
 class GameObject : public ax::Sprite
 {
-protected:
-    bool m_bHasBeenActivated;
 private:
     ax::Rect _pOuterBounds;
     ax::Rect _pInnerBounds;
@@ -46,6 +44,10 @@ private:
     float _pDuration;
 
 public:
+
+    bool m_bHasBeenActivated;
+    int _mainColorChannel, _secColorChannel;
+
     static const std::map<int, Hitbox> _pHitboxes;
     static const std::map<int, float> _pHitboxRadius;
     // from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35
@@ -78,7 +80,6 @@ public:
     void setActive(bool active) { m_bActive = active; }
 
     bool isActive() { return m_bActive; }
-    bool hasBeenActivated() {return m_bHasBeenActivated;}
     void triggerActivated();
 
     int getColorRed() { return _pColorRed; }
