@@ -68,6 +68,7 @@ bool PlayLayer::init(GJGameLevel *level)
 
     levelData = split(objData[0], ',');
     objData.erase(objData.begin());
+    // objData.erase(objData.end() - 1);
 
     for (std::string data : objData)
     {
@@ -123,8 +124,8 @@ bool PlayLayer::init(GJGameLevel *level)
             case 6:
                 obj->setRotation(std::stof(d[i + 1]));
                 break;
-            case 7: {
-
+            case 7:
+            {
             }
             case 25:
                 obj->setGlobalZOrder(std::stoi(d[i + 1]));
@@ -154,33 +155,48 @@ bool PlayLayer::init(GJGameLevel *level)
                 }
             }
 
-            switch (obj->getGameObjectType()) {
-                case kGameObjectTypeCubePortal:
-                case kGameObjectTypeShipPortal:
-                case kGameObjectTypeSolid:
-                case kGameObjectTypeHazard: {
-                    obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
-                    break;
-                }
+            switch (obj->getGameObjectType())
+            {
+            case kGameObjectTypeCubePortal:
+            case kGameObjectTypeShipPortal:
+            case kGameObjectTypeSolid:
+            case kGameObjectTypeHazard:
+            {
+                obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
+                break;
+            }
             }
         }
     }
 
     if (_pObjects.size() != 0)
     {
-        for (size_t i = 0; i < sectionForPos(_pObjects[_pObjects.size() - 1]->getPositionX()); i++)
+
+        this->m_lastObjXPos = std::numeric_limits<float>().min();
+
+        for (GameObject *object : _pObjects)
+        {
+            if(this->m_lastObjXPos < object->getPositionX()) this->m_lastObjXPos = object->getPositionX();
+        }
+
+        if (this->m_lastObjXPos < 570.f)
+        {
+            this->m_lastObjXPos = 570.f;
+        }
+
+        for (size_t i = 0; i < sectionForPos(this->m_lastObjXPos); i++)
         {
             std::vector<GameObject *> vec;
             m_pSectionObjects.push_back(vec);
         }
-    }
 
-    for (GameObject *object : _pObjects)
-    {
-        int section = sectionForPos(object->getPositionX());
-        m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
+        for (GameObject *object : _pObjects)
+        {
+            int section = sectionForPos(object->getPositionX());
+            m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
-        this->addChild(object);
+            this->addChild(object);
+        }
     }
 
     this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
@@ -210,10 +226,13 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
-    if(m_freezePlayer) {
+    if (m_freezePlayer)
+    {
         AudioEngine::pauseAll();
         return;
-    } else {
+    }
+    else
+    {
         AudioEngine::resumeAll();
     }
 
@@ -242,14 +261,7 @@ void PlayLayer::update(float dt)
         }
     }
 
-    float sSize = 570.f; // after this point level end layer is called
-    if (this->_pObjects.size() != 0)
-        sSize = this->_pObjects[this->_pObjects.size() - 1]->getPositionX();
-        if(sSize < 570.f) {
-            sSize = 570.f;
-        }
-
-    m_pBar->setPercentage(m_pPlayer->getPositionX() / sSize * 100.f);
+    m_pBar->setPercentage(m_pPlayer->getPositionX() / this->m_lastObjXPos * 100.f);
 
     if (this->m_pBG->getPositionX() <= -1024)
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024);
@@ -358,14 +370,17 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
     moveY(pos.y, 1.2f, 1.8f);
 }
 
-void PlayLayer::processTriggers() {
+void PlayLayer::processTriggers()
+{
     int current_section = this->sectionForPos(m_pPlayer->getPositionX());
-    if(m_pSectionObjects.size() == 0) return;
+    if (m_pSectionObjects.size() == 0)
+        return;
 
     std::vector<GameObject *> section = m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
 
     int i = 0;
-    while(i < section.size()) {
+    while (i < section.size())
+    {
         i++;
     }
 }
@@ -379,7 +394,8 @@ void PlayLayer::checkCollisions(float dt)
     {
         if (m_pPlayer->isGravityFlipped())
         {
-            if (!noclip) {
+            if (!noclip)
+            {
                 m_pPlayer->setDead(true);
                 m_pPlayer->playDeathEffect();
             }
@@ -392,7 +408,8 @@ void PlayLayer::checkCollisions(float dt)
     }
     else if (m_pPlayer->getPositionY() > 1290.0f)
     {
-        if (!noclip) {
+        if (!noclip)
+        {
             m_pPlayer->setDead(true);
             m_pPlayer->playDeathEffect();
         }
@@ -611,37 +628,42 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event *event)
     GameToolbox::log("Key with keycode {} pressed", static_cast<int>(keyCode));
     switch (keyCode)
     {
-        case EventKeyboard::KeyCode::KEY_R:
-        {
-            this->resetLevel();
-        }
-        break;
-        case EventKeyboard::KeyCode::KEY_F:
-        {
-            extern bool _showDebugImgui;
-            _showDebugImgui = !_showDebugImgui;
-        }
-        break;
-        case EventKeyboard::KeyCode::KEY_SPACE: {
-            m_pPlayer->onTouchBegan(nullptr, nullptr);
-        }
-        break;
-        case EventKeyboard::KeyCode::KEY_UP_ARROW: {
-            m_pPlayer->onTouchBegan(nullptr, nullptr);
-        }
+    case EventKeyboard::KeyCode::KEY_R:
+    {
+        this->resetLevel();
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_F:
+    {
+        extern bool _showDebugImgui;
+        _showDebugImgui = !_showDebugImgui;
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_SPACE:
+    {
+        m_pPlayer->onTouchBegan(nullptr, nullptr);
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_UP_ARROW:
+    {
+        m_pPlayer->onTouchBegan(nullptr, nullptr);
+    }
     }
 }
 
 void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event)
 {
     GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
-    switch(keyCode){ 
-        case EventKeyboard::KeyCode::KEY_SPACE: {
-            m_pPlayer->onTouchEnded(nullptr, nullptr);
-        }
-        break;
-        case EventKeyboard::KeyCode::KEY_UP_ARROW: {
-            m_pPlayer->onTouchEnded(nullptr, nullptr);
-        }
+    switch (keyCode)
+    {
+    case EventKeyboard::KeyCode::KEY_SPACE:
+    {
+        m_pPlayer->onTouchEnded(nullptr, nullptr);
+    }
+    break;
+    case EventKeyboard::KeyCode::KEY_UP_ARROW:
+    {
+        m_pPlayer->onTouchEnded(nullptr, nullptr);
+    }
     }
 }

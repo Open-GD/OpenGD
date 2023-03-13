@@ -34,6 +34,7 @@ private:
     std::vector<std::vector<GameObject*>> m_pSectionObjects;
 
     float m_fCameraYCenter;
+    float m_lastObjXPos = 570.0f;
     bool m_bFirstAttempt = true;
     bool m_bMoveCameraX;
     bool m_bMoveCameraY;
