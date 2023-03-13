@@ -169,7 +169,7 @@ void PlayerObject::update(float dt)
         this->updateJump(dtSlow);
 
         float velY = (float)((double)dtSlow * m_dYVel);
-        float velX = (float)((double)dtSlow * m_dXVel);
+        float velX = (float)((double)dtSlow * m_dXVel) * (!m_bIsPlatformer ? 1.f : direction);
 
         ax::Vec2 velocity{velX, velY};
 
@@ -316,16 +316,12 @@ void PlayerObject::updateJump(float dt)
                 if (isUpsideDown())
                 {
                     if (m_dYVel >= -4.0)
-                    {
                         return;
-                    }
                 }
                 else
                 {
                     if (m_dYVel <= 4.0)
-                    {
                         return;
-                    }
                 }
             }
         }
@@ -344,7 +340,6 @@ bool PlayerObject::playerIsFalling()
     }
 }
 
-// i didnt understand some things in IDA Pseudocode so i just did my own code k? - Tr1Ngle
 void PlayerObject::collidedWithObject(float dt, GameObject *obj)
 {
     Vec2 pos = getPosition();
@@ -372,39 +367,41 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     if (isGravityFlipped())
     {
         if (!isShip())
-        {
-            if (b <= MinY || t <= MinY)
-            {
-                if (m_dYVel > 0.0)
-                {
-                    checkSnapJumpToObject(obj);
-                    setPositionY(MinY); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
-                    hitGround(isGravityFlipped());
-                }
-                return;
-            }
-        }
+            goto topCollision;
         t = bottomP;
         b = topP;
     }
-
     if (b >= MaxY || t >= MaxY)
     {
-        if (m_dYVel >= 0.0f)
+        if (m_dYVel < 0.0f)
         {
-            goto death;
-        }
-        else
-        {
-            // checkSnapJumpToObject(obj);
+            //checkSnapJumpToObject(obj);
             setPositionY(MaxY); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
-            hitGround(isGravityFlipped());
+            hitGround(isGravityFlipped() ? isShip() : false);
         }
-        if (isGravityFlipped() || !isShip())
-            return;
+        return;
     }
+    
+    if (!isGravityFlipped())
+    {
+        if(!isShip())
+            goto death;
+        t = bottomP;
+        b = topP;
+    }
+    topCollision:
+    if (b <= MinY || t <= MinY)
+    {
+        if (m_dYVel > 0.0f)
+        {
+            //checkSnapJumpToObject(obj);
+            setPositionY(MinY - 30); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
 
-death:
+            hitGround(!isGravityFlipped() ? isShip() : false);
+        }
+        return;
+    }
+    death:
     if (playerRectI.intersectsRect(rect))
     {
         if (!noclip)
@@ -412,8 +409,42 @@ death:
         return;
     }
 }
+
+// this is shit that i made myself lmao. and also it doesnt work rn really - Tr1Ngle
 float PlayerObject::checkSnapJumpToObject(GameObject *obj)
 {
+    Vec2 pos = getPosition();
+    Rect rect = obj->getOuterBounds();
+
+    Rect playerRectO = getOuterBounds();
+    Rect playerRectI = getInnerBounds();
+
+    float flipModV = flipMod();
+
+    float mod = flipModV * 10.0f;
+
+    if (isShip())
+        mod = flipModV * 6.0f;
+
+    float topP = (pos.y + (playerRectO.origin.height * -0.5f * -flipMod())) - mod;
+    float bottomP = (pos.y + (playerRectO.origin.height * -0.5f * flipMod())) + mod;
+
+
+    float MaxY = rect.getMaxY();
+    float MinY = rect.getMinY();
+    
+    //GameToolbox::log("min:{};max:{};t:{};b:{}", MinY, MaxY, topP, bottomP);
+
+    if (isGravityFlipped())
+    {
+        if (!isShip())
+        {
+            setPositionY(MinY);
+            return 0.0;
+        }
+    }
+    
+    setPositionY(MaxY);
     return 0.0f;
 }
 void PlayerObject::hitGround(bool reverseGravity)

@@ -46,8 +46,10 @@ private:
     bool m_bIsShip;
 
     ax::Vec2 m_obLastGroundPos;
-
 public:
+    bool m_bIsPlatformer;
+    float direction;
+
     static PlayerObject *create(int, ax::Layer *);
 
     bool onTouchBegan(ax::Touch *touch, ax::Event *event);

@@ -46,6 +46,7 @@ private:
 
     //----IMGUI DEBUG MEMBERS----
     bool m_freezePlayer;
+    bool m_platformerMode;
 
 public:
     AX_SYNTHESIZE(GJGameLevel *, _pLevel, Level);

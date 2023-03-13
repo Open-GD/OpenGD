@@ -179,9 +179,9 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
-
     float step = std::min(2.0f, dt * 60.0f);
 
+    m_pPlayer->m_bIsPlatformer = m_platformerMode;
     m_pPlayer->noclip = noclip;
 
     auto winSize = Director::getInstance()->getWinSize();
@@ -252,11 +252,15 @@ void PlayLayer::updateCamera(float dt)
         if (cam.x >= temp)
             cam.x = temp;
 
-    if (player->getPositionX() >= winSize.width / 2.5f && !player->isDead()) // wrong but works for now
+    if (player->getPositionX() >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
     {
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * .9f * m_pGround->getSpeed() * 0.1175f);
         m_pGround->update(dt * .9f);
         cam.x += dt * .9f * 5.770002f;
+    }
+    else if (player->m_bIsPlatformer)
+    {
+        cam.x = player->getPositionX() - winSize.width / 2.f;
     }
 
     this->m_pGround->setPositionX(this->m_pGround->getPositionX() + (cam.x - m_obCamPos.x));
@@ -430,6 +434,7 @@ void PlayLayer::onDrawImGui()
     ImGui::Text("Hello, world!");
 
     ImGui::Checkbox("Freeze Player", &m_freezePlayer);
+    ImGui::Checkbox("Platformer Mode (Basic)", &m_platformerMode);
 
     if (ImGui::Button("Back to menu"))
     {
@@ -516,9 +521,16 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
             _showDebugImgui = !_showDebugImgui;
         }
     }
+    if (keyCode == EventKeyboard::KeyCode::KEY_A) m_pPlayer->direction = -1.f;
+    else if (keyCode == EventKeyboard::KeyCode::KEY_D) m_pPlayer->direction = 1.f;
 }
 
 void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
     GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
+    if (
+        (keyCode == EventKeyboard::KeyCode::KEY_A && m_pPlayer->direction == -1.f)
+        || (keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->direction == 1.f)
+        ) 
+        m_pPlayer->direction = 0.f;
 }
