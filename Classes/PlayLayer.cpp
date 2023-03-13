@@ -96,6 +96,7 @@ bool PlayLayer::init(GJGameLevel *level)
                 obj->setStretchEnabled(false);
                 obj->setActive(true);
                 obj->setID(id);
+                obj->updateObjectType();
 
                 if (GameObject::_pHitboxes.contains(id))
                 {
@@ -120,14 +121,25 @@ bool PlayLayer::init(GJGameLevel *level)
             case 6:
                 obj->setRotation(std::stof(d[i + 1]));
                 break;
+            case 7: {
+
+            }
             case 25:
                 obj->setGlobalZOrder(std::stoi(d[i + 1]));
             }
         }
         if (obj)
         {
-            obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
-
+            switch (obj->getGameObjectType()) {
+                case kGameObjectTypeCubePortal:
+                case kGameObjectTypeShipPortal:
+                case kGameObjectTypeSolid:
+                case kGameObjectTypeHazard: {
+                    obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
+                    break;
+                }
+            }
+    
             if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), obj->getID()) != std::end(GameObject::_pSolids))
                 obj->setGameObjectType(kGameObjectTypeSolid);
             else
@@ -179,6 +191,14 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
+    if(m_freezePlayer) {
+        AudioEngine::pauseAll();
+        return;
+    } else {
+        AudioEngine::resumeAll();
+    }
+
+    Vec2 playerPosOld = m_pPlayer->getPosition();
 
     float step = std::min(2.0f, dt * 60.0f);
 
@@ -206,6 +226,9 @@ void PlayLayer::update(float dt)
     float sSize = 570.f; // after this point level end layer is called
     if (this->_pObjects.size() != 0)
         sSize = this->_pObjects[this->_pObjects.size() - 1]->getPositionX();
+        if(sSize < 570.f) {
+            sSize = 570.f;
+        }
 
     m_pBar->setPercentage(m_pPlayer->getPositionX() / sSize * 100.f);
 
@@ -213,6 +236,8 @@ void PlayLayer::update(float dt)
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024);
 
     this->updateCamera(step * 4.f);
+
+    Vec2 playerPosNew = m_pPlayer->getPosition();
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -290,14 +315,28 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
     moveY(pos.y, 1.2f, 1.8f);
 }
 
+void PlayLayer::processTriggers() {
+    int current_section = this->sectionForPos(m_pPlayer->getPositionX());
+    if(m_pSectionObjects.size() == 0) return;
+
+    std::vector<GameObject *> section = m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
+
+    int i = 0;
+    while(i < section.size()) {
+        i++;
+    }
+}
+
 void PlayLayer::checkCollisions(float dt)
 {
     if (m_pPlayer->getPositionY() < 105.0f)
     {
         if (m_pPlayer->isGravityFlipped())
         {
-            if (!noclip)
+            if (!noclip) {
                 m_pPlayer->setDead(true);
+                m_pPlayer->playDeathEffect();
+            }
             return;
         }
 
@@ -307,8 +346,10 @@ void PlayLayer::checkCollisions(float dt)
     }
     else if (m_pPlayer->getPositionY() > 1290.0f)
     {
-        if (!noclip)
+        if (!noclip) {
             m_pPlayer->setDead(true);
+            m_pPlayer->playDeathEffect();
+        }
         return;
     }
 
@@ -344,59 +385,39 @@ void PlayLayer::checkCollisions(float dt)
                     renderRect(obj->getOuterBounds(), ax::Color4B::BLUE);
                     if (m_pPlayer->getOuterBounds().intersectsRect(obj->getOuterBounds()))
                     {
+                        GameToolbox::log("game object type 2: {}", obj->getGameObjectType());
                         switch (obj->getGameObjectType())
                         {
-                        /* case GameObjectType::kInvertGravity:
-                            if (!this->getPlayer()->getGravityFlipped())
-                                this->playGravityEffect(true);
+                        //  case GameObjectType::kInvertGravity:
+                        //     if (!this->getPlayer()->getGravityFlipped())
+                        //         this->playGravityEffect(true);
 
-                            this->getPlayer()->setPortal(obj->getPosition());
+                        //     this->getPlayer()->setPortal(obj->getPosition());
 
-                            this->getPlayer()->flipGravity(true);
+                        //     this->getPlayer()->flipGravity(true);
+                        //     break;
+
+                        // case GameObjectType::kNormalGravity:
+                        //     if (this->getPlayer()->getGravityFlipped())
+                        //         this->playGravityEffect(false);
+
+                        //     this->getPlayer()->setPortal(obj->getPosition());
+
+                        //     this->getPlayer()->flipGravity(false);
+                        //     break;
+
+                        case kGameObjectTypeShipPortal: {
+                            this->m_pPlayer->setShip(true);
                             break;
+                        }
+                        case kGameObjectTypeCubePortal: {
+                            this->m_pPlayer->setShip(false);
+                            // this->toggleGlitter(false);
+                            // this->animateOutGround(false);
 
-                        case GameObjectType::kNormalGravity:
-                            if (this->getPlayer()->getGravityFlipped())
-                                this->playGravityEffect(false);
-
-                            this->getPlayer()->setPortal(obj->getPosition());
-
-                            this->getPlayer()->flipGravity(false);
+                            // this->moveCameraY = false;
                             break;
-
-                        case GameObjectType::kShipPortal:
-                            this->switchToFlyMode(obj, false);
-                            break;
-
-                        case GameObjectType::kCubePortal:
-                            this->getPlayer()->setPortal(obj->getPosition());
-
-                            this->getPlayer()->toggleFlyMode(false);
-                            this->toggleGlitter(false);
-                            this->animateOutGround(false);
-
-                            this->moveCameraY = false;
-                            break;
-
-                        case GameObjectType::kYellowJumpPad:
-                            if (!obj->hasBeenActivated())
-                            {
-                                this->getPlayer()->setPortal(obj->getPosition() - cocos2d::CCPoint(0, 10));
-                                obj->triggerActivated();
-
-                                this->getPlayer()->propellPlayer();
-                            }
-                            break;
-
-                        case GameObjectType::kYellowJumpRing:
-                            if (!obj->hasBeenActivated())
-                            {
-                                this->getPlayer()->setTouchedRing(obj);
-                                obj->powerOnObject();
-
-                                this->getPlayer()->ringJump();
-                            }
-                            break; */
+                        } 
                         default:
                             m_pPlayer->collidedWithObject(dt, obj);
                             break;
@@ -412,7 +433,25 @@ void PlayLayer::checkCollisions(float dt)
 
         if (m_pPlayer->getOuterBounds().intersectsRect(hazard->getOuterBounds()))
         {
-            if(!noclip) m_pPlayer->setDead(true);
+            GameToolbox::log("game object type1 : {} {}", hazard->getGameObjectType(), hazard->getID());
+            switch(hazard->getID()) {
+                case 13: {
+                    this->m_pPlayer->setShip(true);
+                    return;
+                }
+                case 12: {
+                    this->m_pPlayer->setShip(false);
+                    // this->toggleGlitter(false);
+                    // this->animateOutGround(false);
+
+                    // this->moveCameraY = false;
+                    return;
+                } 
+            }
+            if(!noclip) {
+                m_pPlayer->setDead(true);
+                m_pPlayer->playDeathEffect();
+            }
             return;
         }
     }
@@ -471,7 +510,11 @@ void PlayLayer::resetLevel()
     m_obCamPos.x = 0;
     m_pGround->setPositionX(0);
     m_pPlayer->setDead(false);
+    m_pPlayer->setShip(false);
     m_pBG->setPositionX(0);
+    AudioEngine::stopAll();
+    AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
+    scheduleUpdate();
 }
 void PlayLayer::renderRect(ax::Rect rect, ax::Color4B col)
 {
@@ -515,10 +558,27 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
             extern bool _showDebugImgui;
             _showDebugImgui = !_showDebugImgui;
         }
+        break;
+        case EventKeyboard::KeyCode::KEY_SPACE: {
+            m_pPlayer->onTouchBegan(nullptr, nullptr);
+        }
+        break;
+        case EventKeyboard::KeyCode::KEY_UP_ARROW: {
+            m_pPlayer->onTouchBegan(nullptr, nullptr);
+        }
     }
 }
 
 void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
     GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
+    switch(keyCode){ 
+        case EventKeyboard::KeyCode::KEY_SPACE: {
+            m_pPlayer->onTouchEnded(nullptr, nullptr);
+        }
+        break;
+        case EventKeyboard::KeyCode::KEY_UP_ARROW: {
+            m_pPlayer->onTouchEnded(nullptr, nullptr);
+        }
+    }
 }

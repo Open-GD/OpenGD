@@ -81,6 +81,10 @@ public:
     inline void setDead(bool const &value) { m_bIsDead = value; }
     inline void setOnGround(bool const &value) { m_bOnGround = value; }
 
+    ax::Layer *getPlayLayer() { return gameLayer; }
+
+    void playDeathEffect();
+
     void hitGround(bool reverseGravity);
 
     bool noclip;

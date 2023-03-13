@@ -19,7 +19,6 @@ private:
     void onDrawImGui();
     void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
     void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
-    void resetLevel();
 
     ax::Sprite *m_pBG;
     GroundLayer *m_pGround;
@@ -42,6 +41,8 @@ private:
     float m_fEndOfLevel = FLT_MAX;
     float m_fShakeIntensity = 1;
 
+    bool m_bIsJumpPressed;
+
     SimpleProgressBar *m_pBar;
 
     //----IMGUI DEBUG MEMBERS----
@@ -54,9 +55,13 @@ public:
     void updateCamera(float dt);
     void moveCameraToPos(ax::Vec2);
 
+    void resetLevel();
+
     // dt?
     void checkCollisions(float delta);
     void renderRect(ax::Rect rect, ax::Color4B col);
+
+    void processTriggers();
 
     int sectionForPos(float x)
     {

@@ -15,6 +15,9 @@ enum GameObjectType
     kGameObjectTypeDecoration = 7,
     kGameObjectTypeYellowJumpPad = 8,
     kGameObjectTypeYellowJumpRing = 11,
+    // opengd additions //
+    kGameObjectTypeBGTrigger = 12,
+    kGameObjectTypeGTrigger = 13,
 };
 
 struct Hitbox
@@ -34,6 +37,11 @@ private:
 
     GameObjectType _pObjectType;
 
+    int _pColorRed;
+    int _pColorGreen;
+    int _pColorBlue;
+    float _pDuration;
+
 public:
     static const std::map<int, Hitbox> _pHitboxes;
     static const std::map<int, float> _pHitboxRadius;
@@ -46,6 +54,8 @@ public:
     static GameObject *createObject(std::string_view frame);
     static GameObject *objectFromString(std::string);
     bool init(std::string_view frame);
+
+    void updateObjectType();
 
     static std::string keyToFrame(int key);
     static std::map<std::string, std::string> stringSetupToDict(std::string);
@@ -65,4 +75,17 @@ public:
     void setActive(bool active) { m_bActive = active; }
 
     bool isActive() { return m_bActive; }
+
+    int getColorRed() { return _pColorRed; }
+    void setColorRed(int col) { _pColorRed = col; }
+    int getColorGreen() { return _pColorGreen; }
+    void setColorGreen(int col) { _pColorGreen = col; }
+    int getColorBlue() { return _pColorBlue; }
+    void setColorBlue(int col) { _pColorBlue = col; }
+    float getDuration() { return _pDuration; }
+    void setDuration(float dura) { _pDuration = dura; }
+
+    // AX_SYNTESIZE(int, _pColorRed, ColorRed); // does not work
+    // AX_SYNTESIZE(int, _pColorGreen, ColorGreen);
+    // AX_SYNTESIZE(int, _pColorBlue, ColorBlue);
 };
