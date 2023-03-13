@@ -407,16 +407,6 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     {
         if (m_dYVel >= 0.0f)
         {
-            switch(obj->getGameObjectType()) {
-                case kGameObjectTypeShipPortal: {
-                    setShip(true);
-                    return;
-                }
-                case kGameObjectTypePlayer: {
-                    setShip(false);
-                    return;
-                }
-            }
             goto death;
         }
         else
