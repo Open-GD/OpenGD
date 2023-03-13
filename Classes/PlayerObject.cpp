@@ -6,6 +6,18 @@
 
 USING_NS_AX;
 
+void PlayerObject::reset()
+{
+    setDead(false);
+    setShip(false);
+    flipGravity(false);
+    m_snappedObject = nullptr;
+    m_snapDifference = 0;
+    m_isRising = false;
+    stopActionByTag(0);
+    stopActionByTag(1);
+}
+
 void PlayerObject::playDeathEffect() {
     AudioEngine::stopAll();
     AudioEngine::play2d("explode_11.ogg", false, 0.1f);
@@ -231,6 +243,18 @@ void PlayerObject::updateShipRotation()
 
         setRotation(newAngleDeg);
     }
+}
+void PlayerObject::propellPlayer()
+{
+    m_isRising = true;
+    setOnGround(false);
+    m_dYVel = flipMod() * 16.0f;
+    runRotateAction();
+    m_obLastGroundPos = getPosition();
+}
+void PlayerObject::flipGravity(bool gravity)
+{
+    m_bGravityFlipped = gravity;
 }
 void PlayerObject::updateJump(float dt)
 {

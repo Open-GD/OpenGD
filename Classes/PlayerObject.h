@@ -53,7 +53,11 @@ private:
     float m_snapDifference;
 
     ax::Vec2 m_prevPos;
+
+    bool m_isRising;
 public:
+    void reset();
+
     bool m_bIsPlatformer;
     float direction;
 
@@ -97,6 +101,8 @@ public:
 
     void hitGround(bool reverseGravity);
 
+    void flipGravity(bool gravity);
+
     bool noclip;
 
     ax::Vec2 getLastGroundPos();
@@ -105,4 +111,6 @@ public:
 
     float getPlayerSpeed() { return m_playerSpeed; }
     void setPlayerSpeed(float v) { m_playerSpeed = v; }
+
+    void propellPlayer();
 };

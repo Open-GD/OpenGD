@@ -2279,3 +2279,7 @@ std::map<std::string, std::string> GameObject::stringSetupToDict(std::string str
 
     return output;
 }
+void GameObject::triggerActivated()
+{
+    m_bHasBeenActivated = true;
+}

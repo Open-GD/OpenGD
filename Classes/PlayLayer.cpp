@@ -131,11 +131,23 @@ void PlayLayer::loadLevel(std::string levelStr)
             {
                 switch (obj->getID())
                 {
+                case 10:
+                    obj->setGameObjectType(kGameObjectTypeNormalGravityPortal);
+                    break;
+                case 11:
+                    obj->setGameObjectType(kGameObjectTypeInverseGravityPortal);
+                    break;
                 case 12:
                     obj->setGameObjectType(kGameObjectTypeCubePortal);
                     break;
                 case 13:
                     obj->setGameObjectType(kGameObjectTypeShipPortal);
+                    break;
+                case 35:
+                    obj->setGameObjectType(kGameObjectTypeYellowJumpPad);
+                    break;
+                case 36:
+                    obj->setGameObjectType(kGameObjectTypeYellowJumpRing);
                     break;
                 default:
                     obj->setGameObjectType(kGameObjectTypeHazard);
@@ -145,6 +157,10 @@ void PlayLayer::loadLevel(std::string levelStr)
 
             switch (obj->getGameObjectType())
             {
+            case kGameObjectTypeYellowJumpRing:
+            case kGameObjectTypeYellowJumpPad:
+            case kGameObjectTypeNormalGravityPortal:
+            case kGameObjectTypeInverseGravityPortal:
             case kGameObjectTypeCubePortal:
             case kGameObjectTypeShipPortal:
             case kGameObjectTypeSolid:
@@ -491,24 +507,24 @@ void PlayLayer::checkCollisions(float dt)
                         //GameToolbox::log("game object type 2: {}", obj->getGameObjectType());
                         switch (obj->getGameObjectType())
                         {
-                        /*  case GameObjectType::kInvertGravity:
-                        //     if (!this->getPlayer()->getGravityFlipped())
-                        //         this->playGravityEffect(true);
+                        case GameObjectType::kGameObjectTypeInverseGravityPortal:
+                            //if (!m_pPlayer->isGravityFlipped())
+                            //    this->playGravityEffect(true);
 
-                        //     this->getPlayer()->setPortal(obj->getPosition());
+                            //m_pPlayer->setPortal(obj->getPosition());
 
-                        //     this->getPlayer()->flipGravity(true);
-                        //     break;
-
-                        // case GameObjectType::kNormalGravity:
-                        //     if (this->getPlayer()->getGravityFlipped())
-                        //         this->playGravityEffect(false);
-
-                        //     this->getPlayer()->setPortal(obj->getPosition());
-
-                            this->getPlayer()->flipGravity(false);
+                            m_pPlayer->flipGravity(true);
                             break;
-                            */
+
+                        case GameObjectType::kGameObjectTypeNormalGravityPortal:
+                            //if (m_pPlayer->isGravityFlipped())
+                            //    this->playGravityEffect(false);
+
+                            //m_pPlayer->setPortal(obj->getPosition());
+
+                            m_pPlayer->flipGravity(false);
+                            break;
+                            
                         case GameObjectType::kGameObjectTypeShipPortal:
                             this->m_pPlayer->setShip(true);
                             this->m_fCameraYCenter = obj->getPositionY(); // TODO check if portal is lower than certan y pos, if so set center to predefined pointS
@@ -524,25 +540,24 @@ void PlayLayer::checkCollisions(float dt)
                             this->moveCameraY = false; */
                             break;
 
-                        /* case GameObjectType::kYellowJumpPad:
-                            if (!obj->hasBeenActivated())
-                            {
-                                this->getPlayer()->setPortal(obj->getPosition() - cocos2d::CCPoint(0, 10));
-                                obj->triggerActivated();
+                        case GameObjectType::kGameObjectTypeYellowJumpPad:
+                            //if (!obj->hasBeenActivated())
+                            //{
+                                //obj->setActive(true);
 
-                                this->getPlayer()->propellPlayer();
-                            }
+                                m_pPlayer->propellPlayer();
+                            //}
                             break;
 
-                        case GameObjectType::kYellowJumpRing:
+                        case GameObjectType::kGameObjectTypeYellowJumpRing:
                             if (!obj->hasBeenActivated())
                             {
-                                this->getPlayer()->setTouchedRing(obj);
-                                obj->powerOnObject();
+                                //this->getPlayer()->setTouchedRing(obj);
+                                //obj->powerOnObject();
 
-                                this->getPlayer()->ringJump();
+                                //this->getPlayer()->ringJump();
                             }
-                            break; */
+                            break;
                         case GameObjectType::kGameObjectTypeSpecial:
                             break;
                         default:
@@ -621,8 +636,7 @@ void PlayLayer::resetLevel()
     m_pPlayer->setPosition({2, 105});
     m_obCamPos.x = 0;
     m_pGround->setPositionX(0);
-    m_pPlayer->setDead(false);
-    m_pPlayer->setShip(false);
+    m_pPlayer->reset();
     m_pBG->setPositionX(0);
     AudioEngine::stopAll();
     AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);

@@ -79,6 +79,7 @@ public:
 
     bool isActive() { return m_bActive; }
     bool hasBeenActivated() {return m_bHasBeenActivated;}
+    void triggerActivated();
 
     int getColorRed() { return _pColorRed; }
     void setColorRed(int col) { _pColorRed = col; }
