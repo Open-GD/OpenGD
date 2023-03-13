@@ -80,7 +80,7 @@ public:
 
     void updateShipRotation();
     bool isShip();
-    void setShip(bool ship);
+    void setIsShip(bool);
     bool isUpsideDown();
     bool isDead();
     bool isOnGround();
@@ -92,8 +92,8 @@ public:
 
     double getYVel() { return m_dYVel; }
 
-    inline void setDead(bool const &value) { m_bIsDead = value; }
-    inline void setOnGround(bool const &value) { m_bOnGround = value; }
+    void setIsDead(bool);
+    void setIsOnGround(bool);
 
     ax::Layer *getPlayLayer() { return gameLayer; }
 
