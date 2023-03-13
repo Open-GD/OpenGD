@@ -226,7 +226,6 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
-
     if (m_freezePlayer)
     {
         AudioEngine::pauseAll();
@@ -332,11 +331,8 @@ void PlayLayer::updateCamera(float dt)
         if (cam.x >= temp)
             cam.x = temp;
 
-<<<<<<< HEAD
     if (player->getPositionX() >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
-=======
     if (playerPosX >= winSize.width / 2.5f && !player->isDead()) // wrong but works for now
->>>>>>> 68324c71049444618de80485e19bb13a1d607070
     {
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * .9f * m_pGround->getSpeed() * 0.1175f);
         m_pGround->update(dt * .9f);
@@ -667,13 +663,11 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event *event)
 void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event)
 {
     GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
-<<<<<<< HEAD
     if (
         (keyCode == EventKeyboard::KeyCode::KEY_A && m_pPlayer->direction == -1.f)
         || (keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->direction == 1.f)
         ) 
         m_pPlayer->direction = 0.f;
-=======
     switch (keyCode)
     {
     case EventKeyboard::KeyCode::KEY_SPACE:
@@ -686,5 +680,4 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event)
         m_pPlayer->onTouchEnded(nullptr, nullptr);
     }
     }
->>>>>>> 68324c71049444618de80485e19bb13a1d607070
 }
