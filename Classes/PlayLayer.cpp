@@ -4,6 +4,7 @@
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
 #include "AudioEngine.h"
+#include "EffectGameObject.h"
 #include "LevelTools.h"
 #include <fstream>
 
@@ -13,6 +14,8 @@ USING_NS_AX_EXT;
 bool showDn = false, noclip = false, ship = false;
 
 float gameSpeed;
+
+static PlayLayer *Instance = nullptr;
 
 Scene *PlayLayer::scene(GJGameLevel *level)
 {
@@ -62,7 +65,10 @@ void PlayLayer::loadLevel(std::string levelStr)
             {
                 int id = std::stoi(d[i + 1]);
 
-                obj = GameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
+                if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) != std::end(GameObject::_pTriggers))
+                    obj = EffectGameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
+                else
+                    obj = GameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
 
                 if (obj == nullptr)
                     break;
@@ -96,10 +102,20 @@ void PlayLayer::loadLevel(std::string levelStr)
                 obj->setRotation(std::stof(d[i + 1]));
                 break;
             case 7:
-            {
-            }
+                dynamic_cast<EffectGameObject *>(obj)->m_cColor.r = std::stof(d[i + 1]);
+                break;
+            case 8:
+                dynamic_cast<EffectGameObject *>(obj)->m_cColor.g = std::stof(d[i + 1]);
+                break;
+            case 9:
+                dynamic_cast<EffectGameObject *>(obj)->m_cColor.b = std::stof(d[i + 1]);
+                break;
+            case 10:
+                dynamic_cast<EffectGameObject *>(obj)->m_fDuration = std::stof(d[i + 1]);
+                break;
             case 25:
                 obj->setGlobalZOrder(std::stoi(d[i + 1]));
+                break;
             }
         }
         if (obj)
@@ -132,6 +148,7 @@ void PlayLayer::loadLevel(std::string levelStr)
             case kGameObjectTypeCubePortal:
             case kGameObjectTypeShipPortal:
             case kGameObjectTypeSolid:
+            case kGameObjectTypeSpecial:
             case kGameObjectTypeHazard:
             {
                 obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), { hb.w, hb.h }));
@@ -244,6 +261,9 @@ void PlayLayer::update(float dt)
     m_pPlayer->noclip = noclip;
 
     auto winSize = Director::getInstance()->getWinSize();
+
+    if (this->m_pColorChannels.contains(1000))
+        this->m_pBG->setColor(this->m_pColorChannels.at(1000));
 
     if (!m_freezePlayer && !this->m_pPlayer->isDead())
     {
@@ -457,6 +477,14 @@ void PlayLayer::checkCollisions(float dt)
                 }
                 else if (obj->isActive())
                 {
+                    if (!obj->hasBeenActivated())
+                    {
+                        if (auto trigger = dynamic_cast<EffectGameObject *>(obj))
+                        {
+                            if (trigger->getPositionX() <= m_pPlayer->getPositionX())
+                                trigger->triggerActivated(dt);
+                        }
+                    }
                     renderRect(objBounds, ax::Color4B::BLUE);
                     if (playerOuterBounds.intersectsRect(objBounds))
                     {
@@ -678,4 +706,9 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event)
         m_pPlayer->onTouchEnded(nullptr, nullptr);
     }
     }
+}
+
+PlayLayer *PlayLayer::getInstance()
+{
+    return Instance;
 }
