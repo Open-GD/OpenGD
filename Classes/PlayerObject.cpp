@@ -184,7 +184,7 @@ void PlayerObject::update(float dt)
         this->updateJump(dtSlow);
 
         float velY = (float)((double)dtSlow * m_dYVel);
-        float velX = (float)((double)dtSlow * m_dXVel) * (!m_bIsPlatformer ? 1.f : direction);
+        float velX = (float)((double)dtSlow * m_dXVel * (!m_bIsPlatformer ? 1.f : direction));
 
         ax::Vec2 velocity{velX, velY};
 
@@ -205,7 +205,10 @@ void PlayerObject::update(float dt)
     // particle->setPosition(this->getPosition());
     // this->gameLayer->addChild(particle, 999);
 }
-
+void PlayerObject::updateShipRotation()
+{
+    Vec2 pos = getPosition();
+}
 void PlayerObject::updateJump(float dt)
 {
     float localGravity = m_dGravity;
@@ -376,6 +379,10 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     float MaxY = rect.getMaxY();
     float MinY = rect.getMinY();
 
+    // h
+    float MaxYP = playerRectO.getMaxY();
+    float MinYP = playerRectO.getMinY();
+
     float t = topP;
     float b = bottomP;
 
@@ -390,11 +397,21 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     {
         if (m_dYVel < 0.0f)
         {
-            //checkSnapJumpToObject(obj);
-            setPositionY(MaxY); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
-            hitGround(isGravityFlipped() ? isShip() : false);
+            checkSnapJumpToObject(obj);
+            // idk snapping to Y
+            playerRectI.origin.x = rect.origin.x;
+            if (playerRectI.intersectsRect(rect))
+            {
+                playerRectI.origin.x = pos.x;
+                ((PlayLayer*)getPlayLayer())->destroyPlayer();
+                return;
+            }
+            if (MaxYP >= (MinY + MaxY) / 2.f)
+            {
+                setPositionY(MaxY);
+                hitGround(isGravityFlipped() ? isShip() : false);
+            }
         }
-        return;
     }
     
     if (!isGravityFlipped())
@@ -409,65 +426,118 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     {
         if (m_dYVel > 0.0f)
         {
-            //checkSnapJumpToObject(obj);
-            setPositionY(MinY - 30); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
-            hitGround(!isGravityFlipped() ? isShip() : false);
+            checkSnapJumpToObject(obj);
+            // idk snapping to Y
+            playerRectI.origin.x = rect.origin.x;
+            if (playerRectI.intersectsRect(rect))
+            {
+                playerRectI.origin.x = pos.x;
+                ((PlayLayer*)getPlayLayer())->destroyPlayer();
+                return;
+            }
+
+            if (MinYP <= (MinY + MaxY) / 2.f)
+            {
+                setPositionY(MinY - 30);
+                hitGround(!isGravityFlipped() ? isShip() : false);
+            }
         }
-        return;
     }
     death:
     if (playerRectI.intersectsRect(rect))
-    {
-        if (!noclip) {
-            setDead(true);
-            playDeathEffect();
-        }
-        return;
-    }
+        ((PlayLayer*)getPlayLayer())->destroyPlayer();
 }
 
-// this is shit that i made myself lmao. and also it doesnt work rn really - Tr1Ngle
-float PlayerObject::checkSnapJumpToObject(GameObject *obj)
+void PlayerObject::checkSnapJumpToObject(GameObject *obj)
 {
-    Vec2 pos = getPosition();
-    Rect rect = obj->getOuterBounds();
-
-    Rect playerRectO = getOuterBounds();
-    Rect playerRectI = getInnerBounds();
-
-    float flipModV = flipMod();
-
-    float mod = flipModV * 10.0f;
-
-    if (isShip())
-        mod = flipModV * 6.0f;
-
-    float topP = (pos.y + (playerRectO.origin.height * -0.5f * -flipMod())) - mod;
-    float bottomP = (pos.y + (playerRectO.origin.height * -0.5f * flipMod())) + mod;
-
-
-    float MaxY = rect.getMaxY();
-    float MinY = rect.getMinY();
-    
-    //GameToolbox::log("min:{};max:{};t:{};b:{}", MinY, MaxY, topP, bottomP);
-
-    if (isGravityFlipped())
+    if (obj) 
     {
-        if (!isShip())
+        if (m_snappedObject && m_snappedObject->getID() != obj->getID() && m_snappedObject->getGameObjectType() == kGameObjectTypeSolid)
         {
-            setPositionY(MinY);
-            return 0.0;
+            Vec2 oldSnapPos = m_snappedObject->getPosition();
+            Vec2 newSnapPos = obj->getPosition();
+
+            float unknownUse = 1.0;
+            float upTwoGap = 90.0;
+            float downOneGap = 150.0;
+            float upOneGap = 90.0;
+            float xShift = 1.0;
+
+            if (m_playerSpeed == 0.9) 
+            {
+                upOneGap = 120.0;
+            }
+            else if (m_playerSpeed == 0.7) 
+            {
+                upTwoGap = 60.0;
+                downOneGap = 120.0;
+            }
+            else if (m_playerSpeed == 1.1) 
+            {
+                unknownUse = 0.0;
+                xShift = 2.00;
+                upTwoGap = 120.0;
+                downOneGap = 195.0;
+                upOneGap = 150.0;
+            }
+            else if (m_playerSpeed == 1.3) 
+            {
+                unknownUse = 0.0;
+                xShift = 2.00;
+                upTwoGap = 135.0;
+                downOneGap = 225.0;
+                upOneGap = 180.0;
+            }
+            else 
+            {
+                upOneGap = 120.0;
+            }
+
+            upOneGap += oldSnapPos.x;
+            downOneGap += oldSnapPos.x;
+
+            float someMultiplier = (isUpsideDown() ? 30.0 : -30.0);
+
+            if (unknownUse >= upOneGap)
+                oldSnapPos.y = fabs(newSnapPos.x - upOneGap) + someMultiplier;
+
+            float value1 = fabs(newSnapPos.y - (oldSnapPos.y + someMultiplier));
+            float value2 = fabs(newSnapPos.y - (oldSnapPos.y + someMultiplier * 2));
+            float value3 = fabs(newSnapPos.x - downOneGap);
+            float value4 = fabs(newSnapPos.x - (upTwoGap + oldSnapPos.x));
+            float value5 = fabs(newSnapPos.y - oldSnapPos.y);
+
+            if (
+                (unknownUse >= upOneGap && unknownUse >= value5) ||
+                (unknownUse >= value3 && unknownUse >= value1) ||
+                (unknownUse >= value4 && unknownUse >= value2)
+                ) 
+            {
+                float newPos = obj->getPositionX() + this->m_snapDifference;
+                float oldPos = this->getPositionX();
+
+                if (xShift < fabs(newPos - oldPos)) {
+                    if (newPos > oldPos) {
+                        newPos += oldPos;
+                    }
+                    else {
+                        newPos = oldPos - xShift;
+                    }
+                }
+                this->setPositionX(newPos);
+            }
         }
+
+        m_snappedObject = obj;
+        m_snapDifference = this->getPositionX() - obj->getPositionX();
     }
-    
-    setPositionY(MaxY);
-    return 0.0f;
 }
 void PlayerObject::hitGround(bool reverseGravity)
 {
     setOnGround(true);
     m_dYVel = 0.0f;
-    stopRotation();
+    if(getActionByTag(0))
+        stopRotation();
     m_obLastGroundPos = getPosition();
 }
 float PlayerObject::flipMod()

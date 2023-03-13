@@ -45,7 +45,12 @@ private:
 
     bool m_bIsShip;
 
+    float m_playerSpeed = 0.9f;
+
     ax::Vec2 m_obLastGroundPos;
+
+    GameObject* m_snappedObject;
+    float m_snapDifference;
 public:
     bool m_bIsPlatformer;
     float direction;
@@ -65,8 +70,9 @@ public:
 
     void jump();
     void collidedWithObject(float dt, GameObject* obj);
-    float checkSnapJumpToObject(GameObject* obj);
+    void checkSnapJumpToObject(GameObject* obj);
 
+    void updateShipRotation();
     bool isShip();
     void setShip(bool ship) {m_bIsShip = ship;}
     bool isUpsideDown();
@@ -94,4 +100,7 @@ public:
     ax::Vec2 getLastGroundPos();
     void setLastGroundPos(ax::Vec2 pos) {m_obLastGroundPos = pos;}
     void update(float dt);
+
+    float getPlayerSpeed() { return m_playerSpeed; }
+    void setPlayerSpeed(float v) { m_playerSpeed = v; }
 };

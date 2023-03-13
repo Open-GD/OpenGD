@@ -33,37 +33,8 @@ std::vector<std::string> split(std::string &tosplit, char splitter)
     return vec;
 }
 
-bool PlayLayer::init(GJGameLevel *level)
+void PlayLayer::loadLevel(std::string levelStr)
 {
-    if (!Layer::init())
-        return false;
-
-    setLevel(level);
-
-    auto winSize = Director::getInstance()->getWinSize();
-
-    this->m_pGround = GroundLayer::create(1);
-    this->addChild(this->m_pGround);
-
-    dn = ax::DrawNode::create();
-    dn->setPosition({-15, -15});
-    addChild(dn, 99999);
-
-    this->m_pBG = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
-    m_pBG->setStretchEnabled(false);
-    const Texture2D::TexParams texParams = {
-        backend::SamplerFilter::LINEAR,
-        backend::SamplerFilter::LINEAR,
-        backend::SamplerAddressMode::REPEAT,
-        backend::SamplerAddressMode::REPEAT};
-    this->m_pBG->getTexture()->setTexParameters(texParams);
-    this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
-    this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
-    this->m_pBG->setColor({0, 102, 255});
-    this->addChild(this->m_pBG, -1);
-
-    std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
-
     std::vector<std::string> objData = split(levelStr, ';'), levelData;
 
     levelData = split(objData[0], ',');
@@ -74,9 +45,9 @@ bool PlayLayer::init(GJGameLevel *level)
     {
         auto d = split(data, ',');
 
-        GameObject *obj = nullptr;
+        GameObject* obj = nullptr;
 
-        Hitbox hb = {0, 0, 0, 0};
+        Hitbox hb = { 0, 0, 0, 0 };
 
         for (size_t i = 0; i < d.size(); i += 2)
         {
@@ -138,6 +109,7 @@ bool PlayLayer::init(GJGameLevel *level)
             else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), obj->getID()) != std::end(GameObject::_pTriggers))
             {
                 obj->setGameObjectType(kGameObjectTypeSpecial);
+                obj->setVisible(false);
             }
             else
             {
@@ -162,27 +134,55 @@ bool PlayLayer::init(GJGameLevel *level)
             case kGameObjectTypeSolid:
             case kGameObjectTypeHazard:
             {
-                obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
+                obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), { hb.w, hb.h }));
                 break;
             }
             }
         }
     }
+}
+
+bool PlayLayer::init(GJGameLevel *level)
+{
+    if (!Layer::init())
+        return false;
+
+    setLevel(level);
+
+    auto winSize = Director::getInstance()->getWinSize();
+
+    this->m_pGround = GroundLayer::create(1);
+    this->addChild(this->m_pGround, 1);
+
+    dn = ax::DrawNode::create();
+    dn->setPosition({-15, -15});
+    addChild(dn, 99999);
+
+    this->m_pBG = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
+    m_pBG->setStretchEnabled(false);
+    const Texture2D::TexParams texParams = {
+        backend::SamplerFilter::LINEAR,
+        backend::SamplerFilter::LINEAR,
+        backend::SamplerAddressMode::REPEAT,
+        backend::SamplerAddressMode::REPEAT};
+    this->m_pBG->getTexture()->setTexParameters(texParams);
+    this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
+    this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
+    this->m_pBG->setColor({0, 102, 255});
+    this->addChild(this->m_pBG, -1);
+
+    std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
+    loadLevel(levelStr);
 
     if (_pObjects.size() != 0)
     {
-
         this->m_lastObjXPos = std::numeric_limits<float>().min();
 
         for (GameObject *object : _pObjects)
-        {
             if(this->m_lastObjXPos < object->getPositionX()) this->m_lastObjXPos = object->getPositionX();
-        }
 
         if (this->m_lastObjXPos < 570.f)
-        {
             this->m_lastObjXPos = 570.f;
-        }
 
         for (size_t i = 0; i < sectionForPos(this->m_lastObjXPos); i++)
         {
@@ -272,6 +272,13 @@ void PlayLayer::update(float dt)
     Vec2 playerPosNew = m_pPlayer->getPosition();
 }
 
+void PlayLayer::destroyPlayer()
+{
+    if (m_pPlayer->noclip) return;
+    m_pPlayer->setDead(true);
+    m_pPlayer->playDeathEffect();
+}
+
 void PlayLayer::updateCamera(float dt)
 {
     auto winSize = Director::getInstance()->getWinSize();
@@ -331,17 +338,14 @@ void PlayLayer::updateCamera(float dt)
         if (cam.x >= temp)
             cam.x = temp;
 
-    if (player->getPositionX() >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
-    if (playerPosX >= winSize.width / 2.5f && !player->isDead()) // wrong but works for now
+    if (playerPosX >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
     {
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * .9f * m_pGround->getSpeed() * 0.1175f);
         m_pGround->update(dt * .9f);
         cam.x += dt * .9f * 5.770002f;
     }
     else if (player->m_bIsPlatformer)
-    {
         cam.x = player->getPositionX() - winSize.width / 2.f;
-    }
 
     this->m_pGround->setPositionX(this->m_pGround->getPositionX() + (cam.x - m_obCamPos.x));
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
@@ -393,7 +397,6 @@ void PlayLayer::processTriggers()
 
 void PlayLayer::checkCollisions(float dt)
 {
-
     auto playerOuterBounds = this->m_pPlayer->getOuterBounds();
 
     if (m_pPlayer->getPositionY() < 105.0f)
@@ -452,13 +455,12 @@ void PlayLayer::checkCollisions(float dt)
                     m_pHazards.push_back(obj);
                     renderRect(objBounds, ax::Color4B::RED);
                 }
-
                 else if (obj->isActive())
                 {
                     renderRect(objBounds, ax::Color4B::BLUE);
                     if (playerOuterBounds.intersectsRect(objBounds))
                     {
-                        GameToolbox::log("game object type 2: {}", obj->getGameObjectType());
+                        //GameToolbox::log("game object type 2: {}", obj->getGameObjectType());
                         switch (obj->getGameObjectType())
                         {
                         /*  case GameObjectType::kInvertGravity:
@@ -530,11 +532,7 @@ void PlayLayer::checkCollisions(float dt)
 
         if (playerOuterBounds.intersectsRect(hazard->getOuterBounds()))
         {
-            if (!noclip)
-            {
-                m_pPlayer->setDead(true);
-                m_pPlayer->playDeathEffect();
-            }
+            destroyPlayer();
             return;
         }
     }

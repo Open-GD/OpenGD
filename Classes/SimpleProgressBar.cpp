@@ -2,7 +2,7 @@
 #include "GameToolbox.h"
 
 bool SimpleProgressBar::init() {
-    _pGroove = ax::Sprite::create(GameToolbox::getTextureString("slidergroove.png"));
+    _pGroove = ax::Sprite::create(GameToolbox::getTextureString("slidergroove_02.png"));
     _pBar = ax::Sprite::create(GameToolbox::getTextureString("sliderBar.png"));
 
     // config 

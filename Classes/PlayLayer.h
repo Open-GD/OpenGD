@@ -53,6 +53,10 @@ private:
 public:
     AX_SYNTHESIZE(GJGameLevel *, _pLevel, Level);
 
+    void destroyPlayer();
+
+    void loadLevel(std::string levelStr);
+
     void update(float delta);
     void updateCamera(float dt);
     void moveCameraToPos(ax::Vec2);
