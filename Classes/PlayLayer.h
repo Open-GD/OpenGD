@@ -13,12 +13,13 @@
 class PlayLayer : public ax::Layer
 {
 private:
+
     bool init(GJGameLevel *level);
     void onEnter() override;
     void onExit() override;
     void onDrawImGui();
-    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
-    void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
+    void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
 
     ax::Sprite *m_pBG;
     GroundLayer *m_pGround;
@@ -31,7 +32,7 @@ private:
 
     std::vector<GameObject *> _pObjects;
 
-    std::vector<std::vector<GameObject*>> m_pSectionObjects;
+    std::vector<std::vector<GameObject *>> m_pSectionObjects;
 
     float m_fCameraYCenter;
     float m_lastObjXPos = 570.0f;
@@ -50,6 +51,8 @@ private:
     bool m_freezePlayer;
 
 public:
+    std::map<int, ax::Color3B> m_pColorChannels;
+
     AX_SYNTHESIZE(GJGameLevel *, _pLevel, Level);
 
     void update(float delta);
@@ -85,4 +88,6 @@ public:
         AX_SAFE_DELETE(ret);
         return nullptr;
     }
+
+    static PlayLayer *getInstance();
 };

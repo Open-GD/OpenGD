@@ -28,6 +28,8 @@ struct Hitbox
 
 class GameObject : public ax::Sprite
 {
+protected:
+    bool m_bHasBeenActivated;
 private:
     ax::Rect _pOuterBounds;
     ax::Rect _pInnerBounds;
@@ -76,6 +78,7 @@ public:
     void setActive(bool active) { m_bActive = active; }
 
     bool isActive() { return m_bActive; }
+    bool hasBeenActivated() {return m_bHasBeenActivated;}
 
     int getColorRed() { return _pColorRed; }
     void setColorRed(int col) { _pColorRed = col; }
