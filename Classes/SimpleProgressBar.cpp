@@ -21,8 +21,8 @@ bool SimpleProgressBar::init() {
     return true;
 }
 void SimpleProgressBar::update(float delta) {
-    if(_pPercentage > 102.f) {
-        _pPercentage = 102.f;
+    if(_pPercentage > 100.f) {
+        _pPercentage = 100.f;
     }
     if(_pPercentage < 0.f) {
         _pPercentage = 0.f;
