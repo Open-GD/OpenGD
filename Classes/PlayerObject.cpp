@@ -396,7 +396,6 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
         {
             //checkSnapJumpToObject(obj);
             setPositionY(MinY - 30); // this is very bad. its a temporary replacement for checkSnapJumpToObject(obj)
-
             hitGround(!isGravityFlipped() ? isShip() : false);
         }
         return;
