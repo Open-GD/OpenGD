@@ -142,7 +142,11 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 
     return true;
 }
-
+void PlayerObject::setShip(bool ship)
+{
+    m_bIsShip = ship;
+    m_bOnGround = false;
+}
 void PlayerObject::setMainColor(Color3B col)
 {
     this->m_pMainSprite->setColor(col);

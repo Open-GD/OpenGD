@@ -76,7 +76,7 @@ public:
 
     void updateShipRotation();
     bool isShip();
-    void setShip(bool ship) {m_bIsShip = ship;}
+    void setShip(bool ship);
     bool isUpsideDown();
     bool isDead();
     bool isOnGround();
