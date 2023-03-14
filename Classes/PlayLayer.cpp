@@ -444,13 +444,15 @@ void PlayLayer::update(float dt)
             if (this->m_pPlayer->isDead())
                 break;
         }
+        step *= 4.0f;
     }
 
     m_pBar->setPercentage(m_pPlayer->getPositionX() / this->m_lastObjXPos * 100.f);
 
     this->updateVisibility();
-    this->updateCamera(step * 4.f);
-
+    this->updateCamera(step);
+    if (m_pPlayer->isShip())
+        m_pPlayer->updateShipRotation(step);
     Vec2 playerPosNew = m_pPlayer->getPosition();
 }
 

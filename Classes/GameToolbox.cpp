@@ -254,3 +254,21 @@ float GameToolbox::slerp(float a, float b, float ratio)
         delta -= 360.f;
     return a + delta * clampf(ratio, 0.f, 1.f);
 }
+float GameToolbox::iLerp(float a, float b, float ratio, float dt)
+{
+    const float rDelta = dt / (1.f / 60.f);
+    const float s = 1.f - ratio;
+
+    float iRatio = 1.f - powf(s, rDelta);
+
+    return MathUtil::lerp(a, b, iRatio);
+}
+float GameToolbox::iSlerp(float a, float b, float ratio, float dt)
+{
+    const float rDelta = dt / (1.f / 60.f);
+    const float s = 1.f - ratio;
+
+    float iRatio = 1.f - powf(s, rDelta);
+
+    return slerp(a, b, iRatio);
+}

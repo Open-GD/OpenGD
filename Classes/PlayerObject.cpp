@@ -217,10 +217,7 @@ void PlayerObject::update(float dt)
     }
 
     if (isShip())
-    {
         setScaleX(isGravityFlipped() ? -1.f : 1.f);
-        updateShipRotation(dt);
-    }
     else
         setScaleX(1.f);
         
@@ -240,15 +237,16 @@ void PlayerObject::updateShipRotation(float dt)
 
     Vec2 pos = getPosition();
 
-    Vec2 d = pos - m_prevPos;
+    Vec2 d = (pos - m_prevPos) / dt;
 
-    if (GameToolbox::SquareDistance(pos, m_prevPos) >= 1.2f * (dt))
+    if (GameToolbox::SquareDistance(0, 0, d.x, d.y) >= 1.2f)
     {
         angleRad = atan2f(d.x, d.y);
 
         curAngleRad = getRotation() * 0.017453f;
-        float val = 0.175f / dt;
-        newAngleDeg = GameToolbox::slerp(curAngleRad, angleRad, val) * 57.296f;
+        float val = 0.175f;
+
+        newAngleDeg = GameToolbox::iSlerp(curAngleRad, angleRad, val, dt / 60.f) * 57.296f;
 
         setRotation(newAngleDeg);
     }
