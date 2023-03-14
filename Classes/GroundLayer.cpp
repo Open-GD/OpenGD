@@ -8,8 +8,6 @@ bool GroundLayer::init(int groundID) {
     if (!Layer::init()) return false;
 
     auto winSize = Director::getInstance()->getWinSize();
-
-    setPositionY(12);
     
     auto name = fmt::format("groundSquare_{:03}.png", groundID);
     this->m_pSprite = Sprite::create(GameToolbox::getTextureString(name));
@@ -58,8 +56,8 @@ void GroundLayer::update(float dt) {
 
     this->m_pSprite->setPositionX(this->m_pSprite->getPositionX() - dt * this->m_fSpeed);
 
-    if (this->m_pSprite->getPositionX() <= -this->m_fOneGroundSize)
-        this->m_pSprite->setPositionX(this->m_pSprite->getPositionX() + this->m_fOneGroundSize);
+    if (this->m_pSprite->getPositionX() <= -128.0f)
+        this->m_pSprite->setPositionX(0);
 }
 
 GroundLayer* GroundLayer::create(int groundID) {
