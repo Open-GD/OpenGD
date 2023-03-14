@@ -10,7 +10,7 @@ public:
     float m_fDuration;
     ax::Color3B m_cColor;
     float m_fOpacity;
-    int m_nTargetColorId;
+    int m_nTargetColorId = 1;
 
     void triggerActivated(float idk);
     static EffectGameObject *create(std::string_view frame);

@@ -46,7 +46,9 @@ private:
 public:
 
     bool m_bHasBeenActivated;
-    int _mainColorChannel, _secColorChannel;
+    int _mainColorChannel = -1, _secColorChannel = -1;
+
+    int _uniqueID = -1;;
 
     static const std::map<int, Hitbox> _pHitboxes;
     static const std::map<int, float> _pHitboxRadius;
@@ -81,6 +83,8 @@ public:
 
     bool isActive() { return m_bActive; }
     void triggerActivated();
+
+    void update();
 
     int getColorRed() { return _pColorRed; }
     void setColorRed(int col) { _pColorRed = col; }

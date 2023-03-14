@@ -64,6 +64,8 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
     m_pMainSprite->addChild(m_pSecondarySprite, -1);
     m_pSecondarySprite->setPosition({15, 15});
 
+    m_pMainSprite->setColor(ax::Color3B::RED);
+
     m_pShipSprite = Sprite::createWithSpriteFrameName("ship_01_001.png");
     m_pShipSprite->setStretchEnabled(false);
     m_pShipSprite->setVisible(false);
@@ -280,6 +282,7 @@ void PlayerObject::flipGravity(bool gravity)
 {
     m_bGravityFlipped = gravity;
 }
+
 void PlayerObject::updateJump(float dt)
 {
     float localGravity = m_dGravity;
@@ -546,12 +549,11 @@ void PlayerObject::setIsShip(bool val)
 
 void PlayerObject::checkSnapJumpToObject(GameObject *obj)
 {
-    if (obj) 
-    {
-        if (m_snappedObject && m_snappedObject->getID() != obj->getID() && m_snappedObject->getGameObjectType() == kGameObjectTypeSolid)
-        {
-            Vec2 oldSnapPos = m_snappedObject->getPosition();
-            Vec2 newSnapPos = obj->getPosition();
+    if (obj) {
+        if (m_snappedObject && m_snappedObject->_uniqueID != obj->_uniqueID && m_snappedObject->getGameObjectType() == GameObjectType::kGameObjectTypeSolid) {
+
+            auto oldSnapPos = m_snappedObject->getPosition();
+            auto newSnapPos = obj->getPosition();
 
             float unknownUse = 1.0;
             float upTwoGap = 90.0;
@@ -559,33 +561,30 @@ void PlayerObject::checkSnapJumpToObject(GameObject *obj)
             float upOneGap = 90.0;
             float xShift = 1.0;
 
-            if (m_playerSpeed == 0.9) 
-            {
-                upOneGap = 120.0;
-            }
-            else if (m_playerSpeed == 0.7) 
-            {
+            if (m_playerSpeed == 0.9) {
+                /* //if (m_vehicleSize == 1.0) {
+                    upOneGap = 120.0;
+                //} */
+            } else if (m_playerSpeed == 0.7) {
                 upTwoGap = 60.0;
                 downOneGap = 120.0;
-            }
-            else if (m_playerSpeed == 1.1) 
-            {
+            } else if (m_playerSpeed == 1.1) {
                 unknownUse = 0.0;
                 xShift = 2.00;
                 upTwoGap = 120.0;
                 downOneGap = 195.0;
-                upOneGap = 150.0;
-            }
-            else if (m_playerSpeed == 1.3) 
-            {
+                /* //if (m_vehicleSize == 1.0) {
+                    upOneGap = 150.0;
+                //} */
+            } else if (m_playerSpeed == 1.3) {
                 unknownUse = 0.0;
                 xShift = 2.00;
                 upTwoGap = 135.0;
                 downOneGap = 225.0;
-                upOneGap = 180.0;
-            }
-            else 
-            {
+                /* //if (m_vehicleSize == 1.0) {
+                    upOneGap = 180.0;
+                //} */
+            } else {
                 upOneGap = 120.0;
             }
 
@@ -607,16 +606,14 @@ void PlayerObject::checkSnapJumpToObject(GameObject *obj)
                 (unknownUse >= upOneGap && unknownUse >= value5) ||
                 (unknownUse >= value3 && unknownUse >= value1) ||
                 (unknownUse >= value4 && unknownUse >= value2)
-                ) 
-            {
+            ) {
                 float newPos = obj->getPositionX() + this->m_snapDifference;
                 float oldPos = this->getPositionX();
 
                 if (xShift < fabs(newPos - oldPos)) {
                     if (newPos > oldPos) {
                         newPos += oldPos;
-                    }
-                    else {
+                    } else {
                         newPos = oldPos - xShift;
                     }
                 }
