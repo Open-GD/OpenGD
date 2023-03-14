@@ -2,39 +2,37 @@
 
 #include <axmol.h>
 
-#include "PlayerObject.h"
 #include "GroundLayer.h"
-#include "MenuLayer.h"
-#include "SimpleProgressBar.h"
 #include "MenuItemSpriteExtra.h"
+#include "MenuLayer.h"
+#include "PlayerObject.h"
+#include "SimpleProgressBar.h"
 
 #include "GJGameLevel.h"
 
-class PlayLayer : public ax::Layer
-{
-private:
-
-    bool init(GJGameLevel *level);
+class PlayLayer : public ax::Layer {
+  private:
+    bool init(GJGameLevel* level);
     void onEnter() override;
     void onExit() override;
     void onDrawImGui();
-    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
-    void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
+    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+    void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 
-    void fillColorChannel(std::vector<std::string> &colorString, int id);
+    void fillColorChannel(std::vector<std::string>& colorString, int id);
 
-    ax::Sprite *m_pBG;
-    GroundLayer *m_pGround;
-    PlayerObject *m_pPlayer;
+    ax::Sprite* m_pBG;
+    GroundLayer* m_pGround;
+    PlayerObject* m_pPlayer;
     ax::Vec2 m_obCamPos;
 
-    MenuItemSpriteExtra *backbtn;
+    MenuItemSpriteExtra* backbtn;
 
-    ax::DrawNode *dn;
+    ax::DrawNode* dn;
 
-    std::vector<GameObject *> _pObjects;
+    std::vector<GameObject*> _pObjects;
 
-    std::vector<std::vector<GameObject *>> m_pSectionObjects;
+    std::vector<std::vector<GameObject*>> m_pSectionObjects;
 
     float m_fCameraYCenter;
     float m_lastObjXPos = 570.0f;
@@ -49,16 +47,16 @@ private:
 
     bool m_bIsJumpPressed;
 
-    SimpleProgressBar *m_pBar;
+    SimpleProgressBar* m_pBar;
 
     //----IMGUI DEBUG MEMBERS----
     bool m_freezePlayer;
     bool m_platformerMode;
 
-public:
+  public:
     std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
 
-    AX_SYNTHESIZE(GJGameLevel *, _pLevel, Level);
+    AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 
     void destroyPlayer();
 
@@ -79,8 +77,8 @@ public:
 
     int sectionForPos(float x);
 
-    static ax::Scene *scene(GJGameLevel *level);
-    static PlayLayer *create(GJGameLevel *level);
+    static ax::Scene* scene(GJGameLevel* level);
+    static PlayLayer* create(GJGameLevel* level);
 
-    static PlayLayer *getInstance();
+    static PlayLayer* getInstance();
 };

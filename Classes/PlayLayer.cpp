@@ -605,7 +605,14 @@ void PlayLayer::changeGameMode(GameObject *obj, int gameMode)
     break;
     case 1:
     {
-        this->m_fCameraYCenter = obj->getPositionY(); // TODO check if portal is lower than certan y pos, if so set center to predefined pointS
+        if(obj->getPositionY() < 270)
+        {
+            m_fCameraYCenter = 240.0f;
+        }
+        else
+        {
+            m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
+        }
         this->m_pPlayer->setIsShip(true);
     }
     }
