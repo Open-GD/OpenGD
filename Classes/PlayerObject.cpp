@@ -220,7 +220,7 @@ void PlayerObject::update(float dt)
     }
 
     if (isShip())
-        updateShipRotation();
+        updateShipRotation(dt);
 
     // if (!this->m_bFlyMode)
     // this->motionStreak->setPosition(this->getPosition() + ccp({-10, 0}));
@@ -231,7 +231,7 @@ void PlayerObject::update(float dt)
     // particle->setPosition(this->getPosition());
     // this->gameLayer->addChild(particle, 999);
 }
-void PlayerObject::updateShipRotation()
+void PlayerObject::updateShipRotation(float dt)
 {
     float angleRad, curAngleRad, newAngleDeg;
 
@@ -239,13 +239,13 @@ void PlayerObject::updateShipRotation()
 
     Vec2 d = pos - m_prevPos;
 
-    if (GameToolbox::SquareDistance(pos, m_prevPos) >= 1.2f)
+    if (GameToolbox::SquareDistance(pos, m_prevPos) >= 1.2f * (dt))
     {
         angleRad = atan2f(d.x, d.y);
 
         curAngleRad = getRotation() * 0.017453f;
-
-        newAngleDeg = GameToolbox::slerp(curAngleRad, angleRad, 0.15f) * 57.296f;
+        float val = 0.175f / dt;
+        newAngleDeg = GameToolbox::slerp(curAngleRad, angleRad, val) * 57.296f;
 
         setRotation(newAngleDeg);
     }

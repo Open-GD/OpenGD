@@ -337,7 +337,6 @@ bool PlayLayer::init(GJGameLevel *level)
     this->m_pBG->getTexture()->setTexParameters(texParams);
     this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
     this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
-    this->m_pBG->setColor({0, 102, 255});
     this->addChild(this->m_pBG, -1);
 
     std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");

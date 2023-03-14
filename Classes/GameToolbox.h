@@ -25,7 +25,7 @@ namespace GameToolbox
     void createCorners(ax::Node* layer, bool topRight, bool topLeft, bool botLeft, bool botRight);
     inline void createAllCorners(ax::Node* self) { return createCorners(self, true, true, true, true); }
     
-    inline float SquareDistance(float xa, float ya, float xb, float yb);
+    float SquareDistance(float xa, float ya, float xb, float yb);
     float SquareDistance(ax::Vec2 a, ax::Vec2 b);
 
     float slerp(float a, float b, float ratio);

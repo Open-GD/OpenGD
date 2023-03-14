@@ -78,7 +78,7 @@ public:
     void collidedWithObject(float dt, GameObject* obj);
     void checkSnapJumpToObject(GameObject* obj);
 
-    void updateShipRotation();
+    void updateShipRotation(float dt);
     bool isShip();
     void setIsShip(bool);
     bool isUpsideDown();
