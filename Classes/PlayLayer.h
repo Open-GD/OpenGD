@@ -56,7 +56,7 @@ private:
     bool m_platformerMode;
 
 public:
-    std::map<int, ax::Color3B> m_pColorChannels;
+    std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
 
     AX_SYNTHESIZE(GJGameLevel *, _pLevel, Level);
 

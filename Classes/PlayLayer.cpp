@@ -24,7 +24,6 @@ Scene *PlayLayer::scene(GJGameLevel *level)
     return scene;
 }
 
-
 int PlayLayer::sectionForPos(float x)
 {
     int section = x / 100;
@@ -32,8 +31,8 @@ int PlayLayer::sectionForPos(float x)
         section = 0;
     return section;
 }
-    
-PlayLayer* PlayLayer::create(GJGameLevel *level)
+
+PlayLayer *PlayLayer::create(GJGameLevel *level)
 {
     auto ret = new (std::nothrow) PlayLayer();
     if (ret && ret->init(level))
@@ -41,11 +40,11 @@ PlayLayer* PlayLayer::create(GJGameLevel *level)
         ret->autorelease();
         return ret;
     }
-    
+
     AX_SAFE_DELETE(ret);
     return nullptr;
 }
-    
+
 std::vector<std::string> split(std::string &tosplit, char splitter)
 {
     std::vector<std::string> vec;
@@ -164,6 +163,11 @@ void PlayLayer::loadLevel(std::string levelStr)
             }
         }
     }
+
+    _originalColors = std::map<int, Color3B>(m_pColorChannels);
+    if (this->m_pColorChannels.contains(1000))
+        this->m_pBG->setColor(this->m_pColorChannels.at(1000));
+    this->m_pGround->update(0);
 
     for (std::string data : objData)
     {
@@ -436,6 +440,7 @@ void PlayLayer::update(float dt)
     if (this->m_pBG->getPositionX() <= -1024)
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024);
 
+    this->updateVisibility();
     this->updateCamera(step * 4.f);
 
     Vec2 playerPosNew = m_pPlayer->getPosition();
@@ -443,7 +448,8 @@ void PlayLayer::update(float dt)
 
 void PlayLayer::destroyPlayer()
 {
-    if (m_pPlayer->noclip) return;
+    if (m_pPlayer->noclip)
+        return;
     m_pPlayer->setIsDead(true);
     m_pPlayer->playDeathEffect();
 }
@@ -523,7 +529,7 @@ void PlayLayer::updateCamera(float dt)
     this->m_obCamPos = cam;
     // GameToolbox::log("camPosX: {}, camPosY: {}", m_obCamPos.x, m_obCamPos.y);
     Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
-    
+
     m_pBar->setPosition(this->m_obCamPos + winSize / 2);
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 }
@@ -537,16 +543,15 @@ void PlayLayer::updateVisibility()
     int prevSection = floorf(this->m_obCamPos.x / 100) - 1.0f;
     int nextSection = ceilf((this->m_obCamPos.x + winSize.width) / 100) + 1.0f;
 
-    for (size_t i = prevSection; i < nextSection; i++)
+    for (int i = prevSection; i < nextSection; i++)
     {
-        if (i > 0)
+        if (i >= 0)
         {
             if (i < m_pSectionObjects.size())
             {
                 auto section = m_pSectionObjects[i];
                 for (size_t j = 0; j < section.size(); j++)
                 {
-
                     GameObject *obj = section[j];
 
                     obj->setActive(true);
@@ -575,38 +580,34 @@ void PlayLayer::updateVisibility()
         }
     }
 
-    for (size_t i = this->_prevSection; i < this->_nextSection; i++)
+    if (_prevSection - 1 >= 0)
     {
-        if (i > 0)
+        auto section = m_pSectionObjects[_prevSection - 1];
+        for (size_t j = 0; j < section.size(); j++)
         {
-            if (i < this->m_pSectionObjects.size())
-            {
-                auto section = m_pSectionObjects[i];
-                for (size_t j = 0; j < section.size(); j++)
-                {
-                    section[j]->setActive(false);
-                }
-            }
+            dn->drawCircle(section[j]->getPosition(), 10, 0, 10, false, Color4B(255, 0, 0, 255));
+            section[j]->setActive(false);
         }
     }
+
     this->_prevSection = prevSection;
     this->_nextSection = nextSection;
 }
 
-void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
+void PlayLayer::changeGameMode(GameObject *obj, int gameMode)
 {
-    switch(gameMode)
+    switch (gameMode)
     {
-        case 0:
-        {
-            this->m_pPlayer->setIsShip(false);
-        }
-        break;
-        case 1:
-        {
-            this->m_fCameraYCenter = obj->getPositionY(); // TODO check if portal is lower than certan y pos, if so set center to predefined pointS
-            this->m_pPlayer->setIsShip(true);
-        }
+    case 0:
+    {
+        this->m_pPlayer->setIsShip(false);
+    }
+    break;
+    case 1:
+    {
+        this->m_fCameraYCenter = obj->getPositionY(); // TODO check if portal is lower than certan y pos, if so set center to predefined pointS
+        this->m_pPlayer->setIsShip(true);
+    }
     }
 }
 void PlayLayer::moveCameraToPos(Vec2 pos)
@@ -715,23 +716,23 @@ void PlayLayer::checkCollisions(float dt)
                         switch (obj->getGameObjectType())
                         {
                         case GameObjectType::kGameObjectTypeInverseGravityPortal:
-                            //if (!m_pPlayer->isGravityFlipped())
-                            //    this->playGravityEffect(true);
+                            // if (!m_pPlayer->isGravityFlipped())
+                            //     this->playGravityEffect(true);
 
-                            //m_pPlayer->setPortal(obj->getPosition());
+                            // m_pPlayer->setPortal(obj->getPosition());
 
                             m_pPlayer->flipGravity(true);
                             break;
 
                         case GameObjectType::kGameObjectTypeNormalGravityPortal:
-                            //if (m_pPlayer->isGravityFlipped())
-                            //    this->playGravityEffect(false);
+                            // if (m_pPlayer->isGravityFlipped())
+                            //     this->playGravityEffect(false);
 
-                            //m_pPlayer->setPortal(obj->getPosition());
+                            // m_pPlayer->setPortal(obj->getPosition());
 
                             m_pPlayer->flipGravity(false);
                             break;
-                            
+
                         case GameObjectType::kGameObjectTypeShipPortal:
                             this->changeGameMode(obj, 1);
                             break;
@@ -740,7 +741,7 @@ void PlayLayer::checkCollisions(float dt)
                             this->changeGameMode(obj, 0);
                             // this->getPlayer()->setPortal(obj->getPosition());
 
-                            //this->m_pPlayer->setIsShip(false);
+                            // this->m_pPlayer->setIsShip(false);
                             /* this->toggleGlitter(false);
                             this->animateOutGround(false);
 
@@ -750,7 +751,7 @@ void PlayLayer::checkCollisions(float dt)
                         case GameObjectType::kGameObjectTypeYellowJumpPad:
                             if (!obj->m_bHasBeenActivated)
                             {
-                                //obj->triggerActivated();
+                                // obj->triggerActivated();
 
                                 m_pPlayer->propellPlayer();
                             }
@@ -759,10 +760,10 @@ void PlayLayer::checkCollisions(float dt)
                         case GameObjectType::kGameObjectTypeYellowJumpRing:
                             if (!obj->m_bHasBeenActivated)
                             {
-                                //this->getPlayer()->setTouchedRing(obj);
-                                //obj->powerOnObject();
+                                // this->getPlayer()->setTouchedRing(obj);
+                                // obj->powerOnObject();
 
-                                //this->getPlayer()->ringJump();
+                                // this->getPlayer()->ringJump();
                             }
                             break;
                         case GameObjectType::kGameObjectTypeSpecial:
@@ -855,6 +856,17 @@ void PlayLayer::resetLevel()
         obj->m_bHasBeenActivated = false;
         obj->setActive(false);
     }
+
+    ax::Director::getInstance()->getActionManager()->removeAllActions();
+
+    m_pColorChannels = std::map<int, Color3B>(_originalColors);
+
+    _prevSection = -1;
+    _nextSection = -1;
+
+    if (this->m_pColorChannels.contains(1000))
+        this->m_pBG->setColor(this->m_pColorChannels.at(1000));
+    this->m_pGround->update(0);
 
     AudioEngine::stopAll();
     AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);

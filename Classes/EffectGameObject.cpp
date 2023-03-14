@@ -22,7 +22,6 @@ void EffectGameObject::updateTweenAction(float value, std::string_view key) {
     if(key == "col1")
     {
         pl->m_pColorChannels.at(m_nTargetColorId).r = value;
-        GameToolbox::log("{}", m_nTargetColorId);
     }
     else if(key == "col2")
     {
