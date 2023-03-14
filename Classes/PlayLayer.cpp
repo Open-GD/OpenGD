@@ -316,7 +316,7 @@ bool PlayLayer::init(GJGameLevel *level)
     if (!Layer::init())
         return false;
 
-    level->_MusicID = 2; // polargeist song
+    level->_MusicID = 5; // cant let go song
     setLevel(level);
 
     Instance = this;

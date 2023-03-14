@@ -466,7 +466,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     {
         if (m_dYVel < 0.0f)
         {
-            checkSnapJumpToObject(obj);
+            //checkSnapJumpToObject(obj);
             // idk snapping to Y
             playerRectI.origin.x = rect.origin.x;
             if (playerRectI.intersectsRect(rect))
@@ -495,7 +495,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     {
         if (m_dYVel > 0.0f)
         {
-            checkSnapJumpToObject(obj);
+            //checkSnapJumpToObject(obj);
             // idk snapping to Y
             playerRectI.origin.x = rect.origin.x;
             if (playerRectI.intersectsRect(rect))
