@@ -3,8 +3,9 @@
 #include "GameObject.h"
 #include <axmol.h>
 
-class PlayerObject : public GameObject {
-  private:
+class PlayerObject : public GameObject 
+{
+private:
     void updateJump(float dt);
     bool init(int, ax::Layer*);
     void runRotateAction();
@@ -39,6 +40,7 @@ class PlayerObject : public GameObject {
     bool m_bIsLocked;
     bool m_bIsRising;
     bool m_bIsHolding;
+    bool _isHoldingFromGround;
 
     bool m_bGravityFlipped;
 
@@ -55,7 +57,11 @@ class PlayerObject : public GameObject {
 
     bool m_isRising;
 
-  public:
+public:
+
+    GameObject* _touchedRingObject;
+    bool _hasRingJumped;
+
     void reset();
 
     bool m_bIsPlatformer;
@@ -113,4 +119,7 @@ class PlayerObject : public GameObject {
     void setPlayerSpeed(float v) { m_playerSpeed = v; }
 
     void propellPlayer();
+
+    void setTouchedRing(GameObject* obj);
+    void ringJump();
 };

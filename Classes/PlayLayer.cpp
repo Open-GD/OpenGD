@@ -314,6 +314,7 @@ bool PlayLayer::init(GJGameLevel *level)
     if (!Layer::init())
         return false;
 
+    level->_MusicID = 2; // polargeist song
     setLevel(level);
 
     Instance = this;
@@ -436,9 +437,6 @@ void PlayLayer::update(float dt)
 
     m_pBar->setPercentage(m_pPlayer->getPositionX() / this->m_lastObjXPos * 100.f);
 
-    if (this->m_pBG->getPositionX() <= -1024)
-        this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024);
-
     this->updateVisibility();
     this->updateCamera(step * 4.f);
 
@@ -447,10 +445,17 @@ void PlayLayer::update(float dt)
 
 void PlayLayer::destroyPlayer()
 {
+    if (m_pPlayer->isDead()) return;
     if (m_pPlayer->noclip)
         return;
     m_pPlayer->setIsDead(true);
     m_pPlayer->playDeathEffect();
+
+    scheduleOnce([=](float d) {
+        resetLevel();
+        }, 1.f, "restart");
+
+    runAction(FadeTo::create(0.2f, 0));
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -521,6 +526,9 @@ void PlayLayer::updateCamera(float dt)
     }
     else if (player->m_bIsPlatformer)
         cam.x = playerPosX - winSize.width / 2.f;
+
+    if (this->m_pBG->getPosition().x <= cam.x - 1024.f)
+        this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024.f);
 
     this->m_pGround->setPositionX(this->m_pGround->getPositionX() + (cam.x - m_obCamPos.x));
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
@@ -757,8 +765,7 @@ void PlayLayer::checkCollisions(float dt)
                         case GameObjectType::kGameObjectTypeYellowJumpPad:
                             if (!obj->m_bHasBeenActivated)
                             {
-                                // obj->triggerActivated();
-
+                                //obj->triggerActivated();
                                 m_pPlayer->propellPlayer();
                             }
                             break;
@@ -766,10 +773,10 @@ void PlayLayer::checkCollisions(float dt)
                         case GameObjectType::kGameObjectTypeYellowJumpRing:
                             if (!obj->m_bHasBeenActivated)
                             {
-                                // this->getPlayer()->setTouchedRing(obj);
-                                // obj->powerOnObject();
+                                m_pPlayer->setTouchedRing(obj);
+                                //obj->triggerActivated();
 
-                                // this->getPlayer()->ringJump();
+                                m_pPlayer->ringJump();
                             }
                             break;
                         case GameObjectType::kGameObjectTypeSpecial:
@@ -914,7 +921,7 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event *event)
     {
     case EventKeyboard::KeyCode::KEY_R:
     {
-        this->resetLevel();
+        destroyPlayer();
     }
     break;
     case EventKeyboard::KeyCode::KEY_F:

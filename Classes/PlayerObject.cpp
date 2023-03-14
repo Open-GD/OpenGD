@@ -14,8 +14,10 @@ void PlayerObject::reset()
     m_snappedObject = nullptr;
     m_snapDifference = 0;
     m_isRising = false;
+    _touchedRingObject = nullptr;
     stopActionByTag(0);
     stopActionByTag(1);
+    _hasRingJumped = false;
 }
 
 void PlayerObject::playDeathEffect() {
@@ -23,12 +25,6 @@ void PlayerObject::playDeathEffect() {
     AudioEngine::play2d("explode_11.ogg", false, 0.1f);
 
     getPlayLayer()->unscheduleUpdate();
-
-    scheduleOnce([=](float d) {
-        static_cast<PlayLayer *>(getPlayLayer())->resetLevel();
-    }, 1.f, "playerdeath");
-
-    runAction(FadeTo::create(0.2f, 0));
 }
 
 bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
@@ -66,29 +62,30 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
     m_pSecondarySprite->setStretchEnabled(false);
 
     m_pMainSprite->addChild(m_pSecondarySprite, -1);
-    // secondarySprite->setPosition(mainSprite->convertToNodeSpace(Vec2(0, 0))); // this shit DONT WORK!! cuz rob made it a global var
     m_pSecondarySprite->setPosition({15, 15});
 
     m_pShipSprite = Sprite::createWithSpriteFrameName("ship_01_001.png");
     m_pShipSprite->setStretchEnabled(false);
     m_pShipSprite->setVisible(false);
+    m_pShipSprite->setRotation(-90);
+    m_pShipSprite->setPosition({ 5, 0 });
     addChild(m_pShipSprite, 2);
 
     // particles
-    dragEffect1 = ParticleSystemQuad::create("Resources/dragEffect.plist");
+    dragEffect1 = ParticleSystemQuad::create("dragEffect.plist");
     dragEffect1->setPositionType(ParticleSystem::PositionType::FREE);
     dragEffect1->stopSystem();
 
     gameLayer->addChild(dragEffect1, 1);
 
-    dragEffect2 = ParticleSystemQuad::create("Resources/dragEffect.plist");
+    dragEffect2 = ParticleSystemQuad::create("dragEffect.plist");
     dragEffect2->setPositionType(ParticleSystem::PositionType::FREE);
     dragEffect2->stopSystem();
     dragEffect2->setPositionY(2);
 
     gameLayer->addChild(dragEffect2, 1);
 
-    dragEffect3 = ParticleSystemQuad::create("Resources/dragEffect.plist");
+    dragEffect3 = ParticleSystemQuad::create("dragEffect.plist");
     dragEffect3->setPositionType(ParticleSystem::PositionType::FREE);
     dragEffect3->stopSystem();
     dragEffect3->setPositionY(2);
@@ -112,19 +109,19 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
     dragEffect3->setEndColor({255, 255, 255, 0});
 
     // other particles
-    shipDragEffect = ParticleSystemQuad::create("Resources/shipDragEffect.plist");
+    shipDragEffect = ParticleSystemQuad::create("shipDragEffect.plist");
     shipDragEffect->setPositionType(ParticleSystem::PositionType::GROUPED);
     shipDragEffect->stopSystem();
 
     gameLayer->addChild(shipDragEffect, 1);
 
-    landEffect1 = ParticleSystemQuad::create("Resources/landEffect.plist");
+    landEffect1 = ParticleSystemQuad::create("landEffect.plist");
     landEffect1->setPositionType(ParticleSystem::PositionType::GROUPED);
     landEffect1->stopSystem();
 
     gameLayer->addChild(landEffect1, 1);
 
-    landEffect2 = ParticleSystemQuad::create("Resources/landEffect.plist");
+    landEffect2 = ParticleSystemQuad::create("landEffect.plist");
     landEffect2->setPositionType(ParticleSystem::PositionType::GROUPED);
     landEffect2->stopSystem();
 
@@ -257,6 +254,23 @@ void PlayerObject::propellPlayer()
     m_dYVel = flipMod() * 16.0f;
     runRotateAction();
     m_obLastGroundPos = getPosition();
+}
+void PlayerObject::setTouchedRing(GameObject* obj)
+{
+    _touchedRingObject = obj;
+}
+void PlayerObject::ringJump()
+{
+    if (_touchedRingObject && !_isHoldingFromGround && m_bIsHolding)
+    {
+        m_isRising = true;
+        _isHoldingFromGround = true;
+        setIsOnGround(false);
+        m_dYVel = m_dJumpHeight * flipMod();
+        runRotateAction();
+        _touchedRingObject = nullptr;
+        _hasRingJumped = true;
+    }
 }
 void PlayerObject::flipGravity(bool gravity)
 {
@@ -402,13 +416,9 @@ void PlayerObject::updateJump(float dt)
 bool PlayerObject::playerIsFalling()
 {
     if(this->isGravityFlipped())
-    {
         return this->m_dYVel > this->m_dGravity;
-    }
     else
-    {
         return this->m_dYVel < this->m_dGravity;
-    }
 }
 
 void PlayerObject::collidedWithObject(float dt, GameObject *obj)
@@ -498,13 +508,36 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
     }
     death:
     if (playerRectI.intersectsRect(rect))
-        ((PlayLayer*)getPlayLayer())->destroyPlayer();
+        static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer();
 }
 
 void PlayerObject::setIsShip(bool val)
 {
-    m_bIsShip = val;
-    setIsOnGround(false);
+    if (isShip() != val)
+    {
+        stopRotation();
+        m_bIsShip = val;
+        m_dYVel = m_dYVel * 0.5f;
+        setIsOnGround(false);
+
+        m_pShipSprite->setVisible(isShip());
+        m_pMainSprite->setScale(isShip() ? 0.55f : 1.f);
+
+        m_pMainSprite->setPositionX(isShip() ? -5 : 0);
+
+        m_pMainSprite->setRotation(isShip() ? -90.f : 0);
+
+        if (val)
+        {
+            // do shit with particles
+        }
+        else
+        {
+            runRotateAction();
+            // do shit with particles
+        }
+    }
+    
 }
 
 void PlayerObject::checkSnapJumpToObject(GameObject *obj)
@@ -656,7 +689,7 @@ void PlayerObject::stopRotation()
         if (getRotation() != 0)
         {
             auto degrees = (int)getRotation() % 360;
-            auto action = RotateTo::create(0.075f, (90 * roundf(degrees / 90.0f)));
+            auto action = RotateTo::create(0.06f, (90 * roundf(degrees / 90.0f)));
             action->setTag(1);
             runAction(action);
         }
@@ -672,6 +705,7 @@ bool PlayerObject::onTouchBegan(ax::Touch *touch, ax::Event *event)
     if (this->inPlayLayer)
     {
         m_bIsHolding = true;
+        _isHoldingFromGround = isOnGround();
         return true;
     }
     return false;
@@ -681,6 +715,7 @@ void PlayerObject::onTouchEnded(ax::Touch *touch, ax::Event *event)
 {
     if (this->inPlayLayer)
     {
+        _isHoldingFromGround = false;
         m_bIsHolding = false;
     }
 }
