@@ -349,7 +349,7 @@ bool PlayLayer::init(GJGameLevel *level)
     this->m_pBG->getTexture()->setTexParameters(texParams);
     this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
     this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
-    this->addChild(this->m_pBG, -1);
+    this->addChild(this->m_pBG, -100);
 
     std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
     loadLevel(levelStr);
@@ -382,7 +382,7 @@ bool PlayLayer::init(GJGameLevel *level)
 
     this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
     this->m_pPlayer->setPosition({-20, 105});
-    this->addChild(this->m_pPlayer);
+    this->addChild(this->m_pPlayer, -1);
     this->m_pPlayer->setAnchorPoint({0, 0});
 
     this->m_pBar = SimpleProgressBar::create();

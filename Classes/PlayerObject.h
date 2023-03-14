@@ -33,7 +33,6 @@ private:
     double m_dGravity = 0.958199;
     double m_dJumpHeight = 11.180032;
 
-    bool m_bUpsideDown;
     bool m_bOnGround;
 
     bool m_bIsDead;
@@ -87,7 +86,6 @@ public:
     void updateShipRotation(float dt);
     bool isShip();
     void setIsShip(bool);
-    bool isUpsideDown();
     bool isDead();
     bool isOnGround();
     bool isGravityFlipped();

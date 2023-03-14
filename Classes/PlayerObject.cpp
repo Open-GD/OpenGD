@@ -384,7 +384,7 @@ void PlayerObject::updateJump(float dt)
                 {
                     m_dYVel = std::min(m_dYVel, 15.0);
                 }
-                if (!isUpsideDown())
+                if (!isGravityFlipped())
                 {
                     if (m_dYVel >= tfIsThisGravity * 2.0f)
                         return;
@@ -398,7 +398,7 @@ void PlayerObject::updateJump(float dt)
                 if (getActionByTag(0) == nullptr)
                     runRotateAction();
 
-                if (isUpsideDown())
+                if (isGravityFlipped())
                 {
                     if (m_dYVel >= -4.0)
                         return;
@@ -588,7 +588,7 @@ void PlayerObject::checkSnapJumpToObject(GameObject *obj)
             upOneGap += oldSnapPos.x;
             downOneGap += oldSnapPos.x;
 
-            float someMultiplier = (isUpsideDown() ? 30.0 : -30.0);
+            float someMultiplier = (isGravityFlipped() ? 30.0 : -30.0);
 
             if (unknownUse >= upOneGap)
                 oldSnapPos.y = fabs(newSnapPos.x - upOneGap) + someMultiplier;
@@ -647,11 +647,6 @@ bool PlayerObject::isShip()
     return this->m_bIsShip;
 }
 
-bool PlayerObject::isUpsideDown()
-{
-    return this->m_bUpsideDown;
-}
-
 bool PlayerObject::isDead()
 {
     return this->m_bIsDead;
@@ -675,7 +670,7 @@ void PlayerObject::logValues()
 void PlayerObject::runRotateAction()
 {
     stopRotation();
-    auto action = RotateBy::create(0.43333f, 180);
+    auto action = RotateBy::create(0.43333f, 180.f * flipMod());
     action->setTag(0);
     runAction(action);
 }
@@ -689,7 +684,7 @@ void PlayerObject::stopRotation()
         if (getRotation() != 0)
         {
             auto degrees = (int)getRotation() % 360;
-            auto action = RotateTo::create(0.06f, (90 * roundf(degrees / 90.0f)));
+            auto action = RotateTo::create(0.125f, (90 * roundf(degrees / 90.0f)));
             action->setTag(1);
             runAction(action);
         }
