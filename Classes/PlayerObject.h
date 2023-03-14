@@ -1,32 +1,31 @@
 #pragma once
-#include <axmol.h>
-#include "GameObject.h"
 #include "CircleWave.h"
+#include "GameObject.h"
+#include <axmol.h>
 
-class PlayerObject : public GameObject
-{
-private:
+class PlayerObject : public GameObject {
+  private:
     void updateJump(float dt);
-    bool init(int, ax::Layer *);
+    bool init(int, ax::Layer*);
     void runRotateAction();
 
     void logValues();
 
-    ax::Layer *gameLayer;
+    ax::Layer* gameLayer;
     bool inPlayLayer;
 
-    ax::Sprite *m_pMainSprite;
-    ax::Sprite *m_pSecondarySprite;
-    ax::Sprite *m_pShipSprite;
+    ax::Sprite* m_pMainSprite;
+    ax::Sprite* m_pSecondarySprite;
+    ax::Sprite* m_pShipSprite;
 
-    ax::ParticleSystemQuad *dragEffect1;
-    ax::ParticleSystemQuad *dragEffect2;
-    ax::ParticleSystemQuad *dragEffect3;
-    ax::ParticleSystemQuad *shipDragEffect;
-    ax::ParticleSystemQuad *landEffect1;
-    ax::ParticleSystemQuad *landEffect2;
+    ax::ParticleSystemQuad* dragEffect1;
+    ax::ParticleSystemQuad* dragEffect2;
+    ax::ParticleSystemQuad* dragEffect3;
+    ax::ParticleSystemQuad* shipDragEffect;
+    ax::ParticleSystemQuad* landEffect1;
+    ax::ParticleSystemQuad* landEffect2;
 
-    ax::MotionStreak *motionStreak;
+    ax::MotionStreak* motionStreak;
 
     double m_dXVel = 5.770002;
     double m_dYVel = 0;
@@ -55,16 +54,17 @@ private:
     ax::Vec2 m_prevPos;
 
     bool m_isRising;
-public:
+
+  public:
     void reset();
 
     bool m_bIsPlatformer;
     float direction;
 
-    static PlayerObject *create(int, ax::Layer *);
+    static PlayerObject* create(int, ax::Layer*);
 
-    bool onTouchBegan(ax::Touch *touch, ax::Event *event);
-    void onTouchEnded(ax::Touch *touch, ax::Event *event);
+    bool onTouchBegan(ax::Touch* touch, ax::Event* event);
+    void onTouchEnded(ax::Touch* touch, ax::Event* event);
 
     void setMainColor(ax::Color3B col);
     void setSecondaryColor(ax::Color3B col);
@@ -95,7 +95,7 @@ public:
     void setIsDead(bool);
     void setIsOnGround(bool);
 
-    ax::Layer *getPlayLayer() { return gameLayer; }
+    ax::Layer* getPlayLayer() { return gameLayer; }
 
     void playDeathEffect();
 
@@ -106,7 +106,7 @@ public:
     bool noclip;
 
     ax::Vec2 getLastGroundPos();
-    void setLastGroundPos(ax::Vec2 pos) {m_obLastGroundPos = pos;}
+    void setLastGroundPos(ax::Vec2 pos) { m_obLastGroundPos = pos; }
     void update(float dt);
 
     float getPlayerSpeed() { return m_playerSpeed; }
