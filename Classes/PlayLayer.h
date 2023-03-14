@@ -22,7 +22,7 @@ class PlayLayer : public ax::Layer {
     void fillColorChannel(std::vector<std::string>& colorString, int id);
 
     ax::Sprite* m_pBG;
-    GroundLayer* m_pGround;
+    GroundLayer* _bottomGround, *_topGround;
     PlayerObject* m_pPlayer;
     ax::Vec2 m_obCamPos;
 
@@ -68,6 +68,9 @@ class PlayLayer : public ax::Layer {
     void moveCameraToPos(ax::Vec2);
     void changeGameMode(GameObject*, int);
     void resetLevel();
+
+    void tweenBottomGround(float y);
+    void tweenTopGround(float y);
 
     // dt?
     void checkCollisions(float delta);
