@@ -83,7 +83,7 @@ void PlayLayer::loadLevel(std::string levelStr)
     levelData = split(objData[0], ',');
     objData.erase(objData.begin());
 
-    for (size_t i = 0; i < levelData.size(); i += 2)
+    for (size_t i = 0; i < levelData.size() - 1; i += 2)
     {
         if (levelData[i] == "kS1")
         {
@@ -177,7 +177,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
         Hitbox hb = {0, 0, 0, 0};
 
-        for (size_t i = 0; i < d.size(); i += 2)
+        for (size_t i = 0; i < d.size() - 1; i += 2)
         {
             int key = std::stoi(d[i]);
 
@@ -872,6 +872,7 @@ void PlayLayer::resetLevel()
     AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
     scheduleUpdate();
 }
+
 void PlayLayer::renderRect(ax::Rect rect, ax::Color4B col)
 {
     dn->drawRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, col);
