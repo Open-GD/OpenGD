@@ -10,20 +10,20 @@ bool GroundLayer::init(int groundID) {
     auto winSize = Director::getInstance()->getWinSize();
     
     auto name = fmt::format("groundSquare_{:03}.png", groundID);
-    this->m_pSprite = Sprite::create(GameToolbox::getTextureString(name));
-    m_pSprite->setStretchEnabled(false);
-    this->m_fOneGroundSize = this->m_pSprite->getTextureRect().size.width;
-    this->m_pSprite->getTexture()->setTexParameters({ backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT });
-    this->m_pSprite->setTextureRect({0, 0, winSize.width + this->m_fOneGroundSize, this->m_pSprite->getTextureRect().size.height });
-    this->m_pSprite->setAnchorPoint({0, 0});
-    this->m_pSprite->setPosition({0, -50});
-    this->m_pSprite->setColor({0, 102, 255});
-    this->addChild(this->m_pSprite);
+    this->_sprite = Sprite::create(GameToolbox::getTextureString(name));
+    _sprite->setStretchEnabled(false);
+    this->m_fOneGroundSize = this->_sprite->getTextureRect().size.width;
+    this->_sprite->getTexture()->setTexParameters({ backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT });
+    this->_sprite->setTextureRect({0, 0, winSize.width + this->m_fOneGroundSize, _sprite->getTextureRect().size.height });
+    this->_sprite->setAnchorPoint({0, 0});
+    this->_sprite->setPosition({0, -50});
+    this->_sprite->setColor({0, 102, 255});
+    this->addChild(this->_sprite);
 
     auto line = Sprite::create(GameToolbox::getTextureString("floor.png"));
     line->setStretchEnabled(false);
     this->addChild(line);
-    line->setPosition({winSize.width / 2, this->m_pSprite->getContentSize().height + this->m_pSprite->getPositionY()});
+    line->setPosition({winSize.width / 2, this->_sprite->getContentSize().height + this->_sprite->getPositionY()});
        
     auto gradient1 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
     gradient1->setStretchEnabled(false);
@@ -45,19 +45,22 @@ bool GroundLayer::init(int groundID) {
     
     return true;
 }
-
-
+void GroundLayer::updateTweenAction(float value, std::string_view key)
+{
+    if (key == "y")
+        setPositionY(value);
+}
 void GroundLayer::update(float dt) {
 
     if(auto pl = PlayLayer::getInstance())
     {
-        if(pl->m_pColorChannels.contains(1001)) m_pSprite->setColor(pl->m_pColorChannels.at(1001));
+        if(pl->m_pColorChannels.contains(1001)) _sprite->setColor(pl->m_pColorChannels.at(1001));
     }
 
-    this->m_pSprite->setPositionX(this->m_pSprite->getPositionX() - dt * this->m_fSpeed);
+    this->_sprite->setPositionX(this->_sprite->getPositionX() - dt * this->m_fSpeed);
 
-    if (this->m_pSprite->getPositionX() <= -128.0f)
-        this->m_pSprite->setPositionX(0);
+    if (this->_sprite->getPositionX() <= -128.0f)
+        this->_sprite->setPositionX(0);
 }
 
 GroundLayer* GroundLayer::create(int groundID) {

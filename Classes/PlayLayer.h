@@ -22,7 +22,7 @@ class PlayLayer : public ax::Layer {
     void fillColorChannel(std::vector<std::string>& colorString, int id);
 
     ax::Sprite* m_pBG;
-    GroundLayer* _bottomGround, *_topGround;
+    GroundLayer* _bottomGround, * _ceiling;
     PlayerObject* m_pPlayer;
     ax::Vec2 m_obCamPos;
 
@@ -70,7 +70,7 @@ class PlayLayer : public ax::Layer {
     void resetLevel();
 
     void tweenBottomGround(float y);
-    void tweenTopGround(float y);
+    void tweenCeiling(float y);
 
     // dt?
     void checkCollisions(float delta);

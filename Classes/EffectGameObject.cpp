@@ -18,7 +18,8 @@ void EffectGameObject::triggerActivated(float idk)
     this->runAction(ActionTween::create(this->m_fDuration, "col3", pl->m_pColorChannels.at(m_nTargetColorId).b, m_cColor.b));
 }
 
-void EffectGameObject::updateTweenAction(float value, std::string_view key) {
+void EffectGameObject::updateTweenAction(float value, std::string_view key) 
+{
     if(key == "col1")
     {
         pl->m_pColorChannels.at(m_nTargetColorId).r = value;

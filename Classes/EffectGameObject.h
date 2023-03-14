@@ -5,7 +5,7 @@
 class EffectGameObject : public GameObject, public ax::ActionTweenDelegate
 {
 private:
-virtual void updateTweenAction(float value, std::string_view key) override;
+    virtual void updateTweenAction(float value, std::string_view key) override;
 public:
     float m_fDuration;
     ax::Color3B m_cColor;

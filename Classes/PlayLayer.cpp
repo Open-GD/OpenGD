@@ -324,16 +324,16 @@ bool PlayLayer::init(GJGameLevel *level)
     auto winSize = Director::getInstance()->getWinSize();
 
     this->_bottomGround = GroundLayer::create(1);
-    this->_topGround = GroundLayer::create(1);
+    this->_ceiling = GroundLayer::create(1);
     cameraFollow = ax::Node::create();
     cameraFollow->addChild(this->_bottomGround, 1);
-    cameraFollow->addChild(this->_topGround);
-    this->addChild(cameraFollow);
+    cameraFollow->addChild(this->_ceiling, 1);
+    this->addChild(cameraFollow, 1);
 
-    this->_topGround->setScaleY(-1);
-    _topGround->setVisible(false);
-
-    _bottomGround->setPositionY(1);
+    this->_ceiling->setScaleY(-1);
+    _ceiling->setVisible(false);
+    _bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
+    _ceiling->setPositionY(winSize.height + _ceiling->_sprite->getTextureRect().size.height);
 
     dn = ax::DrawNode::create();
     dn->setPosition({-15, -15});
@@ -388,7 +388,7 @@ bool PlayLayer::init(GJGameLevel *level)
     this->m_pBar = SimpleProgressBar::create();
     this->m_pBar->setPercentage(0.f);
     this->m_pBar->setPosition({winSize.width / 2, winSize.height - 20});
-    this->addChild(m_pBar);
+    this->addChild(m_pBar, 1000);
 
     m_pBar->setPosition(this->m_obCamPos + winSize / 2);
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
@@ -531,10 +531,10 @@ void PlayLayer::updateCamera(float dt)
 
     if (playerPosX >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
     {
-        this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * .9f * _bottomGround->getSpeed() * 0.1175f);
-        _bottomGround->update(dt * .9f);
-        _topGround->update(dt * .9f);
-        cam.x += dt * .9f * 5.770002f;
+        this->m_pBG->setPositionX(this->m_pBG->getPositionX() - dt * player->getPlayerSpeed() * _bottomGround->getSpeed() * 0.1175f);
+        _bottomGround->update(dt * player->getPlayerSpeed());
+        _ceiling->update(dt * player->getPlayerSpeed());
+        cam.x += dt * player->getPlayerSpeed() * 5.770002f;
     }
     else if (player->m_bIsPlatformer)
         cam.x = playerPosX - winSize.width / 2.f;
@@ -542,7 +542,8 @@ void PlayLayer::updateCamera(float dt)
     if (this->m_pBG->getPosition().x <= cam.x - 1024.f)
         this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024.f);
 
-    this->m_pGround->setPositionX(this->m_pGround->getPositionX() + (cam.x - m_obCamPos.x));
+    //this->_bottomGround->setPositionX(this->_bottomGround->getPositionX() + (cam.x - m_obCamPos.x));
+    //this->_ceiling->setPositionX(this->_ceiling->getPositionX() + (cam.x - m_obCamPos.x));
     this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
 
     this->m_obCamPos = cam;
@@ -550,16 +551,9 @@ void PlayLayer::updateCamera(float dt)
     Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
 
     cameraFollow->setPosition(m_obCamPos);
-
+    _ceiling->setVisible(m_pPlayer->isShip());
     if(!m_pPlayer->isShip())
-    {
         _bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
-        _topGround->setVisible(false);
-    }
-    else
-    {
-        _topGround->setVisible(true);
-    }
 
     m_pBar->setPosition(this->m_obCamPos + winSize / 2);
     m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
@@ -646,7 +640,7 @@ void PlayLayer::changeGameMode(GameObject *obj, int gameMode)
         }
         this->m_pPlayer->setIsShip(true);
         tweenBottomGround(-68);
-        tweenTopGround(388);
+        tweenCeiling(388);
     }
     }
 }
@@ -693,7 +687,7 @@ void PlayLayer::checkCollisions(float dt)
 
     if (m_pPlayer->getPositionY() < 105.0f)
     {
-        if (m_pPlayer->isGravityFlipped())
+        if (m_pPlayer->isGravityFlipped() && !m_pPlayer->isShip())
         {
             destroyPlayer();
             return;
@@ -702,6 +696,18 @@ void PlayLayer::checkCollisions(float dt)
         m_pPlayer->setPositionY(105.0f);
 
         m_pPlayer->hitGround(false);
+    }
+    else if (m_pPlayer->getPositionY() >= _ceiling->getPositionY() - 12.f && _ceiling->isVisible())
+    {
+        if (!m_pPlayer->isGravityFlipped() && !m_pPlayer->isShip())
+        {
+            destroyPlayer();
+            return;
+        }
+
+        m_pPlayer->setPositionY(_ceiling->getPositionY() - 12.f);
+
+        m_pPlayer->hitGround(true);
     }
     else if (m_pPlayer->getPositionY() > 1290.0f)
     {
@@ -887,7 +893,7 @@ void PlayLayer::resetLevel()
     m_pPlayer->setPosition({2, 105});
     m_obCamPos.x = 0;
     _bottomGround->setPositionX(0);
-    _topGround->setPositionX(0);
+    _ceiling->setPositionX(0);
     m_pPlayer->reset();
     m_pBG->setPositionX(0);
 
@@ -907,7 +913,7 @@ void PlayLayer::resetLevel()
     if (this->m_pColorChannels.contains(1000))
         this->m_pBG->setColor(this->m_pColorChannels.at(1000));
     this->_bottomGround->update(0);
-    this->_topGround->update(0);
+    this->_ceiling->update(0);
 
     AudioEngine::stopAll();
     AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
@@ -996,14 +1002,14 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event)
 
 void PlayLayer::tweenBottomGround(float y)
 {
-    //_bottomGround->runAction(ax::MoveTo::create(1.2f, Vec2(_bottomGround->getPositionX(), y)));
-    _bottomGround->setPositionY(y);
+    _bottomGround->runAction(EaseInOut::create(ActionTween::create(0.25f, "y", _bottomGround->getPositionY(), y), 2.f));
+    //_bottomGround->setPositionY(y);
 }
 
-void PlayLayer::tweenTopGround(float y)
+void PlayLayer::tweenCeiling(float y)
 {
-    //_topGround->runAction(ax::MoveTo::create(1.2f, Vec2(_topGround->getPositionX(), y)));
-    _topGround->setPositionY(y);
+    _ceiling->runAction(EaseInOut::create(ActionTween::create(0.25f, "y", _ceiling->getPositionY(), y), 2.f));
+    //_ceiling->setPositionY(y);
 }
 
 PlayLayer *PlayLayer::getInstance()
