@@ -217,7 +217,13 @@ void PlayerObject::update(float dt)
     }
 
     if (isShip())
+    {
+        setScaleX(isGravityFlipped() ? -1.f : 1.f);
         updateShipRotation(dt);
+    }
+    else
+        setScaleX(1.f);
+        
 
     // if (!this->m_bFlyMode)
     // this->motionStreak->setPosition(this->getPosition() + ccp({-10, 0}));
