@@ -2122,76 +2122,46 @@ GameObject* GameObject::objectFromString(std::string str)
 
 void GameObject::updateObjectType()
 {
-	switch (getID())
-	{
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-	case 5:
-	case 6:
-	case 7:
-	case 40: {
+	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) != std::end(GameObject::_pSolids))
 		setGameObjectType(kGameObjectTypeSolid);
-		break;
-	}
-
-	case 8:
-	case 9:
-	case 39: {
-		setGameObjectType(kGameObjectTypeHazard);
-		break;
-	}
-
-	case 35: {
-		setGameObjectType(kGameObjectTypeYellowJumpPad);
-		break;
-	}
-	case 36: {
-		setGameObjectType(kGameObjectTypeYellowJumpRing);
-		break;
-	}
-
-	case 15:
-	case 16:
-	case 17:
-	case 18:
-	case 19:
-	case 20:
-	case 21:
-	case 41: {
-		setGameObjectType(kGameObjectTypeDecoration);
-		break;
-	}
-
-	case 10: {
-		setGameObjectType(kGameObjectTypeNormalGravityPortal);
-		break;
-	}
-	case 11: {
-		setGameObjectType(kGameObjectTypeInverseGravityPortal);
-		break;
-	}
-	case 12: {
-		setGameObjectType(kGameObjectTypeCubePortal);
-		break;
-	}
-	case 13: {
-		setGameObjectType(kGameObjectTypeShipPortal);
-		break;
-	}
-
-	case 29: {
-		setGameObjectType(kGameObjectTypeBGTrigger);
-		break;
-	}
-	case 30: {
-		setGameObjectType(kGameObjectTypeGTrigger);
-		break;
-	}
-	case 899: {
+	else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), getID()) != std::end(GameObject::_pTriggers))
+	{
 		setGameObjectType(kGameObjectTypeSpecial);
+		setVisible(false);
 	}
+	else
+	{
+		switch (getID())
+		{
+		case 35:
+			setGameObjectType(kGameObjectTypeYellowJumpPad);
+			break;
+		case 36:
+			setGameObjectType(kGameObjectTypeYellowJumpRing);
+			break;
+		case 15:
+		case 16:
+		case 17:
+		case 18:
+		case 19:
+		case 20:
+		case 21:
+		case 41:
+			setGameObjectType(kGameObjectTypeDecoration);
+			break;
+		case 10:
+			setGameObjectType(kGameObjectTypeNormalGravityPortal);
+			break;
+		case 11:
+			setGameObjectType(kGameObjectTypeInverseGravityPortal);
+			break;
+		case 12:
+			setGameObjectType(kGameObjectTypeCubePortal);
+			break;
+		case 13:
+			setGameObjectType(kGameObjectTypeShipPortal);
+			break;
+		}
 	}
 }
 

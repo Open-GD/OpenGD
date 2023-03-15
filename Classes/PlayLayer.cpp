@@ -195,7 +195,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 				int id = std::stoi(d[i + 1]);
 
 				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
-					std::end(GameObject::_pTriggers))
+					std::end(GameObject::_pTriggers)) 
 					obj = EffectGameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
 				else
 					obj = GameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
@@ -276,9 +276,9 @@ void PlayLayer::loadLevel(std::string levelStr)
 				obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
 				break;
 			}
-			}
 		}
 	}
+}
 }
 
 bool PlayLayer::init(GJGameLevel* level)
@@ -364,7 +364,7 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	scheduleOnce(
 		[=](float d) {
-			AudioEngine::play2d(LevelTools::getAudioFilename(3), false, 0.1f);
+			AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
 			scheduleUpdate();
 			m_pPlayer->setIsDead(false);
 		},

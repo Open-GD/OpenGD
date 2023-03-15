@@ -473,8 +473,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
             if (playerRectI.intersectsRect(rect))
             {
                 playerRectI.origin.x = pos.x;
-                ((PlayLayer*)getPlayLayer())->destroyPlayer();
-                return;
+                goto death;
             }
             if (MaxYP >= (MinY + MaxY) / 2.f)
             {
@@ -502,8 +501,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject *obj)
             if (playerRectI.intersectsRect(rect))
             {
                 playerRectI.origin.x = pos.x;
-                ((PlayLayer*)getPlayLayer())->destroyPlayer();
-                return;
+                goto death;
             }
 
             if (MinYP <= (MinY + MaxY) / 2.f)
