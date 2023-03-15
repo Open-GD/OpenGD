@@ -12,76 +12,76 @@
 
 class PlayLayer : public ax::Layer {
   private:
-    bool init(GJGameLevel* level);
-    void onEnter() override;
-    void onExit() override;
-    void onDrawImGui();
-    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
-    void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	bool init(GJGameLevel* level);
+	void onEnter() override;
+	void onExit() override;
+	void onDrawImGui();
+	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 
-    void fillColorChannel(std::vector<std::string>& colorString, int id);
+	void fillColorChannel(std::vector<std::string>& colorString, int id);
 
-    ax::Sprite* m_pBG;
-    GroundLayer* _bottomGround, * _ceiling;
-    PlayerObject* m_pPlayer;
-    ax::Vec2 m_obCamPos;
+	ax::Sprite* m_pBG;
+	GroundLayer* _bottomGround, * _ceiling;
+	PlayerObject* m_pPlayer;
+	ax::Vec2 m_obCamPos;
 
-    MenuItemSpriteExtra* backbtn;
+	MenuItemSpriteExtra* backbtn;
 
-    ax::DrawNode* dn;
+	ax::DrawNode* dn;
 
-    std::vector<GameObject*> _pObjects;
+	std::vector<GameObject*> _pObjects;
 
-    std::vector<std::vector<GameObject*>> m_pSectionObjects;
+	std::vector<std::vector<GameObject*>> m_pSectionObjects;
 
-    float m_fCameraYCenter;
-    float m_lastObjXPos = 570.0f;
-    bool m_bFirstAttempt = true;
-    bool m_bMoveCameraX;
-    bool m_bMoveCameraY;
-    bool m_bShakingCamera;
-    float m_fEndOfLevel = FLT_MAX;
-    float m_fShakeIntensity = 1;
+	float m_fCameraYCenter;
+	float m_lastObjXPos = 570.0f;
+	bool m_bFirstAttempt = true;
+	bool m_bMoveCameraX;
+	bool m_bMoveCameraY;
+	bool m_bShakingCamera;
+	float m_fEndOfLevel = FLT_MAX;
+	float m_fShakeIntensity = 1;
 
-    int _prevSection, _nextSection;
+	int _prevSection, _nextSection;
 
-    bool m_bIsJumpPressed;
+	bool m_bIsJumpPressed;
 
-    SimpleProgressBar* m_pBar;
+	SimpleProgressBar* m_pBar;
 
-    //----IMGUI DEBUG MEMBERS----
-    bool m_freezePlayer;
-    bool m_platformerMode;
+	//----IMGUI DEBUG MEMBERS----
+	bool m_freezePlayer;
+	bool m_platformerMode;
 
   public:
-    std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
+	std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
 
-    AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
+	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 
-    void destroyPlayer();
+	void destroyPlayer();
 
-    void loadLevel(std::string levelStr);
+	void loadLevel(std::string levelStr);
 
-    void update(float delta);
-    void updateCamera(float dt);
-    void updateVisibility();
-    void moveCameraToPos(ax::Vec2);
-    void changeGameMode(GameObject*, int);
-    void resetLevel();
+	void update(float delta);
+	void updateCamera(float dt);
+	void updateVisibility();
+	void moveCameraToPos(ax::Vec2);
+	void changeGameMode(GameObject*, int);
+	void resetLevel();
 
-    void tweenBottomGround(float y);
-    void tweenCeiling(float y);
+	void tweenBottomGround(float y);
+	void tweenCeiling(float y);
 
-    // dt?
-    void checkCollisions(float delta);
-    void renderRect(ax::Rect rect, ax::Color4B col);
+	// dt?
+	void checkCollisions(float delta);
+	void renderRect(ax::Rect rect, ax::Color4B col);
 
-    void processTriggers();
+	void processTriggers();
 
-    int sectionForPos(float x);
+	int sectionForPos(float x);
 
-    static ax::Scene* scene(GJGameLevel* level);
-    static PlayLayer* create(GJGameLevel* level);
+	static ax::Scene* scene(GJGameLevel* level);
+	static PlayLayer* create(GJGameLevel* level);
 
-    static PlayLayer* getInstance();
+	static PlayLayer* getInstance();
 };

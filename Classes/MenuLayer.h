@@ -6,7 +6,7 @@ extern bool music;
 
 class MenuLayer : public ax::Layer {
 public:
-    static ax::Scene* scene();
-    bool init();
-    CREATE_FUNC(MenuLayer);
+	static ax::Scene* scene();
+	bool init();
+	CREATE_FUNC(MenuLayer);
 };

@@ -7,6 +7,7 @@
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
 #include <fstream>
+#include "LevelSelectLayer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -545,7 +546,7 @@ void PlayLayer::updateVisibility()
 
 					// if (obj->getType() == GameObjectType::kBallFrame || obj->getType() ==
 					// GameObjectType::kYellowJumpRing)
-					//     obj->setScale(this->getAudioEffectsLayer()->getAudioScale())
+					//	 obj->setScale(this->getAudioEffectsLayer()->getAudioScale())
 
 					// auto pos = obj->getPosition();
 
@@ -553,15 +554,15 @@ void PlayLayer::updateVisibility()
 
 					// if (obj->getGameObjectType == GameObjectType::)
 					// {
-					//     unk2 = obj->getTextureRect().origin.x * obj->getScaleX() * 0.4f;
+					//	 unk2 = obj->getTextureRect().origin.x * obj->getScaleX() * 0.4f;
 					// }
 
 					// unsigned char opacity = this->getRelativeMod(pos, unk, unk2) * 255.0f;
 
 					// if (!obj->getDontTransform())
 					// {
-					//     obj->setOpacity(opacity);
-					//     this->applyEnterEffect(obj);
+					//	 obj->setOpacity(opacity);
+					//	 this->applyEnterEffect(obj);
 					// }
 				}
 			}
@@ -648,49 +649,49 @@ void PlayLayer::checkCollisions(float dt)
 	auto playerOuterBounds = this->m_pPlayer->getOuterBounds();
 
 	if (this->m_pPlayer->getPositionY() < 105.0f && !this->m_pPlayer->isShip())
-    {
-        if (this->m_pPlayer->isGravityFlipped())
-        {
-            this->destroyPlayer();
-            return;
-        }
+	{
+		if (this->m_pPlayer->isGravityFlipped())
+		{
+			this->destroyPlayer();
+			return;
+		}
 
-        float x = this->m_pPlayer->getPositionX();
+		float x = this->m_pPlayer->getPositionX();
 
-        this->m_pPlayer->setPosition({x, 105.0f});
+		this->m_pPlayer->setPosition({x, 105.0f});
 
-        this->m_pPlayer->hitGround(false);
-    }
+		this->m_pPlayer->hitGround(false);
+	}
 
-    else if (this->m_pPlayer->getPositionY() > 1290.0f)
-    {
-        this->destroyPlayer();
-        return;
-    }
+	else if (this->m_pPlayer->getPositionY() > 1290.0f)
+	{
+		this->destroyPlayer();
+		return;
+	}
 
-    if (this->m_pPlayer->isShip())
-    {
-        if (this->m_pPlayer->getPositionY() <= _ceiling->getPositionY() - 12.f)
-        {
+	if (this->m_pPlayer->isShip())
+	{
+		if (this->m_pPlayer->getPositionY() <= _ceiling->getPositionY() - 12.f)
+		{
 
-            if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + 175.f)
-            {
-                float x = this->m_pPlayer->getPositionX();
+			if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + 175.f)
+			{
+				float x = this->m_pPlayer->getPositionX();
 
-                this->m_pPlayer->setPosition({x, _bottomGround->getPositionY() + 175.f});
+				this->m_pPlayer->setPosition({x, _bottomGround->getPositionY() + 175.f});
 
-                this->m_pPlayer->hitGround(this->m_pPlayer->isGravityFlipped());
-            }
-        }
-        else
-        {
-            float x = this->m_pPlayer->getPositionX();
+				this->m_pPlayer->hitGround(this->m_pPlayer->isGravityFlipped());
+			}
+		}
+		else
+		{
+			float x = this->m_pPlayer->getPositionX();
 
-            this->m_pPlayer->setPosition({x, _ceiling->getPositionY() - 12.f});
+			this->m_pPlayer->setPosition({x, _ceiling->getPositionY() - 12.f});
 
-            this->m_pPlayer->hitGround(!this->m_pPlayer->isGravityFlipped());
-        }
-    }
+			this->m_pPlayer->hitGround(!this->m_pPlayer->isGravityFlipped());
+		}
+	}
 
 	dn->setVisible(showDn);
 	dn->clear();
@@ -738,7 +739,7 @@ void PlayLayer::checkCollisions(float dt)
 						{
 						case GameObjectType::kGameObjectTypeInverseGravityPortal:
 							// if (!m_pPlayer->isGravityFlipped())
-							//     this->playGravityEffect(true);
+							//	 this->playGravityEffect(true);
 
 							// m_pPlayer->setPortal(obj->getPosition());
 
@@ -747,7 +748,7 @@ void PlayLayer::checkCollisions(float dt)
 
 						case GameObjectType::kGameObjectTypeNormalGravityPortal:
 							// if (m_pPlayer->isGravityFlipped())
-							//     this->playGravityEffect(false);
+							//	 this->playGravityEffect(false);
 
 							// m_pPlayer->setPortal(obj->getPosition());
 
@@ -822,7 +823,7 @@ void PlayLayer::onDrawImGui()
 	ImGui::Checkbox("Freeze Player", &m_freezePlayer);
 	ImGui::Checkbox("Platformer Mode (Basic)", &m_platformerMode);
 
-	if (ImGui::Button("Back to menu"))
+	if (ImGui::Button("Exit"))
 	{
 		AudioEngine::stopAll();
 		AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
@@ -830,7 +831,7 @@ void PlayLayer::onDrawImGui()
 		music = true;
 		Instance = nullptr;
 
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
 	}
 
 	ImGui::Text(

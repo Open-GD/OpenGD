@@ -29,42 +29,42 @@
 #include <axmol.h>
 
 /**
-@brief    The axmol Application.
+@brief	The axmol Application.
 
 Private inheritance here hides part of interface from Director.
 */
 class AppDelegate : private ax::Application
 {
 public:
-    AppDelegate();
-    virtual ~AppDelegate();
+	AppDelegate();
+	virtual ~AppDelegate();
 
-    void initGLContextAttrs() override;
+	void initGLContextAttrs() override;
 
-    /**
-    @brief    Implement Director and Scene init code here.
-    @return true    Initialize success, app continue.
-    @return false   Initialize failed, app terminate.
-    */
-    bool applicationDidFinishLaunching() override;
+	/**
+	@brief	Implement Director and Scene init code here.
+	@return true	Initialize success, app continue.
+	@return false   Initialize failed, app terminate.
+	*/
+	bool applicationDidFinishLaunching() override;
 
-    /**
-    @brief  Called when the application moves to the background
-    @param  the pointer of the application
-    */
-    void applicationDidEnterBackground() override;
+	/**
+	@brief  Called when the application moves to the background
+	@param  the pointer of the application
+	*/
+	void applicationDidEnterBackground() override;
 
-    /**
-    @brief  Called when the application reenters the foreground
-    @param  the pointer of the application
-    */
-    void applicationWillEnterForeground() override;
+	/**
+	@brief  Called when the application reenters the foreground
+	@param  the pointer of the application
+	*/
+	void applicationWillEnterForeground() override;
 
-    /**
-    @brief  Crossplatform solution. Gets refresh rate of the device.
-    @return Refresh rate in Hz
-    */
-    int applicationGetRefreshRate();
+	/**
+	@brief  Crossplatform solution. Gets refresh rate of the device.
+	@return Refresh rate in Hz
+	*/
+	int applicationGetRefreshRate();
 };
 
 #endif  // _APP_DELEGATE_H_

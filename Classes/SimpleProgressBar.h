@@ -5,15 +5,15 @@
 // opengd addition
 class SimpleProgressBar : public ax::Layer {
 protected:
-    ax::Sprite *_pGroove;
-    ax::Sprite *_pBar;
+	ax::Sprite *_pGroove;
+	ax::Sprite *_pBar;
 
-    float _pBarWidth;
+	float _pBarWidth;
 public:
-    CREATE_FUNC(SimpleProgressBar);
-    bool init();
+	CREATE_FUNC(SimpleProgressBar);
+	bool init();
 
-    void update(float delta);
+	void update(float delta);
 
-    AX_SYNTHESIZE(float, _pPercentage, Percentage);
+	AX_SYNTHESIZE(float, _pPercentage, Percentage);
 };

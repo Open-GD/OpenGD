@@ -51,9 +51,9 @@ bool MenuLayer::init()
 	this->addChild(log_oSpr);
 	auto playBtn = MenuItemSpriteExtra::create("GJ_playBtn_001.png", [&](Node* btn) {
 		/* AudioEngine::stopAll();
-        AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
-        auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 5));
-        Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene)); */
+		AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
+		auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 5));
+		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene)); */
 		auto scene = LevelSelectLayer::scene();
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
@@ -144,11 +144,11 @@ bool MenuLayer::init()
 	// this->addChild(lctest, 1024);
 
 	/*auto pbtest = SimpleProgressBar::create();
-    pbtest->setPercentage(10.f);
-    pbtest->setPosition({winSize.width / 2, winSize.height / 2});
-    pbtest->setVisible(false);
-    this->addChild(pbtest, 1024);
-    */
+	pbtest->setPercentage(10.f);
+	pbtest->setPosition({winSize.width / 2, winSize.height / 2});
+	pbtest->setVisible(false);
+	this->addChild(pbtest, 1024);
+	*/
 
 	return true;
 }
