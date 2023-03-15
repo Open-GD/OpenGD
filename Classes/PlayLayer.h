@@ -22,6 +22,7 @@ class PlayLayer : public ax::Layer {
 	void fillColorChannel(std::vector<std::string>& colorString, int id);
 
 	ax::Sprite* m_pBG;
+	ax::SpriteBatchNode* _mainBatchNode;
 	GroundLayer* _bottomGround, * _ceiling;
 	PlayerObject* m_pPlayer;
 	ax::Vec2 m_obCamPos;
