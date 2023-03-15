@@ -48,7 +48,7 @@ bool LevelSelectLayer::init()
 	std::vector<Layer*> layers;
 	layers.reserve(3);
 	
-	for(uint32_t i = 0; i < 3; i++)
+	for(uint32_t i = 0; i < 20; i++)
 	{
 		auto l = Layer::create();
 		const char* frame = nullptr;
@@ -56,7 +56,7 @@ bool LevelSelectLayer::init()
 		{
 			case 0: frame = "player_01_001.png";	break;
 			case 1: frame = "GJ_createBtn_001.png";	break;
-			case 2: frame = "GJ_arrow_01_001.png";	break;
+			default: frame = "GJ_arrow_01_001.png";	break;
 		}
 		auto spr = Sprite::createWithSpriteFrameName(frame);
 		//spr->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
@@ -73,7 +73,7 @@ bool LevelSelectLayer::init()
 		layers.push_back(std::move(l));
 	}
 	
-	auto bsl = BoomScrollLayer::create(layers, 1);
+	auto bsl = BoomScrollLayer::create(layers, 0);
 	bsl->setPosition(winSize.width / 2, winSize.height / 2);
 	addChild(bsl);
 	/* std::vector<GJGameLevel> mainLevels;

@@ -30,19 +30,10 @@ void BoomScrollLayer::selectPage(int current)
 	auto pages = _layers;
 	auto count = pages.size();
 	
-	for(int i = current; i < count; i++)
+	for(int i = 0; i < count; i++)
 	{
-		float newX = winSize.width * (i - 1);
+		float newX = winSize.width * (i - current);
 		GameToolbox::log("1 {}", i);
-		auto layer = pages.at(i);
-		layer->setPositionX(newX);
-		GameToolbox::log("setting {} to {}", i, newX);
-	}
-	
-	for(int i = current - 1; i >= 0; i--)
-	{
-		float newX = (winSize.width * (i + 1)) * -1;
-		GameToolbox::log("2 {}", i);
 		auto layer = pages.at(i);
 		layer->setPositionX(newX);
 		GameToolbox::log("setting {} to {}", i, newX);
