@@ -328,6 +328,10 @@ bool PlayLayer::init(GJGameLevel* level)
 	this->addChild(this->m_pPlayer, -1);
 	this->m_pPlayer->setAnchorPoint({0, 0});
 
+	m_pPlayer->setMainColor({125, 255, 0});
+	m_pPlayer->setSecondaryColor({0, 255, 255});
+	
+
 	std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
 	loadLevel(levelStr);
 

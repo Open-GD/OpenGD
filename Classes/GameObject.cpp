@@ -2092,7 +2092,7 @@ bool GameObject::init(std::string_view frame)
 	}
 
 	if (!Sprite::initWithSpriteFrameName(frame))
-		Sprite::initWithSpriteFrameName("checkpoint_01_001.png");
+		return false;
 
 	_pOuterBounds = Rect();
 	_pInnerBounds = Rect();

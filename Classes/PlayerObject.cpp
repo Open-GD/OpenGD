@@ -64,8 +64,6 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
     m_pMainSprite->addChild(m_pSecondarySprite, -1);
     m_pSecondarySprite->setPosition({15, 15});
 
-    m_pMainSprite->setColor(ax::Color3B::RED);
-
     m_pShipSprite = Sprite::createWithSpriteFrameName("ship_01_001.png");
     m_pShipSprite->setStretchEnabled(false);
     m_pShipSprite->setVisible(false);
@@ -157,6 +155,7 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 void PlayerObject::setMainColor(Color3B col)
 {
     this->m_pMainSprite->setColor(col);
+    setShipColor(col);
 }
 
 void PlayerObject::setSecondaryColor(Color3B col)
