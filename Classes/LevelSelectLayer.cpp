@@ -5,6 +5,7 @@
 #include "PlayLayer.h"
 #include "GameToolbox.h"
 #include "MenuLayer.h"
+#include "BoomScrollLayer.h"
 
 USING_NS_AX;
 
@@ -19,10 +20,10 @@ bool LevelSelectLayer::init()
 {
 	if(!Layer::init()) return false;
 
-	auto director = ax::Director::getInstance();
+	auto director = Director::getInstance();
 	auto winSize = director->getWinSize();
 
-	_background = ax::Sprite::create("GJ_gradientBG.png");
+	_background = Sprite::create("GJ_gradientBG.png");
 	_background->setAnchorPoint({0.0f, 0.0f});
 	addChild(_background, -2);
 
@@ -36,14 +37,45 @@ bool LevelSelectLayer::init()
 
 	addChild(_ground, -1);
 
-	// auto topBar = ax::Sprite::create("GJ_topBar_001.png");
+	// auto topBar = Sprite::create("GJ_topBar_001.png");
 	// topBar->setAnchorPoint({0.5f, 1.0f});
 	// topBar->setPosition({winSize.width / 2, winSize.height + 1.0f});
 
 	// addChild(topBar, 1);
 
 	GameToolbox::createCorners(this, false, false, true, true);
-
+	
+	std::vector<Layer*> layers;
+	layers.reserve(3);
+	
+	for(uint32_t i = 0; i < 3; i++)
+	{
+		auto l = Layer::create();
+		const char* frame = nullptr;
+		switch(i)
+		{
+			case 0: frame = "player_01_001.png";	break;
+			case 1: frame = "GJ_createBtn_001.png";	break;
+			case 2: frame = "GJ_arrow_01_001.png";	break;
+		}
+		auto spr = Sprite::createWithSpriteFrameName(frame);
+		//spr->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+		auto menu = Menu::create();
+		auto btn = MenuItemSpriteExtra::create(spr, [&](Node* btn) {
+			AudioEngine::stopAll();
+			AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
+			auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 5));
+			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
+		});
+		menu->addChild(btn);
+		menu->setPosition(Vec2::ZERO);
+		l->addChild(menu);
+		layers.push_back(std::move(l));
+	}
+	
+	auto bsl = BoomScrollLayer::create(layers, 1);
+	bsl->setPosition(winSize.width / 2, winSize.height / 2);
+	addChild(bsl);
 	/* std::vector<GJGameLevel> mainLevels;
 	cocos2d::CCArray* levelPages = cocos2d::CCArray::create();
 	for (size_t i = 0; i < 22; i++)
@@ -85,34 +117,30 @@ bool LevelSelectLayer::init()
 	// });
 	// downloadBtn->setScale(2.0f);
 
-	// ax::Menu* DLMenu = ax::Menu::create();
+	// Menu* DLMenu = Menu::create();
 	// addChild(DLMenu);
 
 	// DLMenu->setPosition({winSize.width / 2, 0 + 35.0f});
 
-	auto btnMenu = ax::Menu::create();
+	auto btnMenu = Menu::create();
 	addChild(btnMenu, 5);
 
 	//bool controller = PlatformToolbox::isControllerConnected();
 	bool controller = false;
 
 	auto left =
-		ax::Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Left_001.png" : "navArrowBtn_001.png");
+		Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Left_001.png" : "navArrowBtn_001.png");
 	if (!controller) left->setFlippedX(true);
 
 	MenuItemSpriteExtra* leftBtn = MenuItemSpriteExtra::create(left, [&](Node* btn) {
-		AudioEngine::stopAll();
-		AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
-		auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 5));
-		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
+
 	});
 	btnMenu->addChild(leftBtn);
 
 	//leftBtn->setScale(2.0f);
 	leftBtn->setPosition(btnMenu->convertToNodeSpace({0 + 25.0f, winSize.height / 2}));
 
-	auto right =
-		ax::Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Right_001.png" : "navArrowBtn_001.png");
+	auto right = Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Right_001.png" : "navArrowBtn_001.png");
 
 	MenuItemSpriteExtra* rightBtn = MenuItemSpriteExtra::create(right, [&](Node* btn) {
 		//auto a = GJMoreGamesLayer::create();
@@ -121,15 +149,15 @@ bool LevelSelectLayer::init()
 	btnMenu->addChild(rightBtn);
 
 	//right->setScale(2.0f);
-	right->setPosition(btnMenu->convertToNodeSpace({569 - 25.0f, winSize.height / 2}));
+	rightBtn->setPosition(btnMenu->convertToNodeSpace({569 - 25.0f, winSize.height / 2}));
 
-	auto back = ax::Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
+	auto back = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
 	MenuItemSpriteExtra* backBtn = MenuItemSpriteExtra::create(back, [&](Node* btn) {
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
 	//backBtn->setScale(1.6f);
 
-	ax::Menu* backMenu = ax::Menu::create();
+	Menu* backMenu = Menu::create();
 	addChild(backMenu, 1);
 
 	backMenu->addChild(backBtn);
@@ -138,10 +166,10 @@ bool LevelSelectLayer::init()
 
 	// //GM->0x298 = 0;
 
-	auto infoMenu = ax::Menu::create();
+	auto infoMenu = Menu::create();
 	addChild(infoMenu);
 
-	ax::Sprite* info = ax::Sprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
+	Sprite* info = Sprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
 	MenuItemSpriteExtra* infoBtn = MenuItemSpriteExtra::create(info, [&](Node* btn) {
 		//auto a = GJMoreGamesLayer::create();
 		//addChild(a);
