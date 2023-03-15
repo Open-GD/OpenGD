@@ -865,6 +865,13 @@ void PlayLayer::onDrawImGui()
 		music = true;
 		Instance = nullptr;
 
+		_mainBatchNode->removeAllChildrenWithCleanup(true);
+
+		for (auto obj : this->_pObjects)
+		{
+			obj->release();
+		}
+
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
 	}
 
