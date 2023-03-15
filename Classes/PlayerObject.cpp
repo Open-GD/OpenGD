@@ -20,7 +20,8 @@ void PlayerObject::reset()
     _hasRingJumped = false;
 }
 
-void PlayerObject::playDeathEffect() {
+void PlayerObject::playDeathEffect() 
+{
     AudioEngine::stopAll();
     AudioEngine::play2d("explode_11.ogg", false, 0.1f);
 
@@ -279,7 +280,12 @@ void PlayerObject::ringJump()
 }
 void PlayerObject::flipGravity(bool gravity)
 {
-    m_bGravityFlipped = gravity;
+    if (m_bGravityFlipped != gravity)
+    {
+        m_bGravityFlipped = gravity;
+        m_dYVel /= 2.f;
+    }
+    
 }
 
 void PlayerObject::updateJump(float dt)
@@ -521,7 +527,7 @@ void PlayerObject::setIsShip(bool val)
     {
         stopRotation();
         m_bIsShip = val;
-        m_dYVel = m_dYVel * 0.5f;
+        m_dYVel /= 2.f;
         setIsOnGround(false);
 
         m_pShipSprite->setVisible(isShip());
