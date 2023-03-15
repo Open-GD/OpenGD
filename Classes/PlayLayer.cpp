@@ -275,6 +275,8 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 				tr.rotate(obj->getRotationQuat());
 
+				tr.scale(obj->getScaleX() * (obj->isFlippedX() ? -1.f : 1.f), obj->getScaleY() * (obj->isFlippedY() ? -1.f : 1.f), 1);
+
 				ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
 				rec = RectApplyTransform(rec, tr);
 
@@ -645,35 +647,50 @@ void PlayLayer::checkCollisions(float dt)
 {
 	auto playerOuterBounds = this->m_pPlayer->getOuterBounds();
 
-	if (m_pPlayer->getPositionY() < 105.0f)
-	{
-		if (m_pPlayer->isGravityFlipped() && !m_pPlayer->isShip())
-		{
-			destroyPlayer();
-			return;
-		}
+	if (this->m_pPlayer->getPositionY() < 105.0f && !this->m_pPlayer->isShip())
+    {
+        if (this->m_pPlayer->isGravityFlipped())
+        {
+            this->destroyPlayer();
+            return;
+        }
 
-		m_pPlayer->setPositionY(105.0f);
+        float x = this->m_pPlayer->getPositionX();
 
-		m_pPlayer->hitGround(false);
-	}
-	else if (m_pPlayer->getPositionY() >= _ceiling->getPositionY() - 12.f && _ceiling->isVisible())
-	{
-		if (!m_pPlayer->isGravityFlipped() && !m_pPlayer->isShip())
-		{
-			destroyPlayer();
-			return;
-		}
+        this->m_pPlayer->setPosition({x, 105.0f});
 
-		m_pPlayer->setPositionY(_ceiling->getPositionY() - 12.f);
+        this->m_pPlayer->hitGround(false);
+    }
 
-		m_pPlayer->hitGround(true);
-	}
-	else if (m_pPlayer->getPositionY() > 1290.0f)
-	{
-		destroyPlayer();
-		return;
-	}
+    else if (this->m_pPlayer->getPositionY() > 1290.0f)
+    {
+        this->destroyPlayer();
+        return;
+    }
+
+    if (this->m_pPlayer->isShip())
+    {
+        if (this->m_pPlayer->getPositionY() <= _ceiling->getPositionY() - 12.f)
+        {
+
+            if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + 175.f)
+            {
+                float x = this->m_pPlayer->getPositionX();
+
+                this->m_pPlayer->setPosition({x, _bottomGround->getPositionY() + 175.f});
+
+                this->m_pPlayer->hitGround(this->m_pPlayer->isGravityFlipped());
+            }
+        }
+        else
+        {
+            float x = this->m_pPlayer->getPositionX();
+
+            this->m_pPlayer->setPosition({x, _ceiling->getPositionY() - 12.f});
+
+            this->m_pPlayer->hitGround(!this->m_pPlayer->isGravityFlipped());
+        }
+    }
 
 	dn->setVisible(showDn);
 	dn->clear();
@@ -743,7 +760,7 @@ void PlayLayer::checkCollisions(float dt)
 
 						case GameObjectType::kGameObjectTypeCubePortal:
 							this->changeGameMode(obj, 0);
-							// this->getPlayer()->setPortal(obj->getPosition());
+							// this->m_pPlayer->setPortal(obj->getPosition());
 
 							// this->m_pPlayer->setIsShip(false);
 							/* this->toggleGlitter(false);

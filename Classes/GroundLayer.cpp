@@ -4,73 +4,81 @@
 
 USING_NS_AX;
 
-bool GroundLayer::init(int groundID) {
-    if (!Layer::init()) return false;
+bool GroundLayer::init(int groundID)
+{
+	if (!Layer::init()) return false;
 
-    auto winSize = Director::getInstance()->getWinSize();
-    
-    auto name = fmt::format("groundSquare_{:03}.png", groundID);
-    this->_sprite = Sprite::create(GameToolbox::getTextureString(name));
-    _sprite->setStretchEnabled(false);
-    this->m_fOneGroundSize = this->_sprite->getTextureRect().size.width;
-    this->_sprite->getTexture()->setTexParameters({ backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT });
-    this->_sprite->setTextureRect({0, 0, winSize.width + this->m_fOneGroundSize, _sprite->getTextureRect().size.height });
-    this->_sprite->setAnchorPoint({0, 0});
-    this->_sprite->setPosition({0, -50});
-    this->_sprite->setColor({0, 102, 255});
-    this->addChild(this->_sprite);
+	auto winSize = Director::getInstance()->getWinSize();
 
-    auto line = Sprite::create(GameToolbox::getTextureString("floor.png"));
-    line->setStretchEnabled(false);
-    this->addChild(line);
-    line->setPosition({winSize.width / 2, this->_sprite->getContentSize().height + this->_sprite->getPositionY()});
-       
-    auto gradient1 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
-    gradient1->setStretchEnabled(false);
-    this->addChild(gradient1);
-    gradient1->setScale(0.7f);
-    gradient1->setPositionY(33);
-    
-    auto gradient2 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
-    gradient2->setStretchEnabled(false);
-    this->addChild(gradient2);
-    gradient2->setScale(0.7f);
-    gradient2->setFlippedX(true);
-    gradient2->setPositionX(winSize.width);
-    gradient2->setPositionY(33);
+	auto name = fmt::format("groundSquare_{:03}.png", groundID);
+	this->_sprite = Sprite::create(GameToolbox::getTextureString(name));
+	_sprite->setStretchEnabled(false);
+	this->m_fOneGroundSize = this->_sprite->getTextureRect().size.width;
+	this->_sprite->getTexture()->setTexParameters(
+		{backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT,
+		 backend::SamplerAddressMode::REPEAT});
+	this->_sprite->setTextureRect({0, 0, winSize.width + this->m_fOneGroundSize, _sprite->getTextureRect().size.height});
+	this->_sprite->setAnchorPoint({0, 0});
+	this->_sprite->setPosition({0, -50});
+	this->_sprite->setColor({0, 102, 255});
+	this->addChild(this->_sprite);
 
-    this->m_fSpeed = 5.770002f;
-    
-    //scheduleUpdate();
-    
-    return true;
+	auto line = Sprite::create(GameToolbox::getTextureString("floor.png"));
+	line->setStretchEnabled(false);
+	this->addChild(line);
+	line->setPosition({winSize.width / 2, this->_sprite->getContentSize().height + this->_sprite->getPositionY()});
+
+	auto gradient1 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
+	gradient1->setStretchEnabled(false);
+	this->addChild(gradient1);
+	gradient1->setScale(0.7f);
+	gradient1->setPositionY(33);
+
+	auto gradient2 = Sprite::createWithSpriteFrameName("groundSquareShadow_001.png");
+	gradient2->setStretchEnabled(false);
+	this->addChild(gradient2);
+	gradient2->setScale(0.7f);
+	gradient2->setFlippedX(true);
+	gradient2->setPositionX(winSize.width);
+	gradient2->setPositionY(33);
+
+	this->m_fSpeed = 5.770002f;
+
+	//scheduleUpdate();
+
+	return true;
 }
+
 void GroundLayer::updateTweenAction(float value, std::string_view key)
 {
-    if (key == "y")
-        setPositionY(value);
-}
-void GroundLayer::update(float dt) {
-
-    if(auto pl = PlayLayer::getInstance())
-    {
-        if(pl->m_pColorChannels.contains(1001)) _sprite->setColor(pl->m_pColorChannels.at(1001));
-    }
-
-    this->_sprite->setPositionX(this->_sprite->getPositionX() - dt * this->m_fSpeed);
-
-    if (this->_sprite->getPositionX() <= -128.0f)
-        this->_sprite->setPositionX(0);
+	if (key == "y") setPositionY(value);
 }
 
-GroundLayer* GroundLayer::create(int groundID) {
-    GroundLayer* pRet = new(std::nothrow) GroundLayer();
+void GroundLayer::update(float dt)
+{
 
-    if (pRet && pRet->init(groundID)) {
-        pRet->autorelease();
-        return pRet;
-    } else {
-        AX_SAFE_DELETE(pRet);
-        return nullptr;
-    }
+	if (auto pl = PlayLayer::getInstance())
+	{
+		if (pl->m_pColorChannels.contains(1001)) _sprite->setColor(pl->m_pColorChannels.at(1001));
+	}
+
+	this->_sprite->setPositionX(this->_sprite->getPositionX() - dt * this->m_fSpeed);
+
+	if (this->_sprite->getPositionX() <= -128.0f) this->_sprite->setPositionX(0);
+}
+
+GroundLayer* GroundLayer::create(int groundID)
+{
+	GroundLayer* pRet = new (std::nothrow) GroundLayer();
+
+	if (pRet && pRet->init(groundID))
+	{
+		pRet->autorelease();
+		return pRet;
+	}
+	else
+	{
+		AX_SAFE_DELETE(pRet);
+		return nullptr;
+	}
 }
