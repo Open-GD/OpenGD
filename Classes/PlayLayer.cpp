@@ -879,7 +879,7 @@ void PlayLayer::resetLevel()
 	this->_ceiling->update(0);
 
 	AudioEngine::stopAll();
-	AudioEngine::play2d(LevelTools::getAudioFilename(6), false, 0.1f);
+	AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
 	scheduleUpdate();
 }
 
