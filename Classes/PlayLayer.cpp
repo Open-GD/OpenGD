@@ -448,59 +448,46 @@ void PlayLayer::destroyPlayer()
 void PlayLayer::updateCamera(float dt)
 {
 	auto winSize = Director::getInstance()->getWinSize();
-	auto cam = m_obCamPos;
+	Vec2 cam = m_obCamPos;
 
-	auto player = this->m_pPlayer;
+	PlayerObject* player = m_pPlayer;
+	Vec2 pPos = player->getPosition();
 
-	float playerPosY = player->getPositionY();
-	float playerPosX = player->getPositionX();
-
-	float unk4 = 0;
-	float unk5 = 20;
-
-	if (!player->isShip())
+	if (player->isShip())
 	{
-
-		float unk2 = 180.0f;
-		float unk3 = 120.0f;
-
-		if (player->isGravityFlipped())
-		{
-			std::swap(unk2, unk3);
-		}
-
-		if (playerPosY <= cam.y + winSize.height - unk2)
-		{
-			if (playerPosY < cam.y + unk3) unk4 = playerPosY - unk3;
-		}
-		else
-			unk4 = playerPosY - winSize.height + unk2;
-
-		if (player->getLastGroundPos().y == 105 && playerPosY <= cam.y + winSize.height - unk2) unk4 = 0;
+		cam.y = (winSize.height * -0.5f) + m_fCameraYCenter;
+		if (cam.y <= 0.0f)
+			cam.y = 0.0f;
 	}
 	else
 	{
-		unk4 = 0.0f;
-		if (this->m_fCameraYCenter + (winSize.height / -2.0f > 0.0f))
-			unk4 = this->m_fCameraYCenter + (winSize.height / -2.0f);
-		unk5 = 30.0f;
+		float unk2 = 90.0f;
+		float unk3 = 120.0f;
+		if (player->isGravityFlipped())
+		{
+			unk2 = 120.0f;
+			unk3 = 90.0f;
+		}
+		if (pPos.y <= winSize.height + cam.y - unk2)
+		{
+			if (pPos.y < unk3 + cam.y)
+				cam.y = pPos.y - unk3;
+		}
+		else
+			cam.y = pPos.y - winSize.height + unk2;
+		if (!player->isGravityFlipped())
+		{
+			Vec2 lastGroundPos = player->getLastGroundPos();
+
+			if (lastGroundPos.y == 105.f)
+				if (pPos.y <= cam.y + winSize.height - unk2)
+					cam.y = 0.0f;
+		}
 	}
 
-	cam.y += (unk4 - cam.y) / unk5;
+	cam.y = clampf(cam.y, 0.0f, 1140.f - winSize.height);
 
-	if (cam.y < 0) cam.y = 0;
-
-	// if (cam.y - winSize.height)
-	//     cam.y -= winSize.height;
-
-	if (this->m_bFirstAttempt)
-		if (cam.x <= 30.0f) cam.x = 30.0f;
-
-	float temp = this->m_fEndOfLevel - winSize.width;
-	if (this->m_fEndOfLevel > 0.0f)
-		if (cam.x >= temp) cam.x = temp;
-
-	if (playerPosX >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
+	if (pPos.x >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
 	{
 		this->m_pBG->setPositionX(
 			this->m_pBG->getPositionX() - dt * player->getPlayerSpeed() * _bottomGround->getSpeed() * 0.1175f);
@@ -509,16 +496,18 @@ void PlayLayer::updateCamera(float dt)
 		cam.x += dt * player->getPlayerSpeed() * 5.770002f;
 	}
 	else if (player->m_bIsPlatformer)
-		cam.x = playerPosX - winSize.width / 2.f;
-
+		cam.x = pPos.x - winSize.width / 2.f;
+	
 	if (this->m_pBG->getPosition().x <= cam.x - 1024.f) this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024.f);
 
-	// this->_bottomGround->setPositionX(this->_bottomGround->getPositionX() + (cam.x - m_obCamPos.x));
-	// this->_ceiling->setPositionX(this->_ceiling->getPositionX() + (cam.x - m_obCamPos.x));
 	this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
 
-	this->m_obCamPos = cam;
-	// GameToolbox::log("camPosX: {}, camPosY: {}", m_obCamPos.x, m_obCamPos.y);
+	if (!this->m_bMoveCameraX)
+		m_obCamPos.x = cam.x;
+
+	if (!this->m_bMoveCameraY)
+		m_obCamPos.y = GameToolbox::iLerp(m_obCamPos.y, cam.y, 0.1f, dt / 60.f);
+
 	Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
 
 	cameraFollow->setPosition(m_obCamPos);
