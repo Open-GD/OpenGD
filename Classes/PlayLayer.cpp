@@ -29,8 +29,7 @@ Scene* PlayLayer::scene(GJGameLevel* level)
 int PlayLayer::sectionForPos(float x)
 {
 	int section = x / 100;
-	if (section < 0)
-		section = 0;
+	if (section < 0) section = 0;
 	return section;
 }
 
@@ -170,8 +169,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 	m_pColorChannels.insert({1006, m_pPlayer->getSecondaryColor()});
 
 	_originalColors = std::map<int, Color3B>(m_pColorChannels);
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000));
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000));
 	this->_bottomGround->update(0);
 
 	for (std::string data : objData)
@@ -186,12 +184,12 @@ void PlayLayer::loadLevel(std::string levelStr)
 		{
 			int key = std::stoi(d[i]);
 
-			if (key != 1 && obj == nullptr)
-				break;
+			if (key != 1 && obj == nullptr) break;
 
 			switch (key)
 			{
-			case 1: {
+			case 1:
+			{
 				int id = std::stoi(d[i + 1]);
 
 				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
@@ -200,8 +198,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 				else
 					obj = GameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
 
-				if (obj == nullptr)
-					break;
+				if (obj == nullptr) break;
 
 				obj->setStretchEnabled(false);
 				obj->setActive(true);
@@ -272,8 +269,16 @@ void PlayLayer::loadLevel(std::string levelStr)
 			case kGameObjectTypeShipPortal:
 			case kGameObjectTypeSolid:
 			case kGameObjectTypeSpecial:
-			case kGameObjectTypeHazard: {
-				obj->setOuterBounds(Rect(obj->getPosition() + Vec2(hb.x, hb.y) + Vec2(15, 15), {hb.w, hb.h}));
+			case kGameObjectTypeHazard:
+			{
+				ax::Mat4 tr;
+
+				tr.rotate(obj->getRotationQuat());
+
+				ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
+				rec = RectApplyTransform(rec, tr);
+
+				obj->setOuterBounds(Rect(obj->getPosition() + Vec2(rec.origin.x, rec.origin.y) + Vec2(15, 15), {rec.size.width, rec.size.height}));
 				break;
 			}
 			}
@@ -283,8 +288,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 bool PlayLayer::init(GJGameLevel* level)
 {
-	if (!Layer::init())
-		return false;
+	if (!Layer::init()) return false;
 
 	level->_MusicID = 5; // cant let go song
 	setLevel(level);
@@ -311,8 +315,9 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	this->m_pBG = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
 	m_pBG->setStretchEnabled(false);
-	const Texture2D::TexParams texParams = {backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR,
-											backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT};
+	const Texture2D::TexParams texParams = {
+		backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR, backend::SamplerAddressMode::REPEAT,
+		backend::SamplerAddressMode::REPEAT};
 	this->m_pBG->getTexture()->setTexParameters(texParams);
 	this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
 	this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
@@ -331,11 +336,9 @@ bool PlayLayer::init(GJGameLevel* level)
 		this->m_lastObjXPos = std::numeric_limits<float>().min();
 
 		for (GameObject* object : _pObjects)
-			if (this->m_lastObjXPos < object->getPositionX())
-				this->m_lastObjXPos = object->getPositionX();
+			if (this->m_lastObjXPos < object->getPositionX()) this->m_lastObjXPos = object->getPositionX();
 
-		if (this->m_lastObjXPos < 570.f)
-			this->m_lastObjXPos = 570.f;
+		if (this->m_lastObjXPos < 570.f) this->m_lastObjXPos = 570.f;
 
 		for (size_t i = 0; i < sectionForPos(this->m_lastObjXPos); i++)
 		{
@@ -364,7 +367,7 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	scheduleOnce(
 		[=](float d) {
-			AudioEngine::play2d(LevelTools::getAudioFilename(3), false, 0.1f);
+			AudioEngine::play2d(LevelTools::getAudioFilename(6), false, 0.1f);
 			scheduleUpdate();
 			m_pPlayer->setIsDead(false);
 		},
@@ -399,8 +402,7 @@ void PlayLayer::update(float dt)
 	this->m_pColorChannels.at(1005) = this->m_pPlayer->getMainColor();
 	this->m_pColorChannels.at(1006) = this->m_pPlayer->getSecondaryColor();
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000));
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000));
 
 	if (!m_freezePlayer && !this->m_pPlayer->isDead())
 	{
@@ -414,8 +416,7 @@ void PlayLayer::update(float dt)
 			m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), {7.5, 7.5}));
 
 			this->checkCollisions(step);
-			if (this->m_pPlayer->isDead())
-				break;
+			if (this->m_pPlayer->isDead()) break;
 		}
 		step *= 4.0f;
 	}
@@ -424,17 +425,14 @@ void PlayLayer::update(float dt)
 
 	this->updateVisibility();
 	this->updateCamera(step);
-	if (m_pPlayer->isShip())
-		m_pPlayer->updateShipRotation(step);
+	if (m_pPlayer->isShip()) m_pPlayer->updateShipRotation(step);
 	Vec2 playerPosNew = m_pPlayer->getPosition();
 }
 
 void PlayLayer::destroyPlayer()
 {
-	if (m_pPlayer->isDead())
-		return;
-	if (m_pPlayer->noclip)
-		return;
+	if (m_pPlayer->isDead()) return;
+	if (m_pPlayer->noclip) return;
 	m_pPlayer->setIsDead(true);
 	m_pPlayer->playDeathEffect();
 
@@ -469,14 +467,12 @@ void PlayLayer::updateCamera(float dt)
 
 		if (playerPosY <= cam.y + winSize.height - unk2)
 		{
-			if (playerPosY < cam.y + unk3)
-				unk4 = playerPosY - unk3;
+			if (playerPosY < cam.y + unk3) unk4 = playerPosY - unk3;
 		}
 		else
 			unk4 = playerPosY - winSize.height + unk2;
 
-		if (player->getLastGroundPos().y == 105 && playerPosY <= cam.y + winSize.height - unk2)
-			unk4 = 0;
+		if (player->getLastGroundPos().y == 105 && playerPosY <= cam.y + winSize.height - unk2) unk4 = 0;
 	}
 	else
 	{
@@ -488,25 +484,22 @@ void PlayLayer::updateCamera(float dt)
 
 	cam.y += (unk4 - cam.y) / unk5;
 
-	if (cam.y < 0)
-		cam.y = 0;
+	if (cam.y < 0) cam.y = 0;
 
 	// if (cam.y - winSize.height)
 	//     cam.y -= winSize.height;
 
 	if (this->m_bFirstAttempt)
-		if (cam.x <= 30.0f)
-			cam.x = 30.0f;
+		if (cam.x <= 30.0f) cam.x = 30.0f;
 
 	float temp = this->m_fEndOfLevel - winSize.width;
 	if (this->m_fEndOfLevel > 0.0f)
-		if (cam.x >= temp)
-			cam.x = temp;
+		if (cam.x >= temp) cam.x = temp;
 
 	if (playerPosX >= winSize.width / 2.5f && !player->isDead() && !player->m_bIsPlatformer) // wrong but works for now
 	{
-		this->m_pBG->setPositionX(this->m_pBG->getPositionX() -
-								  dt * player->getPlayerSpeed() * _bottomGround->getSpeed() * 0.1175f);
+		this->m_pBG->setPositionX(
+			this->m_pBG->getPositionX() - dt * player->getPlayerSpeed() * _bottomGround->getSpeed() * 0.1175f);
 		_bottomGround->update(dt * player->getPlayerSpeed());
 		_ceiling->update(dt * player->getPlayerSpeed());
 		cam.x += dt * player->getPlayerSpeed() * 5.770002f;
@@ -514,8 +507,7 @@ void PlayLayer::updateCamera(float dt)
 	else if (player->m_bIsPlatformer)
 		cam.x = playerPosX - winSize.width / 2.f;
 
-	if (this->m_pBG->getPosition().x <= cam.x - 1024.f)
-		this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024.f);
+	if (this->m_pBG->getPosition().x <= cam.x - 1024.f) this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024.f);
 
 	// this->_bottomGround->setPositionX(this->_bottomGround->getPositionX() + (cam.x - m_obCamPos.x));
 	// this->_ceiling->setPositionX(this->_ceiling->getPositionX() + (cam.x - m_obCamPos.x));
@@ -527,8 +519,7 @@ void PlayLayer::updateCamera(float dt)
 
 	cameraFollow->setPosition(m_obCamPos);
 	_ceiling->setVisible(m_pPlayer->isShip());
-	if (!m_pPlayer->isShip())
-		_bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
+	if (!m_pPlayer->isShip()) _bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
 
 	m_pBar->setPosition(this->m_obCamPos + winSize / 2);
 	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
@@ -600,11 +591,13 @@ void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
 {
 	switch (gameMode)
 	{
-	case 0: {
+	case 0:
+	{
 		this->m_pPlayer->setIsShip(false);
 	}
 	break;
-	case 1: {
+	case 1:
+	{
 		if (obj->getPositionY() < 270)
 		{
 			m_fCameraYCenter = 240.0f;
@@ -619,6 +612,7 @@ void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
 	}
 	}
 }
+
 void PlayLayer::moveCameraToPos(Vec2 pos)
 {
 	auto moveX = [this](float a, float b, float c) -> void {
@@ -642,12 +636,10 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
 void PlayLayer::processTriggers()
 {
 	int current_section = this->sectionForPos(m_pPlayer->getPositionX());
-	if (m_pSectionObjects.size() == 0)
-		return;
+	if (m_pSectionObjects.size() == 0) return;
 
 	std::vector<GameObject*> section =
-		m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0
-																		: sectionForPos(m_pPlayer->getPositionX()) - 1];
+		m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
 
 	int i = 0;
 	while (i < section.size())
@@ -714,8 +706,7 @@ void PlayLayer::checkCollisions(float dt)
 
 				if (obj->getGameObjectType() == kGameObjectTypeHazard)
 				{
-					if (objBounds.size.width <= 0 || objBounds.size.height <= 0)
-						continue;
+					if (objBounds.size.width <= 0 || objBounds.size.height <= 0) continue;
 					m_pHazards.push_back(obj);
 					renderRect(objBounds, ax::Color4B::RED);
 				}
@@ -725,12 +716,10 @@ void PlayLayer::checkCollisions(float dt)
 					{
 						if (auto trigger = dynamic_cast<EffectGameObject*>(obj); trigger)
 						{
-							if (trigger->getPositionX() <= m_pPlayer->getPositionX())
-								trigger->triggerActivated(dt);
+							if (trigger->getPositionX() <= m_pPlayer->getPositionX()) trigger->triggerActivated(dt);
 						}
 					}
-					if (objBounds.size.width <= 0 || objBounds.size.height <= 0)
-						continue;
+					if (objBounds.size.width <= 0 || objBounds.size.height <= 0) continue;
 					renderRect(objBounds, ax::Color4B::BLUE);
 					if (playerOuterBounds.intersectsRect(objBounds))
 					{
@@ -814,8 +803,7 @@ void PlayLayer::checkCollisions(float dt)
 void PlayLayer::onDrawImGui()
 {
 	extern bool _showDebugImgui;
-	if (!_showDebugImgui)
-		return;
+	if (!_showDebugImgui) return;
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
 	ImGui::SetNextWindowPos({1000.0f, 200.0f}, ImGuiCond_FirstUseEver);
 
@@ -835,29 +823,27 @@ void PlayLayer::onDrawImGui()
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	}
 
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
-				ImGui::GetIO().Framerate);
+	ImGui::Text(
+		"Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 	ImGui::Text("yVel %.3f", m_pPlayer->getYVel());
 
 	ImGui::Checkbox("Show Hitboxes", &showDn);
 	ImGui::Checkbox("Gain the power of invincibility", &noclip);
 
-	if (ImGui::InputFloat("Speed", &gameSpeed))
-		Director::getInstance()->getScheduler()->setTimeScale(gameSpeed);
+	if (ImGui::InputFloat("Speed", &gameSpeed)) Director::getInstance()->getScheduler()->setTimeScale(gameSpeed);
 
-	if (ImGui::InputFloat("FPS", &fps))
-		Director::getInstance()->setAnimationInterval(1.0f / fps);
+	if (ImGui::InputFloat("FPS", &fps)) Director::getInstance()->setAnimationInterval(1.0f / fps);
 
 	ImGui::Text("Sections: %i", m_pSectionObjects.size());
 	if (m_pSectionObjects.size() > 0 && sectionForPos(m_pPlayer->getPositionX()) - 1 < m_pSectionObjects.size())
-		ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0
-																	  ? 0
-																	  : sectionForPos(m_pPlayer->getPositionX()) - 1]
-													.size());
+		ImGui::Text(
+			"Current Section Size: %i",
+			m_pSectionObjects
+				[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1]
+					.size());
 
-	if (ImGui::Checkbox("Become ship", &ship))
-		this->m_pPlayer->setIsShip(ship);
+	if (ImGui::Checkbox("Become ship", &ship)) this->m_pPlayer->setIsShip(ship);
 
 	if (ImGui::Button("Reset"))
 	{
@@ -888,21 +874,19 @@ void PlayLayer::resetLevel()
 	_prevSection = -1;
 	_nextSection = -1;
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000));
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000));
 	this->_bottomGround->update(0);
 	this->_ceiling->update(0);
 
 	AudioEngine::stopAll();
-	AudioEngine::play2d(LevelTools::getAudioFilename(3), false, 0.1f);
+	AudioEngine::play2d(LevelTools::getAudioFilename(6), false, 0.1f);
 	scheduleUpdate();
 }
 
 void PlayLayer::renderRect(ax::Rect rect, ax::Color4B col)
 {
 	dn->drawRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, col);
-	dn->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()},
-					  Color4B(col.r, col.g, col.b, 100));
+	dn->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, Color4B(col.r, col.g, col.b, 100));
 }
 
 void PlayLayer::onEnter()
@@ -932,20 +916,24 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 	GameToolbox::log("Key with keycode {} pressed", static_cast<int>(keyCode));
 	switch (keyCode)
 	{
-	case EventKeyboard::KeyCode::KEY_R: {
+	case EventKeyboard::KeyCode::KEY_R:
+	{
 		resetLevel();
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_F: {
+	case EventKeyboard::KeyCode::KEY_F:
+	{
 		extern bool _showDebugImgui;
 		_showDebugImgui = !_showDebugImgui;
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_SPACE: {
+	case EventKeyboard::KeyCode::KEY_SPACE:
+	{
 		m_pPlayer->onTouchBegan(nullptr, nullptr);
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_UP_ARROW: {
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+	{
 		m_pPlayer->onTouchBegan(nullptr, nullptr);
 	}
 	}
@@ -963,11 +951,13 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 		m_pPlayer->direction = 0.f;
 	switch (keyCode)
 	{
-	case EventKeyboard::KeyCode::KEY_SPACE: {
+	case EventKeyboard::KeyCode::KEY_SPACE:
+	{
 		m_pPlayer->onTouchEnded(nullptr, nullptr);
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_UP_ARROW: {
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+	{
 		m_pPlayer->onTouchEnded(nullptr, nullptr);
 	}
 	}
@@ -985,7 +975,4 @@ void PlayLayer::tweenCeiling(float y)
 	//_ceiling->setPositionY(y);
 }
 
-PlayLayer* PlayLayer::getInstance()
-{
-	return Instance;
-}
+PlayLayer* PlayLayer::getInstance() { return Instance; }
