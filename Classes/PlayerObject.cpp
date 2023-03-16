@@ -38,20 +38,13 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 	GameToolbox::log("1: {}, 2: {}", sprStr1, sprStr2);
 
 	// initialize
-	if (!GameObject::init(sprStr1))
+	if (!GameObject::init(sprStr1, ""))
 		return false;
 
 	gameLayer = gameLayer_;
 
 	// Check if layer is playlayer
-	if (dynamic_cast<PlayLayer *>(gameLayer_) == nullptr)
-	{
-		inPlayLayer = false;
-	}
-	else
-	{
-		inPlayLayer = true;
-	}
+	inPlayLayer = dynamic_cast<PlayLayer*>(gameLayer_) != nullptr;
 
 	setTextureRect(Rect(0, 0, 30, 30)); // player hitbox lol
 

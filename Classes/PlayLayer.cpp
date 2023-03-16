@@ -48,7 +48,7 @@ PlayLayer* PlayLayer::create(GJGameLevel* level)
 	return nullptr;
 }
 
-std::vector<std::string> split(std::string& tosplit, char splitter)
+std::vector<std::string> split(std::string tosplit, char splitter)
 {
 	std::vector<std::string> vec;
 	std::istringstream ss(tosplit);
@@ -195,11 +195,18 @@ void PlayLayer::loadLevel(std::string levelStr)
 			case 1: {
 				int id = std::stoi(d[i + 1]);
 
+				std::string frameName = (std::string)GameObject::_pBlocks.at(id);
+
+				auto a = split(frameName, '_');
+				frameName = a[0] + '_' + a[1];
+
+				GameToolbox::log("{}{}.png", frameName, a[2]);
+
 				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
 					std::end(GameObject::_pTriggers))
-					obj = EffectGameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
+					obj = EffectGameObject::create(frameName + '_' + a[2] + ".png");
 				else
-					obj = GameObject::create((std::string)GameObject::_pBlocks.at(id) + ".png");
+					obj = GameObject::create(frameName + (a.size() >= 3 ? '_' + a[2] : "") + ".png", frameName + "_glow" + (a.size() >= 3 ? '_' + a[2] : "") + ".png");
 
 				if (obj == nullptr)
 					break;
@@ -211,9 +218,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 				obj->setID(id);
 
 				if (GameObject::_pHitboxes.contains(id))
-				{
 					hb = GameObject::_pHitboxes.at(id);
-				}
 
 				obj->_uniqueID = _pObjects.size();
 
@@ -382,7 +387,7 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	scheduleOnce(
 		[=](float d) {
-			AudioEngine::play2d(LevelTools::getAudioFilename(6), false, 0.1f);
+			AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
 			scheduleUpdate();
 			m_pPlayer->setIsDead(false);
 		},
@@ -939,7 +944,7 @@ void PlayLayer::resetLevel()
 	this->_ceiling->update(0);
 
 	AudioEngine::stopAll();
-	AudioEngine::play2d(LevelTools::getAudioFilename(6), false, 0.1f);
+	AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
 	scheduleUpdate();
 }
 

@@ -449,7 +449,7 @@ const std::map<int, float> GameObject::_pHitboxRadius = std::map<int, float>{
 	{1708, 28.9}, {1709, 17.6}, {1710, 12.9}, {1734, 32},	{1735, 17.68}, {1736, 12.48}};
 
 const std::map<int, const char*> GameObject::_pBlocks = std::map<int, const char*>{
-	{44, "checkpoint_01_001.png"}, // not setup in ObjectToolbox::init(), only initialised when placing a checkpoint
+	{44, "checkpoint_01_001"}, // not setup in ObjectToolbox::init(), only initialised when placing a checkpoint
 	{1, "square_01_001"},
 	{2, "square_02_001"},
 	{3, "square_03_001"},
@@ -2077,7 +2077,7 @@ const std::vector<int> GameObject::_pTriggers = std::vector<int>{
 	1817, 1818, 1819, 22,	24,	  23,	25,	  26,	27,	  28,	55,	  56,	57,	  58,	59,	  1912, 1913,
 	1914, 1916, 1917, 1931, 1932, 1934, 1935, 2015, 2016, 2062, 2067, 2068, 2701, 2702};
 
-bool GameObject::init(std::string_view frame)
+bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 {
 	// so ObjectManager is supposed to do some shit here
 	// but there's not even any purpose for it to even exist
@@ -2096,6 +2096,16 @@ bool GameObject::init(std::string_view frame)
 
 	_pOuterBounds = Rect();
 	_pInnerBounds = Rect();
+
+	if (!glowFrame.empty())
+	{
+		_glowSprite = Sprite::createWithSpriteFrameName(glowFrame);
+		if (_glowSprite)
+		{
+			_glowSprite->setGlobalZOrder(-1);
+			addChild(_glowSprite);
+		}
+	}
 
 	return true;
 }
@@ -2168,12 +2178,12 @@ void GameObject::updateObjectType()
 	}
 }
 
-GameObject* GameObject::createObject(std::string_view frame)
+GameObject* GameObject::createObject(std::string_view frame, std::string_view glowFrame)
 {
 	// if RingObject
 	if (frame.find("ring_01_001.png") != std::string::npos)
 	{
-		return GameObject::create(frame);
+		return GameObject::create(frame, glowFrame);
 	}
 	else
 	{
@@ -2181,11 +2191,11 @@ GameObject* GameObject::createObject(std::string_view frame)
 	}
 }
 
-GameObject* GameObject::create(std::string_view frame)
+GameObject* GameObject::create(std::string_view frame, std::string_view glowFrame)
 {
 	auto pRet = new (std::nothrow) GameObject();
 
-	if (pRet && pRet->init(frame))
+	if (pRet && pRet->init(frame, glowFrame))
 	{
 		pRet->autorelease();
 		return pRet;
@@ -2205,6 +2215,16 @@ void GameObject::update()
 		setColor(pl->m_pColorChannels.at(_mainColorChannel));
 	if (pl->m_pColorChannels.contains(_secColorChannel))
 		setColor(pl->m_pColorChannels.at(_secColorChannel));
+
+	if (_glowSprite)
+	{
+		_glowSprite->setPosition(getContentSize() / 2.f);
+		_glowSprite->setFlippedX(_flippedX);
+		_glowSprite->setFlippedY(_flippedY);
+		_glowSprite->setRotation(getRotation());
+		_glowSprite->setScaleX(getScaleX());
+		_glowSprite->setScaleY(getScaleY());
+	}
 }
 
 std::string GameObject::keyToFrame(int key)

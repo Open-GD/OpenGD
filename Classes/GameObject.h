@@ -43,6 +43,8 @@ private:
 	int _pColorBlue;
 	float _pDuration;
 
+	ax::Sprite* _glowSprite;
+
 public:
 
 	bool m_bHasBeenActivated;
@@ -57,10 +59,10 @@ public:
 
 	static const std::vector<int> _pSolids, _pTriggers;
 
-	static GameObject *create(std::string_view frame);
-	static GameObject *createObject(std::string_view frame);
+	static GameObject *create(std::string_view frame, std::string_view glowFrame = "");
+	static GameObject *createObject(std::string_view frame, std::string_view glowFrame = "");
 	static GameObject *objectFromString(std::string);
-	bool init(std::string_view frame);
+	bool init(std::string_view frame, std::string_view glowFrame = "");
 
 	void updateObjectType();
 
