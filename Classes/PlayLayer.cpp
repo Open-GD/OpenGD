@@ -195,18 +195,17 @@ void PlayLayer::loadLevel(std::string levelStr)
 			case 1: {
 				int id = std::stoi(d[i + 1]);
 
-				std::string frameName = (std::string)GameObject::_pBlocks.at(id);
-
-				auto a = split(frameName, '_');
-				frameName = a[0] + '_' + a[1];
-
-				GameToolbox::log("{}{}.png", frameName, a[2]);
+				auto block = GameObject::_pBlocks.at(id);
+				std::string frame = static_cast<std::string>(block[0]);
+				std::string glowFrame = "";
+				if (block.size() > 1)
+					glowFrame = static_cast<std::string>(block[1]);
 
 				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
 					std::end(GameObject::_pTriggers))
-					obj = EffectGameObject::create(frameName + '_' + a[2] + ".png");
+					obj = EffectGameObject::create(frame);
 				else
-					obj = GameObject::create(frameName + (a.size() >= 3 ? '_' + a[2] : "") + ".png", frameName + "_glow" + (a.size() >= 3 ? '_' + a[2] : "") + ".png");
+					obj = GameObject::create(frame + ".png", glowFrame + ".png");
 
 				if (obj == nullptr)
 					break;

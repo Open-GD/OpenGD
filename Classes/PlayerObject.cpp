@@ -38,7 +38,7 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 	GameToolbox::log("1: {}, 2: {}", sprStr1, sprStr2);
 
 	// initialize
-	if (!GameObject::init(sprStr1, ""))
+	if (!GameObject::init(sprStr1))
 		return false;
 
 	gameLayer = gameLayer_;
@@ -681,7 +681,7 @@ void PlayerObject::stopRotation()
 		if (getRotation() != 0)
 		{
 			auto degrees = (int)getRotation() % 360;
-			auto action = RotateTo::create(0.125f, (90 * roundf(degrees / 90.0f)));
+			auto action = RotateTo::create(0.1f, (90 * roundf(degrees / 90.0f)));
 			action->setTag(1);
 			runAction(action);
 		}

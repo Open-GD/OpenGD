@@ -50,18 +50,17 @@ public:
 	bool m_bHasBeenActivated;
 	int _mainColorChannel = -1, _secColorChannel = -1;
 
-	int _uniqueID = -1;;
+	int _uniqueID = -1;
 
 	static const std::map<int, Hitbox> _pHitboxes;
 	static const std::map<int, float> _pHitboxRadius;
 	// from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35
-	static const std::map<int, const char *> _pBlocks;
+	static const std::map<int, std::vector<const char *>> _pBlocks;
 
 	static const std::vector<int> _pSolids, _pTriggers;
 
 	static GameObject *create(std::string_view frame, std::string_view glowFrame = "");
 	static GameObject *createObject(std::string_view frame, std::string_view glowFrame = "");
-	static GameObject *objectFromString(std::string);
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
 	void updateObjectType();
