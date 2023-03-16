@@ -6,6 +6,7 @@
 #include "GameToolbox.h"
 #include "MenuLayer.h"
 #include "BoomScrollLayer.h"
+#include "LevelPage.h"
 
 USING_NS_AX;
 
@@ -34,7 +35,7 @@ bool LevelSelectLayer::init()
 
 	// // why does game manager store the ground id? who knows!
 	_ground = GroundLayer::create(1);
-
+	_ground->setPositionY(-25.f);
 	addChild(_ground, -1);
 
 	// auto topBar = Sprite::create("GJ_topBar_001.png");
@@ -46,35 +47,13 @@ bool LevelSelectLayer::init()
 	GameToolbox::createCorners(this, false, false, true, true);
 	
 	std::vector<Layer*> layers;
-	layers.reserve(3);
 	
 	for(uint32_t i = 0; i < 20; i++)
 	{
-		auto l = Layer::create();
-		const char* frame = nullptr;
-		switch(i)
-		{
-			case 0: frame = "player_01_001.png";	break;
-			case 1: frame = "GJ_createBtn_001.png";	break;
-			default: frame = "GJ_arrow_01_001.png";	break;
-		}
-		auto spr = Sprite::createWithSpriteFrameName(frame);
-		//spr->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-		auto menu = Menu::create();
-		auto btn = MenuItemSpriteExtra::create(spr, [&](Node* btn) {
-			AudioEngine::stopAll();
-			AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
-			auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 5));
-			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
-		});
-		menu->addChild(btn);
-		menu->setPosition(Vec2::ZERO);
-		l->addChild(menu);
-		layers.push_back(std::move(l));
+		layers.push_back(LevelPage::create(GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1)));
 	}
 	
 	auto bsl = BoomScrollLayer::create(layers, 0);
-	bsl->setPosition(winSize.width / 2, winSize.height / 2);
 	addChild(bsl);
 	/* std::vector<GJGameLevel> mainLevels;
 	cocos2d::CCArray* levelPages = cocos2d::CCArray::create();
@@ -132,8 +111,8 @@ bool LevelSelectLayer::init()
 		Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Left_001.png" : "navArrowBtn_001.png");
 	if (!controller) left->setFlippedX(true);
 
-	MenuItemSpriteExtra* leftBtn = MenuItemSpriteExtra::create(left, [&](Node* btn) {
-
+	MenuItemSpriteExtra* leftBtn = MenuItemSpriteExtra::create(left, [&, bsl](Node* btn) {
+		bsl->changePageLeft();
 	});
 	btnMenu->addChild(leftBtn);
 
@@ -142,9 +121,8 @@ bool LevelSelectLayer::init()
 
 	auto right = Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Right_001.png" : "navArrowBtn_001.png");
 
-	MenuItemSpriteExtra* rightBtn = MenuItemSpriteExtra::create(right, [&](Node* btn) {
-		//auto a = GJMoreGamesLayer::create();
-		//addChild(a);
+	MenuItemSpriteExtra* rightBtn = MenuItemSpriteExtra::create(right, [&, bsl](Node* btn) {
+		bsl->changePageRight();
 	});
 	btnMenu->addChild(rightBtn);
 

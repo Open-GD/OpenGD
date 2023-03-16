@@ -65,6 +65,7 @@ public:
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
 	void updateObjectType();
+	void setupColors();
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);
