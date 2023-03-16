@@ -27,17 +27,35 @@ void BoomScrollLayer::selectPage(int current)
 	GameToolbox::log("current page: {}", current);
 	//_internalLayer->setPositionX(Director::getInstance()->getWinSize().x * current);
 	auto winSize = Director::getInstance()->getWinSize();
-	auto pages = _layers;
-	auto count = pages.size();
+	auto count = _layers.size();
+	GameToolbox::log("count: {}", count);
 	
 	for(int i = 0; i < count; i++)
 	{
 		float newX = winSize.width * (i - current);
 		GameToolbox::log("1 {}", i);
-		auto layer = pages.at(i);
-		layer->setPositionX(newX);
+		auto layer = _layers.at(i);
+		//layer->setPositionX(newX);
+		auto ac = ax::MoveTo::create(0.5f, {newX, layer->getPositionY()});
+		layer->runAction(ax::EaseBackOut::create(ac));
 		GameToolbox::log("setting {} to {}", i, newX);
 	}
+
+	_currentPage = current;
+}
+
+void BoomScrollLayer::changePageRight()
+{
+	_currentPage++;
+	if(_currentPage >= _layers.size()) _currentPage = 0;
+	selectPage(_currentPage);
+}
+
+void BoomScrollLayer::changePageLeft()
+{
+	_currentPage--;
+	if(_currentPage < 0) _currentPage = _layers.size() - 1;
+	selectPage(_currentPage);
 }
 
 bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
@@ -88,13 +106,13 @@ bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 
 bool BoomScrollLayer::onTouchBegan(ax::Touch* touch, ax::Event *event)
 {
-	GameToolbox::log("began");
+	//GameToolbox::log("began");
 	return true;
 }
 
 void BoomScrollLayer::onTouchEnded(ax::Touch* touch, ax::Event *event)
 {
-	GameToolbox::log("ended");
+	//GameToolbox::log("ended");
 }
 
 void BoomScrollLayer::onTouchMoved(ax::Touch* touch, ax::Event *event)
@@ -105,7 +123,7 @@ void BoomScrollLayer::onTouchMoved(ax::Touch* touch, ax::Event *event)
 	
 	_internalLayer->setPositionX(layerPos.x + (touchPos.x - previous.x));
 	
-	GameToolbox::log("moved");
+	//GameToolbox::log("moved");
 }
 
 void BoomScrollLayer::onExit()

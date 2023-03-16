@@ -2120,6 +2120,76 @@ GameObject* GameObject::objectFromString(std::string str)
 	return obj;
 }
 
+void GameObject::setupColors()
+{
+	switch(getID())
+	{
+		case 18:
+		case 110:
+		case 241:
+		case 19:
+		case 153:
+		case 237:
+		case 20:
+		case 152:
+		case 41:
+		case 238:
+		case 21:
+		case 151:
+		case 239:
+		case 113:
+		case 452:
+		case 240:
+		case 114:
+		case 451:
+		case 496:
+		case 115:
+		case 450:
+		case 497:
+		case 1004:
+		case 1003:
+		case 1002:
+		case 1001:
+		case 129:
+		case 127:
+		case 128:
+		case 130:
+		case 131:
+		case 126:
+		case 123:
+		case 85:
+		case 494:
+		case 125:
+		case 124:
+		case 1019:
+		case 97:
+		case 154:
+		case 87:
+		case 1000:
+		case 1020:
+		case 155:
+		case 156:
+		case 375:
+		case 1021:
+		case 377:
+		case 1521:
+		case 222:
+		case 223:
+		case 224:
+		case 999:
+		case 394:
+		case 396:
+		case 998:
+		case 395:
+		case 1527:
+		case 1525:
+		case 997:
+		this->_mainColorChannel = 1005;
+		this->_secColorChannel = 1005;
+		break;
+	}
+}
+
 void GameObject::updateObjectType()
 {
 	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) != std::end(GameObject::_pSolids))

@@ -35,6 +35,9 @@ public:
 	int _EditorTime;
 	int _EditorTimeTotal;
 	int _SongID;
+
+	float _normalPercent;
+	float _practicePercent;
 	
 	bool _Auto;
 	bool _Demon;

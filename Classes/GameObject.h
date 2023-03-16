@@ -63,6 +63,7 @@ public:
 	bool init(std::string_view frame);
 
 	void updateObjectType();
+	void setupColors();
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);
