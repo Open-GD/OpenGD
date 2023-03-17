@@ -40,6 +40,7 @@ private:
 	bool m_bMoveCameraX;
 	bool m_bMoveCameraY;
 	bool m_bShakingCamera;
+	bool _pauseUpdate;
 	float m_fEndOfLevel = FLT_MAX;
 	float m_fShakeIntensity = 1;
 
@@ -71,6 +72,7 @@ public:
 	void moveCameraToPos(ax::Vec2);
 	void changeGameMode(GameObject*, int);
 	void resetLevel();
+	void exit();
 
 	void tweenBottomGround(float y);
 	void tweenCeiling(float y);

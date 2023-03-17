@@ -125,14 +125,14 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 	gameLayer->addChild(landEffect2, 1);
 
 	// streak
-	motionStreak = MotionTrail::create(0.3f, 3, 10, {255, 255, 255}, "streak.png");
-	motionStreak->setBlendFunc(BlendFunc::ADDITIVE);
+	//motionStreak = MotionTrail::create(0.3f, 3, 10, {255, 255, 255}, "streak.png");
+	//motionStreak->setBlendFunc(BlendFunc::ADDITIVE);
 
-	gameLayer->addChild(motionStreak);
+	//gameLayer->addChild(motionStreak);
 
-	motionStreak->setStartingPositionInitialized(false);
-	deactivateStreak();
-
+	//motionStreak->setStartingPositionInitialized(false);
+	//deactivateStreak();
+	
 	// scheduleUpdate();
 
 	auto dir = Director::getInstance();
@@ -277,12 +277,12 @@ void PlayerObject::update(float dt)
 	dragEffect3->setPosition(dragEffect2->getPosition());
 	shipDragEffect->setPosition(this->getPosition() + Vec2{ 1.f, flipMod() * -15.f });
 
-	if (!isShip())
-		motionStreak->setPosition(this->getPosition() + Vec2{ -5.f, 0.f });
-	else
-		motionStreak->setPosition(dragEffect2->getPosition());
+	//if (!isShip())
+	//	motionStreak->setPosition(this->getPosition() + Vec2{ -5.f, 0.f });
+	//else
+	//	motionStreak->setPosition(dragEffect2->getPosition());
 
-	motionStreak->setColor(getSecondaryColor());
+	//motionStreak->setColor(getSecondaryColor());
 	dragEffect1->setColor(getMainColor());
 	shipDragEffect->setColor(getMainColor());
 
@@ -322,11 +322,11 @@ void PlayerObject::spawnPortalCircle(ax::Color4B color, float radius)
 }
 void PlayerObject::deactivateStreak()
 {
-	motionStreak->stopStroke();
+	//motionStreak->stopStroke();
 }
 void PlayerObject::activateStreak()
 {
-	motionStreak->resumeStroke();
+	//motionStreak->resumeStroke();
 }
 void PlayerObject::propellPlayer()
 {

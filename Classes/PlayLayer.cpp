@@ -305,6 +305,8 @@ bool PlayLayer::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
 
+	_pauseUpdate = true;
+
 	level->_MusicID = 6; // cant let go song
 	setLevel(level);
 
@@ -395,6 +397,7 @@ bool PlayLayer::init(GJGameLevel* level)
 		},
 		1.f, "k");
 
+	_pauseUpdate = false;
 	return true;
 }
 
@@ -402,6 +405,9 @@ double lastY = 0;
 
 void PlayLayer::update(float dt)
 {
+	if (_pauseUpdate)
+		return;
+
 	if (m_freezePlayer)
 	{
 		AudioEngine::pauseAll();
@@ -553,6 +559,7 @@ void PlayLayer::updateVisibility()
 				for (size_t j = 0; j < section.size(); j++)
 				{
 					GameObject* obj = section[j];
+					if (!obj) continue;
 
 					if (obj->getParent() == nullptr)
 					{
@@ -852,12 +859,7 @@ void PlayLayer::onDrawImGui()
 
 	if (ImGui::Button("Exit"))
 	{
-		//_doNotUpdate = true;
-		AudioEngine::stopAll();
-		AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
-		unscheduleUpdate();
-
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
+		this->exit();
 	}
 
 	ImGui::Text(
@@ -902,7 +904,7 @@ void PlayLayer::resetLevel()
 		obj->setActive(false);
 		if (obj->getParent() != nullptr)
 		{
-			obj->retain();
+			AX_SAFE_RETAIN(obj);
 			_mainBatchNode->removeChild(obj, false);
 		}
 	}
@@ -950,48 +952,64 @@ void PlayLayer::onExit()
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
 	music = true;
 	Instance = nullptr;
-
-	_mainBatchNode->removeAllChildrenWithCleanup(true);
-
-	for (auto obj : this->_pObjects)
-	{
-		obj->release();
-	}
-
-	_particleBatchNode->removeAllChildrenWithCleanup(true);
-
-	for (auto particle : _particleBatchNode->getChildren())
-	{
-		//particle->autorelease();
-	}
 	Layer::onExit();
 }
 
+void PlayLayer::exit()
+{
+	_pauseUpdate = true;
+	unscheduleUpdate();
+	//_mainBatchNode->removeAllChildrenWithCleanup(true);
+
+	int size = _pObjects.size();
+	for (int i = 0; i < size; i++)
+	{
+		GameObject* obj = _pObjects.at(i);
+		if(obj && !obj->getParent()) obj->release();
+	}
+
+	_particleBatchNode->removeAllChildrenWithCleanup(true);
+	
+	//for (auto particle : _particleBatchNode->getChildren())
+	//{
+	//	particle->autorelease();
+	//}
+	AudioEngine::stopAll();
+	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
+	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
+
+}
 void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
 	GameToolbox::log("Key with keycode {} pressed", static_cast<int>(keyCode));
 	switch (keyCode)
-	{
-	case EventKeyboard::KeyCode::KEY_R:
-	{
-		resetLevel();
-	}
-	break;
-	case EventKeyboard::KeyCode::KEY_F:
-	{
-		extern bool _showDebugImgui;
-		_showDebugImgui = !_showDebugImgui;
-	}
-	break;
-	case EventKeyboard::KeyCode::KEY_SPACE:
-	{
-		m_pPlayer->onTouchBegan(nullptr, nullptr);
-	}
-	break;
-	case EventKeyboard::KeyCode::KEY_UP_ARROW:
-	{
-		m_pPlayer->onTouchBegan(nullptr, nullptr);
-	}
+		{
+		case EventKeyboard::KeyCode::KEY_R:
+		{
+			resetLevel();
+		}
+		break;
+		case EventKeyboard::KeyCode::KEY_F:
+		{
+			extern bool _showDebugImgui;
+			_showDebugImgui = !_showDebugImgui;
+		}
+		break;
+		case EventKeyboard::KeyCode::KEY_SPACE:
+		{
+			m_pPlayer->onTouchBegan(nullptr, nullptr);
+		}
+		break;
+		case EventKeyboard::KeyCode::KEY_UP_ARROW:
+		{
+			m_pPlayer->onTouchBegan(nullptr, nullptr);
+		}
+		break;
+		case EventKeyboard::KeyCode::KEY_BACK:
+		{
+			m_pPlayer->onTouchEnded(nullptr, nullptr);
+			this->exit();
+		}
 	}
 	if (keyCode == EventKeyboard::KeyCode::KEY_A)
 		m_pPlayer->direction = -1.f;
