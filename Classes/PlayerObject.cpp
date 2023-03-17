@@ -186,7 +186,6 @@ void PlayerObject::setIsOnGround(bool value)
 {
 	m_bOnGround = value; 
 }
-
 void PlayerObject::update(float dt)
 {
 	m_prevPos = getPosition();
@@ -216,9 +215,45 @@ void PlayerObject::update(float dt)
 	else
 		setScaleX(1.f);
 		
+	this->motionStreak->setPosition(this->getPosition() + Vec2{ -5.f, 0.f });
+	dragEffect1->setPosition(this->getPosition() + Vec2{ -10.f, flipMod() * -13.f });
+	dragEffect2->setPosition(this->getPosition() + Vec2{ -12.f, -4.f });
+	dragEffect3->setPosition(dragEffect2->getPosition());
+	shipDragEffect->setPosition(this->getPosition() + Vec2{ 1.f, flipMod() * -15.f });
 
-	// if (!this->m_bFlyMode)
-	// this->motionStreak->setPosition(this->getPosition() + ccp({-10, 0}));
+	if (!isShip())
+	{
+		if (isOnGround())
+		{
+			if(!_particlesActivated)
+				dragEffect1->resume();
+			_particlesActivated = true;
+			if (getActionByTag(2))
+				stopActionByTag(2);
+		}
+		else
+		{
+			if (_particlesActivated && !getActionByTag(2))
+			{
+				Sequence* action = Sequence::create(DelayTime::create(0.06f), CallFunc::create([=]() 
+				{
+					if (_particlesActivated)
+						dragEffect1->resume();
+					_particlesActivated = false; 
+				}), nullptr);
+				action->setTag(2);
+				runAction(action);
+			}
+		}
+	}
+	else
+	{
+		if (isOnGround() && m_dYVel > -1.f)
+			shipDragEffect->resume();
+		else
+			shipDragEffect->pause();
+	}
+		
 
 	// auto particle = Sprite::create("square.png");
 	// particle->setStretchEnabled(false);

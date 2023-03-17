@@ -167,8 +167,8 @@ void PlayLayer::loadLevel(std::string levelStr)
 		}
 	}
 
-	m_pColorChannels.insert({1005, m_pPlayer->getMainColor()});
-	m_pColorChannels.insert({1006, m_pPlayer->getSecondaryColor()});
+	m_pColorChannels[1005] = m_pPlayer->getMainColor();
+	m_pColorChannels[1006] = m_pPlayer->getSecondaryColor();
 
 	_originalColors = std::map<int, Color3B>(m_pColorChannels);
 	if (this->m_pColorChannels.contains(1000))
@@ -215,6 +215,10 @@ void PlayLayer::loadLevel(std::string levelStr)
 				obj->setStretchEnabled(false);
 				obj->setActive(true);
 				obj->setID(id);
+
+				obj->setupColors();
+				 
+				obj->customSetup();
 
 				if (GameObject::_pHitboxes.contains(id))
 					hb = GameObject::_pHitboxes.at(id);
@@ -338,7 +342,7 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
 	this->m_pPlayer->setPosition({-20, 105});
-	this->addChild(this->m_pPlayer, -1);
+	this->addChild(this->m_pPlayer, 2);
 	this->m_pPlayer->setAnchorPoint({0, 0});
 
 	m_pPlayer->setMainColor({125, 255, 0});
@@ -449,6 +453,9 @@ void PlayLayer::update(float dt)
 	if (m_pPlayer->isShip())
 		m_pPlayer->updateShipRotation(step);
 	Vec2 playerPosNew = m_pPlayer->getPosition();
+
+	m_pColorChannels[1005] = m_pPlayer->getMainColor();
+	m_pColorChannels[1006] = m_pPlayer->getSecondaryColor();
 }
 
 void PlayLayer::destroyPlayer()

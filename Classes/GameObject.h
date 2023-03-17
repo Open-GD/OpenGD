@@ -45,6 +45,8 @@ private:
 
 	ax::Sprite* _glowSprite;
 
+	ax::ParticleSystemQuad* _particle;
+
 public:
 
 	bool m_bHasBeenActivated;
@@ -64,6 +66,8 @@ public:
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
 	void updateObjectType();
+
+	void customSetup();
 	void setupColors();
 
 	static std::string keyToFrame(int key);
@@ -96,6 +100,8 @@ public:
 	void setColorBlue(int col) { _pColorBlue = col; }
 	float getDuration() { return _pDuration; }
 	void setDuration(float dura) { _pDuration = dura; }
+
+	void createAndAddParticle(const char* particle, int a3);
 
 	// AX_SYNTESIZE(int, _pColorRed, ColorRed); // does not work
 	// AX_SYNTESIZE(int, _pColorGreen, ColorGreen);

@@ -2106,9 +2106,41 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 			addChild(_glowSprite);
 		}
 	}
-
+	
 	return true;
 }
+
+void GameObject::customSetup()
+{
+	switch (getID())
+	{
+	case 10:
+		createAndAddParticle("portalEffect01.plist", 3);
+		_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
+		_particle->start();
+		//_particle->setEmissionRate(10);
+		break;
+	case 11:
+		createAndAddParticle("portalEffect02.plist", 3);
+		_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
+		_particle->start();
+		//_particle->setEmissionRate(10);
+		break;
+	case 12:
+		createAndAddParticle("portalEffect03.plist", 3);
+		_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
+		_particle->start();
+		//_particle->setEmissionRate(10);
+		break;
+	case 13:
+		createAndAddParticle("portalEffect04.plist", 3);
+		_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
+		_particle->start();
+		//_particle->setEmissionRate(10);
+		break;
+	}
+}
+
 void GameObject::setupColors()
 {
 	switch(getID())
@@ -2179,6 +2211,22 @@ void GameObject::setupColors()
 	}
 }
 
+void GameObject::createAndAddParticle(const char* path, int zOrder)
+{
+	if (_particle)
+	{
+		_particle->release();
+		_particle->cleanup();
+		_particle = nullptr;
+	}
+
+	_particle = ParticleSystemQuad::create(path);
+
+	PlayLayer::getInstance()->addChild(_particle, zOrder);
+
+	_particle->retain();
+	_particle->stopSystem();
+}
 void GameObject::updateObjectType()
 {
 	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) != std::end(GameObject::_pSolids))
@@ -2258,15 +2306,20 @@ void GameObject::update()
 
 		_glowSprite->setLocalZOrder(-1);
 	}
+	if (_particle)
+	{
+		_particle->setPosition(getPosition());
+		_particle->setRotation(getRotation());
+	}
 	auto pl = PlayLayer::getInstance();
 
 	if (!pl)
 		return;
 
 	if (pl->m_pColorChannels.contains(_mainColorChannel))
-		setColor(pl->m_pColorChannels.at(_mainColorChannel));
+		setColor(pl->m_pColorChannels[_mainColorChannel]);
 	if (pl->m_pColorChannels.contains(_secColorChannel))
-		setColor(pl->m_pColorChannels.at(_secColorChannel));
+		setColor(pl->m_pColorChannels[_secColorChannel]);
 }
 
 std::string GameObject::keyToFrame(int key)

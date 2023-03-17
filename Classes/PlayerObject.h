@@ -56,6 +56,8 @@ private:
 
 	bool m_isRising;
 
+	bool _particlesActivated;
+
 public:
 
 	GameObject* _touchedRingObject;
