@@ -18,6 +18,15 @@ void PlayerObject::reset()
 	stopActionByTag(0);
 	stopActionByTag(1);
 	_hasRingJumped = false;
+
+	dragEffect1->pauseEmissions();
+	dragEffect2->pauseEmissions();
+	dragEffect3->pauseEmissions();
+	shipDragEffect->pauseEmissions();
+	landEffect1->pauseEmissions();
+	landEffect2->pauseEmissions();
+
+	deactivateStreak();
 }
 
 void PlayerObject::playDeathEffect() 
@@ -68,20 +77,20 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 	// particles
 	dragEffect1 = ParticleSystemQuad::create("dragEffect.plist");
 	dragEffect1->setPositionType(ParticleSystem::PositionType::FREE);
-	dragEffect1->stopSystem();
+	dragEffect1->pauseEmissions();
 
 	gameLayer->addChild(dragEffect1, 1);
 
 	dragEffect2 = ParticleSystemQuad::create("dragEffect.plist");
 	dragEffect2->setPositionType(ParticleSystem::PositionType::FREE);
-	dragEffect2->stopSystem();
+	dragEffect2->pauseEmissions();
 	dragEffect2->setPositionY(2);
 
 	gameLayer->addChild(dragEffect2, 1);
 
 	dragEffect3 = ParticleSystemQuad::create("dragEffect.plist");
 	dragEffect3->setPositionType(ParticleSystem::PositionType::FREE);
-	dragEffect3->stopSystem();
+	dragEffect3->pauseEmissions();
 	dragEffect3->setPositionY(2);
 
 	gameLayer->addChild(dragEffect3, 1);
@@ -96,38 +105,33 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 	dragEffect3->setStartSize(dragEffect3->getStartSize() * 1.5f);
 	dragEffect3->setStartSizeVar(dragEffect3->getStartSizeVar() * 1.5f);
 
-	dragEffect2->setStartColor({255, 255, 255, 100});
-	dragEffect2->setEndColor({255, 255, 255, 0});
-
-	dragEffect3->setStartColor({255, 255, 255, 190});
-	dragEffect3->setEndColor({255, 255, 255, 0});
-
 	// other particles
 	shipDragEffect = ParticleSystemQuad::create("shipDragEffect.plist");
 	shipDragEffect->setPositionType(ParticleSystem::PositionType::GROUPED);
-	shipDragEffect->stopSystem();
+	shipDragEffect->pauseEmissions();
 
 	gameLayer->addChild(shipDragEffect, 1);
 
 	landEffect1 = ParticleSystemQuad::create("landEffect.plist");
 	landEffect1->setPositionType(ParticleSystem::PositionType::GROUPED);
-	landEffect1->stopSystem();
+	landEffect1->pauseEmissions();
 
 	gameLayer->addChild(landEffect1, 1);
 
 	landEffect2 = ParticleSystemQuad::create("landEffect.plist");
 	landEffect2->setPositionType(ParticleSystem::PositionType::GROUPED);
-	landEffect2->stopSystem();
+	landEffect2->pauseEmissions();
 
 	gameLayer->addChild(landEffect2, 1);
 
 	// streak
-	motionStreak = MotionStreak::create(0.3f, 3, 10, {255, 255, 255}, "streak.png");
+	motionStreak = MotionTrail::create(0.3f, 3, 10, {255, 255, 255}, "streak.png");
 	motionStreak->setBlendFunc(BlendFunc::ADDITIVE);
 
 	gameLayer->addChild(motionStreak);
 
 	motionStreak->setStartingPositionInitialized(false);
+	deactivateStreak();
 
 	// scheduleUpdate();
 
@@ -148,6 +152,14 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 
 void PlayerObject::setMainColor(Color3B col)
 {
+	float r = static_cast<float>(col.r);
+	float g = static_cast<float>(col.g);
+	float b = static_cast<float>(col.b);
+	dragEffect2->setStartColor({ r, g, b, 100 });
+	dragEffect2->setEndColor({ r, g, b, 0 });
+
+	dragEffect3->setStartColor({ r, g, b, 190 });
+	dragEffect3->setEndColor({ r, g, b, 0 });
 	this->m_pMainSprite->setColor(col);
 	setShipColor(col);
 }
@@ -192,6 +204,53 @@ void PlayerObject::update(float dt)
 	if (this->m_bIsDead)
 		return;
 
+	if (!isShip())
+	{
+		if (isOnGround())
+		{
+			if (!_particles1Activated)
+				dragEffect1->resumeEmissions();
+			_particles1Activated = true;
+			if (getActionByTag(2))
+				stopActionByTag(2);
+		}
+		else
+		{
+			if (_particles1Activated && !getActionByTag(2))
+			{
+				Sequence* action = Sequence::create(DelayTime::create(0.06f), CallFunc::create([=]()
+					{
+						if (_particles1Activated)
+							dragEffect1->pauseEmissions();
+						_particles1Activated = false;
+					}), nullptr);
+				action->setTag(2);
+				runAction(action);
+			}
+		}
+		shipDragEffect->pauseEmissions();
+		dragEffect3->pauseEmissions();
+	}
+	else // is ship
+	{
+		if (m_bIsHolding)
+		{
+			if (!_particles3Activated)
+				dragEffect3->resumeEmissions();
+			_particles3Activated = true;
+		}
+		else
+		{
+			if (_particles3Activated)
+				dragEffect3->pauseEmissions();
+			_particles3Activated = false;
+		}
+		if (isOnGround() && m_dYVel > -1.f)
+			shipDragEffect->resumeEmissions();
+		else
+			shipDragEffect->pauseEmissions();
+	}
+
 	if (!this->m_bIsLocked)
 	{
 		float dtSlow = dt * 0.9f;
@@ -206,54 +265,26 @@ void PlayerObject::update(float dt)
 	}
 
 	if (this->getPositionX() >= 500 && !this->inPlayLayer)
-	{
 		this->m_bIsHolding = true;
-	}
 
 	if (isShip())
 		setScaleX(isGravityFlipped() ? -1.f : 1.f);
 	else
 		setScaleX(1.f);
 		
-	this->motionStreak->setPosition(this->getPosition() + Vec2{ -5.f, 0.f });
 	dragEffect1->setPosition(this->getPosition() + Vec2{ -10.f, flipMod() * -13.f });
-	dragEffect2->setPosition(this->getPosition() + Vec2{ -12.f, -4.f });
+	dragEffect2->setPosition(this->getPosition() + m_pShipSprite->getPosition() + Vec2{-10.f, flipMod() * -8.f});
 	dragEffect3->setPosition(dragEffect2->getPosition());
 	shipDragEffect->setPosition(this->getPosition() + Vec2{ 1.f, flipMod() * -15.f });
 
 	if (!isShip())
-	{
-		if (isOnGround())
-		{
-			if(!_particlesActivated)
-				dragEffect1->resume();
-			_particlesActivated = true;
-			if (getActionByTag(2))
-				stopActionByTag(2);
-		}
-		else
-		{
-			if (_particlesActivated && !getActionByTag(2))
-			{
-				Sequence* action = Sequence::create(DelayTime::create(0.06f), CallFunc::create([=]() 
-				{
-					if (_particlesActivated)
-						dragEffect1->resume();
-					_particlesActivated = false; 
-				}), nullptr);
-				action->setTag(2);
-				runAction(action);
-			}
-		}
-	}
+		motionStreak->setPosition(this->getPosition() + Vec2{ -5.f, 0.f });
 	else
-	{
-		if (isOnGround() && m_dYVel > -1.f)
-			shipDragEffect->resume();
-		else
-			shipDragEffect->pause();
-	}
-		
+		motionStreak->setPosition(dragEffect2->getPosition());
+
+	motionStreak->setColor(getSecondaryColor());
+	dragEffect1->setColor(getMainColor());
+	shipDragEffect->setColor(getMainColor());
 
 	// auto particle = Sprite::create("square.png");
 	// particle->setStretchEnabled(false);
@@ -281,6 +312,22 @@ void PlayerObject::updateShipRotation(float dt)
 		setRotation(newAngleDeg);
 	}
 }
+void PlayerObject::spawnPortalCircle(ax::Color4B color, float radius)
+{
+	CircleWave* circle = CircleWave::create(0.3f, color, 5.f, radius, true, false);
+
+	circle->setPosition(getPortalP());
+
+	gameLayer->addChild(circle, 0);
+}
+void PlayerObject::deactivateStreak()
+{
+	motionStreak->stopStroke();
+}
+void PlayerObject::activateStreak()
+{
+	motionStreak->resumeStroke();
+}
 void PlayerObject::propellPlayer()
 {
 	m_isRising = true;
@@ -288,6 +335,8 @@ void PlayerObject::propellPlayer()
 	m_dYVel = flipMod() * 16.0f;
 	runRotateAction();
 	m_obLastGroundPos = getPosition();
+
+	activateStreak();
 }
 void PlayerObject::setTouchedRing(GameObject* obj)
 {
@@ -297,6 +346,7 @@ void PlayerObject::ringJump()
 {
 	if (_touchedRingObject && !_isHoldingFromGround && m_bIsHolding)
 	{
+		_touchedRingObject->triggerActivated();
 		m_isRising = true;
 		_isHoldingFromGround = true;
 		setIsOnGround(false);
@@ -304,6 +354,8 @@ void PlayerObject::ringJump()
 		runRotateAction();
 		_touchedRingObject = nullptr;
 		_hasRingJumped = true;
+
+		activateStreak();
 	}
 }
 void PlayerObject::flipGravity(bool gravity)
@@ -312,8 +364,21 @@ void PlayerObject::flipGravity(bool gravity)
 	{
 		m_bGravityFlipped = gravity;
 		m_dYVel /= 2.f;
+
+		activateStreak();
+
+		dragEffect1->setAngle(dragEffect1->getAngle() + 180);
+		dragEffect1->setGravity(Vec2{ dragEffect1->getGravity().x, -dragEffect1->getGravity().y });
+
+		dragEffect2->setAngle(dragEffect2->getAngle() + 180);
+		dragEffect2->setGravity(Vec2{ dragEffect2->getGravity().x, -dragEffect2->getGravity().y });
+
+		dragEffect3->setAngle(dragEffect3->getAngle() + 180);
+		dragEffect3->setGravity(Vec2{ dragEffect3->getGravity().x, -dragEffect3->getGravity().y });
+
+		shipDragEffect->setAngle(shipDragEffect->getAngle() + 180);
+		shipDragEffect->setGravity(Vec2{ shipDragEffect->getGravity().x, -shipDragEffect->getGravity().y });
 	}
-	
 }
 
 void PlayerObject::updateJump(float dt)
@@ -367,7 +432,7 @@ void PlayerObject::updateJump(float dt)
 
 		if (shouldJump && isOnGround())
 		{
-			m_bIsRising = true;
+			m_isRising = true;
 			m_bOnGround = false;
 
 			float jumpAccel = m_dJumpHeight;
@@ -378,55 +443,33 @@ void PlayerObject::updateJump(float dt)
 		}
 		else
 		{
-			float tfIsThisGravity = m_dGravity;
-
-			if (m_bIsRising)
+			if (m_isRising)
 			{
 				m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
-				bool condition;
-				if (!isGravityFlipped())
+				if (playerIsFalling())
 				{
-					condition = m_dYVel <= tfIsThisGravity * 2.0f;
-				}
-				else
-				{
-					condition = m_dYVel >= m_dGravity * 2.0f;
-				}
-
-				if (condition)
-				{
-					m_bIsRising = false;
+					m_isRising = false;
+					setIsOnGround(false);
 				}
 			}
 			else
 			{
-				if (!isGravityFlipped())
+				if (isGravityFlipped())
 				{
-					if (m_dYVel < tfIsThisGravity * 2.0f)
-					{
+					if (m_dYVel > m_dGravity * 2.f)
 						m_bOnGround = false;
-					}
 				}
 				else
 				{
-					if (m_dYVel > m_dGravity * 2.0f)
-					{
+					if (m_dGravity * 2.f > m_dYVel)
 						m_bOnGround = false;
-					}
 				}
 
 				m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
+				m_dYVel = isGravityFlipped() ? std::min(m_dYVel, 15.0) : std::max(m_dYVel, -15.0);
 				if (!isGravityFlipped())
 				{
-					m_dYVel = std::max(m_dYVel, -15.0);
-				}
-				else
-				{
-					m_dYVel = std::min(m_dYVel, 15.0);
-				}
-				if (!isGravityFlipped())
-				{
-					if (m_dYVel >= tfIsThisGravity * 2.0f)
+					if (m_dYVel >= m_dGravity * 2.0f)
 						return;
 				}
 				else
@@ -568,11 +611,13 @@ void PlayerObject::setIsShip(bool val)
 		if (val)
 		{
 			// do shit with particles
+			activateStreak();
 		}
 		else
 		{
 			runRotateAction();
 			// do shit with particles
+			deactivateStreak();
 		}
 	}
 	
@@ -658,11 +703,24 @@ void PlayerObject::checkSnapJumpToObject(GameObject *obj)
 }
 void PlayerObject::hitGround(bool reverseGravity)
 {
-	setIsOnGround(true);
 	m_dYVel = 0.0f;
+
+	if (!isOnGround() && !reverseGravity)
+	{
+		landEffect1->setPosition(getPosition() + Vec2{0.f, flipMod() * -15.f});
+		landEffect1->resetSystem();
+		landEffect1->start();
+	}
+
+	setIsOnGround(true);
+
 	if(getActionByTag(0))
 		stopRotation();
+
 	m_obLastGroundPos = getPosition();
+
+	if(!isShip())
+		deactivateStreak();
 }
 float PlayerObject::flipMod()
 {

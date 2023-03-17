@@ -11,7 +11,7 @@
 #include "GJGameLevel.h"
 
 class PlayLayer : public ax::Layer {
-  private:
+private:
 	bool init(GJGameLevel* level);
 	void onEnter() override;
 	void onExit() override;
@@ -54,7 +54,9 @@ class PlayLayer : public ax::Layer {
 	bool m_freezePlayer;
 	bool m_platformerMode;
 
-  public:
+public:
+	ax::ParticleBatchNode* _particleBatchNode;
+
 	std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
 
 	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);

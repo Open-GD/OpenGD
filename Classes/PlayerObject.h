@@ -2,6 +2,7 @@
 #include "CircleWave.h"
 #include "GameObject.h"
 #include <axmol.h>
+#include <MotionTrail.h>
 
 class PlayerObject : public GameObject 
 {
@@ -26,7 +27,7 @@ private:
 	ax::ParticleSystemQuad* landEffect1;
 	ax::ParticleSystemQuad* landEffect2;
 
-	ax::MotionStreak* motionStreak;
+	MotionTrail* motionStreak;
 
 	double m_dXVel = 5.770002;
 	double m_dYVel = 0;
@@ -37,7 +38,6 @@ private:
 
 	bool m_bIsDead;
 	bool m_bIsLocked;
-	bool m_bIsRising;
 	bool m_bIsHolding;
 	bool _isHoldingFromGround;
 
@@ -56,7 +56,9 @@ private:
 
 	bool m_isRising;
 
-	bool _particlesActivated;
+	bool _particles1Activated;
+	bool _particles2Activated;
+	bool _particles3Activated;
 
 public:
 
@@ -122,4 +124,24 @@ public:
 
 	void setTouchedRing(GameObject* obj);
 	void ringJump();
+
+	void activateStreak();
+	void deactivateStreak();
+
+	ax::Vec2 _portalP;
+	ax::Vec2 _lastP;
+
+	ax::Vec2 getPortalP() { return _portalP; }
+	ax::Vec2 getLastP() { return _lastP; }
+	void setPortalP(ax::Vec2 portalP) { _portalP = portalP; }
+	void setLastP(ax::Vec2 lastP) { _lastP = lastP; }
+
+
+
+	GameObject* _portalObject;
+
+	GameObject* getPortalObject() { return _portalObject; }
+	void setPortalObject(GameObject* portal) { _portalObject = portal; }
+
+	void spawnPortalCircle(ax::Color4B color, float radius);
 };

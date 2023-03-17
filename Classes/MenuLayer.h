@@ -4,7 +4,8 @@
 
 extern bool music;
 
-class MenuLayer : public ax::Layer {
+class MenuLayer : public ax::Layer 
+{
 public:
 	static ax::Scene* scene();
 	bool init();

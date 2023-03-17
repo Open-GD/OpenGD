@@ -308,7 +308,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	if (!Layer::init())
 		return false;
 
-	level->_MusicID = 5; // cant let go song
+	level->_MusicID = 6; // cant let go song
 	setLevel(level);
 
 	Instance = this;
@@ -380,6 +380,9 @@ bool PlayLayer::init(GJGameLevel* level)
 	_mainBatchNode = ax::SpriteBatchNode::create("GJ_GameSheet-hd.png", 150);
 	this->addChild(_mainBatchNode);
 
+	//_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
+	//addChild(_particleBatchNode);
+
 	this->m_pBar = SimpleProgressBar::create();
 	this->m_pBar->setPercentage(0.f);
 	this->m_pBar->setPosition({winSize.width / 2, winSize.height - 20});
@@ -389,7 +392,8 @@ bool PlayLayer::init(GJGameLevel* level)
 	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 
 	scheduleOnce(
-		[=](float d) {
+		[=](float d) 
+		{
 			AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
 			scheduleUpdate();
 			m_pPlayer->setIsDead(false);
@@ -709,23 +713,19 @@ void PlayLayer::checkCollisions(float dt)
 	{
 		if (this->m_pPlayer->getPositionY() <= _ceiling->getPositionY() - 12.f)
 		{
-
 			if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + 175.f)
 			{
-				float x = this->m_pPlayer->getPositionX();
-
-				this->m_pPlayer->setPosition({x, _bottomGround->getPositionY() + 175.f});
+				this->m_pPlayer->setPositionY(_bottomGround->getPositionY() + 175.f);
 
 				this->m_pPlayer->hitGround(this->m_pPlayer->isGravityFlipped());
 			}
 		}
 		else
 		{
-			float x = this->m_pPlayer->getPositionX();
+			this->m_pPlayer->setPositionY(_ceiling->getPositionY() - 12.f);
 
-			this->m_pPlayer->setPosition({x, _ceiling->getPositionY() - 12.f});
-
-			this->m_pPlayer->hitGround(!this->m_pPlayer->isGravityFlipped());
+			if(m_pPlayer->isGravityFlipped())
+				this->m_pPlayer->hitGround(!this->m_pPlayer->isGravityFlipped());
 		}
 	}
 
@@ -785,7 +785,8 @@ void PlayLayer::checkCollisions(float dt)
 							// if (!m_pPlayer->isGravityFlipped())
 							//	 this->playGravityEffect(true);
 
-							// m_pPlayer->setPortal(obj->getPosition());
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
 
 							m_pPlayer->flipGravity(true);
 							break;
@@ -794,30 +795,33 @@ void PlayLayer::checkCollisions(float dt)
 							// if (m_pPlayer->isGravityFlipped())
 							//	 this->playGravityEffect(false);
 
-							// m_pPlayer->setPortal(obj->getPosition());
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
 
 							m_pPlayer->flipGravity(false);
 							break;
 
 						case GameObjectType::kGameObjectTypeShipPortal:
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+
 							this->changeGameMode(obj, 1);
 							break;
 
 						case GameObjectType::kGameObjectTypeCubePortal:
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+
 							this->changeGameMode(obj, 0);
-							// this->m_pPlayer->setPortal(obj->getPosition());
-
-							// this->m_pPlayer->setIsShip(false);
-							/* this->toggleGlitter(false);
-							this->animateOutGround(false);
-
-							this->moveCameraY = false; */
 							break;
 
 						case GameObjectType::kGameObjectTypeYellowJumpPad:
 							if (!obj->m_bHasBeenActivated)
 							{
-								// obj->triggerActivated();
+								m_pPlayer->setPortalP(obj->getPosition());
+								m_pPlayer->setPortalObject(obj);
+
+								obj->triggerActivated();
 								m_pPlayer->propellPlayer();
 							}
 							break;
@@ -825,8 +829,10 @@ void PlayLayer::checkCollisions(float dt)
 						case GameObjectType::kGameObjectTypeYellowJumpRing:
 							if (!obj->m_bHasBeenActivated)
 							{
+								m_pPlayer->setPortalP(obj->getPosition());
+								m_pPlayer->setPortalObject(obj);
+
 								m_pPlayer->setTouchedRing(obj);
-								// obj->triggerActivated();
 
 								m_pPlayer->ringJump();
 							}

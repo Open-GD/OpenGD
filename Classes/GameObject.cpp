@@ -2138,6 +2138,17 @@ void GameObject::customSetup()
 		_particle->start();
 		//_particle->setEmissionRate(10);
 		break;
+	case 35:
+		createAndAddParticle("bumpEffect.plist", 0);
+		_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
+		_particle->setPositionY(getPositionY() - 4.f);
+		_particle->start();
+		break;
+	case 36:
+		createAndAddParticle("ringEffect.plist", 3);
+		_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
+		_particle->start();
+		break;
 	}
 }
 
