@@ -65,51 +65,44 @@ bool LevelPage::init(GJGameLevel* level)
 	practicePerc->setString(std::to_string((int)level->_practicePercent) + "%");
 	addChild(practicePerc, 4);
 
-    auto levelMenu = ax::Menu::create();
-    levelMenu->setPosition({283.5, 220});
-    addChild(levelMenu);
 
-    auto extraSprite = ax::Sprite::create("square02_001-hd.png");
+	
+	auto scale9 = ax::ui::Scale9Sprite::create("square02_001.png");
+	//scale9->setPosition({170, 47.5});
+	scale9->setContentSize({340, 95});
+	scale9->setOpacity(125);
+	
+	auto levelName = ax::Label::createWithBMFont("bigFont-hd.fnt", level->_LevelName);
+	levelName->setPosition(190, 50.5);
+	levelName->setScale(0.904);
+	scale9->addChild(levelName, 0);
 
-    auto extra = MenuItemSpriteExtra::create(extraSprite, [&, level](Node* btn) {
-        ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+	auto diffIcon = ax::Sprite::createWithSpriteFrameName("diffIcon_01_btn_001.png");
+	diffIcon->setScale(1.1);
+	diffIcon->setPosition(35.75, 50.5);
+	scale9->addChild(diffIcon, 0);
+
+	//1.0 didnt have stars apparently
+	// auto starIcon = ax::Sprite::createWithSpriteFrameName("GJ_starsIcon_001.png");
+	// starIcon->setScale(0.7);
+	// starIcon->setPosition({325, 82});
+	// mainNode->addChild(starIcon, 0);
+
+	// auto starAmt = ax::Label::createWithBMFont("bigFont.fnt", std::to_string(level->_Stars));
+	// starAmt->setPosition({313, 82.5});
+	// starAmt->setScale(0.5);
+	// starAmt->setAnchorPoint({1, 0.5});
+	// mainNode->addChild(starAmt, 0);
+
+	auto mainBtn = MenuItemSpriteExtra::create(scale9, [&, level](Node* btn) {
+		ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
 	});
-    extra->setContentSize({340, 95});
-
-    extraSprite->setOpacity(0);
-    extraSprite->setPosition({170, 47.5});
-    extraSprite->setContentSize({340, 95});
-    levelMenu->addChild(extra);
-
-    auto scale9 = ax::ui::Scale9Sprite::create();
-    scale9->setPosition({170, 47.5});
-    scale9->setContentSize({340, 95});
-    scale9->setCapInsets({5000, 5000, 5000, 5000});
-    extraSprite->addChild(scale9);
-
-    auto levelName = ax::Label::createWithBMFont("bigFont-hd.fnt", level->_LevelName);
-    levelName->setPosition({65.75, 50.5});
-    levelName->setScale(0.904);
-    levelName->setAnchorPoint({0, 0.5});
-    scale9->addChild(levelName, 0);
-
-    auto diffIcon = ax::Sprite::createWithSpriteFrameName("diffIcon_01_btn_001.png");
-    diffIcon->setScale(1.1);
-    diffIcon->setPosition(35.75, 50.5);
-    scale9->addChild(diffIcon, 0);
-
-    //1.0 didnt have stars apparently
-    // auto starIcon = ax::Sprite::createWithSpriteFrameName("GJ_starsIcon_001.png");
-    // starIcon->setScale(0.7);
-    // starIcon->setPosition({325, 82});
-    // scale9->addChild(starIcon, 0);
-
-    // auto starAmt = ax::Label::createWithBMFont("bigFont.fnt", std::to_string(level->_Stars));
-    // starAmt->setPosition({313, 82.5});
-    // starAmt->setScale(0.5);
-    // starAmt->setAnchorPoint({1, 0.5});
-    // scale9->addChild(starAmt, 0);
-
+	mainBtn->setScaleMultiplier(1.1f);
+	auto levelMenu = ax::Menu::create();
+	levelMenu->addChild(mainBtn);
+	levelMenu->setPosition({283.5, 220});
+	addChild(levelMenu);
+	
 	return true;
 }
 

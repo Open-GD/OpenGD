@@ -4,16 +4,21 @@ USING_NS_AX;
 
 static constexpr float BUTTON_MULTIPLIER = 1.26f;
 
-MenuItemSpriteExtra::MenuItemSpriteExtra(const char* spriteStr, Sprite* sprNode, std::function<void(Node*)> callback) {
+MenuItemSpriteExtra::MenuItemSpriteExtra(const char* spriteStr, Node* sprNode, std::function<void(Node*)> callback) {
 	m_pSprite = !spriteStr ? sprNode : Sprite::createWithSpriteFrameName(spriteStr);
-	m_pSprite->setStretchEnabled(false);
+	//m_pSprite->setStretchEnabled(false);
 	float nodescale = m_pSprite->getScale();
-	m_fSelectedScale = nodescale * BUTTON_MULTIPLIER;
+	m_fScaleMult = BUTTON_MULTIPLIER;
+	m_fSelectedScale = nodescale * m_fScaleMult;
 	m_fUnselectedScale = nodescale;
 	m_fAnimDuration = 0.3f;
 	m_fCallback = callback;
 }
 
+void MenuItemSpriteExtra::setScaleMultiplier(float s) {
+	m_fScaleMult = s;
+	m_fSelectedScale = m_fUnselectedScale * s;
+}
 void MenuItemSpriteExtra::selected() {
 	m_pSprite->runAction(EaseBounceOut::create(ScaleTo::create(m_fAnimDuration, m_fSelectedScale)));
 	MenuItemSprite::selected();
@@ -27,7 +32,7 @@ void MenuItemSpriteExtra::unselected() {
 
 void MenuItemSpriteExtra::setScale(float s) {
 	m_fUnselectedScale = s;
-	m_fSelectedScale = s * BUTTON_MULTIPLIER;
+	m_fSelectedScale = s * m_fScaleMult;
 	m_pSprite->setScale(s);
 }
 void MenuItemSpriteExtra::activate() {
@@ -36,7 +41,7 @@ void MenuItemSpriteExtra::activate() {
 	m_fCallback(this);
 }
 
-Sprite* MenuItemSpriteExtra::getSprite() { return m_pSprite; }
+Node* MenuItemSpriteExtra::getSprite() { return m_pSprite; }
 
 bool MenuItemSpriteExtra::init() {
 	if (!initWithNormalSprite(m_pSprite, m_pSprite, m_pSprite, nullptr)) return false;
@@ -58,7 +63,7 @@ MenuItemSpriteExtra* MenuItemSpriteExtra::create(const char* sprite, std::functi
 	}
 }
 
-MenuItemSpriteExtra* MenuItemSpriteExtra::create(Sprite* sprite, std::function<void(Node*)> callback) {
+MenuItemSpriteExtra* MenuItemSpriteExtra::create(Node* sprite, std::function<void(Node*)> callback) {
 	MenuItemSpriteExtra* pRet = new(std::nothrow) MenuItemSpriteExtra(nullptr, sprite, callback);
 
 	if (pRet && pRet->init()) {

@@ -59,7 +59,7 @@ bool MenuLayer::init()
 	});
 	playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
 	playBtn->setPosition({0, 0});
-	static_cast<ax::Sprite*>(playBtn->getSprite())->setStretchEnabled(false);
+	//static_cast<ax::Sprite*>(playBtn->getSprite())->setStretchEnabled(false);
 
 	auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
 		//Director::getInstance()->replaceScene(TransitionFade::create(0.5f, GarageLayer::scene()));
@@ -95,7 +95,7 @@ bool MenuLayer::init()
 		AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
 	});
 	achievementsBtn->setScale(1.f);
-	static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
+	//static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
 
 	auto optionsBtn = MenuItemSpriteExtra::create("GJ_optionsBtn_001.png", [&](Node* btn) {
 
@@ -113,7 +113,7 @@ bool MenuLayer::init()
 		});
 		alert->show();
 	});
-	static_cast<ax::Sprite*>(statsBtn->getSprite())->setStretchEnabled(false);
+	//static_cast<ax::Sprite*>(statsBtn->getSprite())->setStretchEnabled(false);
 
 	auto bottomMenu = Menu::create(achievementsBtn, optionsBtn, statsBtn, nullptr);
 
@@ -134,7 +134,7 @@ bool MenuLayer::init()
 	addChild(moreMenu);
 
 	moreGamesBtn->setContentSize({74.25f, 63});
-	moreGamesBtn->getSprite()->setStretchEnabled(false);
+	//moreGamesBtn->getSprite()->setStretchEnabled(false);
 	moreGamesBtn->getSprite()->setPosition({37.125f, 31.5f});
 	moreGamesBtn->getSprite()->setScale(1.f);
 
