@@ -50,7 +50,7 @@ bool LevelSelectLayer::init()
 	
 	for(uint32_t i = 0; i < 20; i++)
 	{
-		layers.push_back(LevelPage::create(GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1)));
+		layers.push_back(LevelPage::create(GJGameLevel::createWithMinimumData(fmt::format("Stereo Madness {}", i), "RobTop", 1)));
 	}
 	
 	auto bsl = BoomScrollLayer::create(layers, 0);
