@@ -2233,7 +2233,7 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 
 	_particle = ParticleSystemQuad::create(path);
 
-	PlayLayer::getInstance()->addChild(_particle, zOrder);
+	PlayLayer::getInstance()->_particleBatchNode->addChild(_particle, zOrder);
 
 	_particle->retain();
 	_particle->stopSystem();

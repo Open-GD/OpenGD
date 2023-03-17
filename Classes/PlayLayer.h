@@ -22,7 +22,6 @@ private:
 	void fillColorChannel(std::vector<std::string>& colorString, int id);
 
 	ax::Sprite* m_pBG;
-	ax::SpriteBatchNode* _mainBatchNode;
 	GroundLayer* _bottomGround, * _ceiling;
 	PlayerObject* m_pPlayer;
 	ax::Vec2 m_obCamPos;
@@ -55,6 +54,7 @@ private:
 	bool m_platformerMode;
 
 public:
+	ax::SpriteBatchNode* _mainBatchNode;
 	ax::ParticleBatchNode* _particleBatchNode;
 
 	std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
