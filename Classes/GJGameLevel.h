@@ -4,6 +4,8 @@
 #include <vector>
 #include <axmol.h>
 #include <zlib.h>
+#include "GameToolbox.h"
+#include "base64.h"
 
 #define PKSTRING 0
 #define PKINT 1
@@ -37,8 +39,8 @@ public:
 	int _EditorTimeTotal;
 	int _SongID;
 
-	float _normalPercent;
-	float _practicePercent;
+	float _normalPercent = 0;
+	float _practicePercent = 0;
 	
 	bool _Auto;
 	bool _Demon;
@@ -47,23 +49,27 @@ public:
 	bool _Gauntlet;
 	bool _2P;
 
-	std::string _LevelName;
-	std::string _Description;
-	std::string _LevelString;
-	std::string _XORPassword;
-	std::string _UploadDate;
-	std::string _UpdateDate;
-	std::string _ExtraString;
-	std::string _Settings;
-	std::string _RecordString;
-	std::string _SondURL;
-	std::string _LevelCreator;
+	std::string _LevelName{};
+	std::string _Description{};
+	std::string _LevelString{};
+	std::string _XORPassword{};
+	std::string _UploadDate{};
+	std::string _UpdateDate{};
+	std::string _ExtraString{};
+	std::string _Settings{};
+	std::string _RecordString{};
+	std::string _SondURL{};
+	std::string _LevelCreator{};
 
 	// Expects RobTop like string
 	static GJGameLevel *createWithResponse(std::string backendResponse);
 	GJGameLevel(){}
 	GJGameLevel(std::string levelName, int levelID);
-	static GJGameLevel *createWithMinimumData(std::string levelName, std::string creatorNickname, int levelID);
+	static GJGameLevel *createWithMinimumData(
+		std::string levelName, 
+		std::string creatorNickname, 
+		int levelID
+	);
 	static GJGameLevel *create();
 
 	static std::string getLevelStrFromID(int gdLevelID);

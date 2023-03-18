@@ -7,15 +7,17 @@
 #include "ImGui/imgui/imgui.h"
 #include <ui/CocosGUI.h>
 #include "PlayLayer.h"
-#include "base64.h"
+#include "GJGameLevel.h"
 
 USING_NS_AX;
 using namespace ax::network;
 
+#include "base64.h"
+
 using GameToolbox::getTextureString;
 
-Scene* CreatorLayer::scene() {
-	
+Scene* CreatorLayer::scene() 
+{
 	return CreatorLayer::create();
 }
 
@@ -49,7 +51,9 @@ bool CreatorLayer::init() {
 		GameToolbox::log("on featured");
 	});
 	auto searchBtn = MenuItemSpriteExtra::create(searchBtnSpr, [&](Node*) {
-		Director::getInstance()->replaceScene(TransitionFade::create(.5, LevelSearchLayer::scene()));
+		
+	//	Director::getInstance()->replaceScene(TransitionFade::create(.5, LevelSearchLayer::scene()));
+	
 		/*
 		std::string levelID = "128";
 		std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", levelID);
@@ -98,7 +102,7 @@ bool CreatorLayer::init() {
 
 void CreatorLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
-	
+	/*
 	if(auto str = GameToolbox::getResponse(response))
 	{
 		std::vector<std::string> levelStuff = GameToolbox::splitByDelim(*str, ':');
@@ -106,30 +110,27 @@ void CreatorLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::n
 		GameToolbox::log("compressed: {}", compressedStr);
 		if(!compressedStr.empty())
 		{
-			//HELP
-			// unsigned char* buffer = nullptr;
-			// unsigned char* deflated = nullptr;
-			// int decode_len = ax::base64::decode(
-				// &buffer,
-				// compressedStr.c_str(),
-				// compressedStr.size()
-			// );
-			// GameToolbox::log("000000000");
-			// ssize_t deflated_len = ZipUtils::inflateMemory(buffer, decode_len, &deflated);
-			// GameToolbox::log("11111111");
-			// std::string levelStr(reinterpret_cast<char*>(deflated));
-			
-			// GameToolbox::log("final: {}", levelStr);
-			// return;
-			// auto level = GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1);
-			// level->_LevelString = levelStr;
-			// Director::getInstance()->replaceScene(TransitionFade::create(0.5f, PlayLayer::scene(level)));
-			
+			unsigned char* buffer = nullptr;
+			unsigned char* deflated = nullptr;
+			int decode_len = ax::base64::decode(
+				&buffer,
+				compressedStr.c_str(),
+				compressedStr.size()
+			);
+			GameToolbox::log("000000000 {}", decode_len);
+			ssize_t deflated_len = GameToolbox::ccInflateMemory(buffer, decode_len, &deflated);
+		//	GameToolbox::log("11111111 {}", deflated_len);
+
+			//GameToolbox::log("final: {}", levelStr);
+			return;
+		//	auto level = GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1);
+		//	level->_LevelString = levelStr;
+		//	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, PlayLayer::scene(level)));
 		}
 	}
 	else
 		GameToolbox::log("request failed");
-	
+	*/
 }
 
 /*

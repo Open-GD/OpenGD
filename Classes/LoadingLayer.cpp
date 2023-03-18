@@ -2,6 +2,7 @@
 #include "GameToolbox.h"
 #include "MenuLayer.h"
 #include "CocosExplorer.h"
+#include "constants.h"
 
 #include <array>
 
@@ -96,7 +97,9 @@ bool LoadingLayer::init() {
 	
 	this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([&]() { this->loadAssets(); }), nullptr));
 	
+#if SHOW_IMGUI == true
 	CocosExplorer::openForever();
+#endif
 	
 	return true;
 }

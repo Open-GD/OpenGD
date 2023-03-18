@@ -8,6 +8,8 @@
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
 #include <fstream>
+#include <LevelPage.h>
+#include "constants.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -67,10 +69,9 @@ void PlayLayer::fillColorChannel(std::vector<std::string>& colorString, int id)
 }
 void PlayLayer::loadLevel(std::string levelStr)
 {
-	levelStr = GJGameLevel::decompressLvlStr(levelStr);
-	//GameToolbox::log("\n{}\n", levelStr);
+	std::string levelString = GJGameLevel::decompressLvlStr(levelStr);
 
-	std::vector<std::string> objData = GameToolbox::splitByDelim(levelStr, ';'), levelData;
+	std::vector<std::string> objData = GameToolbox::splitByDelim(levelString, ';'), levelData;
 
 	levelData = GameToolbox::splitByDelim(objData[0], ',');
 	objData.erase(objData.begin());
@@ -190,7 +191,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
 					std::end(GameObject::_pTriggers))
-					obj = EffectGameObject::create(frame);
+					obj = EffectGameObject::create(frame + ".png");
 				else
 					obj = GameObject::create(frame + ".png", glowFrame + ".png");
 
@@ -294,8 +295,6 @@ void PlayLayer::loadLevel(std::string levelStr)
 bool PlayLayer::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
-
-	//level->_MusicID = 6; // cant let go song
 	setLevel(level);
 
 	Instance = this;
@@ -343,7 +342,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	addChild(_particleBatchNode);
 
 	//std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
-	std::string levelStr = level->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(level->_LevelID) : level->_LevelString;
+	std::string levelStr = getLevel()->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(getLevel()->_LevelID) : getLevel()->_LevelString;
 	loadLevel(levelStr);
 
 	if (_pObjects.size() != 0)
@@ -378,11 +377,28 @@ bool PlayLayer::init(GJGameLevel* level)
 	m_pBar->setPosition(this->m_obCamPos + winSize / 2);
 	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 
+	bool levelValid = LevelTools::verifyLevelIntegrity(this->getLevel()->_LevelString, this->getLevel()->_LevelID);
+
+	if(!levelValid) {
+		auto loadfailedstr = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Load Failed!");
+		loadfailedstr->setPosition({
+			winSize.width / 2,
+			winSize.height / 2
+		});
+		addChild(loadfailedstr, 128);
+	}
+
 	scheduleOnce(
 		[=](float d) {
-			AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
-			scheduleUpdate();
-			m_pPlayer->setIsDead(false);
+			if(levelValid)
+			{
+				AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
+				scheduleUpdate();
+				m_pPlayer->setIsDead(false);
+			} else 
+			{
+				exit();
+			}
 		},
 		1.f, "k");
 
@@ -583,7 +599,7 @@ void PlayLayer::updateVisibility()
 		}
 	}
 
-	if (_prevSection - 1 >= 0)
+	if (_prevSection - 1 >= 0 && m_pSectionObjects.size() != 0 && _prevSection <= m_pSectionObjects.size())
 	{
 		auto section = m_pSectionObjects[_prevSection - 1];
 		for (size_t j = 0; j < section.size(); j++)
@@ -703,6 +719,8 @@ void PlayLayer::checkCollisions(float dt)
 			this->m_pPlayer->setPositionY(_ceiling->getPositionY() - 12.f);
 
 			if (m_pPlayer->isGravityFlipped()) this->m_pPlayer->hitGround(!this->m_pPlayer->isGravityFlipped());
+
+			m_pPlayer->setYVel(0.f);
 		}
 	}
 
@@ -931,13 +949,18 @@ void PlayLayer::onEnter()
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
 	auto current = dir->getRunningScene();
+#if SHOW_IMGUI == true
 	ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(PlayLayer::onDrawImGui, this), current);
+#endif
 }
 
 void PlayLayer::onExit()
 {
+#if SHOW_IMGUI == true
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
+#endif
+	LevelPage::replacingScene = false;
 	music = true;
 	Instance = nullptr;
 	Layer::onExit();
@@ -945,6 +968,9 @@ void PlayLayer::onExit()
 
 void PlayLayer::exit()
 {
+	m_pPlayer->deactivateStreak();
+	//removeChild(m_pPlayer->motionStreak);
+
 	_pauseUpdate = true;
 	unscheduleUpdate();
 	//_mainBatchNode->removeAllChildrenWithCleanup(true);

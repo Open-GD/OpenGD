@@ -1,7 +1,10 @@
 #include "LevelTools.h"
 #include "base64.h"
+#include "constants.h"
 
 bool LevelTools::verifyLevelIntegrity(std::string levelData, int id) {
+
+	if(!levelData.starts_with("H4sIAAAAAAAA") && id <= 10) return false || FORCE_LOAD_LEVEL;
 	return true;
 }
 

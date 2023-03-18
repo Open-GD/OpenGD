@@ -3,7 +3,7 @@
 #include "core/ui/UIScale9Sprite.h"
 #include "PlayLayer.h"
 #include <AudioEngine.h>
-
+bool LevelPage::replacingScene = false;
 bool LevelPage::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
@@ -95,11 +95,15 @@ bool LevelPage::init(GJGameLevel* level)
 	// starAmt->setAnchorPoint({1, 0.5});
 	// mainNode->addChild(starAmt, 0);
 	auto mainBtn = MenuItemSpriteExtra::create(scale9, [&, level](Node* btn) 
-	{
-		ax::AudioEngine::stopAll();
-		ax::AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
-		ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
-	});
+		{
+			if (!LevelPage::replacingScene)
+			{
+				ax::AudioEngine::stopAll();
+				ax::AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
+				ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+				LevelPage::replacingScene = true;
+			}
+		});
 	mainBtn->setScaleMultiplier(1.1f);
 	auto levelMenu = ax::Menu::create();
 	levelMenu->addChild(mainBtn);

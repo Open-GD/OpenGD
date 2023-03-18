@@ -2077,6 +2077,12 @@ const std::vector<int> GameObject::_pTriggers = std::vector<int>{
 	1817, 1818, 1819, 22,	24,	  23,	25,	  26,	27,	  28,	55,	  56,	57,	  58,	59,	  1912, 1913,
 	1914, 1916, 1917, 1931, 1932, 1934, 1935, 2015, 2016, 2062, 2067, 2068, 2701, 2702};
 
+GameObject::~GameObject()
+{
+	if (_particle)
+		AX_SAFE_RELEASE_NULL(_particle);
+}
+
 bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 {
 	// so ObjectManager is supposed to do some shit here
@@ -2226,7 +2232,7 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 {
 	if (_particle)
 	{
-		_particle->release();
+		AX_SAFE_RELEASE(_particle);
 		_particle->cleanup();
 		_particle = nullptr;
 	}
@@ -2321,6 +2327,8 @@ void GameObject::update()
 	{
 		_particle->setPosition(getPosition());
 		_particle->setRotation(getRotation());
+		_particle->setScaleX(getScaleX() * isFlippedX() ? -1.f : 1.f);
+		_particle->setScaleY(getScaleY() * isFlippedY() ? -1.f : 1.f);
 	}
 	auto pl = PlayLayer::getInstance();
 
