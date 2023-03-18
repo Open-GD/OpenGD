@@ -8,9 +8,11 @@ private:
 	virtual void updateTweenAction(float value, std::string_view key) override {};
 	ax::Layer* _internalLayer;
 
+	float _dragMovement;
+
 public:
 
-	int _currentPage;
+	int _currentPage, _leftPage, _rightPage;
 	int _totalPages;
 
 	bool init(std::vector<ax::Layer*>, int);

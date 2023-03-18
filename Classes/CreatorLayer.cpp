@@ -4,9 +4,12 @@
 #include "MenuItemSpriteExtra.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
+#include <ui/CocosGUI.h>
+#include "PlayLayer.h"
+#include "base64.h"
 
 USING_NS_AX;
-USING_NS_AX_EXT;
+using namespace ax::network;
 
 using GameToolbox::getTextureString;
 
@@ -45,7 +48,19 @@ bool CreatorLayer::init() {
 		GameToolbox::log("on featured");
 	});
 	auto searchBtn = MenuItemSpriteExtra::create(searchBtnSpr, [&](Node*) {
-		GameToolbox::log("on search");
+		std::string levelID = "128";
+		std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", levelID);
+		GameToolbox::log("postData: {}", postData);
+		HttpRequest* request = new HttpRequest();
+		request->setTag(levelID);
+		request->setUrl("http://www.boomlings.com/database/downloadGJLevel22.php");
+		request->setRequestType(HttpRequest::Type::POST);
+        request->setHeaders(std::vector<std::string>{"User-Agent: "});
+		request->setRequestData(postData.c_str(), postData.length());
+		request->setResponseCallback(AX_CALLBACK_2(CreatorLayer::onHttpRequestCompleted, this));
+		request->setTag("GET test3");
+		HttpClient::getInstance()->send(request);
+		request->release();
 	});
 	auto createBtn = MenuItemSpriteExtra::create(createBtnSpr, [&](Node*) {
 		GameToolbox::log("on create");
@@ -61,13 +76,59 @@ bool CreatorLayer::init() {
 	backBtn->setPosition(menu->convertToNodeSpace({25, winSize.height - 25}));
 	
 	this->addChild(menu);
-
-
+	
+	auto levelField = ui::TextField::create("Enter ID", GameToolbox::getTextureString("bigFont.fnt"), 20);
+	levelField->setPlaceHolderColor({ 120, 170, 240 });
+	levelField->setMaxLength(10);
+	levelField->setMaxLengthEnabled(true);
+	levelField->setCursorEnabled(true);
+	levelField->setPosition({winSize.width / 2 + 150, winSize.height / 2});
+	this->addChild(levelField);
+	
+	auto path = FileUtils::getInstance()->getWritablePath();
+	GameToolbox::log("path: {}", path);
 
 	return true;
 	
 }
 
+void CreatorLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
+{
+	
+	if(auto str = GameToolbox::getResponse(response))
+	{
+		std::vector<std::string> levelStuff = GameToolbox::splitByDelim(*str, ':');
+		std::string compressedStr = fmt::format("{}", levelStuff.at(7));
+		GameToolbox::log("compressed: {}", compressedStr);
+		if(!compressedStr.empty())
+		{
+			//HELP
+			// unsigned char* buffer = nullptr;
+			// unsigned char* deflated = nullptr;
+			// int decode_len = ax::base64::decode(
+				// &buffer,
+				// compressedStr.c_str(),
+				// compressedStr.size()
+			// );
+			// GameToolbox::log("000000000");
+			// ssize_t deflated_len = ZipUtils::inflateMemory(buffer, decode_len, &deflated);
+			// GameToolbox::log("11111111");
+			// std::string levelStr(reinterpret_cast<char*>(deflated));
+			
+			// GameToolbox::log("final: {}", levelStr);
+			// return;
+			// auto level = GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1);
+			// level->_LevelString = levelStr;
+			// Director::getInstance()->replaceScene(TransitionFade::create(0.5f, PlayLayer::scene(level)));
+			
+		}
+	}
+	else
+		GameToolbox::log("request failed");
+	
+}
+
+/*
 static bool show_test_window	= true;
 static bool show_another_window = true;
 static ImVec4 clear_color	   = ImColor(114, 144, 154);
@@ -105,3 +166,4 @@ void CreatorLayer::onDrawImGui()
 		ImGui::ShowDemoWindow();
 	}
 }
+*/

@@ -22,7 +22,6 @@ private:
 	void fillColorChannel(std::vector<std::string>& colorString, int id);
 
 	ax::Sprite* m_pBG;
-	ax::SpriteBatchNode* _mainBatchNode;
 	GroundLayer* _bottomGround, * _ceiling;
 	PlayerObject* m_pPlayer;
 	ax::Vec2 m_obCamPos;
@@ -41,6 +40,7 @@ private:
 	bool m_bMoveCameraX;
 	bool m_bMoveCameraY;
 	bool m_bShakingCamera;
+	bool _pauseUpdate;
 	float m_fEndOfLevel = FLT_MAX;
 	float m_fShakeIntensity = 1;
 
@@ -55,6 +55,7 @@ private:
 	bool m_platformerMode;
 
 public:
+	ax::SpriteBatchNode* _mainBatchNode;
 	ax::ParticleBatchNode* _particleBatchNode;
 
 	std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
@@ -71,6 +72,7 @@ public:
 	void moveCameraToPos(ax::Vec2);
 	void changeGameMode(GameObject*, int);
 	void resetLevel();
+	void exit();
 
 	void tweenBottomGround(float y);
 	void tweenCeiling(float y);

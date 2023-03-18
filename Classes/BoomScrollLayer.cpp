@@ -5,7 +5,7 @@
 #include "GameToolbox.h"
 
 USING_NS_AX;
-	
+
 BoomScrollLayer* BoomScrollLayer::create(std::vector<ax::Layer*> layers, int currentPage)
 {
 	BoomScrollLayer* pRet = new BoomScrollLayer();
@@ -24,47 +24,73 @@ BoomScrollLayer* BoomScrollLayer::create(std::vector<ax::Layer*> layers, int cur
 
 void BoomScrollLayer::selectPage(int current)
 {
-	GameToolbox::log("current page: {}", current);
-	//_internalLayer->setPositionX(Director::getInstance()->getWinSize().x * current);
 	auto winSize = Director::getInstance()->getWinSize();
-	auto count = _layers.size();
-	GameToolbox::log("count: {}", count);
-	
-	for(int i = 0; i < count; i++)
-	{
-		float newX = winSize.width * (i - current);
-		GameToolbox::log("1 {}", i);
-		auto layer = _layers.at(i);
-		//layer->setPositionX(newX);
-		auto ac = ax::MoveTo::create(0.5f, {newX, layer->getPositionY()});
-		layer->runAction(ax::EaseBackOut::create(ac));
-		GameToolbox::log("setting {} to {}", i, newX);
-	}
+	auto count = _internalLayer->getChildrenCount();
+	GameToolbox::log("current: {}", current);
+
+	int change = _currentPage - current;
+	if (change < -1) change = 1;
+	if (change > 1) change = -1;
 
 	_currentPage = current;
 }
 
 void BoomScrollLayer::changePageRight()
 {
-	_currentPage++;
-	if(_currentPage >= _layers.size()) _currentPage = 0;
-	selectPage(_currentPage);
+	_layers[_leftPage]->retain();
+	_internalLayer->removeChild(_layers[_leftPage]);
+
+	_leftPage = _leftPage + 1 >= _layers.size() ? 0 : _leftPage + 1;
+
+	_rightPage = _rightPage + 1 >= _layers.size() ? 0 : _rightPage + 1;
+
+	_internalLayer->addChild(_layers[_rightPage]);
+	_layers[_rightPage]->setPositionX(Director::getInstance()->getWinSize().width * 2);
+	_layers[_rightPage]->release();
+
+	float newX = Director::getInstance()->getWinSize().width * -1.f;
+	newX -= _dragMovement;
+
+	for (auto l : _internalLayer->getChildren())
+	{
+		auto ac = ax::MoveBy::create(1.5f, {newX, _internalLayer->getPositionY()});
+		l->runAction(ax::EaseElasticOut::create(ac));
+	}
+
+	_currentPage = _currentPage + 1 >= _layers.size() ? 0 : _currentPage + 1;
 }
 
 void BoomScrollLayer::changePageLeft()
 {
-	_currentPage--;
-	if(_currentPage < 0) _currentPage = _layers.size() - 1;
-	selectPage(_currentPage);
+	_layers[_rightPage]->retain();
+	_internalLayer->removeChild(_layers[_rightPage]);
+
+	_rightPage = _rightPage - 1 < 0 ? _layers.size() - 1 : _rightPage - 1;
+	_leftPage = _leftPage - 1 < 0 ? _layers.size() - 1 : _leftPage - 1;
+
+	_internalLayer->addChild(_layers[_leftPage]);
+	_layers[_leftPage]->setPositionX(Director::getInstance()->getWinSize().width * -2.f);
+	_layers[_leftPage]->release();
+
+	float newX = Director::getInstance()->getWinSize().width * 1.f;
+	newX -= _dragMovement;
+
+	for (auto l : _internalLayer->getChildren())
+	{
+		auto ac = ax::MoveBy::create(1.5f, {newX, _internalLayer->getPositionY()});
+		l->runAction(ax::EaseElasticOut::create(ac));
+	}
+
+	_currentPage = _currentPage - 1 < 0 ? _layers.size() - 1 : _currentPage - 1;
 }
 
 bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 {
-	if(!Layer::init()) return false;
-	
+	if (!Layer::init()) return false;
+
 	_totalPages = layers.size();
-	if(currentPage > _totalPages) return false;
-	
+	if (currentPage > _totalPages) return false;
+
 	_layers = layers;
 	_currentPage = currentPage;
 	_internalLayer = Layer::create();
@@ -72,23 +98,37 @@ bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 	auto dir = Director::getInstance();
 	auto winSize = dir->getWinSize();
 
-
-	if(_internalLayer->getChildrenCount() < _totalPages)
+	if (_internalLayer->getChildrenCount() < _totalPages)
 	{
 		int i = 0;
-		for(auto l : _layers)
+		for (auto l : _layers)
 		{
-			if(!l) return false;
-			l->setPositionX(winSize.width * i);
-			_internalLayer->addChild(l);
+			if (!l) return false;
+			// l->setPositionX(winSize.width * i);
+			// _internalLayer->addChild(l);
+			l->retain();
 			i++;
 		}
 	}
-	
-	selectPage(currentPage);
-	
+
+	_internalLayer->addChild(_layers[currentPage]);
+	_layers[currentPage]->setName("1");
+	_layers[currentPage]->release();
+
+	_leftPage = currentPage - 1 < 0 ? _layers.size() - 1 : currentPage - 1;
+	_internalLayer->addChild(_layers[_leftPage]);
+	_layers[_leftPage]->setPositionX(winSize.width * -1.f);
+	_layers[_leftPage]->release();
+
+	_rightPage = currentPage + 1 >= _layers.size() ? 0 : currentPage + 1;
+	_internalLayer->addChild(_layers[_rightPage]);
+	_layers[_rightPage]->setPositionX(winSize.width);
+	_layers[_rightPage]->release();
+
+	//selectPage(currentPage);
+
 	addChild(_internalLayer);
-	
+
 	auto listener = EventListenerTouchOneByOne::create();
 
 	listener->setEnabled(true);
@@ -100,34 +140,45 @@ bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 	listener->onTouchMoved = AX_CALLBACK_2(BoomScrollLayer::onTouchMoved, this);
 
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-	
+
 	return true;
 }
 
-bool BoomScrollLayer::onTouchBegan(ax::Touch* touch, ax::Event *event)
+bool BoomScrollLayer::onTouchBegan(ax::Touch* touch, ax::Event* event)
 {
 	//GameToolbox::log("began");
 	return true;
 }
 
-void BoomScrollLayer::onTouchEnded(ax::Touch* touch, ax::Event *event)
+void BoomScrollLayer::onTouchEnded(ax::Touch* touch, ax::Event* event)
 {
 	//GameToolbox::log("ended");
+	if(_dragMovement < -30) changePageRight();
+	else if(_dragMovement > 30) changePageLeft();
+	_dragMovement = 0;
 }
 
-void BoomScrollLayer::onTouchMoved(ax::Touch* touch, ax::Event *event)
+void BoomScrollLayer::onTouchMoved(ax::Touch* touch, ax::Event* event)
 {
 	auto touchPos = touch->getLocationInView();
 	auto previous = touch->getPreviousLocationInView();
-	auto layerPos = _internalLayer->getPosition();
-	
-	_internalLayer->setPositionX(layerPos.x + (touchPos.x - previous.x));
-	
-	//GameToolbox::log("moved");
+	for(auto l : _internalLayer->getChildren())
+	{
+		auto layerPos = l->getPosition();
+		l->setPositionX(layerPos.x + (touchPos.x - previous.x));
+	}
+
+	_dragMovement += touchPos.x - previous.x;
+
+	GameToolbox::log("{}", _dragMovement);
 }
 
 void BoomScrollLayer::onExit()
 {
+	for (auto layer : _layers)
+	{
+		if(layer->getParent() == nullptr) layer->autorelease();
+	}
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	Layer::onExit();
 }

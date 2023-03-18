@@ -2,6 +2,8 @@
 #include <axmol.h>
 #include <string>
 #include <fmt/chrono.h>
+#include <optional>
+#include <network/HttpClient.h>
 
 //general purpose class for helper functions that can be useful with any class at any moment
 namespace GameToolbox
@@ -36,7 +38,10 @@ namespace GameToolbox
 	float slerp(float a, float b, float ratio);
 	float iSlerp(float a, float b, float ratio, float dt);
 	float repeat(float a, float length);
-
+	
+	std::optional<std::string> getResponse(ax::network::HttpResponse* response);
+	std::vector<std::string> splitByDelim(const std::string& s, char delim);
+	
 	template <typename T>
 	inline T inRange(T value, T min, T max) {
 		return MIN(MAX(value, min), max);

@@ -265,7 +265,7 @@ void GameToolbox::alignItemsVerticallyWithPadding(ax::Vector<ax::Node*> _childre
 }
 float GameToolbox::repeat(float a, float length)
 {
-	return clampf(a - floorf(a / length) * length, 0.0f, length);
+	return std::clamp(a - floorf(a / length) * length, 0.0f, length);
 }
 float GameToolbox::SquareDistance(float xa, float ya, float xb, float yb)
 {
@@ -280,7 +280,7 @@ float GameToolbox::slerp(float a, float b, float ratio)
 	float delta = repeat((b - a), 360.f);
 	if (delta > 180.f)
 		delta -= 360.f;
-	return a + delta * clampf(ratio, 0.f, 1.f);
+	return a + delta * std::clamp(ratio, 0.f, 1.f);
 }
 float GameToolbox::iLerp(float a, float b, float ratio, float dt)
 {
@@ -300,3 +300,37 @@ float GameToolbox::iSlerp(float a, float b, float ratio, float dt)
 
 	return slerp(a, b, iRatio);
 }
+
+std::optional<std::string> GameToolbox::getResponse(ax::network::HttpResponse* response)
+{
+	if(!response) 
+		return std::nullopt;
+	
+	int code = response->getResponseCode();
+	GameToolbox::log("response code: {}", code);
+	
+	auto buffer = response->getResponseData();
+	std::string ret {buffer->begin(), buffer->end()};
+	
+	if(code != 200)
+	{
+		if(!ret.empty())
+			GameToolbox::log("recieved error: {}", ret);
+		return std::nullopt;
+	}
+	
+	return std::optional<std::string>{ret};
+}
+
+
+std::vector<std::string> GameToolbox::splitByDelim(const std::string& s, char delim)
+{
+	std::stringstream ss(s);
+	std::string item;
+	std::vector<std::string> elems;
+	while (std::getline(ss, item, delim))
+	{
+		elems.push_back(std::move(item));
+	}
+	return elems;
+};
