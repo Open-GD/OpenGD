@@ -10,16 +10,7 @@
 
 USING_NS_AX;
 
-const std::vector<GJGameLevel> LevelSelectLayer::_levels
-{
-	{"Stereo Madness", 1},
-	{"Back On Track", 2},
-	{"Polargeist", 3},
-	{"Dry Out", 4},
-	{"Base After Base", 5},
-	{"Cant Let Go", 6},
-	{"Jumper", 7},
-};
+std::vector<GJGameLevel*> LevelSelectLayer::_levels;
 
 Scene* LevelSelectLayer::scene()
 {
@@ -30,6 +21,19 @@ Scene* LevelSelectLayer::scene()
 
 bool LevelSelectLayer::init()
 {
+	if (_levels.empty())
+	{
+		// fuck you andy mf
+		_levels.push_back(GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1));
+		_levels.push_back(GJGameLevel::createWithMinimumData("Back On Track", "RobTop", 2));
+		_levels.push_back(GJGameLevel::createWithMinimumData("Polargeist", "RobTop", 3));
+		_levels.push_back(GJGameLevel::createWithMinimumData("Dry Out", "RobTop", 4));
+		_levels.push_back(GJGameLevel::createWithMinimumData("Base After Base", "RobTop", 5));
+		_levels.push_back(GJGameLevel::createWithMinimumData("Cant Let Go", "RobTop", 6));
+		_levels.push_back(GJGameLevel::createWithMinimumData("Jumper", "RobTop", 7));
+	}
+
+
 	if(!Layer::init()) return false;
 
 	auto director = Director::getInstance();
@@ -66,7 +70,7 @@ bool LevelSelectLayer::init()
 
 	for (auto level : _levels)
 	{
-		layers.push_back(LevelPage::create(&level));
+		layers.push_back(LevelPage::create(level));
 	}
 	
 	auto bsl = BoomScrollLayer::create(layers, 0);

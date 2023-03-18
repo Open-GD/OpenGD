@@ -5,10 +5,10 @@
 
 class LevelPage : public ax::Layer
 {
-  private:
+private:
 	GJGameLevel* _level;
-
-  public:
+public:
+	static bool replacingScene;
 	bool init(GJGameLevel* level);
 	static LevelPage* create(GJGameLevel* level);
 };

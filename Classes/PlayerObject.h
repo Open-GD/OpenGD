@@ -27,8 +27,6 @@ private:
 	ax::ParticleSystemQuad* landEffect1;
 	ax::ParticleSystemQuad* landEffect2;
 
-	MotionTrail* motionStreak;
-
 	double m_dXVel = 5.770002;
 	double m_dYVel = 0;
 	double m_dGravity = 0.958199;
@@ -61,6 +59,8 @@ private:
 	bool _particles3Activated;
 
 public:
+	static ax::Texture2D* motionStreakTex;
+	MotionTrail* motionStreak;
 
 	GameObject* _touchedRingObject;
 	bool _hasRingJumped;
@@ -99,6 +99,7 @@ public:
 	bool playerIsFalling();
 
 	double getYVel() { return m_dYVel; }
+	void setYVel(double yVel) { m_dYVel = yVel; }
 
 	void setIsDead(bool);
 	void setIsOnGround(bool);
@@ -135,8 +136,6 @@ public:
 	ax::Vec2 getLastP() { return _lastP; }
 	void setPortalP(ax::Vec2 portalP) { _portalP = portalP; }
 	void setLastP(ax::Vec2 lastP) { _lastP = lastP; }
-
-
 
 	GameObject* _portalObject;
 
