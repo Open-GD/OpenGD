@@ -95,8 +95,8 @@ void AppDelegate::onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 		glView->setDesignResolutionSize(569 - (h - 720), 320,
 			ResolutionPolicy::FIXED_HEIGHT);
 	
-	//glView->setDesignResolutionSize(569, 320,
-	//	ResolutionPolicy::SHOW_ALL);
+	glView->setDesignResolutionSize(569, 320,
+		ResolutionPolicy::SHOW_ALL);
 
 	director->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_RESIZED, nullptr);
 }
