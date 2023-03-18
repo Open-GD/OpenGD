@@ -99,15 +99,16 @@ bool LevelPage::init(GJGameLevel* level)
 			if (!LevelPage::replacingScene)
 			{
 				ax::AudioEngine::stopAll();
-				ax::AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
+				ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
 				ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
 				LevelPage::replacingScene = true;
+				MenuLayer::music = false;
 			}
 		});
 	mainBtn->setScaleMultiplier(1.1f);
 	auto levelMenu = ax::Menu::create();
 	levelMenu->addChild(mainBtn);
-	levelMenu->setPosition({283.5, 220});
+	levelMenu->setPosition({ winSize.width / 2.f, 220 });
 	addChild(levelMenu);
 	
 	return true;

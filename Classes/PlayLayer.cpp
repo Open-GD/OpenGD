@@ -974,11 +974,9 @@ void PlayLayer::onExit()
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
 #endif
 	LevelPage::replacingScene = false;
-	music = true;
 	Instance = nullptr;
 	Layer::onExit();
 }
-
 void PlayLayer::exit()
 {
 	m_pPlayer->deactivateStreak();
@@ -1005,6 +1003,7 @@ void PlayLayer::exit()
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+	MenuLayer::music = false;
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
 
 }
