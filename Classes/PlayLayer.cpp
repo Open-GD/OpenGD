@@ -379,7 +379,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	bool levelValid = LevelTools::verifyLevelIntegrity(this->getLevel()->_LevelString, this->getLevel()->_LevelID);
 
 	if(!levelValid) {
-		auto loadfailedstr = Label::createWithBMFont("bigFont.fnt", "Load Failed!");
+		auto loadfailedstr = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Load Failed!");
 		loadfailedstr->setPosition({
 			winSize.width / 2,
 			winSize.height / 2
