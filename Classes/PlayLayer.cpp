@@ -70,7 +70,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 	levelStr = GJGameLevel::decompressLvlStr(levelStr);
 	//GameToolbox::log("\n{}\n", levelStr);
 
-	std::vector<std::string> objData = GameToolbox::split(levelStr, ';'), levelData;
+	std::vector<std::string> objData = GameToolbox::splitByDelim(levelStr, ';'), levelData;
 
 	levelData = GameToolbox::split(objData[0], ',');
 	objData.erase(objData.begin());
