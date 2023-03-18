@@ -197,7 +197,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 				if (obj == nullptr) break;
 
-				obj->retain();
+				AX_SAFE_RETAIN(obj);
 
 				obj->setStretchEnabled(false);
 				obj->setActive(true);
@@ -568,7 +568,12 @@ void PlayLayer::updateVisibility()
 					if (obj->getParent() == nullptr)
 					{
 						_mainBatchNode->addChild(obj);
-						obj->release();
+						AX_SAFE_RELEASE(obj);
+						if(obj->_particle) 
+						{
+							_particleBatchNode->addChild(obj->_particle);
+							AX_SAFE_RELEASE(obj->_particle);
+						}
 					}
 
 					obj->setActive(true);
@@ -607,8 +612,13 @@ void PlayLayer::updateVisibility()
 			section[j]->setActive(false);
 			if (section[j]->getParent() != nullptr)
 			{
-				section[j]->retain();
-				_mainBatchNode->removeChild(section[j], false);
+				AX_SAFE_RETAIN(section[j]);
+				if(section[j]->_particle)
+				{
+					AX_SAFE_RETAIN(section[j]->_particle);
+					_particleBatchNode->removeChild(section[j]->_particle, true);
+				}
+				_mainBatchNode->removeChild(section[j], true);
 			}
 		}
 	}
@@ -908,8 +918,13 @@ void PlayLayer::resetLevel()
 		obj->setActive(false);
 		if (obj->getParent() != nullptr)
 		{
+			if(obj->_particle)
+			{
+				AX_SAFE_RETAIN(obj->_particle);
+				_particleBatchNode->removeChild(obj->_particle, true);
+			}
 			AX_SAFE_RETAIN(obj);
-			_mainBatchNode->removeChild(obj, false);
+			_mainBatchNode->removeChild(obj, true);
 		}
 	}
 
@@ -971,13 +986,14 @@ void PlayLayer::exit()
 
 	_pauseUpdate = true;
 	unscheduleUpdate();
+	m_pPlayer->unscheduleUpdate();
 	//_mainBatchNode->removeAllChildrenWithCleanup(true);
 
 	int size = _pObjects.size();
 	for (int i = 0; i < size; i++)
 	{
 		GameObject* obj = _pObjects.at(i);
-		if(obj && !obj->getParent()) obj->release();
+		if(obj && !obj->getParent()) AX_SAFE_RELEASE(obj);
 	}
 
 	_particleBatchNode->removeAllChildrenWithCleanup(true);
@@ -988,6 +1004,7 @@ void PlayLayer::exit()
 	//}
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
+	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
 
 }

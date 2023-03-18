@@ -43,14 +43,14 @@ private:
 
 	ax::Sprite* _glowSprite;
 
-	ax::ParticleSystemQuad* _particle;
-
 public:
 
 	bool m_bHasBeenActivated;
 	int _mainColorChannel = -1, _secColorChannel = -1;
 
 	int _uniqueID = -1;
+
+	ax::ParticleSystemQuad* _particle;
 
 	virtual ~GameObject();
 
