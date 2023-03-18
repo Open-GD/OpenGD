@@ -1,6 +1,7 @@
 #include "LevelTools.h"
 #include "base64.h"
 #include "constants.h"
+#include <cstring>
 
 bool LevelTools::verifyLevelIntegrity(std::string levelData, int id) {
 
