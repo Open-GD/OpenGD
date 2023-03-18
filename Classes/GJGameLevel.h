@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <axmol.h>
+#include <zlib.h>
 
 #define PKSTRING 0
 #define PKINT 1
@@ -60,6 +61,11 @@ public:
 
 	// Expects RobTop like string
 	static GJGameLevel *createWithResponse(std::string backendResponse);
+	GJGameLevel(){}
+	GJGameLevel(std::string levelName, int levelID);
 	static GJGameLevel *createWithMinimumData(std::string levelName, std::string creatorNickname, int levelID);
 	static GJGameLevel *create();
+
+	static std::string getLevelStrFromID(int gdLevelID);
+	static std::string decompressLvlStr(std::string compressedLvlStr);
 };

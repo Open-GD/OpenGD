@@ -10,6 +10,17 @@
 
 USING_NS_AX;
 
+const std::vector<GJGameLevel> LevelSelectLayer::_levels
+{
+	{"Stereo Madness", 1},
+	{"Back On Track", 2},
+	{"Polargeist", 3},
+	{"Dry Out", 4},
+	{"Base After Base", 5},
+	{"Cant Let Go", 6},
+	{"Jumper", 7},
+};
+
 Scene* LevelSelectLayer::scene()
 {
 	auto scene = Scene::create();
@@ -48,9 +59,14 @@ bool LevelSelectLayer::init()
 	
 	std::vector<Layer*> layers;
 	
-	for(uint32_t i = 0; i < 20; i++)
+	//for(uint32_t i = 0; i < 20; i++)
+	//{
+	//	layers.push_back(LevelPage::create(GJGameLevel::createWithMinimumData(fmt::format("Stereo Madness {}", i), "RobTop", 1)));
+	//}
+
+	for (auto level : _levels)
 	{
-		layers.push_back(LevelPage::create(GJGameLevel::createWithMinimumData(fmt::format("Stereo Madness {}", i), "RobTop", 1)));
+		layers.push_back(LevelPage::create(&level));
 	}
 	
 	auto bsl = BoomScrollLayer::create(layers, 0);

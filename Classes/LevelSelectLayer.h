@@ -2,6 +2,7 @@
 
 #include <axmol.h>
 #include "GroundLayer.h"
+#include <GJGameLevel.h>
 
 class LevelSelectLayer : public ax::Layer {
 private:
@@ -9,6 +10,7 @@ private:
 	GroundLayer* _ground;
 
 public:
+	static const std::vector<GJGameLevel> _levels;
 	static ax::Scene* scene();
 	bool init();
 	CREATE_FUNC(LevelSelectLayer);

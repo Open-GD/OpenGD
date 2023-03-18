@@ -77,9 +77,11 @@ void PlayLayer::fillColorChannel(std::vector<std::string>& colorString, int id)
 		}
 	}
 }
-
 void PlayLayer::loadLevel(std::string levelStr)
 {
+	levelStr = GJGameLevel::decompressLvlStr(levelStr);
+	//GameToolbox::log("\n{}\n", levelStr);
+
 	std::vector<std::string> objData = split(levelStr, ';'), levelData;
 
 	levelData = split(objData[0], ',');
@@ -307,7 +309,6 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	_pauseUpdate = true;
 
-	level->_MusicID = 6; // cant let go song
 	setLevel(level);
 
 	Instance = this;
@@ -354,7 +355,8 @@ bool PlayLayer::init(GJGameLevel* level)
 	_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
 	addChild(_particleBatchNode);
 
-	std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
+	//std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
+	std::string levelStr = GJGameLevel::getLevelStrFromID(getLevel()->_LevelID);
 	loadLevel(levelStr);
 
 	if (_pObjects.size() != 0)
