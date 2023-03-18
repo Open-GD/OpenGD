@@ -307,9 +307,7 @@ bool PlayLayer::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
 
-	_pauseUpdate = true;
-
-	level->_MusicID = 6; // cant let go song
+	//level->_MusicID = 6; // cant let go song
 	setLevel(level);
 
 	Instance = this;
@@ -356,7 +354,8 @@ bool PlayLayer::init(GJGameLevel* level)
 	_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
 	addChild(_particleBatchNode);
 
-	std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
+	//std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
+	std::string levelStr = level->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(level->_LevelID) : level->_LevelString;
 	loadLevel(levelStr);
 
 	if (_pObjects.size() != 0)
