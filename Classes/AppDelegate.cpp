@@ -70,18 +70,37 @@ int AppDelegate::applicationGetRefreshRate()
 	return 60;
 #endif
 }
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
+	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
 void AppDelegate::onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 {
 	auto director = Director::getInstance();
 	auto glView = director->getOpenGLView();
 
 	glView->setFrameSize(w, h);
+
+	
+	// uhh stuff to make different aspect ratios work ig?
+	if (w > 1280)
+		glView->setDesignResolutionSize(569 + (w - 1280), 320,
+			ResolutionPolicy::FIXED_HEIGHT);
+	else
+		glView->setDesignResolutionSize(569, 320 - (w - 1280),
+			ResolutionPolicy::FIXED_WIDTH);
+
+	if (h > 720)
+		glView->setDesignResolutionSize(569, 320 + (h - 720),
+			ResolutionPolicy::FIXED_WIDTH);
+	else
+		glView->setDesignResolutionSize(569 - (h - 720), 320,
+			ResolutionPolicy::FIXED_HEIGHT);
 	
 	glView->setDesignResolutionSize(569, 320,
-		ResolutionPolicy::NO_BORDER);
+		ResolutionPolicy::SHOW_ALL);
 
 	director->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_RESIZED, nullptr);
 }
+#endif
 bool AppDelegate::applicationDidFinishLaunching()
 {
 	// initialize director
@@ -96,8 +115,11 @@ bool AppDelegate::applicationDidFinishLaunching()
 #else
 		glView = GLViewImpl::create("OpenGD");
 #endif
-		/* auto full = dynamic_cast<GLViewImpl *>(glView);
-		full->setFullscreen(); */
+		
+		/*
+		auto full = dynamic_cast<GLViewImpl *>(glView);
+		full->setFullscreen();
+		*/
 		director->setOpenGLView(glView);
 	}
 
@@ -109,36 +131,34 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 	// Set the design resolution
 	glView->setDesignResolutionSize(569, 320,
-									ResolutionPolicy::FIXED_WIDTH);
+									ResolutionPolicy::SHOW_ALL);
+
+	// uhh stuff to make different aspect ratios work ig?
+	if (glView->getFrameSize().width > 1280)
+		glView->setDesignResolutionSize(569 + (glView->getFrameSize().width - 1280), 320,
+			ResolutionPolicy::FIXED_HEIGHT);
+	else
+		glView->setDesignResolutionSize(569, 320 - (glView->getFrameSize().width - 1280),
+			ResolutionPolicy::FIXED_WIDTH);
+
+	if (glView->getFrameSize().height > 720)
+		glView->setDesignResolutionSize(569, 320 + (glView->getFrameSize().height - 720),
+			ResolutionPolicy::FIXED_WIDTH);
+	else
+		glView->setDesignResolutionSize(569 - (glView->getFrameSize().height - 720), 320,
+			ResolutionPolicy::FIXED_HEIGHT);
+
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
+	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
 
 	glfwSetWindowAspectRatio(static_cast<GLViewImpl*>(glView)->getWindow(), 16, 9);
 
 	glfwSetWindowSizeCallback(static_cast<GLViewImpl*>(glView)->getWindow(), AppDelegate::onGLFWwindowSizeCallback);
 
-	//glView->setFrameSize(1280, 720);
+#endif
 
 	director->setContentScaleFactor(2.0f);
 
-	/*
-	// if the frame's height is larger than the height of medium size.
-	if (frameSize.height > mediumResolutionSize.height)
-	{
-		director->setContentScaleFactor(MIN(largeResolutionSize.height / designResolutionSize.height,
-											largeResolutionSize.width / designResolutionSize.width));
-	}
-	// if the frame's height is larger than the height of small size.
-	else if (frameSize.height > smallResolutionSize.height)
-	{
-		director->setContentScaleFactor(MIN(mediumResolutionSize.height / designResolutionSize.height,
-											mediumResolutionSize.width / designResolutionSize.width));
-	}
-	// if the frame's height is smaller than the height of medium size.
-	else
-	{
-		director->setContentScaleFactor(MIN(smallResolutionSize.height / designResolutionSize.height,
-											smallResolutionSize.width / designResolutionSize.width));
-	}
-*/
 	register_all_packages();
 
 	// create a scene. it's an autorelease object
