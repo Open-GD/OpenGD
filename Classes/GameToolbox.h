@@ -17,6 +17,9 @@ namespace GameToolbox
 	int randomInt(int max);
 	float randomFloat(int min, int max);
 	float randomFloat(int max);
+
+	std::vector<std::string> split(std::string tosplit, char splitter);
+	
 	ax::Color3B randomColor3B();
 	std::string getTextureString(std::string texture);
 	void alignItemsInColumnsWithPadding(ax::Menu* menu, const int rows, const int x_padding, const int y_padding);
