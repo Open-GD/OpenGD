@@ -11,7 +11,7 @@ bool LevelPage::init(GJGameLevel* level)
 	auto winSize = ax::Director::getInstance()->getWinSize();
 
 	auto normalBar = ax::Sprite::create("GJ_progressBar_001-hd.png");
-	normalBar->setPosition({winSize.width / 2, 130});
+	normalBar->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
 	normalBar->setColor({0, 0, 0});
 	normalBar->setOpacity(125);
 	addChild(normalBar, 3);
@@ -28,7 +28,7 @@ bool LevelPage::init(GJGameLevel* level)
 	normalBar->addChild(normalProgress);
 
 	auto practiceBar = ax::Sprite::create("GJ_progressBar_001-hd.png");
-	practiceBar->setPosition({winSize.width / 2, 80});
+	practiceBar->setPosition({ winSize.width / 2, winSize.height / 2.f - 80 });
 	practiceBar->setColor({0, 0, 0});
 	practiceBar->setOpacity(125);
 	addChild(practiceBar, 3);
@@ -45,23 +45,23 @@ bool LevelPage::init(GJGameLevel* level)
 	practiceBar->addChild(practiceProgress);
 
 	auto normalText = ax::Label::createWithBMFont("bigFont.fnt", "Normal Mode");
-	normalText->setPosition({winSize.width / 2, 150});
+	normalText->setPosition({ winSize.width / 2, winSize.height / 2.f - 10 });
 	normalText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	addChild(normalText, 4);
 
 	auto practiceText = ax::Label::createWithBMFont("bigFont.fnt", "Practice Mode");
-	practiceText->setPosition({winSize.width / 2, 100});
+	practiceText->setPosition({ winSize.width / 2, winSize.height / 2.f - 60 });
 	practiceText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	addChild(practiceText, 4);
 
 	auto normalPerc = ax::Label::createWithBMFont("bigFont.fnt", "");
-	normalPerc->setPosition({winSize.width / 2, 130});
+	normalPerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
 	normalPerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	normalPerc->setString(std::to_string((int)level->_normalPercent) + "%");
 	addChild(normalPerc, 4);
 
 	auto practicePerc = ax::Label::createWithBMFont("bigFont.fnt", "");
-	practicePerc->setPosition({winSize.width / 2, 80});
+	practicePerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 80 });
 	practicePerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	practicePerc->setString(std::to_string((int)level->_practicePercent) + "%");
 	addChild(practicePerc, 4);
@@ -108,7 +108,7 @@ bool LevelPage::init(GJGameLevel* level)
 	mainBtn->setScaleMultiplier(1.1f);
 	auto levelMenu = ax::Menu::create();
 	levelMenu->addChild(mainBtn);
-	levelMenu->setPosition({ winSize.width / 2.f, 220 });
+	levelMenu->setPosition({ winSize.width / 2.f, winSize.height / 2.f + 60 });
 	addChild(levelMenu);
 	
 	return true;

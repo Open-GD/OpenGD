@@ -138,7 +138,7 @@ bool LevelSelectLayer::init()
 	btnMenu->addChild(leftBtn);
 
 	//leftBtn->setScale(2.0f);
-	leftBtn->setPosition(btnMenu->convertToNodeSpace({0 + 25.0f, winSize.height / 2}));
+	leftBtn->setPosition(btnMenu->convertToNodeSpace({ 25.0f, winSize.height / 2 }));
 
 	auto right = Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Right_001.png" : "navArrowBtn_001.png");
 
@@ -161,7 +161,7 @@ bool LevelSelectLayer::init()
 
 	backMenu->addChild(backBtn);
 
-	backMenu->setPosition({0 + 25.0f, 320 - 22.0f});
+	backMenu->setPosition({ 0 + 25.0f, winSize.height - 22.0f });
 
 	// //GM->0x298 = 0;
 

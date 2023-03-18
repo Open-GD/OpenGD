@@ -113,7 +113,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 		glView = GLViewImpl::createWithRect(
 			"OpenGD", ax::Rect(0, 0, 1280, 720), 1.f, true);
 #else
-		glView = GLViewImpl::create("OpenGD", true);
+		glView = GLViewImpl::create("OpenGD");
 #endif
 		
 		/*
