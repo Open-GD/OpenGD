@@ -65,6 +65,8 @@ public:
 	@return Refresh rate in Hz
 	*/
 	int applicationGetRefreshRate();
+
+	static void onGLFWwindowSizeCallback(GLFWwindow*, int w, int h);
 };
 
 #endif  // _APP_DELEGATE_H_
