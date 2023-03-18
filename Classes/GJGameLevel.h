@@ -63,7 +63,11 @@ public:
 	static GJGameLevel *createWithResponse(std::string backendResponse);
 	GJGameLevel(){}
 	GJGameLevel(std::string levelName, int levelID);
-	static GJGameLevel *createWithMinimumData(std::string levelName, std::string creatorNickname, int levelID);
+	static GJGameLevel *createWithMinimumData(
+		std::string levelName, 
+		std::string creatorNickname, 
+		int levelID
+	);
 	static GJGameLevel *create();
 
 	static std::string getLevelStrFromID(int gdLevelID);

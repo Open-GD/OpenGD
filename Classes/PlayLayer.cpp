@@ -378,11 +378,28 @@ bool PlayLayer::init(GJGameLevel* level)
 	m_pBar->setPosition(this->m_obCamPos + winSize / 2);
 	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 
+	bool levelValid = LevelTools::verifyLevelIntegrity(this->getLevel()->_LevelString, this->getLevel()->_LevelID);
+
+	if(!levelValid) {
+		auto loadfailedstr = Label::createWithBMFont("bigFont.fnt", "Load Failed!");
+		loadfailedstr->setPosition({
+			winSize.width / 2,
+			winSize.height / 2
+		});
+		addChild(loadfailedstr, 128);
+	}
+
 	scheduleOnce(
 		[=](float d) {
-			AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
-			scheduleUpdate();
-			m_pPlayer->setIsDead(false);
+			if(levelValid)
+			{
+				AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
+				scheduleUpdate();
+				m_pPlayer->setIsDead(false);
+			} else 
+			{
+				exit();
+			}
 		},
 		1.f, "k");
 
@@ -583,7 +600,7 @@ void PlayLayer::updateVisibility()
 		}
 	}
 
-	if (_prevSection - 1 >= 0)
+	if (_prevSection - 1 >= 0 && m_pSectionObjects.size() != 0)
 	{
 		auto section = m_pSectionObjects[_prevSection - 1];
 		for (size_t j = 0; j < section.size(); j++)
