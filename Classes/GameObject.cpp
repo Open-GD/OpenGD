@@ -2326,7 +2326,7 @@ void GameObject::update()
 	if (_particle)
 	{
 		_particle->setPosition(getPosition());
-		_particle->setAngleVar(getRotation());
+		_particle->setRotation(getRotation());
 		_particle->setScaleX(getScaleX() * isFlippedX() ? -1.f : 1.f);
 		_particle->setScaleY(getScaleY() * isFlippedY() ? -1.f : 1.f);
 	}
