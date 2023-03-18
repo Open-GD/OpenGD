@@ -13,12 +13,14 @@
 #include "LoadingCircle.h"
 #include "SimpleProgressBar.h"
 #include "LevelSelectLayer.h"
+#include "DropDownLayer.h"
 
 /*
 #include "ColoursPalette.h"
 #include "ListLayer.h"
 #include "GJMoreGamesLayer.h"
 */
+
 USING_NS_AX;
 
 bool music = true;
@@ -92,14 +94,18 @@ bool MenuLayer::init()
 	addChild(otherMenu);
 
 	auto achievementsBtn = MenuItemSpriteExtra::create("GJ_achBtn_001.png", [&](Node* btn) {
-		AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
+		//AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
+		auto dropdownlayer = DropDownLayer::create();
+		dropdownlayer->showLayer();
 	});
 	achievementsBtn->setScale(1.f);
 	//static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
 
 	auto optionsBtn = MenuItemSpriteExtra::create("GJ_optionsBtn_001.png", [&](Node* btn) {
-
+		auto dropdownlayer = DropDownLayer::create();
+		dropdownlayer->showLayer();
 	});
+
 	static_cast<ax::Sprite*>(optionsBtn->getSprite())->setStretchEnabled(false);
 
 	auto statsBtn = MenuItemSpriteExtra::create("GJ_statsBtn_001.png", [&](Node* btn) {
@@ -126,6 +132,8 @@ bool MenuLayer::init()
 	auto moreGamesBtn = MenuItemSpriteExtra::create("GJ_moreGamesBtn_001.png", [&](Node* btn) {
 		//auto a = GJMoreGamesLayer::create();
 		//addChild(a);
+		auto dropdownlayer = DropDownLayer::create();
+		dropdownlayer->showLayer();
 	});
 
 	auto moreMenu = Menu::create();
