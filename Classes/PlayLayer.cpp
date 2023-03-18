@@ -9,6 +9,7 @@
 #include "MenuItemSpriteExtra.h"
 #include <fstream>
 #include <LevelPage.h>
+#include "constants.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -948,13 +949,17 @@ void PlayLayer::onEnter()
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
 	auto current = dir->getRunningScene();
+#if SHOW_IMGUI == true
 	ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(PlayLayer::onDrawImGui, this), current);
+#endif
 }
 
 void PlayLayer::onExit()
 {
+#if SHOW_IMGUI == true
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
+#endif
 	LevelPage::replacingScene = false;
 	music = true;
 	Instance = nullptr;
