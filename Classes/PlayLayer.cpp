@@ -72,7 +72,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 	std::vector<std::string> objData = GameToolbox::splitByDelim(levelStr, ';'), levelData;
 
-	levelData = GameToolbox::split(objData[0], ',');
+	levelData = GameToolbox::splitByDelim(objData[0], ',');
 	objData.erase(objData.begin());
 
 	for (size_t i = 0; i < levelData.size() - 1; i += 2)
@@ -103,35 +103,35 @@ void PlayLayer::loadLevel(std::string levelStr)
 		}
 		else if (levelData[i] == "kS29")
 		{
-			auto colorString = GameToolbox::split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1000);
 		}
 		else if (levelData[i] == "kS30")
 		{
-			auto colorString = GameToolbox::split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1001);
 		}
 		else if (levelData[i] == "kS31")
 		{
-			auto colorString = GameToolbox::split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1002);
 		}
 		else if (levelData[i] == "kS32")
 		{
-			auto colorString = GameToolbox::split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1004);
 		}
 		else if (levelData[i] == "kS37")
 		{
-			auto colorString = GameToolbox::split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1003);
 		}
 		else if (levelData[i] == "kS38")
 		{
-			auto colorString = GameToolbox::split(levelData[i + 1], '|');
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '|');
 			for (std::string colorData : colorString)
 			{
-				auto innerData = GameToolbox::split(colorData, '_');
+				auto innerData = GameToolbox::splitByDelim(colorData, '_');
 				int key;
 				Color3B col;
 				for (size_t j = 0; j < innerData.size() - 1; j += 2)
@@ -165,7 +165,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 	for (std::string data : objData)
 	{
-		auto d = GameToolbox::split(data, ',');
+		auto d = GameToolbox::splitByDelim(data, ',');
 
 		GameObject* obj = nullptr;
 
