@@ -598,7 +598,7 @@ void PlayLayer::updateVisibility()
 		}
 	}
 
-	if (_prevSection - 1 >= 0 && m_pSectionObjects.size() != 0)
+	if (_prevSection - 1 >= 0 && m_pSectionObjects.size() != 0 && _prevSection <= m_pSectionObjects.size())
 	{
 		auto section = m_pSectionObjects[_prevSection - 1];
 		for (size_t j = 0; j < section.size(); j++)

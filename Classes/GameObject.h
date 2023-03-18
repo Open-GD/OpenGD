@@ -16,8 +16,6 @@ enum GameObjectType
 	kGameObjectTypeYellowJumpPad = 8,
 	kGameObjectTypeYellowJumpRing = 11,
 	// opengd additions //
-	kGameObjectTypeBGTrigger = 12,
-	kGameObjectTypeGTrigger = 13,
 	kGameObjectTypeSpecial = 40
 };
 
@@ -53,6 +51,8 @@ public:
 	int _mainColorChannel = -1, _secColorChannel = -1;
 
 	int _uniqueID = -1;
+
+	virtual ~GameObject();
 
 	static const std::map<int, Hitbox> _pHitboxes;
 	static const std::map<int, float> _pHitboxRadius;
