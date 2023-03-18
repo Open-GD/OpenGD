@@ -148,7 +148,21 @@ std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 {
 	std::string result = compressedLvlStr;
 	
-	//GameToolbox::log("{}\n", gzipInflate(compressedLvlStr, result));
-	
+	std::string compressedStr = base64_decode(compressedLvlStr);
+
+	GameToolbox::log("\n\n{}\n\n{}\n\n", compressedLvlStr, compressedStr);
+
+	if (!compressedStr.empty())
+	{
+		unsigned char* buffer = nullptr;
+		buffer = const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>((compressedStr.c_str())));
+		int decode_len = compressedStr.length();
+		unsigned char* deflated = nullptr;
+		ssize_t deflated_len = GameToolbox::ccInflateMemory(buffer, decode_len, &deflated);
+		result = reinterpret_cast<char*>(deflated);
+	}
+
+	GameToolbox::log("\n\n{}\n\n", result);
+
 	return result;
 }
