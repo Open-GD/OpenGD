@@ -973,6 +973,7 @@ void PlayLayer::exit()
 
 	_pauseUpdate = true;
 	unscheduleUpdate();
+	m_pPlayer->unscheduleUpdate();
 	//_mainBatchNode->removeAllChildrenWithCleanup(true);
 
 	int size = _pObjects.size();
