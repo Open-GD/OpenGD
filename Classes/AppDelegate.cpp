@@ -148,11 +148,10 @@ bool AppDelegate::applicationDidFinishLaunching()
 		glView->setDesignResolutionSize(569 - (glView->getFrameSize().height - 720), 320,
 			ResolutionPolicy::FIXED_HEIGHT);
 
-
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
 	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
 
-	//glfwSetWindowAspectRatio(static_cast<GLViewImpl*>(glView)->getWindow(), 16, 9);
+	glfwSetWindowAspectRatio(static_cast<GLViewImpl*>(glView)->getWindow(), 16, 9);
 
 	glfwSetWindowSizeCallback(static_cast<GLViewImpl*>(glView)->getWindow(), AppDelegate::onGLFWwindowSizeCallback);
 
