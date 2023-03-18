@@ -26,6 +26,18 @@ float GameToolbox::randomFloat(int max) {
    return static_cast<float>(GameToolbox::randomInt(max));
 }
 
+std::vector<std::string> GameToolbox::split(std::string tosplit, char splitter)
+{
+	std::vector<std::string> vec;
+	std::istringstream ss(tosplit);
+	std::string token;
+	while (std::getline(ss, token, splitter))
+	{
+		vec.push_back(token);
+	}
+	return vec;
+}
+
 ax::Color3B GameToolbox::randomColor3B()
 {
 	uint8_t r = GameToolbox::randomInt(255);

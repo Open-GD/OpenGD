@@ -47,18 +47,6 @@ PlayLayer* PlayLayer::create(GJGameLevel* level)
 	return nullptr;
 }
 
-std::vector<std::string> split(std::string tosplit, char splitter)
-{
-	std::vector<std::string> vec;
-	std::istringstream ss(tosplit);
-	std::string token;
-	while (std::getline(ss, token, splitter))
-	{
-		vec.push_back(token);
-	}
-	return vec;
-}
-
 void PlayLayer::fillColorChannel(std::vector<std::string>& colorString, int id)
 {
 	for (size_t j = 0; j < colorString.size() - 1; j += 2)
@@ -82,9 +70,9 @@ void PlayLayer::loadLevel(std::string levelStr)
 	levelStr = GJGameLevel::decompressLvlStr(levelStr);
 	//GameToolbox::log("\n{}\n", levelStr);
 
-	std::vector<std::string> objData = split(levelStr, ';'), levelData;
+	std::vector<std::string> objData = GameToolbox::split(levelStr, ';'), levelData;
 
-	levelData = split(objData[0], ',');
+	levelData = GameToolbox::split(objData[0], ',');
 	objData.erase(objData.begin());
 
 	for (size_t i = 0; i < levelData.size() - 1; i += 2)
@@ -115,35 +103,35 @@ void PlayLayer::loadLevel(std::string levelStr)
 		}
 		else if (levelData[i] == "kS29")
 		{
-			auto colorString = split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::split(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1000);
 		}
 		else if (levelData[i] == "kS30")
 		{
-			auto colorString = split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::split(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1001);
 		}
 		else if (levelData[i] == "kS31")
 		{
-			auto colorString = split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::split(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1002);
 		}
 		else if (levelData[i] == "kS32")
 		{
-			auto colorString = split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::split(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1004);
 		}
 		else if (levelData[i] == "kS37")
 		{
-			auto colorString = split(levelData[i + 1], '_');
+			auto colorString = GameToolbox::split(levelData[i + 1], '_');
 			fillColorChannel(colorString, 1003);
 		}
 		else if (levelData[i] == "kS38")
 		{
-			auto colorString = split(levelData[i + 1], '|');
+			auto colorString = GameToolbox::split(levelData[i + 1], '|');
 			for (std::string colorData : colorString)
 			{
-				auto innerData = split(colorData, '_');
+				auto innerData = GameToolbox::split(colorData, '_');
 				int key;
 				Color3B col;
 				for (size_t j = 0; j < innerData.size() - 1; j += 2)
@@ -177,7 +165,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 	for (std::string data : objData)
 	{
-		auto d = split(data, ',');
+		auto d = GameToolbox::split(data, ',');
 
 		GameObject* obj = nullptr;
 
