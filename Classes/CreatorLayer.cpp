@@ -1,5 +1,6 @@
 #include "CreatorLayer.h"
 #include "GameToolbox.h"
+#include "LevelSearchLayer.h"
 #include "MenuLayer.h"
 #include "MenuItemSpriteExtra.h"
 #include "ImGui/ImGuiPresenter.h"
@@ -48,6 +49,8 @@ bool CreatorLayer::init() {
 		GameToolbox::log("on featured");
 	});
 	auto searchBtn = MenuItemSpriteExtra::create(searchBtnSpr, [&](Node*) {
+		Director::getInstance()->replaceScene(TransitionFade::create(.5, LevelSearchLayer::scene()));
+		/*
 		std::string levelID = "128";
 		std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", levelID);
 		GameToolbox::log("postData: {}", postData);
@@ -61,6 +64,7 @@ bool CreatorLayer::init() {
 		request->setTag("GET test3");
 		HttpClient::getInstance()->send(request);
 		request->release();
+		*/
 	});
 	auto createBtn = MenuItemSpriteExtra::create(createBtnSpr, [&](Node*) {
 		GameToolbox::log("on create");
