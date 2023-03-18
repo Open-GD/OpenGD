@@ -40,6 +40,10 @@ namespace GameToolbox
 	std::optional<std::string> getResponse(ax::network::HttpResponse* response);
 	std::vector<std::string> splitByDelim(const std::string& s, char delim);
 	
+	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int *outLength, unsigned int outLenghtHint);
+	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int outLengthHint);
+	int ccInflateMemory(unsigned char *in, unsigned int inLength, unsigned char **out);
+
 	template <typename T>
 	inline T inRange(T value, T min, T max) {
 		return MIN(MAX(value, min), max);
