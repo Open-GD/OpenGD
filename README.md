@@ -54,6 +54,9 @@ cd axmol
 python setup.py
 ```
 
+You'll also need the resources from the 1.0 version of Geometry Dash. Resources from newer versions might not work.
+
+
 After installing axmol, you can build OpenGD as a CMake project.
 ```
 git clone https://github.com/Open-GD/OpenGD
