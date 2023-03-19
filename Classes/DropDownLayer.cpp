@@ -53,7 +53,7 @@ bool DropDownLayer::init(const char* label){
     droplayer->addChild(chain2);
 
 
-    auto listlayer = ListLayer::create(label, {0, 0, 0, 0}, {356, 220});
+    auto listlayer = ListLayer::create(label);
     listlayer->setPosition({(winSize.width - 356) / 2, ((winSize.height - 220) / 2) + 5});
     droplayer->addChild(listlayer);
     //menu end
