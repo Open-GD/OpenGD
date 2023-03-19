@@ -4,6 +4,27 @@
 #include "PlayLayer.h"
 #include <AudioEngine.h>
 bool LevelPage::replacingScene = false;
+
+ax::Scene* LevelPage::scene(GJGameLevel* level)
+{
+	auto scene = ax::Scene::create();
+	auto winSize = ax::Director::getInstance()->getWinSize();
+	ax::Sprite* background;
+
+	background = ax::Sprite::create("GJ_gradientBG.png");
+	background->setAnchorPoint({0.0f, 0.0f});
+	scene->addChild(background, -2);
+
+	background->setScaleX((winSize.width + 10.0f) / background->getTextureRect().size.width);
+	background->setScaleY((winSize.height + 10.0f) / background->getTextureRect().size.height);
+	background->setPosition({-5.0f, -5.0f});
+	background->setColor({0x28, 0x7D, 0xFF});
+
+	scene->addChild(LevelPage::create(level));
+	return scene;
+}
+
+
 bool LevelPage::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
@@ -44,26 +65,30 @@ bool LevelPage::init(GJGameLevel* level)
 	practiceProgress->setScaleY(0.86f);
 	practiceBar->addChild(practiceProgress);
 
-	auto normalText = ax::Label::createWithBMFont("bigFont.fnt", "Normal Mode");
+	auto normalText = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Normal Mode");
 	normalText->setPosition({ winSize.width / 2, winSize.height / 2.f - 10 });
-	normalText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
+	// normalText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
+	normalText->setScale(0.55f);
 	addChild(normalText, 4);
 
-	auto practiceText = ax::Label::createWithBMFont("bigFont.fnt", "Practice Mode");
+	auto practiceText = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Practice Mode");
 	practiceText->setPosition({ winSize.width / 2, winSize.height / 2.f - 60 });
-	practiceText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
+	// practiceText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
+	practiceText->setScale(0.55f);
 	addChild(practiceText, 4);
 
-	auto normalPerc = ax::Label::createWithBMFont("bigFont.fnt", "");
+	auto normalPerc = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "");
 	normalPerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
 	normalPerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	normalPerc->setString(std::to_string((int)level->_normalPercent) + "%");
+	normalPerc->setScale(0.55f);
 	addChild(normalPerc, 4);
 
-	auto practicePerc = ax::Label::createWithBMFont("bigFont.fnt", "");
+	auto practicePerc = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "");
 	practicePerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 80 });
 	practicePerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	practicePerc->setString(std::to_string((int)level->_practicePercent) + "%");
+	practicePerc->setScale(0.55f);
 	addChild(practicePerc, 4);
 
 
@@ -73,9 +98,9 @@ bool LevelPage::init(GJGameLevel* level)
 	scale9->setContentSize({340, 95});
 	scale9->setOpacity(125);
 	
-	auto levelName = ax::Label::createWithBMFont("bigFont-hd.fnt", level->_LevelName);
+	auto levelName = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_LevelName);
 	levelName->setPosition(190, 50.5);
-	levelName->setScale(0.904);
+	// levelName->setScale(0.904);
 	scale9->addChild(levelName, 0);
 
 	auto diffIcon = ax::Sprite::createWithSpriteFrameName("diffIcon_01_btn_001.png");

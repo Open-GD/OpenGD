@@ -10,6 +10,7 @@
 #include <fstream>
 #include <LevelPage.h>
 #include "constants.h"
+#include "CreatorLayer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -1032,7 +1033,13 @@ void PlayLayer::exit()
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 	// MenuLayer::music = false;
-	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
+	if(getLevel()->_LevelID <= 16) 
+	{
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
+	} else
+	{
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
+	}
 
 }
 void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)

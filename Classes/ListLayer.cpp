@@ -47,9 +47,11 @@ bool ListLayer::init(const char* label, ax::Color4B color, ax::Vec2 size){
 	this->addChild(top);
     this->addChild(bottom);
 
-	auto text = ax::Label::createWithBMFont("bigFont.fnt", label, ax::TextHAlignment::CENTER);
-	text->setPosition(top->getPosition());
-	text->setScale(1.5);
+	auto text = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), label, ax::TextHAlignment::CENTER);
+	
+	text->setPositionX(top->getPositionX());
+	text->setPositionY(top->getPositionY() * 1.01);
+	text->setScale(0.8f);
 	this->addChild(text);
 	//menu end
     

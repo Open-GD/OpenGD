@@ -26,6 +26,7 @@
 #include "AppDelegate.h"
 #include "LoadingLayer.h"
 #include "GameToolbox.h"
+#include "constants.h"
 
 #define USE_AUDIO_ENGINE 1
 
@@ -115,11 +116,10 @@ bool AppDelegate::applicationDidFinishLaunching()
 #else
 		glView = GLViewImpl::create("OpenGD");
 #endif
-		
-		/*
+#if FULLSCREEN == true
 		auto full = dynamic_cast<GLViewImpl *>(glView);
 		full->setFullscreen();
-		*/
+#endif
 		director->setOpenGLView(glView);
 	}
 
