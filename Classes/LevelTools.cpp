@@ -11,20 +11,32 @@ bool LevelTools::verifyLevelIntegrity(std::string levelData, int id) {
 
 std::string LevelTools::getAudioFilename(int lid) {
 	switch(lid) {
-		case 0:  return "StereoMadness.mp3";
 		case 1:  return "BackOnTrack.mp3";
 		case 2:  return "Polargeist.mp3";
 		case 3:  return "DryOut.mp3";
 		case 4:  return "BaseAfterBase.mp3";
 		case 5:  return "CantLetGo.mp3";
 		case 6:  return "Jumper.mp3";
+		case 7:  return "TimeMachine.mp3";
+		case 8:  return "Cycles.mp3";
+		case 9:  return "xStep.mp3";
+		case 10:  return "Clutterfunk.mp3";
+		case 11:  return "TheoryOfEverything.mp3";
+		case 12:  return "Electroman.mp3";
+		case 13:  return "Clubstep.mp3";
+		case 14:  return "Electrodynamix.mp3";
+		case 15:  return "HexagonForce.mp3";
+		case 16:  return "BlastProcessing.mp3";
+		case 17:  return "TheoryOfEverything2.mp3";
+		case 18:  return "GeometricalDominator.mp3";
+		case 19:  return "Deadlocked.mp3";
+		case 20:  return "Fingerdash.mp3";
 		default: return "StereoMadness.mp3";
 	}
 }
 
 std::string LevelTools::getAudioTitle(int lid) {
 	switch(lid) {
-		case 0:  return "Stereo Madness";
 		case 1:  return "Back On Track";
 		case 2:  return "Polargeist";
 		case 3:  return "Dry Out";

@@ -10,6 +10,7 @@ Texture2D* PlayerObject::motionStreakTex = nullptr;
 
 void PlayerObject::reset()
 {
+	m_dYVel = 0.f;
 	setIsDead(false);
 	setIsShip(false);
 	flipGravity(false);
