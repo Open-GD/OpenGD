@@ -1,15 +1,23 @@
 #include "ListLayer.h"
 
-ListLayer* ListLayer::create(const char* label, ax::Color4B color, ax::Vec2 pos){
+ListLayer* ListLayer::create(const char* label, ax::Color4B color, ax::Vec2 size){
     auto pRet = new(std::nothrow) ListLayer();
 
-	if (pRet && pRet->init(label, color, pos)) {
+	if (pRet && pRet->init(label, color, size)) {
 		pRet->autorelease();
 		return pRet;
 	} else {
 		AX_SAFE_DELETE(pRet);
 		return nullptr;
 	}
+}
+
+ListLayer* ListLayer::create(const char* label, ax::Color4B color){
+	ListLayer::create(label, color, {356, 220});
+}
+
+ListLayer* ListLayer::create(const char* label){
+	ListLayer::create(label, {0, 0, 0, 0}, {356, 220});
 }
 
 bool ListLayer::init(const char* label, ax::Color4B color, ax::Vec2 size){
