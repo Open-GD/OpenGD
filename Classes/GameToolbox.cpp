@@ -431,3 +431,8 @@ int GameToolbox::ccInflateMemory(unsigned char *in, unsigned int inLength, unsig
 	return ccInflateMemoryWithHint(in, inLength, out, 256 * 1024);
 }
 
+/* dummy for a while */
+bool GameToolbox::isGDBought()
+{
+	return true;
+}
