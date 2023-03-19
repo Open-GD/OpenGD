@@ -15,6 +15,7 @@ void EffectGameObject::triggerActivated(float idk)
 	{
 	case 30:
 	case 29:
+	case 899:
 		if (!pl->m_pColorChannels.contains(m_nTargetColorId))
 			pl->m_pColorChannels.insert({ m_nTargetColorId, Color3B::WHITE });
 
