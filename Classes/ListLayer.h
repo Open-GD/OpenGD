@@ -4,9 +4,7 @@
 #include "MenuItemSpriteExtra.h"
 
 class ListLayer : public ax::LayerColor {
-    private:
-        ax::Layer* listlayer;
-        
+    private:        
         bool init(const char* label, ax::Color4B color, ax::Vec2 size);
     public:
         static ListLayer* create(const char* label, ax::Color4B color, ax::Vec2 size);
