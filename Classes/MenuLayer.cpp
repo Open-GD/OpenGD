@@ -14,6 +14,7 @@
 #include "SimpleProgressBar.h"
 #include "LevelSelectLayer.h"
 #include "DropDownLayer.h"
+#include "GJMoreGamesLayer.h"
 
 /*
 #include "ColoursPalette.h"
@@ -130,10 +131,8 @@ bool MenuLayer::init()
 	this->addChild(bottomMenu);
 
 	auto moreGamesBtn = MenuItemSpriteExtra::create("GJ_moreGamesBtn_001.png", [&](Node* btn) {
-		//auto a = GJMoreGamesLayer::create();
-		//addChild(a);
-		auto dropdownlayer = DropDownLayer::create("RobTop Games");
-		dropdownlayer->showLayer();
+		auto moregames = GJMoreGamesLayer::create();
+		addChild(moregames);
 	});
 
 	auto moreMenu = Menu::create();

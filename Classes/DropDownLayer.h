@@ -6,10 +6,10 @@
 
 class DropDownLayer : ax::LayerColor {
     private:
-        ax::Layer* droplayer;
-        
         bool init(const char* label);
     public:
+        ax::Layer* droplayer;
+
         static DropDownLayer* create(const char* label);
         void showLayer();
         void hideLayer();
