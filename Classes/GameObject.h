@@ -2,6 +2,7 @@
 #include <axmol.h>
 #include <map>
 #include <string>
+#include "json.hpp"
 
 enum GameObjectType
 {
@@ -40,6 +41,8 @@ private:
 	int _pColorGreen;
 	int _pColorBlue;
 	float _pDuration;
+
+	std::vector<ax::Sprite*> _detailSprites;
 public:
 	std::string _texturePath;
 
@@ -93,7 +96,6 @@ public:
 	void updateObjectType();
 
 	void customSetup();
-	void setupColors();
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);
