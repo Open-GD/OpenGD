@@ -695,25 +695,12 @@ void PlayLayer::processTriggers()
 	// 	i++;
 	// }
 }
-void PlayLayer::processObjectTransitions()
+void PlayLayer::applyEnterEffect(GameObject* obj)
 {
-	// auto winSize = Director::getInstance()->getWinSize();
-
-	// if(m_pSectionObjects.size() == 0) return;
-
-	// int current_section =  this->sectionForPos(m_obCamPos.x - winSize.width / 2);
-	// auto section = m_pSectionObjects[current_section];
-	// int i = 0;
-
-	// while (i < section.size()) {
-	// 	printf("section %d %d %d\n", current_section, i, section[i]->getNumberOfRunningActions());
-	// 	if(section[i]->getNumberOfRunningActions() == 0)
-	// 	{
-	// 		//section[i]->runAction(ActionTween::create(0.5, "opacity", 1.f, 0.f));
-	// 		section[i]->runAction(FadeTo::create(0.5, 0));
-	// 	}
-	// 	i++;
-	// }
+	if (obj->getEnterEffectID() != _enterEffectID)
+		obj->setEnterEffectID(_enterEffectID);
+	Vec2 objPos = obj->getPosition();
+	float rMod = getRelativeMod(objPos, 60.f, 60.f, 0.f);
 }
 
 void PlayLayer::checkCollisions(float dt)

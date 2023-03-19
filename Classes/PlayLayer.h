@@ -55,6 +55,8 @@ private:
 	bool m_platformerMode;
 
 public:
+	int _enterEffectID = 1;
+
 	ax::SpriteBatchNode* _mainBatchNode;
 	ax::ParticleBatchNode* _particleBatchNode;
 
@@ -82,7 +84,9 @@ public:
 	void renderRect(ax::Rect rect, ax::Color4B col);
 
 	void processTriggers();
-	void processObjectTransitions();
+
+
+	void applyEnterEffect(GameObject* obj);
 
 	int sectionForPos(float x);
 

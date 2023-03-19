@@ -44,6 +44,10 @@ private:
 	ax::Sprite* _glowSprite;
 
 public:
+	int _enterEffectID = 1;
+
+	void setEnterEffectID(int id) { _enterEffectID = id; }
+	int getEnterEffectID() { return _enterEffectID; }
 
 	bool m_bHasBeenActivated;
 	int _mainColorChannel = -1, _secColorChannel = -1;
