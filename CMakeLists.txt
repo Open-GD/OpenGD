@@ -76,6 +76,7 @@ if(NOT DEFINED BUILD_ENGINE_DONE) # to test OpenGD into root project
 	endif()
 endif()
 
+
 # record sources, headers, resources...
 set(GAME_SOURCE)
 set(GAME_HEADER)
