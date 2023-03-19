@@ -436,3 +436,22 @@ int GameToolbox::ccInflateMemory(unsigned char *in, unsigned int inLength, unsig
 	return ccInflateMemoryWithHint(in, inLength, out, 256 * 1024);
 }
 
+std::string GameToolbox::getClipboardString()
+{
+	#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
+		if (!OpenClipboard(nullptr)) return "";
+
+		HANDLE hData = GetClipboardData(CF_TEXT);
+		if (hData == nullptr) return "";
+
+		char* pszText = static_cast<char*>(GlobalLock(hData));
+		if (pszText == nullptr) return "";
+
+		std::string text(pszText);
+		GlobalUnlock(hData);
+		CloseClipboard();
+		return text;
+	#else
+		return "";
+	#endif
+}
