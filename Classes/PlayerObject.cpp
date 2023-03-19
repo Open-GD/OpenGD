@@ -633,6 +633,8 @@ void PlayerObject::setIsShip(bool val)
 	if (isShip() != val)
 	{
 		stopRotation();
+		_rotationX = 0.f;
+		_rotationY = 0.f;
 		m_bIsShip = val;
 		m_dYVel /= 2.f;
 		setIsOnGround(false);

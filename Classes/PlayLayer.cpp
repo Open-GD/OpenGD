@@ -365,6 +365,7 @@ bool PlayLayer::init(GJGameLevel* level)
 			int section = sectionForPos(object->getPositionX());
 			m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
+			object->setCascadeOpacityEnabled(true);
 			object->update();
 		}
 	}
@@ -387,6 +388,7 @@ bool PlayLayer::init(GJGameLevel* level)
 		});
 		addChild(loadfailedstr, 128);
 	}
+	updateVisibility();
 
 	scheduleOnce(
 		[=](float d) {
@@ -422,8 +424,6 @@ void PlayLayer::update(float dt)
 		AudioEngine::resumeAll();
 	}
 
-	Vec2 playerPosOld = m_pPlayer->getPosition();
-
 	float step = std::min(2.0f, dt * 60.0f);
 
 	m_pPlayer->m_bIsPlatformer = m_platformerMode;
@@ -458,10 +458,11 @@ void PlayLayer::update(float dt)
 	this->updateVisibility();
 	this->updateCamera(step);
 	if (m_pPlayer->isShip()) m_pPlayer->updateShipRotation(step);
-	Vec2 playerPosNew = m_pPlayer->getPosition();
 
 	m_pColorChannels[1005] = m_pPlayer->getMainColor();
 	m_pColorChannels[1006] = m_pPlayer->getSecondaryColor();
+
+	processObjectTransitions();
 }
 
 void PlayLayer::destroyPlayer()
@@ -473,7 +474,7 @@ void PlayLayer::destroyPlayer()
 
 	scheduleOnce([=](float d) { resetLevel(); }, 1.f, "restart");
 
-	runAction(FadeTo::create(0.2f, 0));
+	m_pPlayer->runAction(FadeTo::create(0.2f, 0));
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -576,6 +577,12 @@ void PlayLayer::updateVisibility()
 						}
 					}
 
+					// obj->setOpacity(127);
+					// printf("%d %d %d\n", j, obj->getNumberOfRunningActions(), i);
+					// if(obj->getNumberOfRunningActions() == 0) 
+					// {
+					// 	obj->runAction(FadeTo::create(0.5f, 255));
+					// }
 					obj->setActive(true);
 					obj->update();
 
@@ -647,6 +654,7 @@ void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
 			m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
 		}
 		this->m_pPlayer->setIsShip(true);
+		this->m_pPlayer->setRotation(0.f);
 		tweenBottomGround(-68);
 		tweenCeiling(388);
 	}
@@ -675,17 +683,37 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
 
 void PlayLayer::processTriggers()
 {
-	int current_section = this->sectionForPos(m_pPlayer->getPositionX());
-	if (m_pSectionObjects.size() == 0) return;
+	// int current_section = this->sectionForPos(m_pPlayer->getPositionX());
+	// if (m_pSectionObjects.size() == 0) return;
 
-	std::vector<GameObject*> section =
-		m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
+	// std::vector<GameObject*> section =
+	// 	m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
 
-	int i = 0;
-	while (i < section.size())
-	{
-		i++;
-	}
+	// int i = 0;
+	// while (i < section.size())
+	// {
+	// 	i++;
+	// }
+}
+void PlayLayer::processObjectTransitions()
+{
+	// auto winSize = Director::getInstance()->getWinSize();
+
+	// if(m_pSectionObjects.size() == 0) return;
+
+	// int current_section =  this->sectionForPos(m_obCamPos.x - winSize.width / 2);
+	// auto section = m_pSectionObjects[current_section];
+	// int i = 0;
+
+	// while (i < section.size()) {
+	// 	printf("section %d %d %d\n", current_section, i, section[i]->getNumberOfRunningActions());
+	// 	if(section[i]->getNumberOfRunningActions() == 0)
+	// 	{
+	// 		//section[i]->runAction(ActionTween::create(0.5, "opacity", 1.f, 0.f));
+	// 		section[i]->runAction(FadeTo::create(0.5, 0));
+	// 	}
+	// 	i++;
+	// }
 }
 
 void PlayLayer::checkCollisions(float dt)
@@ -1003,7 +1031,7 @@ void PlayLayer::exit()
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
-	MenuLayer::music = false;
+	// MenuLayer::music = false;
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
 
 }
