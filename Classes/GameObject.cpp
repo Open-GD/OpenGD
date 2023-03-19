@@ -2333,6 +2333,9 @@ void GameObject::updateObjectType()
 		case 13:
 			setGameObjectType(kGameObjectTypeShipPortal);
 			break;
+		case 1859: // H block
+			setGameObjectType(kGameObjectTypeSpecial);
+			break;
 		default:
 			setGameObjectType(kGameObjectTypeHazard);
 			break;

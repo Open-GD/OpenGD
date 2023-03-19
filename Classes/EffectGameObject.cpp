@@ -11,6 +11,11 @@ void EffectGameObject::triggerActivated(float idk)
 	this->m_bHasBeenActivated = true;
 	pl = PlayLayer::getInstance();
 
+	if(getID() == 29)
+		m_nTargetColorId = 1000;
+	else if (getID() == 30)
+		m_nTargetColorId = 1001;
+
 	switch (getID())
 	{
 	case 30:
