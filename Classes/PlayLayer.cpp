@@ -706,7 +706,6 @@ void PlayLayer::processObjectTransitions()
 void PlayLayer::checkCollisions(float dt)
 {
 	auto playerOuterBounds = this->m_pPlayer->getOuterBounds();
-
 	if (this->m_pPlayer->getPositionY() < 105.0f && !this->m_pPlayer->isShip())
 	{
 		if (this->m_pPlayer->isGravityFlipped())
@@ -715,9 +714,7 @@ void PlayLayer::checkCollisions(float dt)
 			return;
 		}
 
-		float x = this->m_pPlayer->getPositionX();
-
-		this->m_pPlayer->setPosition({x, 105.0f});
+		this->m_pPlayer->setPositionY(105.0f);
 
 		this->m_pPlayer->hitGround(false);
 	}
@@ -730,20 +727,21 @@ void PlayLayer::checkCollisions(float dt)
 
 	if (this->m_pPlayer->isShip())
 	{
-		if (this->m_pPlayer->getPositionY() <= _ceiling->getPositionY() - 12.f)
+		if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + cameraFollow->getPositionY() + 93.0f)
 		{
-			if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + 175.f)
-			{
-				this->m_pPlayer->setPositionY(_bottomGround->getPositionY() + 175.f);
+			this->m_pPlayer->setPositionY(_bottomGround->getPositionY() + cameraFollow->getPositionY() + 93.0f);
 
-				this->m_pPlayer->hitGround(this->m_pPlayer->isGravityFlipped());
-			}
+			if(!this->m_pPlayer->isGravityFlipped())
+				this->m_pPlayer->hitGround(false);
+
+			m_pPlayer->setYVel(0.f);
 		}
-		else
+		if (m_pPlayer->getPositionY() > _ceiling->getPositionY() - 240.f + m_fCameraYCenter - 12.f)
 		{
-			this->m_pPlayer->setPositionY(_ceiling->getPositionY() - 12.f);
+			this->m_pPlayer->setPositionY(_ceiling->getPositionY() - 240.f + m_fCameraYCenter - 12.f);
 
-			if (m_pPlayer->isGravityFlipped()) this->m_pPlayer->hitGround(!this->m_pPlayer->isGravityFlipped());
+			if (m_pPlayer->isGravityFlipped()) 
+				this->m_pPlayer->hitGround(true);
 
 			m_pPlayer->setYVel(0.f);
 		}
@@ -991,11 +989,9 @@ void PlayLayer::onExit()
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
 #endif
 	LevelPage::replacingScene = false;
-	music = true;
 	Instance = nullptr;
 	Layer::onExit();
 }
-
 void PlayLayer::exit()
 {
 	m_pPlayer->deactivateStreak();
@@ -1022,6 +1018,7 @@ void PlayLayer::exit()
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+	MenuLayer::music = false;
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
 
 }

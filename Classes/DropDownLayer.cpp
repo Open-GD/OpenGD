@@ -10,10 +10,10 @@
 
 #define REMOVE_SWALLOW_LISTENER(node) ax::Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(node)
 
-DropDownLayer* DropDownLayer::create(){
+DropDownLayer* DropDownLayer::create(const char* label){
     auto pRet = new(std::nothrow) DropDownLayer();
 
-	if (pRet && pRet->init()) {
+	if (pRet && pRet->init(label)) {
 		pRet->autorelease();
 		return pRet;
 	} else {
@@ -22,7 +22,7 @@ DropDownLayer* DropDownLayer::create(){
 	}
 }
 
-bool DropDownLayer::init(){
+bool DropDownLayer::init(const char* label){
     if(!this->initWithColor({0, 0, 0, 0})) return false;
     
     auto winSize = ax::Director::getInstance()->getWinSize();
@@ -41,6 +41,21 @@ bool DropDownLayer::init(){
     backBtn->setPosition(menu->convertToNodeSpace({25, winSize.height - 25}));
     menu->addChild(backBtn);
     droplayer->addChild(menu);
+
+    auto chain1 = ax::Sprite::createWithSpriteFrameName("chain_01_001.png");
+    chain1->setPosition({(winSize.width / 2) - 156, winSize.height - 43});
+    chain1->setAnchorPoint({0.5f, 0.0f});
+    droplayer->addChild(chain1);
+
+    auto chain2 = ax::Sprite::createWithSpriteFrameName("chain_01_001.png");
+    chain2->setPosition({(winSize.width / 2) + 156, winSize.height - 43});
+    chain2->setAnchorPoint({0.5f, 0.0f});
+    droplayer->addChild(chain2);
+
+
+    auto listlayer = ListLayer::create(label, {0, 0, 0, 0}, {356, 220});
+    listlayer->setPosition({(winSize.width - 356) / 2, ((winSize.height - 220) / 2) + 5});
+    droplayer->addChild(listlayer);
     //menu end
     
     this->addChild(droplayer);

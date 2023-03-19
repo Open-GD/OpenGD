@@ -23,7 +23,7 @@
 
 USING_NS_AX;
 
-bool music = true;
+bool MenuLayer::music = true;
 
 Scene* MenuLayer::scene()
 {
@@ -49,7 +49,7 @@ bool MenuLayer::init()
 	auto log_oSpr = Sprite::createWithSpriteFrameName("GJ_logo_001.png");
 	log_oSpr->setStretchEnabled(false);
 	//log_oSpr->setPosition({ winSize.width / 2, winSize.height - 100 });
-	log_oSpr->setPosition({284.5, 270});
+	log_oSpr->setPosition({ winSize.width / 2.f, winSize.height - 50 });
 	this->addChild(log_oSpr);
 	auto playBtn = MenuItemSpriteExtra::create("GJ_playBtn_001.png", [&](Node* btn) {
 		/* AudioEngine::stopAll();
@@ -60,7 +60,7 @@ bool MenuLayer::init()
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
 	playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
-	playBtn->setPosition({0, 0});
+	playBtn->setPosition({ 0, 0 });
 	//static_cast<ax::Sprite*>(playBtn->getSprite())->setStretchEnabled(false);
 
 	auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
@@ -81,7 +81,7 @@ bool MenuLayer::init()
 
 	auto mainButtonMenu = Menu::create(garageBtn, playBtn, creatorBtn, nullptr);
 
-	mainButtonMenu->setPosition({282.5f, 170});
+	mainButtonMenu->setPosition({ winSize.width / 2.f , winSize.height / 2.f + 10 });
 	addChild(mainButtonMenu);
 
 	auto robBtn = MenuItemSpriteExtra::create(
@@ -95,14 +95,14 @@ bool MenuLayer::init()
 
 	auto achievementsBtn = MenuItemSpriteExtra::create("GJ_achBtn_001.png", [&](Node* btn) {
 		//AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
-		auto dropdownlayer = DropDownLayer::create();
+		auto dropdownlayer = DropDownLayer::create("Achievements");
 		dropdownlayer->showLayer();
 	});
 	achievementsBtn->setScale(1.f);
 	//static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
 
 	auto optionsBtn = MenuItemSpriteExtra::create("GJ_optionsBtn_001.png", [&](Node* btn) {
-		auto dropdownlayer = DropDownLayer::create();
+		auto dropdownlayer = DropDownLayer::create("Options");
 		dropdownlayer->showLayer();
 	});
 
@@ -123,7 +123,7 @@ bool MenuLayer::init()
 
 	auto bottomMenu = Menu::create(achievementsBtn, optionsBtn, statsBtn, nullptr);
 
-	bottomMenu->setPosition({284.5, 45});
+	bottomMenu->setPosition({ winSize.width / 2.f, 45 });
 	//bottomMenu->setPositionY(100);
 	bottomMenu->alignItemsHorizontallyWithPadding(5);
 
@@ -132,12 +132,12 @@ bool MenuLayer::init()
 	auto moreGamesBtn = MenuItemSpriteExtra::create("GJ_moreGamesBtn_001.png", [&](Node* btn) {
 		//auto a = GJMoreGamesLayer::create();
 		//addChild(a);
-		auto dropdownlayer = DropDownLayer::create();
+		auto dropdownlayer = DropDownLayer::create("RobTop Games");
 		dropdownlayer->showLayer();
 	});
 
 	auto moreMenu = Menu::create();
-	moreMenu->setPosition({524, 45});
+	moreMenu->setPosition({ winSize.width - 45, 45 });
 	moreMenu->addChild(moreGamesBtn);
 	addChild(moreMenu);
 

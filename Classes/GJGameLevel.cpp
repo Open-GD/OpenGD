@@ -4,52 +4,30 @@
 #include <cstring>
 #include <iostream>
 
-#define PARSE_KEY_PKSTRING(keyN, member) \
-	case keyN:						   \
-	{									\
-		member = std::string(parsed);	\
-		break;						   \
-	}
-#define PARSE_KEY_PKINT(keyN, member) \
-	case keyN:						\
-	{								 \
-		member = std::atoi(parsed);   \
-		break;						\
-	}
-#define PARSE_KEY_PKBOOL(keyN, member)	  \
-	case keyN:							  \
-	{									   \
-		member = (bool)(std::atoi(parsed)); \
-		break;							  \
-	}
-#define PARSE_KEY_PKBASE64(keyN, member)										 \
-	case keyN:																   \
-	{																			\
-		member = std::string((char *)base64_decode(std::string(parsed)).data()); \
-		break;																   \
-	}
-#define PARSE_KEY(keyN, member, vType) PARSE_KEY_##vType(keyN, member)
+#include <ZipUtils.h>
 
 GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 {
 	GJGameLevel* level = new GJGameLevel();
 	if (!level)
 		return nullptr;
-
+	//                                                                                                                          -
 	// 1:6508283:2:ReTraY:3:VGhhbmtzIGZvciBwbGF5aW5nIEdlb21ldHJ5IERhc2g=:4:{levelString}:5:3:6:4993756:8:10:9:10:10:39431612:12:0:13:21:14:4125578:17::43:3:25::18:2:19:7730:42:0:45:20000:15:3:30:0:31:0:28:5 years:29:1 year:35:557117:36:0_733_0_0_0_0_574_716_0_0_352_78_729_0_42_0_833_68_0_347_0_38_240_205_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0:37:3:38:1:39:2:46:7729:47:13773:40:0:27:AwMABAYDBw==#eb541c03f8355c0709f8007a1d9a595ae5bedc5d#291568b26b08d70a198fca10a87c736a2823be0c
 
-	char *data2 = (char *)malloc(strlen(backendResponse.c_str()) + 2);
-	strcpy(data2, backendResponse.c_str());
+	auto stuff = GameToolbox::splitByDelim(backendResponse, ':');
 
-	auto parsed = strtok(data2, ":");
-	int i = 0;
-	int ai = 0;
+	level->_LevelID = std::stoi(stuff[1]);
+	level->_LevelName = stuff[3];
+	level->_Version = std::stoi(stuff[9]);
+	level->_PlayerID = std::stoi(stuff[11]);
+	//level->_Stars = std::stoi(stuff[17]);
+	level->_MusicID = std::stoi(stuff[19]);
+	
+	level->_LevelString = stuff[7];
 
-	while (parsed != 0)
+	/*while (parsed != 0)
 	{
 		int key = std::stoi(std::string(parsed));
-		printf("[%d %d] %s\n", i, key, parsed);
-		parsed = strtok(NULL, ":");
 		switch (key)
 		{
 			PARSE_KEY(1, level->_LevelID, PKINT);
@@ -75,14 +53,12 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 			PARSE_KEY(45, level->_Objects, PKINT);
 			PARSE_KEY(46, level->_EditorTime, PKINT);
 			PARSE_KEY(47, level->_EditorTimeTotal, PKINT);
-
 			PARSE_KEY(17, level->_Demon, PKBOOL);
 			PARSE_KEY(25, level->_Auto, PKBOOL);
 			PARSE_KEY(31, level->_2P, PKBOOL);
 			PARSE_KEY(38, level->_VerifiedCoins, PKBOOL);
 			PARSE_KEY(40, level->_LDM, PKBOOL);
 			PARSE_KEY(44, level->_Gauntlet, PKBOOL);
-
 			PARSE_KEY(2, level->_LevelName, PKSTRING);
 			PARSE_KEY(4, level->_LevelString, PKSTRING);
 			PARSE_KEY(26, level->_RecordString, PKSTRING);
@@ -91,11 +67,10 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 			PARSE_KEY(29, level->_UpdateDate, PKSTRING);
 			PARSE_KEY(36, level->_ExtraString, PKSTRING);
 			PARSE_KEY(48, level->_Settings, PKSTRING);
-
 			PARSE_KEY(3, level->_Description, PKBASE64);
 		}
 		parsed = strtok(NULL, ":");
-	}
+	}*/
 	return level;
 }
 GJGameLevel::GJGameLevel(std::string levelName, int levelID)
@@ -147,19 +122,22 @@ std::string GJGameLevel::getLevelStrFromID(int gdLevelID)
 std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 {
 	std::string result = compressedLvlStr;
-	
-	std::string compressedStr = base64_decode(compressedLvlStr);
 
-	GameToolbox::log("\n\n{}\n\n{}\n\n", compressedLvlStr, compressedStr);
+	std::replace(compressedLvlStr.begin(), compressedLvlStr.end(), '_', '/');
+	std::replace(compressedLvlStr.begin(), compressedLvlStr.end(), '-', '+');
 
-	if (!compressedStr.empty())
+	if (!compressedLvlStr.empty())
 	{
-		unsigned char* buffer = nullptr;
-		buffer = const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>((compressedStr.c_str())));
-		int decode_len = compressedStr.length();
-		unsigned char* deflated = nullptr;
-		ssize_t deflated_len = GameToolbox::ccInflateMemory(buffer, decode_len, &deflated);
-		result = reinterpret_cast<char*>(deflated);
+		std::string decoded = base64_decode(compressedLvlStr);
+		unsigned char* data = (unsigned char*)decoded.data();
+		unsigned char* a = nullptr;
+
+		//if (ax::ZipUtils::isGZipBuffer(data, decoded.length()))
+		//{
+			ssize_t deflatedLen = ax::ZipUtils::inflateMemory(data, decoded.length(), &a);
+			
+			result = std::string(reinterpret_cast<char*>(a));
+		//}
 	}
 
 	GameToolbox::log("\n\n{}\n\n", result);

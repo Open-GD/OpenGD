@@ -65,6 +65,11 @@ public:
 	@return Refresh rate in Hz
 	*/
 	int applicationGetRefreshRate();
+
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
+	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+	static void onGLFWwindowSizeCallback(GLFWwindow*, int w, int h);
+#endif
 };
 
 #endif  // _APP_DELEGATE_H_

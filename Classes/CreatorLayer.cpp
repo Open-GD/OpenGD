@@ -5,14 +5,15 @@
 #include "MenuItemSpriteExtra.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
-#include <ui/CocosGUI.h>
 #include "PlayLayer.h"
 #include "GJGameLevel.h"
+#include <AudioEngine.h>
 
 USING_NS_AX;
 using namespace ax::network;
 
 #include "base64.h"
+#include <LevelPage.h>
 
 using GameToolbox::getTextureString;
 
@@ -54,8 +55,8 @@ bool CreatorLayer::init() {
 		
 	//	Director::getInstance()->replaceScene(TransitionFade::create(.5, LevelSearchLayer::scene()));
 	
-		/*
-		std::string levelID = "128";
+		
+		std::string levelID(levelField->getString());
 		std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", levelID);
 		GameToolbox::log("postData: {}", postData);
 		HttpRequest* request = new HttpRequest();
@@ -68,7 +69,7 @@ bool CreatorLayer::init() {
 		request->setTag("GET test3");
 		HttpClient::getInstance()->send(request);
 		request->release();
-		*/
+		
 	});
 	auto createBtn = MenuItemSpriteExtra::create(createBtnSpr, [&](Node*) {
 		GameToolbox::log("on create");
@@ -85,11 +86,12 @@ bool CreatorLayer::init() {
 	
 	this->addChild(menu);
 	
-	auto levelField = ui::TextField::create("Enter ID", GameToolbox::getTextureString("bigFont.fnt"), 20);
+	levelField = ui::TextField::create("Enter ID", GameToolbox::getTextureString("bigFont.fnt"), 20);
 	levelField->setPlaceHolderColor({ 120, 170, 240 });
 	levelField->setMaxLength(10);
 	levelField->setMaxLengthEnabled(true);
 	levelField->setCursorEnabled(true);
+	levelField->setString("128");
 	levelField->setPosition({winSize.width / 2 + 150, winSize.height / 2});
 	this->addChild(levelField);
 	
@@ -102,35 +104,21 @@ bool CreatorLayer::init() {
 
 void CreatorLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
-	/*
 	if(auto str = GameToolbox::getResponse(response))
 	{
-		std::vector<std::string> levelStuff = GameToolbox::splitByDelim(*str, ':');
-		std::string compressedStr = fmt::format("{}", levelStuff.at(7));
-		GameToolbox::log("compressed: {}", compressedStr);
-		if(!compressedStr.empty())
-		{
-			unsigned char* buffer = nullptr;
-			unsigned char* deflated = nullptr;
-			int decode_len = ax::base64::decode(
-				&buffer,
-				compressedStr.c_str(),
-				compressedStr.size()
-			);
-			GameToolbox::log("000000000 {}", decode_len);
-			ssize_t deflated_len = GameToolbox::ccInflateMemory(buffer, decode_len, &deflated);
-		//	GameToolbox::log("11111111 {}", deflated_len);
+		//std::vector<std::string> levelStuff = GameToolbox::splitByDelim(*str, ':');
+		//std::string compressedStr = fmt::format("{}", levelStuff.at(7));
+		//GameToolbox::log("compressed: {}", compressedStr);
+		GJGameLevel* level = GJGameLevel::createWithResponse(*str);
+		GameToolbox::log("playing level<{}>:{},{}*", level->_LevelID, level->_LevelName, level->_Stars);
 
-			//GameToolbox::log("final: {}", levelStr);
-			return;
-		//	auto level = GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1);
-		//	level->_LevelString = levelStr;
-		//	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, PlayLayer::scene(level)));
-		}
+		ax::AudioEngine::stopAll();
+		ax::AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
+		ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+		LevelPage::replacingScene = true;
 	}
 	else
 		GameToolbox::log("request failed");
-	*/
 }
 
 /*

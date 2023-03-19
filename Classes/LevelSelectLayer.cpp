@@ -48,7 +48,7 @@ bool LevelSelectLayer::init()
 	_background->setPosition({-5.0f, -5.0f});
 	_background->setColor({0x28, 0x7D, 0xFF});
 
-	// // why does game manager store the ground id? who knows!
+	// why does game manager store the ground id? who knows!
 	_ground = GroundLayer::create(1);
 	_ground->setPositionY(-25.f);
 	addChild(_ground, -1);
@@ -75,6 +75,7 @@ bool LevelSelectLayer::init()
 	
 	auto bsl = BoomScrollLayer::create(layers, 0);
 	addChild(bsl);
+
 	/* std::vector<GJGameLevel> mainLevels;
 	cocos2d::CCArray* levelPages = cocos2d::CCArray::create();
 	for (size_t i = 0; i < 22; i++)
@@ -137,7 +138,7 @@ bool LevelSelectLayer::init()
 	btnMenu->addChild(leftBtn);
 
 	//leftBtn->setScale(2.0f);
-	leftBtn->setPosition(btnMenu->convertToNodeSpace({0 + 25.0f, winSize.height / 2}));
+	leftBtn->setPosition(btnMenu->convertToNodeSpace({ 25.0f, winSize.height / 2 }));
 
 	auto right = Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Right_001.png" : "navArrowBtn_001.png");
 
@@ -147,7 +148,7 @@ bool LevelSelectLayer::init()
 	btnMenu->addChild(rightBtn);
 
 	//right->setScale(2.0f);
-	rightBtn->setPosition(btnMenu->convertToNodeSpace({569 - 25.0f, winSize.height / 2}));
+	rightBtn->setPosition(btnMenu->convertToNodeSpace({ winSize.width - 25.0f, winSize.height / 2 }));
 
 	auto back = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
 	MenuItemSpriteExtra* backBtn = MenuItemSpriteExtra::create(back, [&](Node* btn) {
@@ -160,7 +161,7 @@ bool LevelSelectLayer::init()
 
 	backMenu->addChild(backBtn);
 
-	backMenu->setPosition({0 + 25.0f, 320 - 22.0f});
+	backMenu->setPosition({ 0 + 25.0f, winSize.height - 22.0f });
 
 	// //GM->0x298 = 0;
 
@@ -174,7 +175,7 @@ bool LevelSelectLayer::init()
 	});
 	infoMenu->addChild(infoBtn, 1);
 
-	infoMenu->setPosition({569.f - 20.0f, 320 - 20.0f});
+	infoMenu->setPosition({ winSize.width - 20.0f, winSize.height - 20.0f });
 
 	//if (controller) GameToolbox::addBackButton(this, backBtn);
 	return true;
