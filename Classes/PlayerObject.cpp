@@ -16,6 +16,7 @@ void PlayerObject::reset()
 	m_snappedObject = nullptr;
 	m_snapDifference = 0;
 	m_isRising = false;
+	m_bIsHolding = false;
 	_touchedRingObject = nullptr;
 	stopActionByTag(0);
 	stopActionByTag(1);
@@ -359,7 +360,7 @@ void PlayerObject::propellPlayer()
 	setIsOnGround(false);
 	m_dYVel = flipMod() * 16.0f;
 	runRotateAction();
-	m_obLastGroundPos = getPosition();
+	setLastGroundPos(getPosition());
 
 	activateStreak();
 }
@@ -379,6 +380,7 @@ void PlayerObject::ringJump()
 		runRotateAction();
 		_touchedRingObject = nullptr;
 		_hasRingJumped = true;
+		setLastGroundPos(getPosition());
 
 		activateStreak();
 	}
