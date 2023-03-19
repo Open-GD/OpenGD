@@ -13,11 +13,11 @@ ListLayer* ListLayer::create(const char* label, ax::Color4B color, ax::Vec2 size
 }
 
 ListLayer* ListLayer::create(const char* label, ax::Color4B color){
-	ListLayer::create(label, color, {356, 220});
+	return ListLayer::create(label, color, {356, 220});
 }
 
 ListLayer* ListLayer::create(const char* label){
-	ListLayer::create(label, {0, 0, 0, 0}, {356, 220});
+	return ListLayer::create(label, {0, 0, 0, 0}, {356, 220});
 }
 
 bool ListLayer::init(const char* label, ax::Color4B color, ax::Vec2 size){
