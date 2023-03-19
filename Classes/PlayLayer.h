@@ -57,8 +57,11 @@ private:
 public:
 	int _enterEffectID = 0;
 
-	std::string _mainBatchNodeTexture = "GJ_GameSheet-hd.png";
-	std::string _main2BatchNodeTexture = "GJ_GameSheet02-hd.png";
+	int _groundID = 1;
+	int _bgID = 1;
+
+	std::string _mainBatchNodeTexture = "GJ_GameSheet.png";
+	std::string _main2BatchNodeTexture = "GJ_GameSheet02.png";
 
 	ax::SpriteBatchNode* _mainBatchNode;
 	ax::SpriteBatchNode* _main2BatchNode;

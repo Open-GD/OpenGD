@@ -155,6 +155,18 @@ void PlayLayer::loadLevel(std::string levelStr)
 				m_pColorChannels.insert({key, col});
 			}
 		}
+		else if (levelData[i] == "kA6")
+		{
+			_bgID = std::stoi(levelData[i + 1]);
+			if (!_bgID)
+				_bgID = 1;
+		}
+		else if (levelData[i] == "kA7")
+		{
+			_groundID = std::stoi(levelData[i + 1]);
+			if (!_groundID)
+				_groundID = 1;
+		}
 	}
 
 	m_pColorChannels[1005] = m_pPlayer->getMainColor();
@@ -162,9 +174,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 	m_pColorChannels[1010] = Color3B::BLACK;
 
 	_originalColors = std::map<int, Color3B>(m_pColorChannels);
-	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000));
-	this->_bottomGround->update(0);
-
+	
 	for (std::string data : objData)
 	{
 		auto d = GameToolbox::splitByDelim(data, ',');
@@ -309,31 +319,9 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	this->_bottomGround = GroundLayer::create(1);
-	this->_ceiling = GroundLayer::create(1);
-	cameraFollow = ax::Node::create();
-	cameraFollow->addChild(this->_bottomGround, 1);
-	cameraFollow->addChild(this->_ceiling, 1);
-	this->addChild(cameraFollow, 1);
-
-	this->_ceiling->setScaleY(-1);
-	_ceiling->setVisible(false);
-	_bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
-	_ceiling->setPositionY(winSize.height + _ceiling->_sprite->getTextureRect().size.height);
-
 	dn = ax::DrawNode::create();
 	dn->setPosition({-15, -15});
 	addChild(dn, 99999);
-
-	this->m_pBG = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
-	m_pBG->setStretchEnabled(false);
-	const Texture2D::TexParams texParams = {
-		backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR, backend::SamplerAddressMode::REPEAT,
-		backend::SamplerAddressMode::REPEAT};
-	this->m_pBG->getTexture()->setTexParameters(texParams);
-	this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
-	this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
-	this->addChild(this->m_pBG, -100);
 
 	this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
 	this->m_pPlayer->setPosition({-20, 105});
@@ -343,18 +331,18 @@ bool PlayLayer::init(GJGameLevel* level)
 	m_pPlayer->setMainColor({125, 255, 0});
 	m_pPlayer->setSecondaryColor({0, 255, 255});
 
-	_blendingBatchNode = ax::SpriteBatchNode::create(_mainBatchNodeTexture, 150);
+	_blendingBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 150);
 	this->addChild(_blendingBatchNode);
 	_blendingBatchNode->setBlendFunc(GameToolbox::getBlending());
 
-	_glowBatchNode = ax::SpriteBatchNode::create("GJ_GameSheetGlow-hd.png", 150);
+	_glowBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString("GJ_GameSheetGlow.png"), 150);
 	this->addChild(_glowBatchNode);
 	_glowBatchNode->setBlendFunc(GameToolbox::getBlending());
 
-	_mainBatchNode = ax::SpriteBatchNode::create(_mainBatchNodeTexture, 150);
+	_mainBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 150);
 	this->addChild(_mainBatchNode);
 
-	_main2BatchNode = ax::SpriteBatchNode::create(_main2BatchNodeTexture, 150);
+	_main2BatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_main2BatchNodeTexture), 150);
 	this->addChild(_main2BatchNode);
 
 	_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
@@ -366,6 +354,31 @@ bool PlayLayer::init(GJGameLevel* level)
 	//std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
 	std::string levelStr = getLevel()->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(getLevel()->_LevelID) : getLevel()->_LevelString;
 	loadLevel(levelStr);
+
+	this->_bottomGround = GroundLayer::create(_groundID);
+	this->_ceiling = GroundLayer::create(_groundID);
+	cameraFollow = ax::Node::create();
+	cameraFollow->addChild(this->_bottomGround, 1);
+	cameraFollow->addChild(this->_ceiling, 1);
+	this->addChild(cameraFollow, 1);
+
+	this->_ceiling->setScaleY(-1);
+	_ceiling->setVisible(false);
+	_bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
+	_ceiling->setPositionY(winSize.height + _ceiling->_sprite->getTextureRect().size.height);
+
+	this->m_pBG = Sprite::create(GameToolbox::getTextureString(fmt::format("game_bg_{:02}_001.png", _bgID)));
+	m_pBG->setStretchEnabled(false);
+	const Texture2D::TexParams texParams = {
+		backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR, backend::SamplerAddressMode::REPEAT,
+		backend::SamplerAddressMode::REPEAT };
+	this->m_pBG->getTexture()->setTexParameters(texParams);
+	this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
+	this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
+	this->addChild(this->m_pBG, -100);
+
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000));
+	this->_bottomGround->update(0);
 
 	if (_pObjects.size() != 0)
 	{
