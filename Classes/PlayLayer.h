@@ -82,6 +82,7 @@ public:
 	void renderRect(ax::Rect rect, ax::Color4B col);
 
 	void processTriggers();
+	void processObjectTransitions();
 
 	int sectionForPos(float x);
 

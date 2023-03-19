@@ -422,8 +422,6 @@ void PlayLayer::update(float dt)
 		AudioEngine::resumeAll();
 	}
 
-	Vec2 playerPosOld = m_pPlayer->getPosition();
-
 	float step = std::min(2.0f, dt * 60.0f);
 
 	m_pPlayer->m_bIsPlatformer = m_platformerMode;
@@ -458,10 +456,11 @@ void PlayLayer::update(float dt)
 	this->updateVisibility();
 	this->updateCamera(step);
 	if (m_pPlayer->isShip()) m_pPlayer->updateShipRotation(step);
-	Vec2 playerPosNew = m_pPlayer->getPosition();
 
 	m_pColorChannels[1005] = m_pPlayer->getMainColor();
 	m_pColorChannels[1006] = m_pPlayer->getSecondaryColor();
+
+	processObjectTransitions();
 }
 
 void PlayLayer::destroyPlayer()
@@ -675,15 +674,31 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
 
 void PlayLayer::processTriggers()
 {
-	int current_section = this->sectionForPos(m_pPlayer->getPositionX());
-	if (m_pSectionObjects.size() == 0) return;
+	// int current_section = this->sectionForPos(m_pPlayer->getPositionX());
+	// if (m_pSectionObjects.size() == 0) return;
 
-	std::vector<GameObject*> section =
-		m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
+	// std::vector<GameObject*> section =
+	// 	m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) - 1];
 
+	// int i = 0;
+	// while (i < section.size())
+	// {
+	// 	i++;
+	// }
+}
+void PlayLayer::processObjectTransitions()
+{
+	auto winSize = Director::getInstance()->getWinSize();
+
+	if(m_pSectionObjects.size() == 0) return;
+
+	int current_section =  this->sectionForPos(m_obCamPos.x - winSize.width / 2);
+	auto section = m_pSectionObjects[current_section];
 	int i = 0;
-	while (i < section.size())
-	{
+
+	while (i < section.size()) {
+		printf("section %d %d %d\n", current_section, i, section[i]->getNumberOfRunningActions());
+		section[i]->runAction(FadeTo::create(0.5, 255));
 		i++;
 	}
 }
