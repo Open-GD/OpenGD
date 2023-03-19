@@ -365,6 +365,7 @@ bool PlayLayer::init(GJGameLevel* level)
 			int section = sectionForPos(object->getPositionX());
 			m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
+			object->setCascadeOpacityEnabled(true);
 			object->update();
 		}
 	}
@@ -387,6 +388,7 @@ bool PlayLayer::init(GJGameLevel* level)
 		});
 		addChild(loadfailedstr, 128);
 	}
+	updateVisibility();
 
 	scheduleOnce(
 		[=](float d) {
@@ -472,7 +474,7 @@ void PlayLayer::destroyPlayer()
 
 	scheduleOnce([=](float d) { resetLevel(); }, 1.f, "restart");
 
-	runAction(FadeTo::create(0.2f, 0));
+	m_pPlayer->runAction(FadeTo::create(0.2f, 0));
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -575,6 +577,12 @@ void PlayLayer::updateVisibility()
 						}
 					}
 
+					// obj->setOpacity(127);
+					// printf("%d %d %d\n", j, obj->getNumberOfRunningActions(), i);
+					// if(obj->getNumberOfRunningActions() == 0) 
+					// {
+					// 	obj->runAction(FadeTo::create(0.5f, 255));
+					// }
 					obj->setActive(true);
 					obj->update();
 
@@ -646,6 +654,7 @@ void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
 			m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
 		}
 		this->m_pPlayer->setIsShip(true);
+		this->m_pPlayer->setRotation(0.f);
 		tweenBottomGround(-68);
 		tweenCeiling(388);
 	}
@@ -688,19 +697,23 @@ void PlayLayer::processTriggers()
 }
 void PlayLayer::processObjectTransitions()
 {
-	auto winSize = Director::getInstance()->getWinSize();
+	// auto winSize = Director::getInstance()->getWinSize();
 
-	if(m_pSectionObjects.size() == 0) return;
+	// if(m_pSectionObjects.size() == 0) return;
 
-	int current_section =  this->sectionForPos(m_obCamPos.x - winSize.width / 2);
-	auto section = m_pSectionObjects[current_section];
-	int i = 0;
+	// int current_section =  this->sectionForPos(m_obCamPos.x - winSize.width / 2);
+	// auto section = m_pSectionObjects[current_section];
+	// int i = 0;
 
-	while (i < section.size()) {
-		printf("section %d %d %d\n", current_section, i, section[i]->getNumberOfRunningActions());
-		section[i]->runAction(FadeTo::create(0.5, 255));
-		i++;
-	}
+	// while (i < section.size()) {
+	// 	printf("section %d %d %d\n", current_section, i, section[i]->getNumberOfRunningActions());
+	// 	if(section[i]->getNumberOfRunningActions() == 0)
+	// 	{
+	// 		//section[i]->runAction(ActionTween::create(0.5, "opacity", 1.f, 0.f));
+	// 		section[i]->runAction(FadeTo::create(0.5, 0));
+	// 	}
+	// 	i++;
+	// }
 }
 
 void PlayLayer::checkCollisions(float dt)
@@ -1018,7 +1031,7 @@ void PlayLayer::exit()
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
-	MenuLayer::music = false;
+	// MenuLayer::music = false;
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
 
 }
