@@ -2107,7 +2107,9 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	{
 		_glowSprite = Sprite::createWithSpriteFrameName(glowFrame);
 		if (_glowSprite)
-		{
+		{	
+			BlendFunc bf = { (ax::backend::BlendFactor)ax::backend::BlendFactor::SRC_ALPHA, (ax::backend::BlendFactor)ax::backend::BlendFactor::ONE_MINUS_SRC_ALPHA};
+			_glowSprite->setBlendFunc(bf);
 			_glowSprite->setStretchEnabled(false);
 			addChild(_glowSprite);
 		}
@@ -2245,7 +2247,9 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 	_particle->stopSystem();
 }
 void GameObject::updateObjectType()
-{
+{	
+	BlendFunc bf = { (ax::backend::BlendFactor)ax::backend::BlendFactor::SRC_ALPHA, (ax::backend::BlendFactor)ax::backend::BlendFactor::ONE_MINUS_SRC_ALPHA};
+
 	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) != std::end(GameObject::_pSolids))
 		setGameObjectType(kGameObjectTypeSolid);
 	else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), getID()) != std::end(GameObject::_pTriggers))
@@ -2272,6 +2276,7 @@ void GameObject::updateObjectType()
 		case 21:
 		case 41:
 			setGameObjectType(kGameObjectTypeDecoration);
+			setBlendFunc(bf);
 			break;
 		case 10:
 			setGameObjectType(kGameObjectTypeNormalGravityPortal);
