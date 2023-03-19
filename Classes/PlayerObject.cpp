@@ -28,6 +28,10 @@ void PlayerObject::reset()
 	landEffect1->pauseEmissions();
 	landEffect2->pauseEmissions();
 
+	_particles1Activated = false;
+	_particles2Activated = false;
+	_particles3Activated = false;
+
 	deactivateStreak();
 }
 
@@ -65,16 +69,19 @@ bool PlayerObject::init(int playerFrame, Layer *gameLayer_)
 
 	m_pSecondarySprite = Sprite::createWithSpriteFrameName(sprStr2);
 	m_pSecondarySprite->setStretchEnabled(false);
-
 	m_pMainSprite->addChild(m_pSecondarySprite, -1);
-	m_pSecondarySprite->setPosition({15, 15});
+	m_pSecondarySprite->setPosition(m_pMainSprite->getContentSize() / 2.f);
 
 	m_pShipSprite = Sprite::createWithSpriteFrameName("ship_01_001.png");
 	m_pShipSprite->setStretchEnabled(false);
 	m_pShipSprite->setVisible(false);
-	m_pShipSprite->setRotation(-90);
-	m_pShipSprite->setPosition({ 5, 0 });
+	m_pShipSprite->setPosition({ 0, -5 });
 	addChild(m_pShipSprite, 2);
+
+	m_pShipSecondarySprite = Sprite::createWithSpriteFrameName("ship_01_2_001.png");
+	m_pShipSecondarySprite->setStretchEnabled(false);
+	m_pShipSprite->addChild(m_pShipSecondarySprite, -1);
+	m_pShipSecondarySprite->setPosition(m_pShipSprite->getContentSize() / 2.f);
 
 	// particles
 	dragEffect1 = ParticleSystemQuad::create("dragEffect.plist");
@@ -159,23 +166,20 @@ void PlayerObject::setMainColor(Color3B col)
 	float r = static_cast<float>(col.r);
 	float g = static_cast<float>(col.g);
 	float b = static_cast<float>(col.b);
-	dragEffect2->setStartColor({ r, g, b, 100 });
-	dragEffect2->setEndColor({ r, g, b, 0 });
+	dragEffect1->setStartColor({ r, g, b, 100 });
+	dragEffect1->setEndColor({ r, g, b, 0 });
 
-	dragEffect3->setStartColor({ r, g, b, 190 });
-	dragEffect3->setEndColor({ r, g, b, 0 });
+	shipDragEffect->setStartColor({ r, g, b, 190 });
+	shipDragEffect->setEndColor({ r, g, b, 0 });
+
 	this->m_pMainSprite->setColor(col);
-	setShipColor(col);
+	this->m_pShipSprite->setColor(col);
 }
 
 void PlayerObject::setSecondaryColor(Color3B col)
 {
 	this->m_pSecondarySprite->setColor(col);
-}
-
-void PlayerObject::setShipColor(Color3B col)
-{
-	this->m_pShipSprite->setColor(col);
+	this->m_pShipSecondarySprite->setColor(col);
 }
 
 Color3B PlayerObject::getMainColor()
@@ -186,11 +190,6 @@ Color3B PlayerObject::getMainColor()
 Color3B PlayerObject::getSecondaryColor()
 {
 	return this->m_pSecondarySprite->getColor();
-}
-
-Color3B PlayerObject::getShipColor()
-{
-	return this->m_pShipSprite->getColor();
 }
 
 void PlayerObject::setIsDead(bool value)
@@ -232,8 +231,17 @@ void PlayerObject::update(float dt)
 				runAction(action);
 			}
 		}
-		shipDragEffect->pauseEmissions();
-		dragEffect3->pauseEmissions();
+		//shipDragEffect->pauseEmissions();
+		if (_particles3Activated)
+		{
+			dragEffect3->pauseEmissions();
+			_particles3Activated = false;
+		}
+		if (_particles2Activated)
+		{
+			dragEffect2->pauseEmissions();
+			_particles2Activated = false;
+		}
 	}
 	else // is ship
 	{
@@ -249,14 +257,29 @@ void PlayerObject::update(float dt)
 				dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
-		if (isOnGround() && m_dYVel > -1.f)
-			shipDragEffect->resumeEmissions();
-		else
-			shipDragEffect->pauseEmissions();
+		if (!_particles2Activated)
+		{
+			dragEffect2->resumeEmissions();
+			_particles2Activated = true;
+		}
+		if (_particles1Activated)
+		{
+			dragEffect1->pauseEmissions();
+			_particles1Activated = false;
+		}
+		//if (isOnGround() && m_dYVel > -1.f)
+		//	shipDragEffect->resumeEmissions();
+		//else
+		//	shipDragEffect->pauseEmissions();
 	}
 
 	if (!this->m_bIsLocked)
 	{
+		direction = clampf(direction, -1.f, 1.f);
+
+		if (!m_bIsPlatformer)
+			direction = 1.f;
+
 		float dtSlow = dt * 0.9f;
 		this->updateJump(dtSlow);
 
@@ -271,13 +294,12 @@ void PlayerObject::update(float dt)
 	if (this->getPositionX() >= 500 && !this->inPlayLayer)
 		this->m_bIsHolding = true;
 
-	if (isShip())
-		setScaleX(isGravityFlipped() ? -1.f : 1.f);
-	else
-		setScaleX(1.f);
+	setScaleX(direction < -0.05f ? -1.f : direction > 0.05f ? 1.f : getScaleX());
+	setScaleY(isShip() ? isGravityFlipped() ? -1.f : 1.f : 1.f);
+		
 		
 	dragEffect1->setPosition(this->getPosition() + Vec2{ -10.f, flipMod() * -13.f });
-	dragEffect2->setPosition(this->getPosition() + m_pShipSprite->getPosition() + Vec2{-10.f, flipMod() * -8.f});
+	dragEffect2->setPosition(this->getPosition() + m_pShipSprite->getPosition() + Vec2{-10.f, flipMod() * -3.f});
 	dragEffect3->setPosition(dragEffect2->getPosition());
 	shipDragEffect->setPosition(this->getPosition() + Vec2{ 1.f, flipMod() * -15.f });
 
@@ -298,20 +320,19 @@ void PlayerObject::update(float dt)
 }
 void PlayerObject::updateShipRotation(float dt)
 {
-	float angleRad, curAngleRad, newAngleDeg;
+	float angleRad, curAngleDeg, newAngleDeg;
 
 	Vec2 pos = getPosition();
 
 	Vec2 d = (pos - m_prevPos) / dt;
 
-	if (GameToolbox::SquareDistance(0, 0, d.x, d.y) >= 1.2f)
+	if (GameToolbox::SquareDistance(0, 0, d.x, -d.y) >= 1.2f)
 	{
-		angleRad = atan2f(d.x, d.y);
+		angleRad = atan2f(-d.y, d.x);
 
-		curAngleRad = getRotation() * 0.017453f;
-		float val = 0.175f;
-
-		newAngleDeg = GameToolbox::iSlerp(curAngleRad, angleRad, val, dt / 60.f) * 57.296f;
+		curAngleDeg = getRotation();
+		
+		newAngleDeg = GameToolbox::iSlerp(curAngleDeg, angleRad * 57.296f, 0.15f, dt / 60.f);
 
 		setRotation(newAngleDeg);
 	}
@@ -601,8 +622,7 @@ void PlayerObject::setIsShip(bool val)
 	if (isShip() != val)
 	{
 		stopRotation();
-		_rotationX = 0.f;
-		_rotationY = 0.f;
+		setRotation(0.f);
 		m_bIsShip = val;
 		m_dYVel /= 2.f;
 		setIsOnGround(false);
@@ -610,9 +630,7 @@ void PlayerObject::setIsShip(bool val)
 		m_pShipSprite->setVisible(isShip());
 		m_pMainSprite->setScale(isShip() ? 0.55f : 1.f);
 
-		m_pMainSprite->setPositionX(isShip() ? -5 : 0);
-
-		m_pMainSprite->setRotation(isShip() ? -90.f : 0);
+		m_pMainSprite->setPositionY(isShip() ? 5 : 0);
 
 		if (val)
 		{
@@ -766,7 +784,7 @@ void PlayerObject::logValues()
 void PlayerObject::runRotateAction()
 {
 	stopRotation();
-	auto action = RotateBy::create(0.43333f, 180.f * flipMod());
+	auto action = RotateBy::create(0.43333f, 180.f * flipMod() * getScaleX());
 	action->setTag(0);
 	runAction(action);
 }

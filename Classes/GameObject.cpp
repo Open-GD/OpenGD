@@ -2081,6 +2081,8 @@ GameObject::~GameObject()
 {
 	if (_particle)
 		AX_SAFE_RELEASE_NULL(_particle);
+	if (_glowSprite)
+		AX_SAFE_RELEASE_NULL(_glowSprite);
 }
 
 bool GameObject::init(std::string_view frame, std::string_view glowFrame)
@@ -2107,13 +2109,13 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	{
 		_glowSprite = Sprite::createWithSpriteFrameName(glowFrame);
 		if (_glowSprite)
-		{	
-			BlendFunc bf = { (ax::backend::BlendFactor)ax::backend::BlendFactor::SRC_ALPHA, (ax::backend::BlendFactor)ax::backend::BlendFactor::ONE_MINUS_SRC_ALPHA};
-			_glowSprite->setBlendFunc(bf);
+		{
+			_glowSprite->setBlendFunc(GameToolbox::getBlending());
 			_glowSprite->setStretchEnabled(false);
-			addChild(_glowSprite);
+			_glowSprite->retain();
 		}
 	}
+	_texturePath = getTexture()->getPath();
 	
 	return true;
 }
@@ -2223,10 +2225,53 @@ void GameObject::setupColors()
 		case 395:
 		case 1527:
 		case 1525:
-		case 997:
-		this->_mainColorChannel = 1005;
-		this->_secColorChannel = 1005;
-		break;
+		case 997: // playerColorChannel1
+			this->_mainColorChannel = 1005;
+			this->_secColorChannel = 1005;
+			this->setBlendFunc(GameToolbox::getBlending());
+			break;
+			
+		case 1705:
+		case 1706:
+		case 1707:
+		case 1708:
+		case 1709:
+		case 1710:
+		case 1715:
+		case 1716:
+		case 1717:
+		case 1718:
+		case 1719:
+		case 1720:
+		case 1721:
+		case 1722:
+		case 1723:
+		case 1724:
+		case 1725:
+		case 1726:
+		case 1727: // osu reference real!!1!!1!1!!
+		case 1728:
+		case 1729:
+		case 1730:
+		case 1731:
+		case 1732:
+		case 1733:
+		case 1889:
+		case 1890:
+		case 1891:
+		case 1892:
+		case 9: // blackColorChannel primary
+			_mainColorChannel = 1010;
+			break;
+
+		case 1053:
+		case 1054:
+		case 1614:
+		case 1734:
+		case 1735:
+		case 1736:
+		case 40: // blackColorChannel secondary
+			_secColorChannel = 1010;
 	}
 }
 
@@ -2247,9 +2292,7 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 	_particle->stopSystem();
 }
 void GameObject::updateObjectType()
-{	
-	BlendFunc bf = { (ax::backend::BlendFactor)ax::backend::BlendFactor::SRC_ALPHA, (ax::backend::BlendFactor)ax::backend::BlendFactor::ONE_MINUS_SRC_ALPHA};
-
+{
 	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) != std::end(GameObject::_pSolids))
 		setGameObjectType(kGameObjectTypeSolid);
 	else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), getID()) != std::end(GameObject::_pTriggers))
@@ -2276,7 +2319,7 @@ void GameObject::updateObjectType()
 		case 21:
 		case 41:
 			setGameObjectType(kGameObjectTypeDecoration);
-			setBlendFunc(bf);
+			//setBlendFunc(GameToolbox::getBlending());
 			break;
 		case 10:
 			setGameObjectType(kGameObjectTypeNormalGravityPortal);
@@ -2289,6 +2332,9 @@ void GameObject::updateObjectType()
 			break;
 		case 13:
 			setGameObjectType(kGameObjectTypeShipPortal);
+			break;
+		case 1859: // H block
+			setGameObjectType(kGameObjectTypeSpecial);
 			break;
 		default:
 			setGameObjectType(kGameObjectTypeHazard);
@@ -2322,11 +2368,14 @@ void GameObject::update()
 {
 	if (_glowSprite)
 	{
-		_glowSprite->setPosition(getContentSize() / 2.f);
+		_glowSprite->setPosition(getPosition());
+		_glowSprite->setScaleX(getScaleX());
+		_glowSprite->setScaleY(getScaleY());
+		_glowSprite->setRotation(getRotation());
 		_glowSprite->setFlippedX(isFlippedX());
 		_glowSprite->setFlippedY(isFlippedY());
-
 		_glowSprite->setLocalZOrder(-1);
+		_glowSprite->setOpacity(getOpacity());
 	}
 	if (_particle)
 	{
@@ -2334,7 +2383,17 @@ void GameObject::update()
 		_particle->setRotation(getRotation());
 		_particle->setScaleX(getScaleX() * isFlippedX() ? -1.f : 1.f);
 		_particle->setScaleY(getScaleY() * isFlippedY() ? -1.f : 1.f);
+		_particle->setOpacity(getOpacity());
 	}
+
+	if (getEnterEffectID() == 0)
+	{
+		setPosition(_startPosition);
+		setScaleX(_startScale.x);
+		setScaleY(_startScale.y);
+	}
+		
+
 	auto pl = PlayLayer::getInstance();
 
 	if (!pl)

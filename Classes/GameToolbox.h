@@ -44,6 +44,8 @@ namespace GameToolbox
 	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int outLengthHint);
 	int ccInflateMemory(unsigned char *in, unsigned int inLength, unsigned char **out);
 
+	ax::BlendFunc getBlending();
+
 	template <typename T>
 	inline T inRange(T value, T min, T max) {
 		return MIN(MAX(value, min), max);

@@ -10,7 +10,7 @@ bool GroundLayer::init(int groundID)
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	auto name = fmt::format("groundSquare_{:03}.png", groundID);
+	auto name = fmt::format("groundSquare_{:02}_001.png", groundID);
 	this->_sprite = Sprite::create(GameToolbox::getTextureString(name));
 	_sprite->setStretchEnabled(false);
 	this->m_fOneGroundSize = this->_sprite->getTextureRect().size.width;
@@ -23,8 +23,9 @@ bool GroundLayer::init(int groundID)
 	this->_sprite->setColor({0, 102, 255});
 	this->addChild(this->_sprite);
 
-	auto line = Sprite::create(GameToolbox::getTextureString("floor.png"));
+	auto line = Sprite::createWithSpriteFrameName("floorLine_001.png");
 	line->setStretchEnabled(false);
+	line->setBlendFunc(GameToolbox::getBlending());
 	this->addChild(line);
 	line->setPosition({winSize.width / 2, this->_sprite->getContentSize().height + this->_sprite->getPositionY()});
 
