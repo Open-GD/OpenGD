@@ -37,6 +37,11 @@ ax::Color3B GameToolbox::randomColor3B()
 	return {r, g, b};
 }
 
+ax::BlendFunc GameToolbox::getBlending()
+{
+	return BlendFunc::ADDITIVE;
+}
+
 void GameToolbox::createCorners(ax::Node* self, bool topLeft, bool topRight, bool botLeft, bool botRight)
 {
 	Sprite* corner = nullptr;

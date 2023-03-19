@@ -19,6 +19,7 @@ private:
 	ax::Sprite* m_pMainSprite;
 	ax::Sprite* m_pSecondarySprite;
 	ax::Sprite* m_pShipSprite;
+	ax::Sprite* m_pShipSecondarySprite;
 
 	ax::ParticleSystemQuad* dragEffect1;
 	ax::ParticleSystemQuad* dragEffect2;
@@ -77,11 +78,9 @@ public:
 
 	void setMainColor(ax::Color3B col);
 	void setSecondaryColor(ax::Color3B col);
-	void setShipColor(ax::Color3B col);
 
 	ax::Color3B getMainColor();
 	ax::Color3B getSecondaryColor();
-	ax::Color3B getShipColor();
 
 	void jump();
 	void collidedWithObject(float dt, GameObject* obj);

@@ -11,15 +11,42 @@ void EffectGameObject::triggerActivated(float idk)
 	this->m_bHasBeenActivated = true;
 	pl = PlayLayer::getInstance();
 
-	if (!pl->m_pColorChannels.contains(m_nTargetColorId))
-		pl->m_pColorChannels.insert({m_nTargetColorId, Color3B::WHITE});
+	switch (getID())
+	{
+	case 30:
+	case 29:
+		if (!pl->m_pColorChannels.contains(m_nTargetColorId))
+			pl->m_pColorChannels.insert({ m_nTargetColorId, Color3B::WHITE });
 
-	this->runAction(
-		ActionTween::create(this->m_fDuration, "col1", pl->m_pColorChannels.at(m_nTargetColorId).r, m_cColor.r));
-	this->runAction(
-		ActionTween::create(this->m_fDuration, "col2", pl->m_pColorChannels.at(m_nTargetColorId).g, m_cColor.g));
-	this->runAction(
-		ActionTween::create(this->m_fDuration, "col3", pl->m_pColorChannels.at(m_nTargetColorId).b, m_cColor.b));
+		this->runAction(
+			ActionTween::create(this->m_fDuration, "col1", pl->m_pColorChannels.at(m_nTargetColorId).r, m_cColor.r));
+		this->runAction(
+			ActionTween::create(this->m_fDuration, "col2", pl->m_pColorChannels.at(m_nTargetColorId).g, m_cColor.g));
+		this->runAction(
+			ActionTween::create(this->m_fDuration, "col3", pl->m_pColorChannels.at(m_nTargetColorId).b, m_cColor.b));
+		break;
+	case 22:
+		pl->_enterEffectID = 1;
+		break;
+	case 23:
+		pl->_enterEffectID = 5;
+		break;
+	case 24:
+		pl->_enterEffectID = 4;
+		break;
+	case 25:
+		pl->_enterEffectID = 6;
+		break;
+	case 26:
+		pl->_enterEffectID = 7;
+		break;
+	case 27:
+		pl->_enterEffectID = 2;
+		break;
+	case 28:
+		pl->_enterEffectID = 3;
+		break;
+	}
 }
 
 void EffectGameObject::updateTweenAction(float value, std::string_view key)

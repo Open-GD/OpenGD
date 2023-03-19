@@ -25,8 +25,6 @@ bool MenuGameLayer::init(){
 	auto playerTest = PlayerObject::create(GameToolbox::randomInt(1,13), this);
 	playerTest->setMainColor(GameToolbox::randomColor3B());
 	playerTest->setSecondaryColor(GameToolbox::randomColor3B());
-	playerTest->setShipColor(playerTest->getMainColor());
-	playerTest->setPosition({-300, 232});
 	addChild(playerTest);
 	this->player = playerTest;
 
@@ -98,7 +96,6 @@ void MenuGameLayer::processPlayerMovement(float delta) {
 		auto mainColor = GameToolbox::randomColor3B();
 		auto secondaryColor = GameToolbox::randomColor3B();
 		player->setMainColor(mainColor);
-		player->setShipColor(mainColor);
 		player->setSecondaryColor(secondaryColor);
 	}
 }

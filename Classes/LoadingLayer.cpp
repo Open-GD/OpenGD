@@ -24,16 +24,17 @@ constexpr static auto splashes = std::to_array <const char*>({
 });
 
 constexpr static auto pngs = std::to_array<const char*>({
-	"GJ_GameSheet.png", "GJ_gradientBG.png", "edit_barBG_001.png", "GJ_button_01.png",
+	"GJ_GameSheetGlow.png", "GJ_GameSheet04.png", "GJ_GameSheet03.png", "GJ_GameSheet02.png", "GJ_GameSheet.png", "GJ_gradientBG.png", "edit_barBG_001.png", "GJ_button_01.png",
 	"gravityOverlay.png", "goldFont.png", "bigFont.png", "chatFont.png", "CCControlColourPickerSpriteSheet.png"
 });
 
 constexpr static auto fonts = std::to_array<const char*>({
 	"bigFont.fnt", "chatFont.fnt", "goldFont.fnt"
 });
-	
+
 constexpr static auto plists = std::to_array<const char*>({
-	"GJ_GameSheet.plist", "CCControlColourPickerSpriteSheet.plist",
+	"GJ_GameSheetGlow.plist", "GJ_GameSheet.plist", "CCControlColourPickerSpriteSheet.plist", "GJ_GameSheet02.plist", "GJ_GameSheet03.plist",
+	"GJ_GameSheet04.plist"
 });
 	
 	
