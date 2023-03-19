@@ -28,6 +28,10 @@ void PlayerObject::reset()
 	landEffect1->pauseEmissions();
 	landEffect2->pauseEmissions();
 
+	_particles1Activated = false;
+	_particles2Activated = false;
+	_particles3Activated = false;
+
 	deactivateStreak();
 }
 
@@ -159,11 +163,11 @@ void PlayerObject::setMainColor(Color3B col)
 	float r = static_cast<float>(col.r);
 	float g = static_cast<float>(col.g);
 	float b = static_cast<float>(col.b);
-	dragEffect2->setStartColor({ r, g, b, 100 });
-	dragEffect2->setEndColor({ r, g, b, 0 });
+	dragEffect1->setStartColor({ r, g, b, 100 });
+	dragEffect1->setEndColor({ r, g, b, 0 });
 
-	dragEffect3->setStartColor({ r, g, b, 190 });
-	dragEffect3->setEndColor({ r, g, b, 0 });
+	shipDragEffect->setStartColor({ r, g, b, 190 });
+	shipDragEffect->setEndColor({ r, g, b, 0 });
 	this->m_pMainSprite->setColor(col);
 	setShipColor(col);
 }
@@ -232,8 +236,17 @@ void PlayerObject::update(float dt)
 				runAction(action);
 			}
 		}
-		shipDragEffect->pauseEmissions();
-		dragEffect3->pauseEmissions();
+		//shipDragEffect->pauseEmissions();
+		if (_particles3Activated)
+		{
+			dragEffect3->pauseEmissions();
+			_particles3Activated = false;
+		}
+		if (_particles2Activated)
+		{
+			dragEffect2->pauseEmissions();
+			_particles2Activated = false;
+		}
 	}
 	else // is ship
 	{
@@ -249,14 +262,26 @@ void PlayerObject::update(float dt)
 				dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
-		if (isOnGround() && m_dYVel > -1.f)
-			shipDragEffect->resumeEmissions();
-		else
-			shipDragEffect->pauseEmissions();
+		if (!_particles2Activated)
+		{
+			dragEffect2->resumeEmissions();
+			_particles2Activated = true;
+		}
+		if (_particles1Activated)
+		{
+			dragEffect1->pauseEmissions();
+			_particles1Activated = false;
+		}
+		//if (isOnGround() && m_dYVel > -1.f)
+		//	shipDragEffect->resumeEmissions();
+		//else
+		//	shipDragEffect->pauseEmissions();
 	}
 
 	if (!this->m_bIsLocked)
 	{
+		direction = clampf(direction, -1.f, 1.f);
+
 		float dtSlow = dt * 0.9f;
 		this->updateJump(dtSlow);
 
@@ -272,9 +297,16 @@ void PlayerObject::update(float dt)
 		this->m_bIsHolding = true;
 
 	if (isShip())
+	{
 		setScaleX(isGravityFlipped() ? -1.f : 1.f);
+		setScaleY(direction < -0.05f ? -1.f : direction > 0.05f ? 1.f : getScaleY());
+	}
 	else
-		setScaleX(1.f);
+	{
+		setScaleX(direction < -0.05f ? -1.f : direction > 0.05f ? 1.f : getScaleX());
+		setScaleY(1.f);
+	}
+		
 		
 	dragEffect1->setPosition(this->getPosition() + Vec2{ -10.f, flipMod() * -13.f });
 	dragEffect2->setPosition(this->getPosition() + m_pShipSprite->getPosition() + Vec2{-10.f, flipMod() * -8.f});
@@ -614,6 +646,7 @@ void PlayerObject::setIsShip(bool val)
 
 		if (val)
 		{
+			setRotation(-90);
 			// do shit with particles
 			activateStreak();
 		}
@@ -764,7 +797,7 @@ void PlayerObject::logValues()
 void PlayerObject::runRotateAction()
 {
 	stopRotation();
-	auto action = RotateBy::create(0.43333f, 180.f * flipMod());
+	auto action = RotateBy::create(0.43333f, 180.f * flipMod() * getScaleX());
 	action->setTag(0);
 	runAction(action);
 }
