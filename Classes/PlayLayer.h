@@ -11,6 +11,14 @@
 #include "GJGameLevel.h"
 #include "SpriteColor.h"
 
+struct LevelSettings
+{
+	PlayerGamemode gamemode;
+	bool mini, dual, twoPlayer, flipGravity;
+	int speed;
+	float songOffset;
+};
+
 class PlayLayer : public ax::Layer
 {
   private:
@@ -51,6 +59,8 @@ class PlayLayer : public ax::Layer
 
 	SimpleProgressBar* m_pBar;
 
+	LevelSettings _levelSettings;
+
 	//----IMGUI DEBUG MEMBERS----
 	bool m_freezePlayer;
 	bool m_platformerMode;
@@ -74,7 +84,7 @@ public:
 	ax::SpriteBatchNode* _glowBatchNode;
 	ax::ParticleBatchNode* _particleBatchNode;
 
-	std::map<int, SpriteColor> m_pColorChannels, _originalColors;
+	std::unordered_map<int, SpriteColor> m_pColorChannels, _originalColors;
 
 	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 

@@ -181,13 +181,41 @@ void PlayLayer::loadLevel(std::string levelStr)
 			if (!_groundID)
 				_groundID = 1;
 		}
+		else if (levelData[i] == "kA2")
+		{
+			_levelSettings.gamemode = (PlayerGamemode)std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA3")
+		{
+			_levelSettings.mini = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA4")
+		{
+			_levelSettings.speed = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA8")
+		{
+			_levelSettings.dual = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA10")
+		{
+			_levelSettings.twoPlayer = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA11")
+		{
+			_levelSettings.flipGravity = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA13")
+		{
+			_levelSettings.songOffset = std::stof(levelData[i + 1]);
+		}
 	}
 
 	m_pColorChannels[1005]._color = m_pPlayer->getMainColor();
 	m_pColorChannels[1006]._color = m_pPlayer->getSecondaryColor();
 	m_pColorChannels[1010]._color = Color3B::BLACK;
 
-	_originalColors = std::map<int, SpriteColor>(m_pColorChannels);
+	_originalColors = std::unordered_map<int, SpriteColor>(m_pColorChannels);
 
 	for (std::string data : objData)
 	{
@@ -518,9 +546,8 @@ bool PlayLayer::init(GJGameLevel* level)
 			m_bCanExitScene = true;
 			if (levelValid)
 			{
-				AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
 				scheduleUpdate();
-				m_pPlayer->setIsDead(false);
+				resetLevel();
 			}
 			else
 			{
@@ -617,7 +644,7 @@ void PlayLayer::updateCamera(float dt)
 	PlayerObject* player = m_pPlayer;
 	Vec2 pPos = player->getPosition();
 
-	if (player->_currentGamemode == PlayerGamemodeShip)
+	if (player->_currentGamemode != PlayerGamemodeCube)
 	{
 		cam.y = (winSize.height * -0.5f) + m_fCameraYCenter;
 		if (cam.y <= 0.0f)
@@ -676,8 +703,8 @@ void PlayLayer::updateCamera(float dt)
 	Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
 
 	cameraFollow->setPosition(m_obCamPos);
-	_ceiling->setVisible(m_pPlayer->_currentGamemode == PlayerGamemodeShip);
-	if (!m_pPlayer->_currentGamemode == PlayerGamemodeShip)
+	_ceiling->setVisible(m_pPlayer->_currentGamemode != PlayerGamemodeCube);
+	if (m_pPlayer->_currentGamemode == PlayerGamemodeCube)
 		_bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
 
 	m_pBar->setPosition(this->m_obCamPos + winSize / 2);
@@ -984,7 +1011,7 @@ void PlayLayer::changeGameMode(GameObject* obj, PlayerGamemode gameMode)
 	default:
 		m_pPlayer->setGamemode(gameMode);
 		break;
-	case PlayerGamemodeShip: {
+	case PlayerGamemodeShip:
 		if (obj->getPositionY() < 270)
 		{
 			m_fCameraYCenter = 240.0f;
@@ -997,7 +1024,20 @@ void PlayLayer::changeGameMode(GameObject* obj, PlayerGamemode gameMode)
 		this->m_pPlayer->setRotation(0.f);
 		tweenBottomGround(-68);
 		tweenCeiling(388);
-	}
+		break;
+	case PlayerGamemodeBall:
+		if (obj->getPositionY() < 240.0f)
+		{
+			m_fCameraYCenter = 210.0f;
+		}
+		else
+		{
+			m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
+		}
+		m_pPlayer->setGamemode(gameMode);
+		tweenBottomGround(-38);
+		tweenCeiling(358);
+		break;
 	}
 }
 
@@ -1059,7 +1099,7 @@ void PlayLayer::checkCollisions(float dt)
 		return;
 	}
 
-	if (this->m_pPlayer->_currentGamemode == PlayerGamemodeShip)
+	if (this->m_pPlayer->_currentGamemode != PlayerGamemodeCube)
 	{
 		if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + cameraFollow->getPositionY() + 93.0f)
 		{
@@ -1157,6 +1197,13 @@ void PlayLayer::checkCollisions(float dt)
 							m_pPlayer->setPortalObject(obj);
 
 							this->changeGameMode(obj, PlayerGamemodeShip);
+							break;
+
+						case GameObjectType::kGameObjectTypeBallPortal:
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+
+							this->changeGameMode(obj, PlayerGamemodeBall);
 							break;
 
 						case GameObjectType::kGameObjectTypeCubePortal:
@@ -1381,7 +1428,7 @@ void PlayLayer::resetLevel()
 
 	ax::Director::getInstance()->getActionManager()->removeAllActions();
 
-	m_pColorChannels = std::map<int, SpriteColor>(_originalColors);
+	m_pColorChannels = std::unordered_map<int, SpriteColor>(_originalColors);
 
 	_prevSection = -1;
 	_nextSection = -1;
@@ -1392,7 +1439,10 @@ void PlayLayer::resetLevel()
 	this->_ceiling->update(0);
 
 	AudioEngine::stopAll();
-	AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
+	AudioEngine::setCurrentTime(AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f),
+								_levelSettings.songOffset);
+
+	changeGameMode(m_pPlayer, _levelSettings.gamemode);
 	scheduleUpdate();
 }
 
@@ -1470,7 +1520,7 @@ void PlayLayer::exit()
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
-	
+
 	if (getLevel()->_LevelID <= 16)
 	{
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));

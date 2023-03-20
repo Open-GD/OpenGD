@@ -6,18 +6,45 @@
 
 enum GameObjectType
 {
-	kGameObjectTypePlayer = 0,
-	kGameObjectTypeSolid = 1,
-	kGameObjectTypeHazard = 2,
-	kGameObjectTypeInverseGravityPortal = 3,
-	kGameObjectTypeNormalGravityPortal = 4,
-	kGameObjectTypeShipPortal = 5,
-	kGameObjectTypeCubePortal = 6,
-	kGameObjectTypeDecoration = 7,
-	kGameObjectTypeYellowJumpPad = 8,
-	kGameObjectTypeYellowJumpRing = 11,
-	// opengd additions //
-	kGameObjectTypeSpecial = 40
+	kGameObjectTypeSolid = 0,
+		kGameObjectTypeHazard = 2,
+		kGameObjectTypeInverseGravityPortal = 3,
+		kGameObjectTypeNormalGravityPortal = 4,
+		kGameObjectTypeShipPortal = 5,
+		kGameObjectTypeCubePortal = 6,
+		kGameObjectTypeDecoration = 7,
+		kGameObjectTypeYellowJumpPad = 8,
+		kGameObjectTypePinkJumpPad = 9,
+		kGameObjectTypeGravityPad = 10,
+		kGameObjectTypeYellowJumpRing = 11,
+		kGameObjectTypePinkJumpRing = 12,
+		kGameObjectTypeGravityRing = 13,
+		kGameObjectTypeInverseMirrorPortal = 14,
+		kGameObjectTypeNormalMirrorPortal = 15,
+		kGameObjectTypeBallPortal = 16,
+		kGameObjectTypeRegularSizePortal = 17,
+		kGameObjectTypeMiniSizePortal = 18,
+		kGameObjectTypeUfoPortal = 19,
+		kGameObjectTypeModifier = 20,
+		kGameObjectTypeSecretCoin = 22,
+		kGameObjectTypeDualPortal = 23,
+		kGameObjectTypeSoloPortal = 24,
+		kGameObjectTypeSlope = 25,
+		kGameObjectTypeWavePortal = 26,
+		kGameObjectTypeRobotPortal = 27,
+		kGameObjectTypeTeleportPortal = 28,
+		kGameObjectTypeGreenRing = 29,
+		kGameObjectTypeCollectible = 30,
+		kGameObjectTypeUserCoin = 31,
+		kGameObjectTypeDropRing = 32,
+		kGameObjectTypeSpiderPortal = 33,
+		kGameObjectTypeRedJumpPad = 34,
+		kGameObjectTypeRedJumpRing = 35,
+		kGameObjectTypeCustomRing = 36,
+		kGameObjectTypeDashRing = 37,
+		kGameObjectTypeGravityDashRing = 38,
+		kGameObjectTypeCollisionObject = 39,
+		kGameObjectTypeSpecial = 40,
 };
 
 struct Hitbox {
@@ -85,6 +112,8 @@ class GameObject : public ax::Sprite
 
 	bool m_bHasBeenActivated;
 	int _mainColorChannel = -1, _secColorChannel = -1;
+
+	bool _hasGlow, _hasParticle;
 
 	int _zLayer = 0;
 

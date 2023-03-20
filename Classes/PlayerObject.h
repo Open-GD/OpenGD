@@ -31,6 +31,8 @@ private:
 	ax::Sprite* m_pSecondarySprite;
 	ax::Sprite* m_pShipSprite;
 	ax::Sprite* m_pShipSecondarySprite;
+	ax::Sprite* _ballSprite;
+	ax::Sprite* _ballSecondarySprite;
 
 	ax::ParticleSystemQuad* dragEffect1;
 	ax::ParticleSystemQuad* dragEffect2;

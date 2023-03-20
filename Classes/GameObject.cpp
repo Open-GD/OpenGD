@@ -2090,7 +2090,6 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	// avoid player lol
 	if (frame.find("player") != std::string::npos)
 	{
-		_pObjectType = GameObjectType::kGameObjectTypePlayer;
 		return true;
 	}
 
@@ -2110,6 +2109,7 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 		_glowSprite = Sprite::createWithSpriteFrameName(fmt::format("{}.png", glowFrame));
 		if (_glowSprite)
 		{
+			_hasGlow = true;
 			_glowSprite->setBlendFunc(GameToolbox::getBlending());
 			_glowSprite->setStretchEnabled(false);
 			_glowSprite->retain();
@@ -2204,6 +2204,8 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 		_particle = nullptr;
 	}
 
+	_hasParticle = true;
+
 	_particle = ParticleSystemQuad::create(path);
 
 	_particle->setGlobalZOrder(zOrder);
@@ -2255,6 +2257,9 @@ void GameObject::updateObjectType()
 		case 13:
 			setGameObjectType(kGameObjectTypeShipPortal);
 			break;
+		case 47:
+			setGameObjectType(kGameObjectTypeBallPortal);
+			break;
 		case 1859: // H block
 			setGameObjectType(kGameObjectTypeSpecial);
 			break;
@@ -2288,24 +2293,28 @@ GameObject* GameObject::create(std::string_view frame, std::string_view glowFram
 
 void GameObject::update()
 {
-	if (_glowSprite)
+	if (_hasGlow)
 	{
-		_glowSprite->setPosition(getPosition());
+		auto pos = getPosition();
+		if(_glowSprite->getPosition() != pos) _glowSprite->setPosition(pos);
 		_glowSprite->setScaleX(getScaleX());
 		_glowSprite->setScaleY(getScaleY());
 		_glowSprite->setRotation(getRotation());
 		_glowSprite->setFlippedX(isFlippedX());
 		_glowSprite->setFlippedY(isFlippedY());
 		_glowSprite->setLocalZOrder(-1);
-		_glowSprite->setOpacity(getOpacity());
+		float op = getOpacity();
+		if(_glowSprite->getOpacity() != op) _glowSprite->setOpacity(op);
 	}
-	if (_particle)
+	if (_hasParticle)
 	{
-		_particle->setPosition(getPosition());
+		auto pos = getPosition();
+		if(_particle->getPosition() != pos) _particle->setPosition(pos);
 		_particle->setRotation(getRotation());
 		_particle->setScaleX(getScaleX() * isFlippedX() ? -1.f : 1.f);
 		_particle->setScaleY(getScaleY() * isFlippedY() ? -1.f : 1.f);
-		_particle->setOpacity(getOpacity());
+		float op = getOpacity();
+		if(_particle->getOpacity() != op) _particle->setOpacity(op);
 	}
 
 	if (getEnterEffectID() == 0)
@@ -2322,33 +2331,43 @@ void GameObject::update()
 
 	if (pl->m_pColorChannels.contains(_mainColorChannel))
 	{
-		setColor(pl->m_pColorChannels[_mainColorChannel]._color);
-		setOpacity(pl->m_pColorChannels[_mainColorChannel]._opacity);
+		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
+		if(getColor() != sp1._color) setColor(sp1._color);
+		float op = sp1._opacity;
+		if(getOpacity() != op) setOpacity(op);
 		if (pl->m_pColorChannels.contains(_secColorChannel))
 		{
+			auto sp2 = pl->m_pColorChannels[_secColorChannel];
 			for (auto sp : _detailSprites)
 			{
-				sp->setColor(pl->m_pColorChannels[_secColorChannel]._color);
-				sp->setOpacity(pl->m_pColorChannels[_secColorChannel]._opacity);
+				if(sp->getColor() != sp2._color) sp->setColor(sp2._color);
+				op = sp2._opacity;
+				if(sp->getOpacity() != op) sp->setOpacity(op);
 			}
 		}
 		else
 		{
+			auto sp1 = pl->m_pColorChannels[_mainColorChannel];
 			for (auto sp : _detailSprites)
 			{
-				sp->setColor(pl->m_pColorChannels[_mainColorChannel]._color);
-				sp->setOpacity(pl->m_pColorChannels[_mainColorChannel]._opacity);
+				if(sp->getColor() != sp1._color) sp->setColor(sp1._color);
+				float op = sp1._opacity;
+				if(sp->getOpacity() != op) sp->setOpacity(op);
 			}
 		}
 	}
 	else if (pl->m_pColorChannels.contains(_secColorChannel))
 	{
-		setColor(pl->m_pColorChannels[_secColorChannel]._color);
-		setOpacity(pl->m_pColorChannels[_mainColorChannel]._opacity);
+		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
+		auto sp2 = pl->m_pColorChannels[_secColorChannel];
+		if(getColor() != sp1._color) setColor(sp1._color);
+		float op = sp1._opacity;
+		if(getOpacity() != op) setOpacity(op);
 		for (auto sp : _detailSprites)
 			{
-				sp->setColor(pl->m_pColorChannels[_secColorChannel]._color);
-				sp->setOpacity(pl->m_pColorChannels[_secColorChannel]._opacity);
+				if(sp->getColor() != sp2._color) sp->setColor(sp2._color);
+				op = sp2._opacity;
+				if(sp->getOpacity() != op) sp->setOpacity(op);
 			}
 	}
 }
