@@ -164,7 +164,17 @@ bool MenuLayer::init()
 			auto scene = LevelSelectLayer::scene();
 			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
-			// close dialog
+			// auto closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to <cr>Quit</c>?", "Cancel", "Yes", NULL, NULL);
+
+			// closeAlert->setBtn1Callback([=](TextButton*){
+			// 	closeAlert->close();
+			// });
+
+			// closeAlert->setBtn2Callback([=](TextButton*){
+			// 	Director::getInstance()->end();
+			// });
+
+			// closeAlert->show();
 		} 
 	};
 
