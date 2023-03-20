@@ -163,8 +163,10 @@ std::vector<std::string> SteamValidation::getPossibleGDPaths()
     return {
         "~/.var/app/com.valvesoftware.Steam/.steam/root/steamapps/common/Geometry Dash/",
         "~/.steam/root/steamapps/common/Geometry Dash/",
-        "~/.var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Geometry Dash\",
+        "~/.var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Geometry Dash/",
     };
+    #elif (AX_TARGET_PLATFORM == AX_PLATFORM_MAC)
+    return {"~/Library/Application Support/Steam/steamapps/common/Geometry Dash"};
     #else
     return {};
     #endif
