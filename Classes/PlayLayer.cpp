@@ -217,7 +217,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 				obj->setActive(true);
 				obj->setID(id);
 
-				obj->setupColors();
+				//obj->setupColors();
 
 				obj->customSetup();
 
