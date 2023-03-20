@@ -6,6 +6,7 @@
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
 #include "PlayLayer.h"
+#include "LevelEditorLayer.h"
 #include "GJGameLevel.h"
 #include <AudioEngine.h>
 
@@ -72,7 +73,8 @@ bool CreatorLayer::init() {
 		
 	});
 	auto createBtn = MenuItemSpriteExtra::create(createBtnSpr, [&](Node*) {
-		GameToolbox::log("on create");
+		auto scene = LevelEditorLayer::scene(GJGameLevel::createWithMinimumData("cool level", "partur", 5));
+		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
 
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [&](Node*) {
