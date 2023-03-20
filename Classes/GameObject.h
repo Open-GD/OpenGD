@@ -2,6 +2,7 @@
 #include <axmol.h>
 #include <map>
 #include <string>
+#include "json.hpp"
 
 enum GameObjectType
 {
@@ -41,9 +42,36 @@ private:
 	int _pColorBlue;
 	float _pDuration;
 
+	std::vector<ax::Sprite*> _detailSprites;
+public:
+	std::string _texturePath;
+
+	ax::Vec2 _startPosition;
+	void setStartPosition(ax::Vec2 pos) { _startPosition = pos; }
+	void setStartPositionX(float x) { _startPosition.x = x; }
+	void setStartPositionY(float y) { _startPosition.y = y; }
+
+	ax::Vec2 getStartPosition() { return _startPosition; }
+	float getStartPositionX() { return _startPosition.x; }
+	float getStartPositionY() { return _startPosition.y; }
+
+	ax::Vec2 _startScale = { 1.f, 1.f };
+	void setStartScale(ax::Vec2 scale) { _startScale = scale; }
+	void setStartScaleX(float x) { _startScale.x = x; }
+	void setStartScaleY(float y) { _startScale.y = y; }
+
+	ax::Vec2 getStartScale() { return _startScale; }
+	float getStartScaleX() { return _startScale.x; }
+	float getStartScaleY() { return _startScale.y; }
+
 	ax::Sprite* _glowSprite;
 
-public:
+	int _enterEffectID = 0;
+
+	bool _dontTransform = false;
+
+	void setEnterEffectID(int id) { _enterEffectID = id; }
+	int getEnterEffectID() { return _enterEffectID; }
 
 	bool m_bHasBeenActivated;
 	int _mainColorChannel = -1, _secColorChannel = -1;
@@ -68,7 +96,6 @@ public:
 	void updateObjectType();
 
 	void customSetup();
-	void setupColors();
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);
@@ -102,6 +129,9 @@ public:
 	void setDuration(float dura) { _pDuration = dura; }
 
 	void createAndAddParticle(const char* particle, int a3);
+
+	bool getDontTransform() { return _dontTransform; }
+	void setDontTransform(bool v) { _dontTransform = v; }
 
 	// AX_SYNTESIZE(int, _pColorRed, ColorRed); // does not work
 	// AX_SYNTESIZE(int, _pColorGreen, ColorGreen);

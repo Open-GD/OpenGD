@@ -132,15 +132,12 @@ std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 		unsigned char* data = (unsigned char*)decoded.data();
 		unsigned char* a = nullptr;
 
-		//if (ax::ZipUtils::isGZipBuffer(data, decoded.length()))
-		//{
-			ssize_t deflatedLen = ax::ZipUtils::inflateMemory(data, decoded.length(), &a);
-			
-			result = std::string(reinterpret_cast<char*>(a));
-		//}
+		ssize_t deflatedLen = ax::ZipUtils::inflateMemory(data, decoded.length(), &a);
+		
+		result = std::string(reinterpret_cast<char*>(a));
 	}
 
-	GameToolbox::log("\n\n{}\n\n", result);
+	//GameToolbox::log("\n\n{}\n\n", result);
 
 	return result;
 }

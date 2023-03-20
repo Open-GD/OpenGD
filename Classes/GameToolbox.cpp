@@ -37,6 +37,11 @@ ax::Color3B GameToolbox::randomColor3B()
 	return {r, g, b};
 }
 
+ax::BlendFunc GameToolbox::getBlending()
+{
+	return BlendFunc::ADDITIVE;
+}
+
 void GameToolbox::createCorners(ax::Node* self, bool topLeft, bool topRight, bool botLeft, bool botRight)
 {
 	Sprite* corner = nullptr;
@@ -431,8 +436,22 @@ int GameToolbox::ccInflateMemory(unsigned char *in, unsigned int inLength, unsig
 	return ccInflateMemoryWithHint(in, inLength, out, 256 * 1024);
 }
 
-/* dummy for a while */
-bool GameToolbox::isGDBought()
+std::string GameToolbox::getClipboardString()
 {
-	return true;
+	#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
+		if (!OpenClipboard(nullptr)) return "";
+
+		HANDLE hData = GetClipboardData(CF_TEXT);
+		if (hData == nullptr) return "";
+
+		char* pszText = static_cast<char*>(GlobalLock(hData));
+		if (pszText == nullptr) return "";
+
+		std::string text(pszText);
+		GlobalUnlock(hData);
+		CloseClipboard();
+		return text;
+	#else
+		return "";
+	#endif
 }

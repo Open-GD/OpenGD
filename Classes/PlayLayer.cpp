@@ -156,15 +156,26 @@ void PlayLayer::loadLevel(std::string levelStr)
 				m_pColorChannels.insert({key, col});
 			}
 		}
+		else if (levelData[i] == "kA6")
+		{
+			_bgID = std::stoi(levelData[i + 1]);
+			if (!_bgID)
+				_bgID = 1;
+		}
+		else if (levelData[i] == "kA7")
+		{
+			_groundID = std::stoi(levelData[i + 1]);
+			if (!_groundID)
+				_groundID = 1;
+		}
 	}
 
 	m_pColorChannels[1005] = m_pPlayer->getMainColor();
 	m_pColorChannels[1006] = m_pPlayer->getSecondaryColor();
+	m_pColorChannels[1010] = Color3B::BLACK;
 
 	_originalColors = std::map<int, Color3B>(m_pColorChannels);
-	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000));
-	this->_bottomGround->update(0);
-
+	
 	for (std::string data : objData)
 	{
 		auto d = GameToolbox::splitByDelim(data, ',');
@@ -172,6 +183,8 @@ void PlayLayer::loadLevel(std::string levelStr)
 		GameObject* obj = nullptr;
 
 		Hitbox hb = {0, 0, 0, 0};
+
+		//GameToolbox::log("obj:{}", data);
 
 		for (size_t i = 0; i < d.size() - 1; i += 2)
 		{
@@ -254,6 +267,10 @@ void PlayLayer::loadLevel(std::string levelStr)
 			case 25:
 				obj->setGlobalZOrder(std::stoi(d[i + 1]));
 				break;
+			case 67: // dont enter
+			case 64: // dont exit
+				obj->setDontTransform(true);
+				break;
 			}
 		}
 		if (obj)
@@ -271,7 +288,6 @@ void PlayLayer::loadLevel(std::string levelStr)
 			case kGameObjectTypeSolid:
 			case kGameObjectTypeSpecial:
 			case kGameObjectTypeHazard:
-			{
 				ax::Mat4 tr;
 
 				tr.rotate(obj->getRotationQuat());
@@ -288,7 +304,9 @@ void PlayLayer::loadLevel(std::string levelStr)
 					{rec.size.width, rec.size.height}));
 				break;
 			}
-			}
+			obj->setStartPosition(obj->getPosition());
+			obj->setStartScaleX(obj->getScaleX());
+			obj->setStartScaleY(obj->getScaleY());
 		}
 	}
 }
@@ -302,8 +320,44 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	this->_bottomGround = GroundLayer::create(1);
-	this->_ceiling = GroundLayer::create(1);
+	dn = ax::DrawNode::create();
+	dn->setPosition({-15, -15});
+	addChild(dn, 99999);
+
+	this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
+	this->m_pPlayer->setPosition({-20, 105});
+	this->addChild(this->m_pPlayer, 2);
+	this->m_pPlayer->setAnchorPoint({0, 0});
+
+	m_pPlayer->setMainColor({125, 255, 0});
+	m_pPlayer->setSecondaryColor({0, 255, 255});
+
+	_blendingBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 150);
+	this->addChild(_blendingBatchNode);
+	_blendingBatchNode->setBlendFunc(GameToolbox::getBlending());
+
+	_glowBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString("GJ_GameSheetGlow.png"), 150);
+	this->addChild(_glowBatchNode);
+	_glowBatchNode->setBlendFunc(GameToolbox::getBlending());
+
+	_mainBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 150);
+	this->addChild(_mainBatchNode);
+
+	_main2BatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_main2BatchNodeTexture), 150);
+	this->addChild(_main2BatchNode);
+
+	_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
+	addChild(_particleBatchNode);
+
+	_mainBatchNodeTexture = _mainBatchNode->getTexture()->getPath();
+	_main2BatchNodeTexture = _main2BatchNode->getTexture()->getPath();
+
+	//std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
+	std::string levelStr = getLevel()->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(getLevel()->_LevelID) : getLevel()->_LevelString;
+	loadLevel(levelStr);
+
+	this->_bottomGround = GroundLayer::create(_groundID);
+	this->_ceiling = GroundLayer::create(_groundID);
 	cameraFollow = ax::Node::create();
 	cameraFollow->addChild(this->_bottomGround, 1);
 	cameraFollow->addChild(this->_ceiling, 1);
@@ -314,37 +368,18 @@ bool PlayLayer::init(GJGameLevel* level)
 	_bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
 	_ceiling->setPositionY(winSize.height + _ceiling->_sprite->getTextureRect().size.height);
 
-	dn = ax::DrawNode::create();
-	dn->setPosition({-15, -15});
-	addChild(dn, 99999);
-
-	this->m_pBG = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
+	this->m_pBG = Sprite::create(GameToolbox::getTextureString(fmt::format("game_bg_{:02}_001.png", _bgID)));
 	m_pBG->setStretchEnabled(false);
 	const Texture2D::TexParams texParams = {
 		backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR, backend::SamplerAddressMode::REPEAT,
-		backend::SamplerAddressMode::REPEAT};
+		backend::SamplerAddressMode::REPEAT };
 	this->m_pBG->getTexture()->setTexParameters(texParams);
 	this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
 	this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
 	this->addChild(this->m_pBG, -100);
 
-	this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
-	this->m_pPlayer->setPosition({-20, 105});
-	this->addChild(this->m_pPlayer, 2);
-	this->m_pPlayer->setAnchorPoint({0, 0});
-
-	m_pPlayer->setMainColor({125, 255, 0});
-	m_pPlayer->setSecondaryColor({0, 255, 255});
-
-	_mainBatchNode = ax::SpriteBatchNode::create("GJ_GameSheet-hd.png", 150);
-	this->addChild(_mainBatchNode);
-
-	_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
-	addChild(_particleBatchNode);
-
-	//std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
-	std::string levelStr = getLevel()->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(getLevel()->_LevelID) : getLevel()->_LevelString;
-	loadLevel(levelStr);
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000));
+	this->_bottomGround->update(0);
 
 	if (_pObjects.size() != 0)
 	{
@@ -462,8 +497,6 @@ void PlayLayer::update(float dt)
 
 	m_pColorChannels[1005] = m_pPlayer->getMainColor();
 	m_pColorChannels[1006] = m_pPlayer->getSecondaryColor();
-
-	processObjectTransitions();
 }
 
 void PlayLayer::destroyPlayer()
@@ -472,10 +505,9 @@ void PlayLayer::destroyPlayer()
 	if (m_pPlayer->noclip) return;
 	m_pPlayer->setIsDead(true);
 	m_pPlayer->playDeathEffect();
+	m_pPlayer->stopRotation();
 
 	scheduleOnce([=](float d) { resetLevel(); }, 1.f, "restart");
-
-	m_pPlayer->runAction(FadeTo::create(0.2f, 0));
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -546,6 +578,84 @@ void PlayLayer::updateCamera(float dt)
 	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
 }
 
+float PlayLayer::getRelativeMod(Vec2 pos, float v1, float v2, float v3)
+{
+	auto winSize = ax::Director::getInstance()->getWinSize();
+	float camX = m_obCamPos.x;
+	float centerX = winSize.width / 2.f;
+	float camXCenter = camX + centerX;
+	float posX = pos.x;
+
+	float vv1;
+	float vv2;
+	float vv3;
+	float result;
+
+	if (posX <= camXCenter)
+	{
+		vv2 = v2;
+		vv3 = (camXCenter - posX) - v3;
+	}
+	else
+	{
+		vv1 = ((posX - v3) - camX) - centerX;
+		vv2 = v1;
+		vv3 = vv1;
+	}
+	if (vv2 < 1.f)
+		vv2 = 1.f;
+
+	result = (centerX - vv3) / vv2;
+
+	return result;
+}
+void PlayLayer::applyEnterEffect(GameObject* obj)
+{
+	if (obj->getEnterEffectID() != _enterEffectID)
+		obj->setEnterEffectID(_enterEffectID);
+	Vec2 objStartPos = obj->getStartPosition();
+	Vec2 objStartScale = obj->getStartScale();
+	float rModn = getRelativeMod(objStartPos, 60.f, 60.f, 0.f);
+	float rMod = clampf(rModn, 0.f, 1.f);
+
+	switch (obj->getEnterEffectID())
+	{
+	case 2:
+		if (obj->getGameObjectType() != GameObjectType::kGameObjectTypeYellowJumpPad)
+		{
+			obj->setScaleX(rMod * objStartScale.x);
+			obj->setScaleY(rMod * objStartScale.y);
+		}
+		break;
+	case 3:
+		if (obj->getGameObjectType() != GameObjectType::kGameObjectTypeYellowJumpPad)
+		{
+			obj->setScaleX((2.f - rMod) * objStartScale.x);
+			obj->setScaleY((2.f - rMod) * objStartScale.y);
+		}
+		break;
+	case 4:
+		if (obj->getGameObjectType() != GameObjectType::kGameObjectTypeYellowJumpPad)
+			obj->setPositionY((1.0 - rMod) * 100.f + objStartPos.y);
+		break;
+	case 5:
+		if (obj->getGameObjectType() != GameObjectType::kGameObjectTypeYellowJumpPad)
+			obj->setPositionY((1.0 - rMod) * -100.f + objStartPos.y);
+		break;
+	case 6:
+		if (obj->getGameObjectType() != GameObjectType::kGameObjectTypeYellowJumpPad)
+			obj->setPositionX((1.0 - rMod) * -100.f + objStartPos.x);
+		break;
+	case 7:
+		if (obj->getGameObjectType() != GameObjectType::kGameObjectTypeYellowJumpPad)
+			obj->setPositionX((1.0 - rMod) * 100.f + objStartPos.x);
+		break;
+	default:
+		obj->setPosition(objStartPos);
+		break;
+	}
+	obj->setEnterEffectID(0);
+}
 void PlayLayer::updateVisibility()
 {
 	auto winSize = ax::Director::getInstance()->getWinSize();
@@ -569,21 +679,29 @@ void PlayLayer::updateVisibility()
 
 					if (obj->getParent() == nullptr)
 					{
-						_mainBatchNode->addChild(obj);
-						AX_SAFE_RELEASE(obj);
-						if(obj->_particle) 
+						if (obj->_particle)
 						{
 							_particleBatchNode->addChild(obj->_particle);
 							AX_SAFE_RELEASE(obj->_particle);
 						}
+						if (obj->_glowSprite)
+						{
+							_glowBatchNode->addChild(obj->_glowSprite);
+							AX_SAFE_RELEASE(obj->_glowSprite);
+						}
+
+						if (obj->getBlendFunc() != GameToolbox::getBlending())
+						{
+							if(obj->_texturePath == _mainBatchNodeTexture)
+								_mainBatchNode->addChild(obj);
+							else if (obj->_texturePath == _main2BatchNodeTexture)
+								_main2BatchNode->addChild(obj);
+						}
+						else
+							_blendingBatchNode->addChild(obj);
+						AX_SAFE_RELEASE(obj);
 					}
 
-					// obj->setOpacity(127);
-					// printf("%d %d %d\n", j, obj->getNumberOfRunningActions(), i);
-					// if(obj->getNumberOfRunningActions() == 0) 
-					// {
-					// 	obj->runAction(FadeTo::create(0.5f, 255));
-					// }
 					obj->setActive(true);
 					obj->update();
 
@@ -593,20 +711,16 @@ void PlayLayer::updateVisibility()
 
 					// auto pos = obj->getPosition();
 
-					// float unk2 = 0.0f;
+					float unk2 = 0.0f;
+					if (obj->getGameObjectType() == GameObjectType::kGameObjectTypeDecoration)
+						unk2 = obj->getTextureRect().origin.x * obj->getScaleX() * 0.4f;
 
-					// if (obj->getGameObjectType == GameObjectType::)
-					// {
-					//	 unk2 = obj->getTextureRect().origin.x * obj->getScaleX() * 0.4f;
-					// }
-
-					// unsigned char opacity = this->getRelativeMod(pos, unk, unk2) * 255.0f;
-
-					// if (!obj->getDontTransform())
-					// {
-					//	 obj->setOpacity(opacity);
-					//	 this->applyEnterEffect(obj);
-					// }
+					unsigned char opacity = clampf(getRelativeMod(obj->getPosition(), 70.f, 70.f, unk2), 0.f, 1.f) * 255.0f;
+					if (!obj->getDontTransform())
+					{
+						obj->setOpacity(opacity);
+						this->applyEnterEffect(obj);
+					}
 				}
 			}
 		}
@@ -626,7 +740,21 @@ void PlayLayer::updateVisibility()
 					AX_SAFE_RETAIN(section[j]->_particle);
 					_particleBatchNode->removeChild(section[j]->_particle, true);
 				}
-				_mainBatchNode->removeChild(section[j], true);
+				if (section[j]->_glowSprite)
+				{
+					AX_SAFE_RETAIN(section[j]->_glowSprite);
+					_glowBatchNode->removeChild(section[j]->_glowSprite, true);
+				}
+				//_mainBatchNode->removeChild(section[j], true);
+				if (section[j]->getBlendFunc() != GameToolbox::getBlending())
+				{
+					if (section[j]->_texturePath == _mainBatchNodeTexture)
+						_mainBatchNode->removeChild(section[j], true);
+					else if (section[j]->_texturePath == _main2BatchNodeTexture)
+						_main2BatchNode->removeChild(section[j], true);
+				}
+				else
+					_blendingBatchNode->removeChild(section[j], true);
 			}
 		}
 	}
@@ -693,26 +821,6 @@ void PlayLayer::processTriggers()
 	// int i = 0;
 	// while (i < section.size())
 	// {
-	// 	i++;
-	// }
-}
-void PlayLayer::processObjectTransitions()
-{
-	// auto winSize = Director::getInstance()->getWinSize();
-
-	// if(m_pSectionObjects.size() == 0) return;
-
-	// int current_section =  this->sectionForPos(m_obCamPos.x - winSize.width / 2);
-	// auto section = m_pSectionObjects[current_section];
-	// int i = 0;
-
-	// while (i < section.size()) {
-	// 	printf("section %d %d %d\n", current_section, i, section[i]->getNumberOfRunningActions());
-	// 	if(section[i]->getNumberOfRunningActions() == 0)
-	// 	{
-	// 		//section[i]->runAction(ActionTween::create(0.5, "opacity", 1.f, 0.f));
-	// 		section[i]->runAction(FadeTo::create(0.5, 0));
-	// 	}
 	// 	i++;
 	// }
 }
@@ -934,15 +1042,19 @@ void PlayLayer::onDrawImGui()
 
 void PlayLayer::resetLevel()
 {
-	m_pPlayer->setPosition({2, 105});
+	m_pPlayer->setPosition({ 2, 105 });
+	m_pPlayer->setRotation(0);
 	m_obCamPos.x = 0;
+	m_obCamPos.y = 0;
 	_bottomGround->setPositionX(0);
 	_ceiling->setPositionX(0);
 	m_pPlayer->reset();
 	m_pBG->setPositionX(0);
+	_enterEffectID = 0;
 
 	for (auto obj : this->_pObjects)
 	{
+		if (!obj) continue;
 		obj->m_bHasBeenActivated = false;
 		obj->setActive(false);
 		if (obj->getParent() != nullptr)
@@ -952,8 +1064,22 @@ void PlayLayer::resetLevel()
 				AX_SAFE_RETAIN(obj->_particle);
 				_particleBatchNode->removeChild(obj->_particle, true);
 			}
+			if (obj->_glowSprite)
+			{
+				AX_SAFE_RETAIN(obj->_glowSprite);
+				_glowBatchNode->removeChild(obj->_glowSprite, true);
+			}
 			AX_SAFE_RETAIN(obj);
-			_mainBatchNode->removeChild(obj, true);
+			//_mainBatchNode->removeChild(obj, true);
+			if (obj->getBlendFunc() != GameToolbox::getBlending())
+			{
+				if (obj->_texturePath == _mainBatchNodeTexture)
+					_mainBatchNode->removeChild(obj, true);
+				else if (obj->_texturePath == _main2BatchNodeTexture)
+					_main2BatchNode->removeChild(obj, true);
+			}
+			else
+				_blendingBatchNode->removeChild(obj, true);
 		}
 	}
 
@@ -1024,6 +1150,7 @@ void PlayLayer::exit()
 	}
 
 	_particleBatchNode->removeAllChildrenWithCleanup(true);
+	_glowBatchNode->removeAllChildrenWithCleanup(true);
 	
 	//for (auto particle : _particleBatchNode->getChildren())
 	//{
@@ -1074,9 +1201,9 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 			this->exit();
 		}
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_A)
+	if (keyCode == EventKeyboard::KeyCode::KEY_A && m_pPlayer->m_bIsPlatformer)
 		m_pPlayer->direction = -1.f;
-	else if (keyCode == EventKeyboard::KeyCode::KEY_D)
+	else if (keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->m_bIsPlatformer)
 		m_pPlayer->direction = 1.f;
 }
 
@@ -1084,7 +1211,7 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
 	GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
 	if ((keyCode == EventKeyboard::KeyCode::KEY_A && m_pPlayer->direction == -1.f) ||
-		(keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->direction == 1.f))
+		(keyCode == EventKeyboard::KeyCode::KEY_D && m_pPlayer->direction == 1.f) && m_pPlayer->m_bIsPlatformer)
 		m_pPlayer->direction = 0.f;
 	switch (keyCode)
 	{
@@ -1102,13 +1229,13 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 
 void PlayLayer::tweenBottomGround(float y)
 {
-	_bottomGround->runAction(EaseInOut::create(ActionTween::create(0.25f, "y", _bottomGround->getPositionY(), y), 2.f));
+	_bottomGround->runAction(EaseInOut::create(ActionTween::create(0.1f, "y", _bottomGround->getPositionY(), y), 2.f));
 	//_bottomGround->setPositionY(y);
 }
 
 void PlayLayer::tweenCeiling(float y)
 {
-	_ceiling->runAction(EaseInOut::create(ActionTween::create(0.25f, "y", _ceiling->getPositionY(), y), 2.f));
+	_ceiling->runAction(EaseInOut::create(ActionTween::create(0.1f, "y", _ceiling->getPositionY(), y), 2.f));
 	//_ceiling->setPositionY(y);
 }
 

@@ -2,7 +2,8 @@
 
 USING_NS_AX;
 
-void CircleWave::draw(ax::Renderer *renderer, const ax::Mat4& transform, uint32_t flags) {
+void CircleWave::draw(ax::Renderer *renderer, const ax::Mat4& transform, uint32_t flags) 
+{
    // log_ << "ASSA";
 	glBlendFunc(0x302, 1);
 	glLineWidth(this->m_fLineWidth);
@@ -15,15 +16,18 @@ void CircleWave::draw(ax::Renderer *renderer, const ax::Mat4& transform, uint32_
 	this->drawSolidCircle(Director::getInstance()->getWinSize() / 2, 100, 90, 100, {1,1,1,1});
 }
 
-void CircleWave::setColor(Color4B col) {
+void CircleWave::setColor(Color4B col) 
+{
 	this->m_eColor = {col.r / 255.f, col.g / 255.f, col.b / 255.f, col.a / 255.f};
 }
 
-Color4B CircleWave::getColor() {
+Color4B CircleWave::getColor() 
+{
 	return {(uint8_t)(m_eColor.r * 255.f), (uint8_t)(m_eColor.g * 255.f), (uint8_t)(m_eColor.b * 255.f), (uint8_t)(m_eColor.a * 255.f)};
 }
 
-bool CircleWave::init(float duration, Color4B color, float radiusMin, float radiusMax, bool easing, float lineWidth, bool filled) {
+bool CircleWave::init(float duration, Color4B color, float radiusMin, float radiusMax, bool easing, float lineWidth, bool filled) 
+{
 	if (!DrawNode::init()) return false;
 
 	this->setColor(color);

@@ -1,9 +1,9 @@
 #include "ListLayer.h"
 
-ListLayer* ListLayer::create(const char* label, ax::Color4B color, ax::Vec2 size){
+ListLayer* ListLayer::create(ax::Layer* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
     auto pRet = new(std::nothrow) ListLayer();
 
-	if (pRet && pRet->init(label, color, size)) {
+	if (pRet && pRet->init(scrollLayer, label, color, size)) {
 		pRet->autorelease();
 		return pRet;
 	} else {
@@ -12,15 +12,15 @@ ListLayer* ListLayer::create(const char* label, ax::Color4B color, ax::Vec2 size
 	}
 }
 
-ListLayer* ListLayer::create(const char* label, ax::Color4B color){
-	return ListLayer::create(label, color, {356, 220});
+ListLayer* ListLayer::create(ax::Layer* scrollLayer, const char* label, ax::Color4B color){
+	return ListLayer::create(scrollLayer, label, color, {356, 240});
 }
 
-ListLayer* ListLayer::create(const char* label){
-	return ListLayer::create(label, {0, 0, 0, 0}, {356, 220});
+ListLayer* ListLayer::create(ax::Layer* scrollLayer, const char* label){
+	return ListLayer::create(scrollLayer, label, {0, 0, 0, 125}, {356, 240});
 }
 
-bool ListLayer::init(const char* label, ax::Color4B color, ax::Vec2 size){
+bool ListLayer::init(ax::Layer* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
     if(!this->initWithColor(color)) return false;
     
     auto winSize = ax::Director::getInstance()->getWinSize();
@@ -29,7 +29,12 @@ bool ListLayer::init(const char* label, ax::Color4B color, ax::Vec2 size){
 	this->setContentSize(size);
     
     //menu start
-	// original list size 356, 240
+	if(scrollLayer != nullptr){
+		scrollLayer->setPosition({size.x / 2, size.y / 1.5f});
+		scrollLayer->setContentSize(size);
+		this->addChild(scrollLayer);
+	}
+
     auto bottom = ax::Sprite::createWithSpriteFrameName("GJ_table_bottom_001.png");
 	bottom->setPosition({size.x / 2, -10});
 	
@@ -56,7 +61,7 @@ bool ListLayer::init(const char* label, ax::Color4B color, ax::Vec2 size){
     this->addChild(bottom);
 
 	auto text = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), label, ax::TextHAlignment::CENTER);
-	
+		
 	text->setPositionX(top->getPositionX());
 	text->setPositionY(top->getPositionY() * 1.01);
 	text->setScale(0.8f);

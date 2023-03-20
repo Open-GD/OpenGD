@@ -4,13 +4,13 @@
 #include "MenuItemSpriteExtra.h"
 #include "ListLayer.h"
 
-class DropDownLayer : ax::LayerColor {
+class DropDownLayer : public ax::LayerColor {
     private:
-        bool init(const char* label);
+        bool init(ax::Layer* scrollLayer, const char* label);
     public:
         ax::Layer* droplayer;
 
-        static DropDownLayer* create(const char* label);
+        static DropDownLayer* create(ax::Layer* scrollLayer, const char* label);
         void showLayer();
         void hideLayer();
 };

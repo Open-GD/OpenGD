@@ -1,7 +1,9 @@
 #include "GameObject.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
+#include "json.hpp"
 #include <fmt/format.h>
+#include <fstream>
 
 USING_NS_AX;
 
@@ -449,7 +451,9 @@ const std::map<int, float> GameObject::_pHitboxRadius = std::map<int, float>{
 	{1708, 28.9}, {1709, 17.6}, {1710, 12.9}, {1734, 32},	{1735, 17.68}, {1736, 12.48}};
 
 const std::map<int, std::vector<const char*>> GameObject::_pBlocks = std::map<int, std::vector<const char*>>{
-	{44, {"checkpoint_01_001", "checkpoint_01_glow_001"}}, // not setup in ObjectToolbox::init(), only initialised when placing a checkpoint
+	{44,
+	 {"checkpoint_01_001",
+	  "checkpoint_01_glow_001"}}, // not setup in ObjectToolbox::init(), only initialised when placing a checkpoint
 	{1, {"square_01_001", "square_01_glow_001"}},
 	{2, {"square_02_001", "square_02_glow_001"}},
 	{3, {"square_03_001", "square_03_glow_001"}},
@@ -462,14 +466,14 @@ const std::map<int, std::vector<const char*>> GameObject::_pBlocks = std::map<in
 	{8, {"spike_01_001", "spike_01_glow_001"}},
 	{39, {"spike_02_001", "spike_02_glow_001"}},
 	{103, {"spike_03_001"}},
-	{10, {"portal_01_front_001"}},  // set gravity to default portal
-	{11, {"portal_02_front_001"}},  // reverse gravity portal
-	{12, {"portal_03_front_001"}},  // player portal
-	{13, {"portal_04_front_001"}},  // ship portal
-	{45, {"portal_05_front_001"}},  // reverse level portal
-	{46, {"portal_06_front_001"}},  // reverse level to default portal
-	{47, {"portal_07_front_001"}},  // ball portal
-	{99, {"portal_08_front_001"}},  // big player portal
+	{10, {"portal_01_front_001"}},	// set gravity to default portal
+	{11, {"portal_02_front_001"}},	// reverse gravity portal
+	{12, {"portal_03_front_001"}},	// player portal
+	{13, {"portal_04_front_001"}},	// ship portal
+	{45, {"portal_05_front_001"}},	// reverse level portal
+	{46, {"portal_06_front_001"}},	// reverse level to default portal
+	{47, {"portal_07_front_001"}},	// ball portal
+	{99, {"portal_08_front_001"}},	// big player portal
 	{101, {"portal_09_front_001"}}, // small player portal
 	{9, {"pit_01_001"}},
 	{1715, {"pit_01_001"}},
@@ -2059,8 +2063,7 @@ const std::map<int, std::vector<const char*>> GameObject::_pBlocks = std::map<in
 	{1882, {"blockDesign07_01_001"}},
 	{1883, {"blockDesign07_02_001"}},
 	{1884, {"blockDesign07_03_001"}},
-	{1885, {"blockDesign07_04_001"}}
-};
+	{1885, {"blockDesign07_04_001"}}};
 
 const std::vector<int> GameObject::_pSolids = std::vector<int>{
 	1,	 2,	  3,   4,	6,	 7,	  40,  62,	63,	 64,  65,  66,	68,	 69,  70,  71,	72,	 74,  75,  76,	77,
@@ -2081,6 +2084,8 @@ GameObject::~GameObject()
 {
 	if (_particle)
 		AX_SAFE_RELEASE_NULL(_particle);
+	if (_glowSprite)
+		AX_SAFE_RELEASE_NULL(_glowSprite);
 }
 
 bool GameObject::init(std::string_view frame, std::string_view glowFrame)
@@ -2107,19 +2112,59 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	{
 		_glowSprite = Sprite::createWithSpriteFrameName(glowFrame);
 		if (_glowSprite)
-		{	
-			BlendFunc bf = { (ax::backend::BlendFactor)ax::backend::BlendFactor::SRC_ALPHA, (ax::backend::BlendFactor)ax::backend::BlendFactor::ONE_MINUS_SRC_ALPHA};
-			_glowSprite->setBlendFunc(bf);
+		{
+			_glowSprite->setBlendFunc(GameToolbox::getBlending());
 			_glowSprite->setStretchEnabled(false);
-			addChild(_glowSprite);
+			_glowSprite->retain();
 		}
 	}
-	
+	_texturePath = getTexture()->getPath();
+
 	return true;
 }
 
 void GameObject::customSetup()
 {
+	static nlohmann::json childJson;
+
+	if (childJson.empty())
+	{
+		std::ifstream file;
+		std::stringstream buffer;
+
+		file.open("object.json");
+		buffer << file.rdbuf();
+		childJson = nlohmann::json::parse(buffer.str());
+		file.close();
+		buffer.clear();
+	}
+
+	if (childJson[std::to_string(getID())].contains("default_z_order"))
+		setGlobalZOrder((int)childJson[std::to_string(getID())]["default_z_order"]);
+	if (childJson[std::to_string(getID())].contains("default_primary_channel"))
+		_mainColorChannel = (int)childJson[std::to_string(getID())]["default_primary_channel"];
+	if (childJson[std::to_string(getID())].contains("default_secondary_channel"))
+		_secColorChannel = (int)childJson[std::to_string(getID())]["default_secondary_channel"];
+
+	for (nlohmann::json jsonObj : childJson[std::to_string(getID())]["childrens"])
+	{
+		ax::Sprite* s = ax::Sprite::createWithSpriteFrameName(static_cast<std::string>(jsonObj["texture_name"]));
+		if (!s)
+			continue;
+		s->setStretchEnabled(false);
+		s->setAnchorPoint({static_cast<float>(jsonObj["anchor_x"]), static_cast<float>(jsonObj["anchor_y"])});
+		s->setFlippedX(static_cast<bool>(jsonObj["flip_x"]));
+		s->setFlippedY(static_cast<bool>(jsonObj["flip_y"]));
+		s->setPosition({static_cast<float>(jsonObj["x"]), static_cast<float>(jsonObj["y"])});
+		s->setLocalZOrder(static_cast<int>(jsonObj["z"]));
+		s->setRotation(static_cast<float>(jsonObj["rot"]));
+		s->setScaleX(static_cast<float>(jsonObj["scale_x"]));
+		s->setScaleY(static_cast<float>(jsonObj["scale_y"]));
+		s->setContentSize({static_cast<float>(jsonObj["content_x"]), static_cast<float>(jsonObj["content_y"])});
+		_detailSprites.push_back(s);
+		addChild(s);
+	}
+
 	switch (getID())
 	{
 	case 10:
@@ -2160,76 +2205,6 @@ void GameObject::customSetup()
 	}
 }
 
-void GameObject::setupColors()
-{
-	switch(getID())
-	{
-		case 18:
-		case 110:
-		case 241:
-		case 19:
-		case 153:
-		case 237:
-		case 20:
-		case 152:
-		case 41:
-		case 238:
-		case 21:
-		case 151:
-		case 239:
-		case 113:
-		case 452:
-		case 240:
-		case 114:
-		case 451:
-		case 496:
-		case 115:
-		case 450:
-		case 497:
-		case 1004:
-		case 1003:
-		case 1002:
-		case 1001:
-		case 129:
-		case 127:
-		case 128:
-		case 130:
-		case 131:
-		case 126:
-		case 123:
-		case 85:
-		case 494:
-		case 125:
-		case 124:
-		case 1019:
-		case 97:
-		case 154:
-		case 87:
-		case 1000:
-		case 1020:
-		case 155:
-		case 156:
-		case 375:
-		case 1021:
-		case 377:
-		case 1521:
-		case 222:
-		case 223:
-		case 224:
-		case 999:
-		case 394:
-		case 396:
-		case 998:
-		case 395:
-		case 1527:
-		case 1525:
-		case 997:
-		this->_mainColorChannel = 1005;
-		this->_secColorChannel = 1005;
-		break;
-	}
-}
-
 void GameObject::createAndAddParticle(const char* path, int zOrder)
 {
 	if (_particle)
@@ -2247,12 +2222,12 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 	_particle->stopSystem();
 }
 void GameObject::updateObjectType()
-{	
-	BlendFunc bf = { (ax::backend::BlendFactor)ax::backend::BlendFactor::SRC_ALPHA, (ax::backend::BlendFactor)ax::backend::BlendFactor::ONE_MINUS_SRC_ALPHA};
-
-	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) != std::end(GameObject::_pSolids))
+{
+	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) !=
+		std::end(GameObject::_pSolids))
 		setGameObjectType(kGameObjectTypeSolid);
-	else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), getID()) != std::end(GameObject::_pTriggers))
+	else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), getID()) !=
+			 std::end(GameObject::_pTriggers))
 	{
 		setGameObjectType(kGameObjectTypeSpecial);
 		setVisible(false);
@@ -2276,7 +2251,7 @@ void GameObject::updateObjectType()
 		case 21:
 		case 41:
 			setGameObjectType(kGameObjectTypeDecoration);
-			setBlendFunc(bf);
+			// setBlendFunc(GameToolbox::getBlending());
 			break;
 		case 10:
 			setGameObjectType(kGameObjectTypeNormalGravityPortal);
@@ -2289,6 +2264,9 @@ void GameObject::updateObjectType()
 			break;
 		case 13:
 			setGameObjectType(kGameObjectTypeShipPortal);
+			break;
+		case 1859: // H block
+			setGameObjectType(kGameObjectTypeSpecial);
 			break;
 		default:
 			setGameObjectType(kGameObjectTypeHazard);
@@ -2322,11 +2300,14 @@ void GameObject::update()
 {
 	if (_glowSprite)
 	{
-		_glowSprite->setPosition(getContentSize() / 2.f);
+		_glowSprite->setPosition(getPosition());
+		_glowSprite->setScaleX(getScaleX());
+		_glowSprite->setScaleY(getScaleY());
+		_glowSprite->setRotation(getRotation());
 		_glowSprite->setFlippedX(isFlippedX());
 		_glowSprite->setFlippedY(isFlippedY());
-
 		_glowSprite->setLocalZOrder(-1);
+		_glowSprite->setOpacity(getOpacity());
 	}
 	if (_particle)
 	{
@@ -2334,16 +2315,41 @@ void GameObject::update()
 		_particle->setRotation(getRotation());
 		_particle->setScaleX(getScaleX() * isFlippedX() ? -1.f : 1.f);
 		_particle->setScaleY(getScaleY() * isFlippedY() ? -1.f : 1.f);
+		_particle->setOpacity(getOpacity());
 	}
+
+	if (getEnterEffectID() == 0)
+	{
+		setPosition(_startPosition);
+		setScaleX(_startScale.x);
+		setScaleY(_startScale.y);
+	}
+
 	auto pl = PlayLayer::getInstance();
 
 	if (!pl)
 		return;
 
 	if (pl->m_pColorChannels.contains(_mainColorChannel))
+	{
 		setColor(pl->m_pColorChannels[_mainColorChannel]);
-	if (pl->m_pColorChannels.contains(_secColorChannel))
+		if (pl->m_pColorChannels.contains(_secColorChannel))
+		{
+			for (auto sp : _detailSprites)
+				sp->setColor(pl->m_pColorChannels[_secColorChannel]);
+		}
+		else
+		{
+			for (auto sp : _detailSprites)
+				sp->setColor(pl->m_pColorChannels[_mainColorChannel]);
+		}
+	}
+	else if (pl->m_pColorChannels.contains(_secColorChannel))
+	{
 		setColor(pl->m_pColorChannels[_secColorChannel]);
+		for (auto sp : _detailSprites)
+			sp->setColor(pl->m_pColorChannels[_secColorChannel]);
+	}
 }
 
 std::string GameObject::keyToFrame(int key)

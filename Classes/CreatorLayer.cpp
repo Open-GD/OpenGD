@@ -95,17 +95,57 @@ bool CreatorLayer::init() {
 	levelField->setPosition({winSize.width / 2 + 150, winSize.height / 2});
 	this->addChild(levelField);
 	
-	auto path = FileUtils::getInstance()->getWritablePath();
-	GameToolbox::log("path: {}", path);
-
-	return true;
+	//auto path = FileUtils::getInstance()->getWritablePath();
+	//GameToolbox::log("path: {}", path);
 	
+	#ifdef AX_PLATFORM_PC
+	{
+		auto listener = EventListenerKeyboard::create();
+		auto dir = Director::getInstance();
+
+		listener->onKeyPressed = AX_CALLBACK_2(CreatorLayer::onKeyPressed, this);
+		listener->onKeyReleased = AX_CALLBACK_2(CreatorLayer::onKeyReleased, this);
+		dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+	}
+	#endif
+	
+	return true;
 }
 
+
+void CreatorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event)
+{
+	switch (keyCode)
+	{
+		case EventKeyboard::KeyCode::KEY_CTRL: _ctrl_down = true; break;
+		
+		case EventKeyboard::KeyCode::KEY_V:
+		{
+			if(_ctrl_down)
+			{
+				GameToolbox::log("paste");
+				levelField->setString(GameToolbox::getClipboardString());
+			}
+		}
+			
+	}
+}
+void CreatorLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event)
+{
+	switch (keyCode)
+	{
+		case EventKeyboard::KeyCode::KEY_CTRL: _ctrl_down = false; break;
+	}
+}
+	
 void CreatorLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	if(auto str = GameToolbox::getResponse(response))
 	{
+		//validate by checking if level ID key/value is set
+		if((*str).find(fmt::format("1:{}", levelField->getString())) == std::string::npos)
+			return GameToolbox::log("invalid response: {}", *str);
+				
 		//std::vector<std::string> levelStuff = GameToolbox::splitByDelim(*str, ':');
 		//std::string compressedStr = fmt::format("{}", levelStuff.at(7));
 		//GameToolbox::log("compressed: {}", compressedStr);

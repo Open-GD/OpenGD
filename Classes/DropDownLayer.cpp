@@ -10,10 +10,10 @@
 
 #define REMOVE_SWALLOW_LISTENER(node) ax::Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(node)
 
-DropDownLayer* DropDownLayer::create(const char* label){
+DropDownLayer* DropDownLayer::create(ax::Layer* scrollLayer, const char* label){
     auto pRet = new(std::nothrow) DropDownLayer();
 
-	if (pRet && pRet->init(label)) {
+	if (pRet && pRet->init(scrollLayer, label)) {
 		pRet->autorelease();
 		return pRet;
 	} else {
@@ -22,7 +22,7 @@ DropDownLayer* DropDownLayer::create(const char* label){
 	}
 }
 
-bool DropDownLayer::init(const char* label){
+bool DropDownLayer::init(ax::Layer* scrollLayer, const char* label){
     if(!this->initWithColor({0, 0, 0, 0})) return false;
     
     auto winSize = ax::Director::getInstance()->getWinSize();
@@ -53,7 +53,7 @@ bool DropDownLayer::init(const char* label){
     droplayer->addChild(chain2);
 
 
-    auto listlayer = ListLayer::create(label);
+    auto listlayer = ListLayer::create(scrollLayer, label);
     listlayer->setPosition({(winSize.width - 356) / 2, ((winSize.height - 220) / 2) + 5});
     droplayer->addChild(listlayer);
     //menu end

@@ -55,7 +55,18 @@ private:
 	bool m_platformerMode;
 
 public:
+	int _enterEffectID = 0;
+
+	int _groundID = 1;
+	int _bgID = 1;
+
+	std::string _mainBatchNodeTexture = "GJ_GameSheet.png";
+	std::string _main2BatchNodeTexture = "GJ_GameSheet02.png";
+
 	ax::SpriteBatchNode* _mainBatchNode;
+	ax::SpriteBatchNode* _main2BatchNode;
+	ax::SpriteBatchNode* _glowBatchNode;
+	ax::SpriteBatchNode* _blendingBatchNode;
 	ax::ParticleBatchNode* _particleBatchNode;
 
 	std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
@@ -82,7 +93,9 @@ public:
 	void renderRect(ax::Rect rect, ax::Color4B col);
 
 	void processTriggers();
-	void processObjectTransitions();
+
+	void applyEnterEffect(GameObject* obj);
+	float getRelativeMod(ax::Vec2 objPos, float v1, float v2, float v3);
 
 	int sectionForPos(float x);
 
