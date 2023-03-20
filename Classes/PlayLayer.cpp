@@ -434,7 +434,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	cameraFollow = ax::Node::create();
 	cameraFollow->addChild(this->_bottomGround, 1);
 	cameraFollow->addChild(this->_ceiling, 1);
-	this->addChild(cameraFollow, 1);
+	this->addChild(cameraFollow, 100);
 
 	this->_ceiling->setScaleY(-1);
 	_ceiling->setVisible(false);
