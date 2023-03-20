@@ -4,6 +4,17 @@
 #include <axmol.h>
 #include <MotionTrail.h>
 
+enum PlayerGamemode
+{
+	PlayerGamemodeCube = 0,
+	PlayerGamemodeShip = 1,
+	PlayerGamemodeBall = 2,
+	PlayerGamemodeUFO = 3,
+	PlayerGamemodeWave = 4,
+	PlayerGamemodeRobot = 5,
+	PlayerGamemodeSpider = 6,
+};
+
 class PlayerObject : public GameObject 
 {
 private:
@@ -42,26 +53,25 @@ private:
 
 	bool m_bGravityFlipped;
 
-	bool m_bIsShip;
-
-	float m_playerSpeed = 0.9f;
-
-	ax::Vec2 m_obLastGroundPos;
-
-	GameObject* m_snappedObject;
-	float m_snapDifference;
-
-	ax::Vec2 m_prevPos;
-
 	bool m_isRising;
 
 	bool _particles1Activated;
 	bool _particles2Activated;
 	bool _particles3Activated;
 
+	float m_playerSpeed = 0.9f;
+	float m_snapDifference;
+
+	ax::Vec2 m_obLastGroundPos;
+	ax::Vec2 m_prevPos;
+
+	GameObject* m_snappedObject;
+
 public:
 	static ax::Texture2D* motionStreakTex;
 	MotionTrail* motionStreak;
+
+	PlayerGamemode _currentGamemode;
 
 	GameObject* _touchedRingObject;
 	bool _hasRingJumped;
@@ -87,8 +97,6 @@ public:
 	void checkSnapJumpToObject(GameObject* obj);
 
 	void updateShipRotation(float dt);
-	bool isShip();
-	void setIsShip(bool);
 	bool isDead();
 	bool isOnGround();
 	bool isGravityFlipped();
@@ -102,6 +110,7 @@ public:
 
 	void setIsDead(bool);
 	void setIsOnGround(bool);
+	void setGamemode(PlayerGamemode mode);
 
 	ax::Layer* getPlayLayer() { return gameLayer; }
 

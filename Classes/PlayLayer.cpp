@@ -508,7 +508,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	scheduleOnce(
 		[=](float d) {
 			m_bCanExitScene = true;
-			if(levelValid)
+			if (levelValid)
 			{
 				AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
 				scheduleUpdate();
@@ -573,7 +573,7 @@ void PlayLayer::update(float dt)
 
 	this->updateVisibility();
 	this->updateCamera(step);
-	if (m_pPlayer->isShip()) m_pPlayer->updateShipRotation(step);
+	if (m_pPlayer->_currentGamemode == PlayerGamemodeShip) m_pPlayer->updateShipRotation(step);
 
 	m_pColorChannels[1005]._color = m_pPlayer->getMainColor();
 	m_pColorChannels[1006]._color = m_pPlayer->getSecondaryColor();
@@ -589,10 +589,12 @@ void PlayLayer::destroyPlayer()
 	m_pPlayer->playDeathEffect();
 	m_pPlayer->stopRotation();
 
-	scheduleOnce([=](float d) { 
-		resetLevel();
-		m_bCanExitScene = true;
-	}, 1.f, "restart");
+	scheduleOnce(
+		[=](float d) {
+			resetLevel();
+			m_bCanExitScene = true;
+		},
+		1.f, "restart");
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -603,7 +605,7 @@ void PlayLayer::updateCamera(float dt)
 	PlayerObject* player = m_pPlayer;
 	Vec2 pPos = player->getPosition();
 
-	if (player->isShip())
+	if (player->_currentGamemode == PlayerGamemodeShip)
 	{
 		cam.y = (winSize.height * -0.5f) + m_fCameraYCenter;
 		if (cam.y <= 0.0f) cam.y = 0.0f;
@@ -656,8 +658,8 @@ void PlayLayer::updateCamera(float dt)
 	Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
 
 	cameraFollow->setPosition(m_obCamPos);
-	_ceiling->setVisible(m_pPlayer->isShip());
-	if (!m_pPlayer->isShip()) _bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
+	_ceiling->setVisible(m_pPlayer->_currentGamemode == PlayerGamemodeShip);
+	if (!m_pPlayer->_currentGamemode == PlayerGamemodeShip) _bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
 
 	m_pBar->setPosition(this->m_obCamPos + winSize / 2);
 	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
@@ -952,16 +954,14 @@ void PlayLayer::updateVisibility()
 	this->_nextSection = nextSection;
 }
 
-void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
+void PlayLayer::changeGameMode(GameObject* obj, PlayerGamemode gameMode)
 {
 	switch (gameMode)
 	{
-	case 0:
-	{
-		this->m_pPlayer->setIsShip(false);
-	}
-	break;
-	case 1:
+	default:
+		m_pPlayer->setGamemode(gameMode);
+		break;
+	case PlayerGamemodeShip:
 	{
 		if (obj->getPositionY() < 270)
 		{
@@ -971,7 +971,7 @@ void PlayLayer::changeGameMode(GameObject* obj, int gameMode)
 		{
 			m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
 		}
-		this->m_pPlayer->setIsShip(true);
+		m_pPlayer->setGamemode(gameMode);
 		this->m_pPlayer->setRotation(0.f);
 		tweenBottomGround(-68);
 		tweenCeiling(388);
@@ -1017,7 +1017,7 @@ void PlayLayer::processTriggers()
 void PlayLayer::checkCollisions(float dt)
 {
 	auto playerOuterBounds = this->m_pPlayer->getOuterBounds();
-	if (this->m_pPlayer->getPositionY() < 105.0f && !this->m_pPlayer->isShip())
+	if (this->m_pPlayer->getPositionY() < 105.0f && this->m_pPlayer->_currentGamemode != PlayerGamemodeShip)
 	{
 		if (this->m_pPlayer->isGravityFlipped())
 		{
@@ -1036,7 +1036,7 @@ void PlayLayer::checkCollisions(float dt)
 		return;
 	}
 
-	if (this->m_pPlayer->isShip())
+	if (this->m_pPlayer->_currentGamemode == PlayerGamemodeShip)
 	{
 		if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + cameraFollow->getPositionY() + 93.0f)
 		{
@@ -1126,14 +1126,14 @@ void PlayLayer::checkCollisions(float dt)
 							m_pPlayer->setPortalP(obj->getPosition());
 							m_pPlayer->setPortalObject(obj);
 
-							this->changeGameMode(obj, 1);
+							this->changeGameMode(obj, PlayerGamemodeShip);
 							break;
 
 						case GameObjectType::kGameObjectTypeCubePortal:
 							m_pPlayer->setPortalP(obj->getPosition());
 							m_pPlayer->setPortalObject(obj);
 
-							this->changeGameMode(obj, 0);
+							this->changeGameMode(obj, PlayerGamemodeCube);
 							break;
 
 						case GameObjectType::kGameObjectTypeYellowJumpPad:
@@ -1186,7 +1186,6 @@ void PlayLayer::onDrawImGui()
 {
 	extern bool _showDebugImgui;
 	if (!_showDebugImgui) return;
-	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
 	ImGui::SetNextWindowPos({1000.0f, 200.0f}, ImGuiCond_FirstUseEver);
 
 	ImGui::Begin("PlayLayer Debug");
@@ -1199,18 +1198,24 @@ void PlayLayer::onDrawImGui()
 		auto monitor = glfwGetMonitors(&a)[monitorN];
 		auto mode = glfwGetVideoMode(monitor);
 
-		if(fullscreen) glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-		else glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), NULL, 0, 0, 1280, 720, 0);
+		if (fullscreen)
+			glfwSetWindowMonitor(
+				static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), monitor, 0, 0,
+				mode->width, mode->height, mode->refreshRate);
+		else
+			glfwSetWindowMonitor(
+				static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), NULL, 0, 0, 1280, 720,
+				0);
 	}
 
 	ImGui::SameLine();
 
-	if(ImGui::ArrowButton("full", ImGuiDir_Right)) ImGui::OpenPopup("Fullscreen Settings");
+	if (ImGui::ArrowButton("full", ImGuiDir_Right)) ImGui::OpenPopup("Fullscreen Settings");
 
 	if (ImGui::BeginPopupModal("Fullscreen Settings", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::InputInt("Monitor", &monitorN);
-		if(ImGui::Button("Close")) ImGui::CloseCurrentPopup();
+		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
 		ImGui::EndPopup();
 	}
 
@@ -1382,9 +1387,8 @@ void PlayLayer::onEnter()
 
 void PlayLayer::onExit()
 {
-	if(!m_bCanExitScene)
-		return;
-		
+	if (!m_bCanExitScene) return;
+
 #if SHOW_IMGUI == true
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
@@ -1396,8 +1400,7 @@ void PlayLayer::onExit()
 
 void PlayLayer::exit()
 {
-	if(!m_bCanExitScene)
-		return;
+	if (!m_bCanExitScene) return;
 
 	m_pPlayer->deactivateStreak();
 	//removeChild(m_pPlayer->motionStreak);

@@ -87,7 +87,7 @@ public:
 	void updateCamera(float dt);
 	void updateVisibility();
 	void moveCameraToPos(ax::Vec2);
-	void changeGameMode(GameObject*, int);
+	void changeGameMode(GameObject* obj, PlayerGamemode gameMode);
 	void resetLevel();
 	void exit();
 
