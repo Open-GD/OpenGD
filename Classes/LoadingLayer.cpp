@@ -3,6 +3,7 @@
 #include "MenuLayer.h"
 #include "CocosExplorer.h"
 #include "constants.h"
+#include "SteamValidation.h"
 
 #include <array>
 
@@ -50,6 +51,13 @@ Scene* LoadingLayer::scene() {
 
 bool LoadingLayer::init() {
 	if (!Layer::init()) return false;
+
+	if(!SteamValidation::isGDBought()) {
+		SteamValidation::showErrorMessage();
+		exit(1);
+	} else {
+		SteamValidation::copyResources();
+	}
 	
 	
 	size_t totalAssets = fonts.size() + plists.size() + pngs.size();
