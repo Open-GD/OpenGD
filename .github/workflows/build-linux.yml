@@ -57,6 +57,18 @@ jobs:
       - name: Build axmol
         run: python3 axmol/setup.py
       
+      - name: Cache Build (to speed up subsequent builds)
+        id: build-cache
+        uses: actions/cache@v3
+        env:
+          cache-name: linux-build-cache-${{github.sha}}
+        with:
+          path: linux-build
+          key: linux-build-cache-${{github.sha}}
+          restore-keys: |
+            linux-build-cache-${{github.sha}}
+            linux-build-cache-
+
       - name: Build OpenGD
         env:
           AX_ROOT: "/home/runner/work/OpenGD/OpenGD/axmol/"
