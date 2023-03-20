@@ -1,0 +1,57 @@
+name: Build Linux
+on:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  GH_OS_NAME: linux
+  BUILD_TARGET: linux
+  BUILD_TYPE: Release
+  PYENV_VERSION: 2.7.18
+
+jobs:
+  build:
+    name: Build for Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the current repo
+        uses: actions/checkout@v3.4.0
+      
+      - name: Checkout axmol
+        uses: actions/checkout@v3.4.0
+        with:
+          repository: axmolengine/axmol
+          ref: 'release'
+          path: 'axmol'
+          submodules: 'recursive'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4.5.0
+      
+      - name: Download resources
+        run: |
+          wget $(curl https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | grep "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" --only-matching) -O Resources.zip
+          unzip Resources.zip
+        
+      - name: Create Build Environment
+        run: |
+          echo "" | tee ~/.bashrc
+          axmol/tools/unix-ci/before-install.sh
+          # sed -i 's/if(DBus1_FOUND OR DBUS_FOUND)/if(FALSE)/' axmol/thirdparty/openal/CMakeLists.txt
+      
+      - name: Build axmol
+        run: python3 axmol/setup.py
+      
+      - name: Build OpenGD
+        env:
+          AX_ROOT: "/home/runner/work/OpenGD/OpenGD/axmol/"
+          AX_CONSOLE_ROOT: "/home/runner/work/OpenGD/OpenGD/axmol/tools/console/bin"
+        run: |
+          source ~/.bashrc
+          $AX_CONSOLE_ROOT/axmol compile -p linux -j $(nproc)
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Debug_Binary
+          path: ./bin/debug/linux/
+
