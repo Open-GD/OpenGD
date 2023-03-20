@@ -36,6 +36,7 @@ bool LevelSelectLayer::init()
 
 	if(!Layer::init()) return false;
 
+
 	auto director = Director::getInstance();
 	auto winSize = director->getWinSize();
 
@@ -176,6 +177,17 @@ bool LevelSelectLayer::init()
 	infoMenu->addChild(infoBtn, 1);
 
 	infoMenu->setPosition({ winSize.width - 20.0f, winSize.height - 20.0f });
+
+	auto listener = EventListenerKeyboard::create();
+
+	listener->onKeyPressed = [&](EventKeyboard::KeyCode code, Event*) {
+		if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
+			auto scene = MenuLayer::scene();
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene));
+		} 
+	};
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 	//if (controller) GameToolbox::addBackButton(this, backBtn);
 	return true;
