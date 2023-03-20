@@ -92,8 +92,6 @@ class GameObject : public ax::Sprite
 
 	ax::ParticleSystemQuad* _particle;
 
-	virtual ~GameObject();
-
 	static const std::map<int, Hitbox> _pHitboxes;
 	static const std::map<int, float> _pHitboxRadius;
 	// from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35

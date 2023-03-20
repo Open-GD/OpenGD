@@ -42,7 +42,6 @@ class PlayLayer : public ax::Layer
 	bool m_bMoveCameraX;
 	bool m_bMoveCameraY;
 	bool m_bShakingCamera;
-	bool _pauseUpdate;
 	float m_fEndOfLevel = FLT_MAX;
 	float m_fShakeIntensity = 1;
 
