@@ -46,7 +46,8 @@ out
 /proj.android/app/.cxx/*
 /proj.android/app/src/org/axmol/lib
 
-Resources
+
 Resources/*
+!Resources/Custom/
 
 CMakeCache.txt

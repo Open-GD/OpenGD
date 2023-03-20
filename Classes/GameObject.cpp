@@ -2105,7 +2105,7 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	if (frame.empty())
 		return false;
 
-	if (!Sprite::initWithSpriteFrameName(std::string(frame) + ".png"))
+	if (!Sprite::initWithSpriteFrameName(fmt::format("{}.png", frame)))
 		return false;
 
 	_pOuterBounds = Rect();
@@ -2115,7 +2115,7 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 
 	if (!glowFrame.empty())
 	{
-		_glowSprite = Sprite::createWithSpriteFrameName(std::string(glowFrame) + ".png");
+		_glowSprite = Sprite::createWithSpriteFrameName(fmt::format("{}.png", glowFrame));
 		if (_glowSprite)
 		{
 			_glowSprite->setBlendFunc(GameToolbox::getBlending());
@@ -2134,14 +2134,7 @@ void GameObject::customSetup()
 
 	if (childJson.empty())
 	{
-		std::ifstream file;
-		std::stringstream buffer;
-
-		file.open("object.json");
-		buffer << file.rdbuf();
-		childJson = nlohmann::json::parse(buffer.str());
-		file.close();
-		buffer.clear();
+		childJson = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/object.json"));
 	}
 
 	if (childJson[std::to_string(getID())].contains("default_z_order"))
