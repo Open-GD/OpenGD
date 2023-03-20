@@ -157,5 +157,18 @@ bool MenuLayer::init()
 	this->addChild(pbtest, 1024);
 	*/
 
+	auto listener = EventListenerKeyboard::create();
+
+	listener->onKeyPressed = [&](EventKeyboard::KeyCode code, Event*) {
+		if (code == EventKeyboard::KeyCode::KEY_SPACE) {
+			auto scene = LevelSelectLayer::scene();
+			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
+		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
+			// close dialog
+		} 
+	};
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+
 	return true;
 }
