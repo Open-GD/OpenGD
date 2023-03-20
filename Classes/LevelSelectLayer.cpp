@@ -180,11 +180,17 @@ bool LevelSelectLayer::init()
 
 	auto listener = EventListenerKeyboard::create();
 
-	listener->onKeyPressed = [&](EventKeyboard::KeyCode code, Event*) {
+	listener->onKeyPressed = [=](EventKeyboard::KeyCode code, Event*) {
 		if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
 			auto scene = MenuLayer::scene();
 			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene));
-		} 
+		} else if (code == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
+			bsl->changePageLeft();
+		} else if (code == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
+			bsl->changePageRight();
+		} else if (code == EventKeyboard::KeyCode::KEY_SPACE) {
+			// :kafif:
+		}
 	};
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
