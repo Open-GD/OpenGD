@@ -205,9 +205,9 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
 					std::end(GameObject::_pTriggers))
-					obj = EffectGameObject::create(frame + ".png");
+					obj = EffectGameObject::create(frame);
 				else
-					obj = GameObject::create(frame + ".png", glowFrame + ".png");
+					obj = GameObject::create(frame, glowFrame);
 
 				if (obj == nullptr) break;
 
