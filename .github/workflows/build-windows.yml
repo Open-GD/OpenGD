@@ -21,11 +21,24 @@ jobs:
       
       - name: Setup Python
         uses: actions/setup-python@v4.5.0
-      
+     
+
+      - name: Cache Resources
+        id: resource-cache
+        uses: actions/cache@v3
+        env:
+          cache-name: 2.1-resources
+        with:
+          path: Resources.zip
+          key: resources
+          restore-keys: resources
+
       - name: Download resources
-        run: |
+        if: ${{ steps.resources-cache.outputs.cache-hit != 'true' }}
+        run: | 
           Invoke-RestMethod $(Invoke-RestMethod https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | Select-String -Pattern "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" | foreach {$_.Matches.Value}) -OutFile Resources.zip
-          unzip Resources.zip
+      - name: Extract resources
+        run: unzip Resources.zip
         
       - name: Build axmol
         run: python3 axmol/setup.py
