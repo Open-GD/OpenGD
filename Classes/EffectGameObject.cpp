@@ -22,14 +22,14 @@ void EffectGameObject::triggerActivated(float idk)
 	case 29:
 	case 899:
 		if (!pl->m_pColorChannels.contains(m_nTargetColorId))
-			pl->m_pColorChannels.insert({ m_nTargetColorId, Color3B::WHITE });
+			pl->m_pColorChannels.insert({ m_nTargetColorId, SpriteColor(Color3B::WHITE, 255, 0) });
 
 		this->runAction(
-			ActionTween::create(this->m_fDuration, "col1", pl->m_pColorChannels.at(m_nTargetColorId).r, m_cColor.r));
+			ActionTween::create(this->m_fDuration, "col1", pl->m_pColorChannels.at(m_nTargetColorId)._color.r, m_cColor.r));
 		this->runAction(
-			ActionTween::create(this->m_fDuration, "col2", pl->m_pColorChannels.at(m_nTargetColorId).g, m_cColor.g));
+			ActionTween::create(this->m_fDuration, "col2", pl->m_pColorChannels.at(m_nTargetColorId)._color.g, m_cColor.g));
 		this->runAction(
-			ActionTween::create(this->m_fDuration, "col3", pl->m_pColorChannels.at(m_nTargetColorId).b, m_cColor.b));
+			ActionTween::create(this->m_fDuration, "col3", pl->m_pColorChannels.at(m_nTargetColorId)._color.b, m_cColor.b));
 		break;
 	case 22:
 		pl->_enterEffectID = 1;
@@ -59,15 +59,15 @@ void EffectGameObject::updateTweenAction(float value, std::string_view key)
 {
 	if (key == "col1")
 	{
-		pl->m_pColorChannels.at(m_nTargetColorId).r = value;
+		pl->m_pColorChannels.at(m_nTargetColorId)._color.r = value;
 	}
 	else if (key == "col2")
 	{
-		pl->m_pColorChannels.at(m_nTargetColorId).g = value;
+		pl->m_pColorChannels.at(m_nTargetColorId)._color.g = value;
 	}
 	else if (key == "col3")
 	{
-		pl->m_pColorChannels.at(m_nTargetColorId).b = value;
+		pl->m_pColorChannels.at(m_nTargetColorId)._color.b = value;
 	}
 }
 

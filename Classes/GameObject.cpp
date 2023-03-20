@@ -2330,23 +2330,34 @@ void GameObject::update()
 
 	if (pl->m_pColorChannels.contains(_mainColorChannel))
 	{
-		setColor(pl->m_pColorChannels[_mainColorChannel]);
+		setColor(pl->m_pColorChannels[_mainColorChannel]._color);
+		setOpacity(pl->m_pColorChannels[_mainColorChannel]._opacity);
 		if (pl->m_pColorChannels.contains(_secColorChannel))
 		{
 			for (auto sp : _detailSprites)
-				sp->setColor(pl->m_pColorChannels[_secColorChannel]);
+			{
+				sp->setColor(pl->m_pColorChannels[_secColorChannel]._color);
+				sp->setOpacity(pl->m_pColorChannels[_secColorChannel]._opacity);
+			}
 		}
 		else
 		{
 			for (auto sp : _detailSprites)
-				sp->setColor(pl->m_pColorChannels[_mainColorChannel]);
+			{
+				sp->setColor(pl->m_pColorChannels[_mainColorChannel]._color);
+				sp->setOpacity(pl->m_pColorChannels[_mainColorChannel]._opacity);
+			}
 		}
 	}
 	else if (pl->m_pColorChannels.contains(_secColorChannel))
 	{
-		setColor(pl->m_pColorChannels[_secColorChannel]);
+		setColor(pl->m_pColorChannels[_secColorChannel]._color);
+		setOpacity(pl->m_pColorChannels[_mainColorChannel]._opacity);
 		for (auto sp : _detailSprites)
-			sp->setColor(pl->m_pColorChannels[_secColorChannel]);
+			{
+				sp->setColor(pl->m_pColorChannels[_secColorChannel]._color);
+				sp->setOpacity(pl->m_pColorChannels[_secColorChannel]._opacity);
+			}
 	}
 }
 

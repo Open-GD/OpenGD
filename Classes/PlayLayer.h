@@ -9,9 +9,11 @@
 #include "SimpleProgressBar.h"
 
 #include "GJGameLevel.h"
+#include "SpriteColor.h"
 
-class PlayLayer : public ax::Layer {
-private:
+class PlayLayer : public ax::Layer
+{
+  private:
 	bool init(GJGameLevel* level);
 	void onEnter() override;
 	void onExit() override;
@@ -22,7 +24,7 @@ private:
 	void fillColorChannel(std::vector<std::string>& colorString, int id);
 
 	ax::Sprite* m_pBG;
-	GroundLayer* _bottomGround, * _ceiling;
+	GroundLayer *_bottomGround, *_ceiling;
 	PlayerObject* m_pPlayer;
 	ax::Vec2 m_obCamPos;
 
@@ -65,13 +67,15 @@ public:
 	std::string _mainBatchNodeTexture = "GJ_GameSheet.png";
 	std::string _main2BatchNodeTexture = "GJ_GameSheet02.png";
 
-	ax::SpriteBatchNode* _mainBatchNode;
+	ax::SpriteBatchNode *_mainBatchNodeB4, *_mainBatchNodeB3, *_mainBatchNodeB2, *_mainBatchNodeB1, *_mainBatchNodeT1,
+		*_mainBatchNodeT2, *_mainBatchNodeT3;
+	ax::SpriteBatchNode *_blendingBatchNodeB4, *_blendingBatchNodeB3, *_blendingBatchNodeB2, *_blendingBatchNodeB1,
+		*_blendingBatchNodeT1, *_blendingBatchNodeT2, *_blendingBatchNodeT3;
 	ax::SpriteBatchNode* _main2BatchNode;
 	ax::SpriteBatchNode* _glowBatchNode;
-	ax::SpriteBatchNode* _blendingBatchNode;
 	ax::ParticleBatchNode* _particleBatchNode;
 
-	std::map<int, ax::Color3B> m_pColorChannels, _originalColors;
+	std::map<int, SpriteColor> m_pColorChannels, _originalColors;
 
 	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 
@@ -98,6 +102,8 @@ public:
 
 	void applyEnterEffect(GameObject* obj);
 	float getRelativeMod(ax::Vec2 objPos, float v1, float v2, float v3);
+	
+	bool isObjectBlending(GameObject* obj);
 
 	int sectionForPos(float x);
 
