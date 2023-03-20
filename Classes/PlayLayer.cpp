@@ -426,8 +426,11 @@ bool PlayLayer::init(GJGameLevel* level)
 	}
 	updateVisibility();
 
+	m_bCanExitScene = false;
+
 	scheduleOnce(
 		[=](float d) {
+			m_bCanExitScene = true;
 			if(levelValid)
 			{
 				AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f);
@@ -501,13 +504,18 @@ void PlayLayer::update(float dt)
 
 void PlayLayer::destroyPlayer()
 {
+	m_bCanExitScene = false;
+
 	if (m_pPlayer->isDead()) return;
 	if (m_pPlayer->noclip) return;
 	m_pPlayer->setIsDead(true);
 	m_pPlayer->playDeathEffect();
 	m_pPlayer->stopRotation();
 
-	scheduleOnce([=](float d) { resetLevel(); }, 1.f, "restart");
+	scheduleOnce([=](float d) { 
+		resetLevel();
+		m_bCanExitScene = true;
+	}, 1.f, "restart");
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -1124,6 +1132,9 @@ void PlayLayer::onEnter()
 
 void PlayLayer::onExit()
 {
+	if(!m_bCanExitScene)
+		return;
+		
 #if SHOW_IMGUI == true
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
@@ -1134,6 +1145,9 @@ void PlayLayer::onExit()
 }
 void PlayLayer::exit()
 {
+	if(!m_bCanExitScene)
+		return;
+
 	m_pPlayer->deactivateStreak();
 	//removeChild(m_pPlayer->motionStreak);
 

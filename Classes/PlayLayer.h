@@ -54,6 +54,8 @@ private:
 	bool m_freezePlayer;
 	bool m_platformerMode;
 
+	bool m_bCanExitScene;
+
 public:
 	int _enterEffectID = 0;
 
