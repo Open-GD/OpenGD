@@ -2102,15 +2102,23 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 		return true;
 	}
 
-	if (!Sprite::initWithSpriteFrameName(frame))
+	std::string frameName = std::string(frame) + ".png";
+	std::string glowFrameName = std::string(glowFrame) + ".png";
+
+	if (frameName.empty())
+		return false;
+
+	if (!Sprite::initWithSpriteFrameName(frameName))
 		return false;
 
 	_pOuterBounds = Rect();
 	_pInnerBounds = Rect();
 
+	_glowSprite = nullptr;
+
 	if (!glowFrame.empty())
 	{
-		_glowSprite = Sprite::createWithSpriteFrameName(glowFrame);
+		_glowSprite = Sprite::createWithSpriteFrameName(glowFrameName);
 		if (_glowSprite)
 		{
 			_glowSprite->setBlendFunc(GameToolbox::getBlending());
