@@ -4,7 +4,6 @@
 
 class BoomScrollLayer : public ax::Layer, public ax::ActionTweenDelegate {
 private:
-	std::vector<ax::Layer*> _layers;
 	virtual void updateTweenAction(float value, std::string_view key) override {};
 	ax::Layer* _internalLayer;
 
@@ -14,7 +13,8 @@ public:
 
 	int _currentPage, _leftPage, _rightPage;
 	int _totalPages;
-
+	std::vector<ax::Layer*> _layers;
+	
 	bool init(std::vector<ax::Layer*>, int);
 	static BoomScrollLayer* create(std::vector<ax::Layer*> layers, int currentPage);
 	void selectPage(int current);
