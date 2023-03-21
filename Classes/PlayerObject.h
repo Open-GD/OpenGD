@@ -21,6 +21,7 @@ private:
 	void updateJump(float dt);
 	bool init(int, ax::Layer*);
 	void runRotateAction();
+	void runBallRotation();
 
 	void logValues();
 
@@ -51,11 +52,12 @@ private:
 	bool m_bIsDead;
 	bool m_bIsLocked;
 	bool m_bIsHolding;
-	bool _isHoldingFromGround;
 
 	bool m_bGravityFlipped;
 
 	bool m_isRising;
+
+	bool _mini = false;
 
 	bool _particles1Activated;
 	bool _particles2Activated;
@@ -77,6 +79,7 @@ public:
 
 	GameObject* _touchedRingObject;
 	bool _hasRingJumped;
+	bool _queuedHold;
 
 	void reset();
 
@@ -128,13 +131,15 @@ public:
 	void setLastGroundPos(ax::Vec2 pos) { m_obLastGroundPos = pos; }
 	void update(float dt);
 
+	float getVehicleSize() {return _mini ? 0.6f : 1.0f; }
+
 	float getPlayerSpeed() { return m_playerSpeed; }
 	void setPlayerSpeed(float v) { m_playerSpeed = v; }
 
-	void propellPlayer();
+	void propellPlayer(double force);
 
 	void setTouchedRing(GameObject* obj);
-	void ringJump();
+	void ringJump(GameObject* obj);
 
 	void activateStreak();
 	void deactivateStreak();

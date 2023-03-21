@@ -2234,6 +2234,27 @@ void GameObject::updateObjectType()
 		case 36:
 			setGameObjectType(kGameObjectTypeYellowJumpRing);
 			break;
+		case 141:
+			setGameObjectType(kGameObjectTypePinkJumpRing);
+			break;
+		case 1333:
+			setGameObjectType(kGameObjectTypeRedJumpRing);
+			break;
+		case 84:
+			setGameObjectType(kGameObjectTypeGravityRing);
+			break;
+		case 1330:
+			setGameObjectType(kGameObjectTypeDropRing);
+			break;
+		case 67:
+			setGameObjectType(kGameObjectTypeGravityPad);
+			break;
+		case 140:
+			setGameObjectType(kGameObjectTypePinkJumpPad);
+			break;
+		case 1332:
+			setGameObjectType(kGameObjectTypeRedJumpPad);
+			break;
 		case 15:
 		case 16:
 		case 17:
