@@ -128,6 +128,7 @@ void CreatorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* e
 				GameToolbox::log("paste");
 				levelField->setString(GameToolbox::getClipboardString());
 			}
+			break;
 		}
 
 		case EventKeyboard::KeyCode::KEY_BACK:
