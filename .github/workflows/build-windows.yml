@@ -35,8 +35,7 @@ jobs:
 
       - name: Download resources
         if: ${{ steps.resources-cache.outputs.cache-hit != 'true' }}
-        run: | 
-          Invoke-RestMethod $(Invoke-RestMethod https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | Select-String -Pattern "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" | foreach {$_.Matches.Value}) -OutFile Resources.zip
+        run: 'if (!(Test-Path "Resources.zip")) {Invoke-RestMethod $(Invoke-RestMethod https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | Select-String -Pattern "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" | foreach {$_.Matches.Value}) -OutFile Resources.zip}'
       - name: Extract resources
         run: unzip Resources.zip
         
@@ -50,8 +49,11 @@ jobs:
         run: |
           #source ~/.bashrc
           ls $AX_CONSOLE_ROOT
-          axmol\tools\console\bin\axmol.bat compile --list-platforms
-          axmol\tools\console\bin\axmol.bat compile -p win32
+          # axmol\tools\console\bin\axmol.bat compile --list-platforms
+          # axmol\tools\console\bin\axmol.bat compile -p win32
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+          ls build
+          msbuild .\build\OpenGD.sln
       - uses: actions/upload-artifact@v3
         with:
           name: Debug_Binary
