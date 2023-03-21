@@ -6,8 +6,9 @@
 class LevelPage : public ax::Layer
 {
 private:
-	GJGameLevel* _level;
+	
 public:
+	GJGameLevel* _level;
 	static bool replacingScene;
 	static ax::Scene *scene(GJGameLevel *level);
 	bool init(GJGameLevel* level);
