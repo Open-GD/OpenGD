@@ -22,7 +22,9 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4.5.0
      
-
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+          
       - name: Cache Resources
         id: resource-cache
         uses: actions/cache@v3
@@ -32,6 +34,7 @@ jobs:
           path: Resources.zip
           key: resources
           restore-keys: resources
+          enableCrossOsArchive: true
 
       - name: Download resources
         if: ${{ steps.resources-cache.outputs.cache-hit != 'true' }}
@@ -41,6 +44,18 @@ jobs:
         
       - name: Build axmol
         run: python3 axmol/setup.py
+      
+      - name: Cache Build (to speed up subsequent builds)
+        id: build-cache
+        uses: actions/cache@v3
+        env:
+          cache-name: windows-build-cache-${{github.sha}}
+        with:
+          path: build
+          key: windows-build-cache-${{github.sha}}
+          restore-keys: |
+            windows-build-cache-${{github.sha}}
+            windows-build-cache-
       
       - name: Build OpenGD
         env:
@@ -54,8 +69,9 @@ jobs:
           cmake -S . -B build -G "Visual Studio 17 2022" -A x64
           ls build
           msbuild .\build\OpenGD.sln
+          cp Resources build/bin/OpenGD/Debug
       - uses: actions/upload-artifact@v3
         with:
-          name: Debug_Binary
-          path: ./bin/debug/windows/
+          name: Debug_Windows_Binary
+          path: ./build/bin/OpenGD/Debug/
 

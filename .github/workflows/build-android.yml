@@ -48,11 +48,12 @@ jobs:
           path: Resources.zip
           key: resources
           restore-keys: resources
+          enableCrossOsArchive: true
 
       - name: Download resources
         if: ${{ steps.resources-cache.outputs.cache-hit != 'true' }}
         run: |
-          wget $(curl https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | grep "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" --only-matching) -O Resources.zip
+          wget $(curl https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | grep "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" --only-matching) -O Resources.zip --no-clobber || true
        
       - name: Extract resources
         run: unzip Resources.zip
