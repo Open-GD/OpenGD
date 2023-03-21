@@ -157,7 +157,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 #endif
 
-	director->setContentScaleFactor(2.0f);
+	director->setContentScaleFactor(4.0f);
 
 	register_all_packages();
 

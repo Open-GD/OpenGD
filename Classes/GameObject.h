@@ -134,8 +134,6 @@ class GameObject : public ax::Sprite
 	static GameObject* createObject(std::string_view frame, std::string_view glowFrame = "");
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
-	void updateObjectType();
-
 	void customSetup();
 
 	static std::string keyToFrame(int key);
@@ -146,6 +144,8 @@ class GameObject : public ax::Sprite
 	void setOuterBounds(const ax::Rect& value) { _pOuterBounds = value; }
 
 	ax::Rect getOuterBounds() { return _pOuterBounds; }
+
+	ax::Rect getOuterBounds(float a, float b);
 
 	void setInnerBounds(const ax::Rect& value) { _pInnerBounds = value; }
 
