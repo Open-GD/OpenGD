@@ -1,5 +1,6 @@
 #include "CreatorLayer.h"
 #include "GameToolbox.h"
+#include "LevelInfoLayer.h"
 #include "LevelSearchLayer.h"
 #include "MenuLayer.h"
 #include "MenuItemSpriteExtra.h"
@@ -154,10 +155,14 @@ void CreatorLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::n
 		GJGameLevel* level = GJGameLevel::createWithResponse(*str);
 		GameToolbox::log("playing level<{}>:{},{}*", level->_LevelID, level->_LevelName, level->_Stars);
 
+		ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(level)));
+		
+		/*
 		ax::AudioEngine::stopAll();
 		ax::AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
 		ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
 		LevelPage::replacingScene = true;
+		*/
 	}
 	else
 		GameToolbox::log("request failed");
