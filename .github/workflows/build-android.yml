@@ -1,14 +1,16 @@
 name: Build Android
 on:
   workflow_call:
+    inputs:
+      build_type:
+        required: false
+        type: string
+        default: Debug
   workflow_dispatch:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  GH_OS_NAME: linux
-  BUILD_TARGET: linux
-  BUILD_TYPE: Release
-  PYENV_VERSION: 2.7.18
+  CMAKE_BUILD_TYPE: ${{inputs.build_type}}
 
 jobs:
   build:

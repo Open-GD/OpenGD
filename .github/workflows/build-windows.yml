@@ -1,8 +1,16 @@
 name: Build Windows
 on:
   workflow_call:
+    inputs:
+      build_type:
+        required: false
+        type: string
+        default: Debug
   workflow_dispatch:
 
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  CMAKE_BUILD_TYPE: ${{inputs.build_type}}
 jobs:
   build:
     name: Build for Windows
@@ -68,10 +76,11 @@ jobs:
           # axmol\tools\console\bin\axmol.bat compile -p win32
           cmake -S . -B build -G "Visual Studio 17 2022" -A x64
           ls build
-          msbuild .\build\OpenGD.sln
-          cp Resources build/bin/OpenGD/Debug
+          cmake --build build
+          ls build/bin/
+          cp Resources/* build/bin/OpenGD/${CMAKE_BUILD_TYPE}/Resources
       - uses: actions/upload-artifact@v3
         with:
           name: Debug_Windows_Binary
-          path: ./build/bin/OpenGD/Debug/
+          path: ./build/bin/OpenGD/${{env.CMAKE_BUILD_TYPE}}
 
