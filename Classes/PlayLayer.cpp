@@ -537,6 +537,8 @@ bool PlayLayer::init(GJGameLevel* level)
 		loadfailedstr->setPosition({winSize.width / 2, winSize.height / 2});
 		addChild(loadfailedstr, 128);
 	}
+	
+	updateVisibility();
 	updateVisibility();
 
 	m_bCanExitScene = false;
@@ -546,7 +548,7 @@ bool PlayLayer::init(GJGameLevel* level)
 			m_bCanExitScene = true;
 			if (levelValid)
 			{
-				scheduleUpdate();
+				//scheduleUpdate();
 				resetLevel();
 			}
 			else
@@ -1060,23 +1062,6 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
 	moveX(pos.x, 1.2f, 1.8f);
 	moveY(pos.y, 1.2f, 1.8f);
 }
-
-void PlayLayer::processTriggers()
-{
-	// int current_section = this->sectionForPos(m_pPlayer->getPositionX());
-	// if (m_pSectionObjects.size() == 0) return;
-
-	// std::vector<GameObject*> section =
-	// 	m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) -
-	// 1];
-
-	// int i = 0;
-	// while (i < section.size())
-	// {
-	// 	i++;
-	// }
-}
-
 void PlayLayer::checkCollisions(float dt)
 {
 	auto playerOuterBounds = this->m_pPlayer->getOuterBounds();

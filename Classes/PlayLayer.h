@@ -107,8 +107,6 @@ public:
 	void checkCollisions(float delta);
 	void renderRect(ax::Rect rect, ax::Color4B col);
 
-	void processTriggers();
-
 	void applyEnterEffect(GameObject* obj);
 	float getRelativeMod(ax::Vec2 objPos, float v1, float v2, float v3);
 	

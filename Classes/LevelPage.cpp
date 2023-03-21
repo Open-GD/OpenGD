@@ -100,7 +100,7 @@ bool LevelPage::init(GJGameLevel* level)
 	
 	auto levelName = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_LevelName);
 	levelName->setPosition(190, 50.5);
-	// levelName->setScale(0.904);
+	levelName->setScale(0.904);
 	scale9->addChild(levelName, 0);
 
 	auto diffIcon = ax::Sprite::createWithSpriteFrameName("diffIcon_01_btn_001.png");
