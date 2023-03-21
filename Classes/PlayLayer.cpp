@@ -11,6 +11,7 @@
 #include "constants.h"
 #include <LevelPage.h>
 #include <fstream>
+#include "benchmark.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -453,9 +454,13 @@ bool PlayLayer::init(GJGameLevel* level)
 	m_pPlayer->setSecondaryColor({0, 255, 255});
 
 	// std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
-	std::string levelStr = getLevel()->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(getLevel()->_LevelID)
-															: getLevel()->_LevelString;
-	loadLevel(levelStr);
+	std::string levelStr = level->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(level->_LevelID)
+															: level->_LevelString;
+	//scope based timer
+	{
+		auto s = BenchmarkTimer("load level");
+		loadLevel(levelStr);
+	}
 
 	this->_bottomGround = GroundLayer::create(_groundID);
 	this->_ceiling = GroundLayer::create(_groundID);
@@ -484,17 +489,20 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	if (_pObjects.size() != 0)
 	{
-		this->m_lastObjXPos = std::numeric_limits<float>().min();
-
+		this->m_lastObjXPos = 570.0f;
+		
 		for (GameObject* object : _pObjects)
+		{
+			//GameToolbox::log("pos: {}", object->getPositionX());
 			if (this->m_lastObjXPos < object->getPositionX())
 				this->m_lastObjXPos = object->getPositionX();
-
-		if (this->m_lastObjXPos < 570.f)
-			this->m_lastObjXPos = 570.f;
+		}
+		
+		GameToolbox::log("last x: {}", m_lastObjXPos);
 
 		for (size_t i = 0; i < sectionForPos(this->m_lastObjXPos); i++)
 		{
+			//GameToolbox::log("i = {}", i);
 			std::vector<GameObject*> vec;
 			m_pSectionObjects.push_back(vec);
 		}
@@ -559,6 +567,12 @@ bool PlayLayer::init(GJGameLevel* level)
 		1.f, "k");
 
 	return true;
+}
+
+
+void PlayLayer::createLevelEnd()
+{
+	
 }
 
 double lastY = 0;

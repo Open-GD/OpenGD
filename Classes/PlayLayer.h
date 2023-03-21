@@ -28,6 +28,7 @@ class PlayLayer : public ax::Layer
 	void onDrawImGui();
 	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	void createLevelEnd();
 
 	void fillColorChannel(std::vector<std::string>& colorString, int id);
 

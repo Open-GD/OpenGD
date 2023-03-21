@@ -101,7 +101,7 @@ static inline std::string getTextureString_AppendResources(std::string texture) 
 	if(!low && pos != std::string::npos) {
 		nTexture.insert(pos, high ? "-uhd" : "-hd");
 	}
-	GameToolbox::log("texture: {}", nTexture);
+	//GameToolbox::log("texture: {}", nTexture);
 	return nTexture;
 }
 
@@ -115,7 +115,7 @@ static inline std::string getTextureString_WithoutResources(std::string texture)
 	if(!low && pos != std::string::npos) {
 		texture.insert(pos, high ? "-uhd" : "-hd");
 	}
-	GameToolbox::log("texture: {}", texture);
+	//GameToolbox::log("texture: {}", texture);
 	return texture;
 }
 std::string GameToolbox::getTextureString(std::string texture)

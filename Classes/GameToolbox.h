@@ -27,6 +27,7 @@ namespace GameToolbox
 	void alignItemsHorizontallyWithPadding(ax::Vector<ax::Node*> children, float padding);
 	void createCorners(ax::Node* layer, bool topRight, bool topLeft, bool botLeft, bool botRight);
 	inline void createAllCorners(ax::Node* self) { return createCorners(self, true, true, true, true); }
+	inline std::string getFileContentsResources(std::string_view file) { return ax::FileUtils::getInstance()->getStringFromFile(file); }
 	
 	float SquareDistance(float xa, float ya, float xb, float yb);
 	float SquareDistance(ax::Vec2 a, ax::Vec2 b);
