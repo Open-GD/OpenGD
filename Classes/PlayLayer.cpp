@@ -620,13 +620,13 @@ void PlayLayer::destroyPlayer()
 {
 	m_bCanExitScene = false;
 
-	if (m_pPlayer->isDead())
+	if (m_pPlayer->isDead() || m_pPlayer->noclip)
 		return;
-	if (m_pPlayer->noclip)
-		return;
+
 	m_pPlayer->setIsDead(true);
 	m_pPlayer->playDeathEffect();
 	m_pPlayer->stopRotation();
+	m_pPlayer->setVisible(false);
 
 	scheduleOnce(
 		[=](float d) {
@@ -1334,6 +1334,7 @@ void PlayLayer::resetLevel()
 {
 	m_pPlayer->setPosition({2, 105});
 	m_pPlayer->setRotation(0);
+	m_pPlayer->setVisible(true);
 	m_obCamPos.x = 0;
 	m_obCamPos.y = 0;
 	_bottomGround->setPositionX(0);

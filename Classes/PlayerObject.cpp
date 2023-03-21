@@ -39,7 +39,7 @@ void PlayerObject::playDeathEffect()
 {
 	AudioEngine::stopAll();
 	AudioEngine::play2d("explode_11.ogg", false, 0.1f);
-
+	dragEffect1->pauseEmissions();
 	getPlayLayer()->unscheduleUpdate();
 }
 
@@ -223,8 +223,10 @@ void PlayerObject::update(float dt)
 		if (isOnGround())
 		{
 			if (!_particles1Activated)
+			{
 				dragEffect1->resumeEmissions();
-			_particles1Activated = true;
+				_particles1Activated = true;
+			}
 			if (getActionByTag(2))
 				stopActionByTag(2);
 		}
