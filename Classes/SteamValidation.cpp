@@ -64,7 +64,7 @@ void SteamValidation::showErrorMessage()
 void SteamValidation::copyResources()
 {
     #if (AX_TARGET_PLATFORM == AX_PLATFORM_ANDROID) || (AX_TARGET_PLATFORM == AX_PLATFORM_IOS) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || (AX_TARGET_PLATFORM == AX_PLATFORM_UNKNOWN)
-    return false;
+    return;
     #endif
 
     auto paths = SteamValidation::getPossibleGDPaths();
