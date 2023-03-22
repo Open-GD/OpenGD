@@ -1,0 +1,14 @@
+name: Build All
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  android:
+    uses: ./.github/workflows/build-android.yml
+  linux:
+    uses: ./.github/workflows/build-linux.yml
+  windows:
+    uses: ./.github/workflows/build-windows.yml
+  
+  

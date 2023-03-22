@@ -1,0 +1,69 @@
+name: Build Windows
+on:
+  workflow_call:
+    inputs:
+      build_type:
+        required: false
+        type: string
+        default: Debug
+  workflow_dispatch:
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  CMAKE_BUILD_TYPE: ${{inputs.build_type}}
+jobs:
+  build:
+    name: Build for Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout the current repo
+        uses: actions/checkout@v3.4.0
+      
+      - name: Checkout axmol
+        uses: actions/checkout@v3.4.0
+        with:
+          repository: axmolengine/axmol
+          ref: 'release'
+          path: 'axmol'
+          submodules: 'recursive'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4.5.0
+     
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+          
+      - name: Build axmol
+        run: python3 axmol/setup.py
+      
+      - name: Cache Build (to speed up subsequent builds)
+        id: build-cache
+        uses: actions/cache@v3
+        env:
+          cache-name: windows-build-cache-${{github.sha}}
+        with:
+          path: build
+          key: windows-build-cache-${{github.sha}}
+          restore-keys: |
+            windows-build-cache-${{github.sha}}
+            windows-build-cache-
+      
+      - name: Build OpenGD
+        env:
+          AX_ROOT: "${{ github.workspace }}/axmol/"
+          AX_CONSOLE_ROOT: "${{ github.workspace }}/axmol/tools/console/bin"
+        run: |
+          #source ~/.bashrc
+          ls $AX_CONSOLE_ROOT
+          # axmol\tools\console\bin\axmol.bat compile --list-platforms
+          # axmol\tools\console\bin\axmol.bat compile -p win32
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+          ls build
+          cmake --build build
+          ls build/bin/
+          cp Resources/* build/bin/OpenGD/${CMAKE_BUILD_TYPE}/Resources
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Debug_Windows_Binary
+          path: ./build/bin/OpenGD/${{env.CMAKE_BUILD_TYPE}}
+
