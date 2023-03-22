@@ -54,7 +54,7 @@ bool InfoLayer::init(GJGameLevel* level)
 
 	this->m_pMainLayer->addChild(levelName);
 
-	auto levelCreator = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("By %s", level->_LevelCreator));
+	auto levelCreator = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
 	levelCreator->setPosition({ winSize.width / 2, levelName->getPositionY() - 30.f });
 
 	if (levelCreator->getContentSize().width > 300.0f)

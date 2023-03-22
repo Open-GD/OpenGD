@@ -1324,24 +1324,27 @@ void PlayLayer::onDrawImGui()
 
 	ImGui::Checkbox("Freeze Player", &m_freezePlayer);
 	ImGui::Checkbox("Platformer Mode (Basic)", &m_platformerMode);
-	if (ImGui::Checkbox("Fullscreen", &fullscreen))
-	{
-		int a;
-		auto monitor = glfwGetMonitors(&a)[monitorN];
-		auto mode = glfwGetVideoMode(monitor);
-
-		if (fullscreen)
-			glfwSetWindowMonitor(
-				static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), monitor, 0, 0,
-				mode->width, mode->height, mode->refreshRate);
-		else
+	
+	#ifdef AX_PLATFORM_PC
+		if (ImGui::Checkbox("Fullscreen", &fullscreen))
 		{
-			glfwSetWindowMonitor(
-				static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), NULL, 0, 0, 1280, 720,
-				0);
-			glfwWindowHint(GLFW_DECORATED, true);
+			int a;
+			auto monitor = glfwGetMonitors(&a)[monitorN];
+			auto mode = glfwGetVideoMode(monitor);
+	
+			if (fullscreen)
+				glfwSetWindowMonitor(
+					static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), monitor, 0, 0,
+					mode->width, mode->height, mode->refreshRate);
+			else
+			{
+				glfwSetWindowMonitor(
+					static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), NULL, 0, 0, 1280, 720,
+					0);
+				glfwWindowHint(GLFW_DECORATED, true);
+			}
 		}
-	}
+	#endif
 
 	ImGui::SameLine();
 
