@@ -40,30 +40,6 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4.5.0
 
-
-      - name: Cache Resources
-        id: resource-cache
-        uses: actions/cache@v3
-        env:
-          cache-name: 2.1-resources
-        with:
-          path: Resources.zip
-          key: resources
-          restore-keys: resources
-          enableCrossOsArchive: true
-
-      - name: Download resources
-        if: ${{ steps.resources-cache.outputs.cache-hit != 'true' }}
-        run: |
-          wget $(curl https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | grep "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" --only-matching) -O Resources.zip --no-clobber || true
-
-      - name: Verify hash
-        run: |
-          echo "b4b53b77dcc508a90fbffb601ec41e81e04dabbe7d0e9328a239c0dcf0a01843  Resources.zip" | sha256sum -c
-       
-      - name: Extract resources
-        run: unzip Resources.zip
-
       - name: Create Build Environment
         run: |
           sdkmanager 'ndk;25.2.9519653'
