@@ -47,6 +47,10 @@ jobs:
       - name: Download resources
         if: ${{ steps.resources-cache.outputs.cache-hit != 'true' }}
         run: 'if (!(Test-Path "Resources.zip")) {Invoke-RestMethod $(Invoke-RestMethod https://anonfiles.com/EbA6Gffcz3/Resources_2_1_zip | Select-String -Pattern "https://cdn-[0-9]*.anonfiles.com/.*/Resources-2.1.zip" | foreach {$_.Matches.Value}) -OutFile Resources.zip}'
+      
+      - name: Verify hash
+        run: |
+          if((Get-FileHash Resources.zip).Hash -ne "b4b53b77dcc508a90fbffb601ec41e81e04dabbe7d0e9328a239c0dcf0a01843") {exit 1}
       - name: Extract resources
         run: unzip Resources.zip
         
