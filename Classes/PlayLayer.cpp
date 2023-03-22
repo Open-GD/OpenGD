@@ -457,6 +457,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	// scope based timer
 	{
 		auto s = BenchmarkTimer("load level");
+		GameToolbox::log("{}", levelStr);
 		loadLevel(levelStr);
 	}
 

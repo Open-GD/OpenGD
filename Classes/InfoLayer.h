@@ -3,12 +3,13 @@
 #include <axmol.h>
 #include "GJGameLevel.h"
 #include "PopupLayer.h"
+#include "LevelTools.h"
 
 class InfoLayer : public PopupLayer
 {
 public:
-	static InfoLayer* create(GJGameLevel* level);
+	static InfoLayer* create(std::vector<std::string> levelinfo);
 
-	bool init(GJGameLevel* level);
+	bool init(std::vector<std::string> levelinfo);
 };
 
