@@ -5,10 +5,14 @@
 #include <optional>
 #include <network/HttpClient.h>
 
+#include <regex>
+#include <sstream>
+#include <iostream>
+#include <filesystem>
+
 //general purpose class for helper functions that can be useful with any class at any moment
 namespace GameToolbox
 {
-
 	enum GTRes {
 		Low = 0,
 		Medium,
@@ -38,6 +42,9 @@ namespace GameToolbox
 	float iSlerp(float a, float b, float ratio, float dt);
 	float repeat(float a, float length);
 	
+	// windows only lmaoooo
+	std::string getSteamGamePathByAppID(int appID, std::string exeName);
+
 	std::optional<std::string> getResponse(ax::network::HttpResponse* response);
 	std::vector<std::string> splitByDelim(const std::string& s, char delim);
 	

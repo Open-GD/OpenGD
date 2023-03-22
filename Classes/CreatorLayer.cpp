@@ -32,7 +32,7 @@ bool CreatorLayer::init() {
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	auto bg = Sprite::create(getTextureString("GJ_gradientBG.png"));
+	auto bg = Sprite::create("GJ_gradientBG.png");
 	bg->setStretchEnabled(false);
 	bg->setScaleX(winSize.width / bg->getContentSize().width);
 	bg->setScaleY(winSize.height / bg->getContentSize().height);
