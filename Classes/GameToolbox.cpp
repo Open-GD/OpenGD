@@ -548,15 +548,25 @@ std::string GameToolbox::getClipboardString()
 		if (!OpenClipboard(nullptr)) return "";
 
 		HANDLE hData = GetClipboardData(CF_TEXT);
-		if (hData == nullptr) return "";
+		if (hData == nullptr)
+		{
+			GlobalUnlock(hData);
+			CloseClipboard();
+			return "";
+		}
 
 		char* pszText = static_cast<char*>(GlobalLock(hData));
-		if (pszText == nullptr) return "";
-
-		std::string text(pszText);
+		if (pszText == nullptr)
+		{
+			GlobalUnlock(hData);
+			CloseClipboard();
+			return "";
+		}
+		
+		std::string ret(pszText);
 		GlobalUnlock(hData);
 		CloseClipboard();
-		return text;
+		return ret;
 	#else
 		return "";
 	#endif
