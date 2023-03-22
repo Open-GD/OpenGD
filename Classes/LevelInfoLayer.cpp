@@ -254,5 +254,24 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	likeBtn->setPosition(rateDiffBtn->getPositionX(), rateDiffBtn->getPositionY() - 50.f);
 
 	this->addChild(menu);
+
+
+	auto listener = EventListenerKeyboard::create();
+	listener->onKeyPressed = [=](EventKeyboard::KeyCode key, Event*) {
+		switch (key)
+		{
+		case EventKeyboard::KeyCode::KEY_SPACE:
+			AudioEngine::stopAll();
+			AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
+			Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+			break;
+		case EventKeyboard::KeyCode::KEY_ESCAPE:
+			Director::getInstance()->replaceScene(TransitionFade::create(.5, CreatorLayer::scene()));
+			break;
+		}
+	};
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+
 	return true;
 }
