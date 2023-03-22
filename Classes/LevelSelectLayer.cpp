@@ -61,6 +61,20 @@ bool LevelSelectLayer::init()
 		{ "Base After Base", "Robtop", 5 },
 		{ "Cant Let Go", "Robtop", 6 },
 		{ "Jumper", "Robtop", 7 },
+		{ "Time Machine", "Robtop", 8 },
+		{ "Cycles", "Robtop", 9 },
+		{ "xStep", "Robtop", 10 },
+		{ "Clutterfunk", "Robtop", 11 },
+		{ "Theory Of Everything", "Robtop", 12 },
+		{ "Electroman Adventures", "Robtop", 13 },
+		{ "Clubstep", "Robtop", 14 },
+		{ "Electrodynamix", "Robtop", 15 },
+		{ "Hexagon Force", "Robtop", 16 },
+		{ "Blast Processing", "Robtop", 17 },
+		{ "Theory Of Everything 2", "Robtop", 18 },
+		{ "Geometrical Dominator", "Robtop", 19 },
+		{ "Deadlocked", "Robtop", 20 },
+		{ "Fingerdash", "Robtop", 21 },
 		{ "Performance Test", "OpenGD", -1 }
 	});
 	

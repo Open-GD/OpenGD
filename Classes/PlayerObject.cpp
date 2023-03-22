@@ -82,15 +82,31 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 	m_pShipSprite->addChild(m_pShipSecondarySprite, -1);
 	m_pShipSecondarySprite->setPosition(m_pShipSprite->getContentSize() / 2.f);
 
-	_ballSprite = Sprite::createWithSpriteFrameName("player_ball_00_001.png");
+	_ballSprite = Sprite::createWithSpriteFrameName("player_ball_01_001.png");
 	_ballSprite->setStretchEnabled(false);
 	_ballSprite->setVisible(false);
 	addChild(_ballSprite, 1);
 
-	_ballSecondarySprite = Sprite::createWithSpriteFrameName("player_ball_00_2_001.png");
+	_ballSecondarySprite = Sprite::createWithSpriteFrameName("player_ball_01_2_001.png");
 	_ballSecondarySprite->setStretchEnabled(false);
 	_ballSprite->addChild(_ballSecondarySprite, -1);
 	_ballSecondarySprite->setPosition(_ballSprite->getContentSize() / 2.f);
+
+	_ufoSprite = Sprite::createWithSpriteFrameName("bird_01_001.png");
+	_ufoSprite->setStretchEnabled(false);
+	_ufoSprite->setVisible(false);
+	_ufoSprite->setPositionY(-7);
+	addChild(_ufoSprite, 1);
+
+	_ufoSecondarySprite = Sprite::createWithSpriteFrameName("bird_01_2_001.png");
+	_ufoSecondarySprite->setStretchEnabled(false);
+	_ufoSprite->addChild(_ufoSecondarySprite, -1);
+	_ufoSecondarySprite->setPosition(_ufoSprite->getContentSize() / 2.f);
+
+	_ufoTertiarySprite = Sprite::createWithSpriteFrameName("bird_01_3_001.png");
+	_ufoTertiarySprite->setStretchEnabled(false);
+	_ufoSprite->addChild(_ufoTertiarySprite, -2);
+	_ufoTertiarySprite->setPosition(_ufoSprite->getContentSize() / 2.f);
 
 	// particles
 	dragEffect1 = ParticleSystemQuad::create("dragEffect.plist");
@@ -183,12 +199,16 @@ void PlayerObject::setMainColor(Color3B col)
 
 	this->m_pMainSprite->setColor(col);
 	this->m_pShipSprite->setColor(col);
+	_ballSprite->setColor(col);
+	_ufoSprite->setColor(col);
 }
 
 void PlayerObject::setSecondaryColor(Color3B col)
 {
 	this->m_pSecondarySprite->setColor(col);
 	this->m_pShipSecondarySprite->setColor(col);
+	_ballSecondarySprite->setColor(col);
+	_ufoSecondarySprite->setColor(col);
 }
 
 Color3B PlayerObject::getMainColor() { return this->m_pMainSprite->getColor(); }
@@ -197,10 +217,7 @@ Color3B PlayerObject::getSecondaryColor() { return this->m_pSecondarySprite->get
 
 void PlayerObject::setIsDead(bool value) { m_bIsDead = value; }
 
-void PlayerObject::setIsOnGround(bool value)
-{
-	m_bOnGround = value;
-}
+void PlayerObject::setIsOnGround(bool value) { m_bOnGround = value; }
 
 void PlayerObject::update(float dt)
 {
@@ -312,6 +329,9 @@ void PlayerObject::update(float dt)
 	// particle->setScale(0.05);
 	// particle->setPosition(this->getPosition());
 	// this->gameLayer->addChild(particle, 999);
+
+	_touchedRingObject = nullptr;
+	_touchedPadObject = nullptr;
 }
 
 void PlayerObject::updateShipRotation(float dt)
@@ -325,6 +345,8 @@ void PlayerObject::updateShipRotation(float dt)
 	if (GameToolbox::SquareDistance(0, 0, d.x, -d.y) >= 1.2f)
 	{
 		angleRad = atan2f(-d.y, d.x);
+
+		angleRad *= _mini ? 1.2f : 1.f;
 
 		curAngleDeg = getRotation();
 
@@ -359,8 +381,7 @@ void PlayerObject::propellPlayer(double force)
 	setIsOnGround(false);
 	m_dYVel = flipMod() * 16 * force * (_vehicleSize == 1.0 ? 1.0 : 0.8);
 
-	if(_currentGamemode == PlayerGamemodeBall || _currentGamemode == PlayerGamemodeSpider)
-		m_dYVel *= 0.6;
+	if (_currentGamemode == PlayerGamemodeBall || _currentGamemode == PlayerGamemodeSpider) m_dYVel *= 0.6;
 
 	runRotateAction();
 	setLastGroundPos(getPosition());
@@ -372,9 +393,9 @@ void PlayerObject::setTouchedRing(GameObject* obj) { _touchedRingObject = obj; }
 
 void PlayerObject::ringJump(GameObject* obj)
 {
-	if (_touchedRingObject && (_queuedHold || isOnGround()) && m_bIsHolding)
+	if (_touchedRingObject && _queuedHold && m_bIsHolding)
 	{
-		obj->m_bHasBeenActivated = true;
+		GameToolbox::log("h ffsiofsfsdofs");
 		_touchedRingObject->triggerActivated();
 		m_isRising = true;
 		_queuedHold = false;
@@ -456,10 +477,14 @@ void PlayerObject::ringJump(GameObject* obj)
 		}
 
 		newYVel *= flipMod();
+		newYVel *= _vehicleSize < 1.f ? 0.8f : 1.f;
 
 		m_dYVel = newYVel;
 
-		runRotateAction();
+		if (_currentGamemode == PlayerGamemodeBall)
+			runBallRotation();
+		else
+			runRotateAction();
 		_touchedRingObject = nullptr;
 		_hasRingJumped = true;
 		setLastGroundPos(getPosition());
@@ -477,7 +502,6 @@ void PlayerObject::ringJump(GameObject* obj)
 			flipGravity(!isGravityFlipped());
 		}
 	}
-	_touchedRingObject = nullptr;
 }
 
 void PlayerObject::flipGravity(bool gravity)
@@ -511,11 +535,13 @@ void PlayerObject::updateJump(float dt)
 
 	const int flipGravityMult = flipMod();
 
-	// leave this here so we dont have to rewrite stuff in the future
-	float playerSize = 1.0;
+	float playerSize = _mini ? 0.8f : 1.0f;
 
-	if (this->_currentGamemode == PlayerGamemodeShip /* || this->m_isUFO || this->m_isWave*/)
+	if (_currentGamemode == PlayerGamemodeShip || _currentGamemode == PlayerGamemodeUFO ||
+		_currentGamemode == PlayerGamemodeWave)
 	{
+		if (_mini) playerSize = 0.85f;
+
 		float upperVelocityLimit = 8.0 / playerSize;
 		float lowerVelocityLimit = -6.4 / playerSize;
 
@@ -535,6 +561,27 @@ void PlayerObject::updateJump(float dt)
 
 			this->m_dYVel -= localGravity * dt * flipGravityMult * shipAccel * extraBoost / playerSize;
 		}
+		else if (_currentGamemode == PlayerGamemodeUFO)
+		{
+			if (m_bIsHolding && _hasJustHeld)
+			{
+				_hasJustHeld = false;
+
+				const float sizeMult = _mini ? 8.f : 7.f;
+				double newVel = flipMod() * sizeMult * playerSize;
+
+				if (!isGravityFlipped() && m_dYVel < newVel || newVel < m_dYVel)
+				{
+					m_dYVel = newVel;
+				}
+			}
+			float gravityMult = 0.8f;
+
+			if (!playerIsFalling()) gravityMult = 1.2f;
+
+			m_dYVel -= localGravity * dt * flipMod() * gravityMult * 0.5 / playerSize;
+		}
+
 		if (!this->isGravityFlipped())
 		{
 			if (this->m_dYVel <= lowerVelocityLimit) this->m_dYVel = lowerVelocityLimit;
@@ -562,7 +609,7 @@ void PlayerObject::updateJump(float dt)
 
 			float jumpAccel = m_dJumpHeight;
 
-			m_dYVel = flipGravityMult * jumpAccel;
+			m_dYVel = flipGravityMult * jumpAccel * playerSize;
 
 			if (_currentGamemode == PlayerGamemodeBall)
 			{
@@ -572,7 +619,7 @@ void PlayerObject::updateJump(float dt)
 			}
 			else if (_currentGamemode == PlayerGamemodeCube)
 			{
-				_queuedHold = false;
+				if (!_touchedRingObject) _queuedHold = false;
 				runRotateAction();
 			}
 		}
@@ -661,7 +708,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 
 	if (isGravityFlipped())
 	{
-		if (!_currentGamemode == PlayerGamemodeShip) goto topCollision;
+		if (_currentGamemode != PlayerGamemodeShip && _currentGamemode != PlayerGamemodeUFO) goto topCollision;
 		t = bottomP;
 		b = topP;
 	}
@@ -679,7 +726,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 			}
 			if (MaxYP >= (MinY + MaxY) / 2.f)
 			{
-				setPositionY(MaxY);
+				setPositionY(MaxY - (_mini ? 6 : 0));
 				hitGround(isGravityFlipped() ? _currentGamemode == PlayerGamemodeShip : false);
 			}
 		}
@@ -687,7 +734,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 
 	if (!isGravityFlipped())
 	{
-		if (_currentGamemode != PlayerGamemodeShip) goto death;
+		if (_currentGamemode != PlayerGamemodeShip && _currentGamemode != PlayerGamemodeUFO) goto death;
 		t = bottomP;
 		b = topP;
 	}
@@ -707,7 +754,7 @@ topCollision:
 
 			if (MinYP <= (MinY + MaxY) / 2.f)
 			{
-				setPositionY(MinY - 30);
+				setPositionY(MinY - (_mini ? 24 : 30));
 				hitGround(!isGravityFlipped() ? _currentGamemode == PlayerGamemodeShip : false);
 			}
 		}
@@ -720,41 +767,48 @@ void PlayerObject::setGamemode(PlayerGamemode mode)
 {
 	if (_currentGamemode != mode)
 	{
+		_ufoSprite->setVisible(false);
+		m_pShipSprite->setVisible(false);
+		m_pMainSprite->setVisible(false);
+		_ballSprite->setVisible(false);
+		stopActionByTag(3);
+		stopActionByTag(2);
+		stopActionByTag(1);
+		stopActionByTag(0);
+		dragEffect1->pauseEmissions();
+		dragEffect2->pauseEmissions();
+		dragEffect3->pauseEmissions();
 		switch (mode)
 		{
 		case PlayerGamemodeCube:
 			setIsOnGround(false);
-			m_pShipSprite->setVisible(false);
-			_ballSprite->setVisible(false);
 			m_pMainSprite->setVisible(true);
 			m_pMainSprite->setScale(1.f);
 			m_pMainSprite->setPositionY(0);
 			deactivateStreak();
-			stopActionByTag(3);
 			break;
 		case PlayerGamemodeShip:
 			m_pShipSprite->setVisible(true);
-			_ballSprite->setVisible(false);
 			m_pMainSprite->setVisible(true);
 			m_pMainSprite->setScale(0.55f);
 			m_pMainSprite->setPositionY(5);
-			stopActionByTag(1);
-			stopActionByTag(0);
 			setRotation(0.f);
 			m_dYVel /= 2.f;
 			setIsOnGround(false);
-			stopActionByTag(3);
 			activateStreak();
 			runRotateAction();
 			break;
 		case PlayerGamemodeBall:
-			stopActionByTag(1);
-			stopActionByTag(0);
-			m_pShipSprite->setVisible(false);
 			_ballSprite->setVisible(true);
-			m_pMainSprite->setVisible(false);
 			deactivateStreak();
 			runBallRotation();
+			break;
+		case PlayerGamemodeUFO:
+			m_pMainSprite->setVisible(true);
+			m_pMainSprite->setScale(0.55f);
+			m_pMainSprite->setPositionY(5);
+			_ufoSprite->setVisible(true);
+			deactivateStreak();
 			break;
 		}
 
@@ -865,7 +919,7 @@ void PlayerObject::hitGround(bool reverseGravity)
 		landEffect1->start();
 	}
 
-	if(_currentGamemode == PlayerGamemodeBall && !isOnGround()) runBallRotation();
+	if (_currentGamemode == PlayerGamemodeBall && !isOnGround()) runBallRotation();
 
 	_queuedHold = false;
 	setIsOnGround(true);
@@ -895,14 +949,14 @@ void PlayerObject::logValues()
 void PlayerObject::runRotateAction()
 {
 	stopRotation();
-	auto action = RotateBy::create(0.41f, 180.f * flipMod() * getScaleX());
+	auto action = RotateBy::create(0.41f * (_mini ? 0.8f : 1.f), 180.f * flipMod());
 	action->setTag(0);
 	runAction(action);
 }
 
 void PlayerObject::runBallRotation()
 {
-	if(getActionByTag(3)) stopActionByTag(3);
+	if (getActionByTag(3)) stopActionByTag(3);
 	auto action = RotateBy::create(0.5f, 360.f * flipMod());
 	auto loop = RepeatForever::create(action);
 	loop->setTag(3);
@@ -929,9 +983,9 @@ void PlayerObject::jump() { this->m_dYVel = this->m_dJumpHeight; }
 
 void PlayerObject::toggleMini(bool active)
 {
-	GameToolbox::log("dshufasdiofhasdf");
 	_mini = active;
-	auto ac = ScaleTo::create(0.5f, active ? 0.5f : 1.f);
+	_vehicleSize = active ? 0.6f : 1.f;
+	auto ac = ScaleTo::create(0.5f, active ? 0.6f : 1.f);
 	auto bounce = EaseBounceOut::create(ac);
 	this->runAction(bounce);
 }
@@ -941,6 +995,7 @@ bool PlayerObject::onTouchBegan(ax::Touch* touch, ax::Event* event)
 	if (this->inPlayLayer)
 	{
 		m_bIsHolding = true;
+		_hasJustHeld = true;
 		_queuedHold = true;
 		return true;
 	}
@@ -952,6 +1007,7 @@ void PlayerObject::onTouchEnded(ax::Touch* touch, ax::Event* event)
 	if (this->inPlayLayer)
 	{
 		_queuedHold = false;
+		_hasJustHeld = false;
 		m_bIsHolding = false;
 	}
 }

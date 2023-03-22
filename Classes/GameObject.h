@@ -123,10 +123,10 @@ class GameObject : public ax::Sprite
 
 	ax::ParticleSystemQuad* _particle;
 
-	static const std::map<int, Hitbox> _pHitboxes;
-	static const std::map<int, float> _pHitboxRadius;
+	static const std::unordered_map<int, Hitbox> _pHitboxes;
+	static const std::unordered_map<int, float> _pHitboxRadius;
 	// from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35
-	static const std::map<int, std::vector<const char*>> _pBlocks;
+	static const std::unordered_map<int, std::vector<const char*>> _pBlocks;
 
 	static const std::vector<int> _pSolids, _pTriggers;
 

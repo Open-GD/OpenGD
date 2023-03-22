@@ -34,6 +34,9 @@ class PlayerObject : public GameObject
 	ax::Sprite* m_pShipSecondarySprite;
 	ax::Sprite* _ballSprite;
 	ax::Sprite* _ballSecondarySprite;
+	ax::Sprite* _ufoSprite;
+	ax::Sprite* _ufoSecondarySprite;
+	ax::Sprite* _ufoTertiarySprite;
 
 	ax::ParticleSystemQuad* dragEffect1;
 	ax::ParticleSystemQuad* dragEffect2;
@@ -51,7 +54,6 @@ class PlayerObject : public GameObject
 
 	bool m_bIsDead;
 	bool m_bIsLocked;
-	bool m_bIsHolding;
 
 	bool m_bGravityFlipped;
 
@@ -71,13 +73,19 @@ class PlayerObject : public GameObject
 
   public:
 
+	GameObject* _touchedPadObject;
+
 	bool _mini = false;
+	bool m_bIsHolding;
+	bool _hasJustHeld;
+
 	static ax::Texture2D* motionStreakTex;
 	MotionTrail* motionStreak;
 
 	PlayerGamemode _currentGamemode;
 
 	GameObject* _touchedRingObject;
+	
 	bool _hasRingJumped;
 	bool _queuedHold;
 
