@@ -25,6 +25,7 @@
 
 #include "AppDelegate.h"
 #include "LoadingLayer.h"
+#include "ResourcesLoadingLayer.h"
 #include "GameToolbox.h"
 #include "constants.h"
 
@@ -163,7 +164,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 	// create a scene. it's an autorelease object
 	auto scene = ax::Scene::create();
-	scene->addChild(LoadingLayer::create());
+	scene->addChild(ResourcesLoadingLayer::create());
 	director->runWithScene(scene);
 
 	return true;
