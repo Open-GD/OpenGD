@@ -111,7 +111,7 @@ bool CreatorLayer::init() {
 		dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 	}
 	#endif
-	
+
 	return true;
 }
 
@@ -129,8 +129,13 @@ void CreatorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* e
 				GameToolbox::log("paste");
 				levelField->setString(GameToolbox::getClipboardString());
 			}
+			break;
 		}
-			
+
+		case EventKeyboard::KeyCode::KEY_BACK:
+		{
+			Director::getInstance()->replaceScene(TransitionFade::create(.5, MenuLayer::scene()));
+		}	
 	}
 }
 void CreatorLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event)

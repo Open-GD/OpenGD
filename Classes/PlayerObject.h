@@ -1,8 +1,8 @@
 #pragma once
 #include "CircleWave.h"
 #include "GameObject.h"
-#include <axmol.h>
 #include <MotionTrail.h>
+#include <axmol.h>
 
 enum PlayerGamemode
 {
@@ -15,9 +15,9 @@ enum PlayerGamemode
 	PlayerGamemodeSpider = 6,
 };
 
-class PlayerObject : public GameObject 
+class PlayerObject : public GameObject
 {
-private:
+  private:
 	void updateJump(float dt);
 	bool init(int, ax::Layer*);
 	void runRotateAction();
@@ -57,8 +57,6 @@ private:
 
 	bool m_isRising;
 
-	bool _mini = false;
-
 	bool _particles1Activated;
 	bool _particles2Activated;
 	bool _particles3Activated;
@@ -71,7 +69,9 @@ private:
 
 	GameObject* m_snappedObject;
 
-public:
+  public:
+
+	bool _mini = false;
 	static ax::Texture2D* motionStreakTex;
 	MotionTrail* motionStreak;
 
@@ -84,7 +84,7 @@ public:
 	void reset();
 
 	bool m_bIsPlatformer;
-	float direction;
+	float direction, _vehicleSize = 1.f;
 
 	static PlayerObject* create(int, ax::Layer*);
 
@@ -105,19 +105,34 @@ public:
 	bool isDead();
 	bool isOnGround();
 	bool isGravityFlipped();
+	bool isRestricted()
+	{
+		return _currentGamemode == PlayerGamemodeShip || _currentGamemode == PlayerGamemodeSpider ||
+			   _currentGamemode == PlayerGamemodeBall;
+	}
 	void stopRotation();
+	void toggleMini(bool active);
 	float flipMod();
 
 	bool playerIsFalling();
 
-	double getYVel() { return m_dYVel; }
-	void setYVel(double yVel) { m_dYVel = yVel; }
+	double getYVel()
+	{
+		return m_dYVel;
+	}
+	void setYVel(double yVel)
+	{
+		m_dYVel = yVel;
+	}
 
 	void setIsDead(bool);
 	void setIsOnGround(bool);
 	void setGamemode(PlayerGamemode mode);
 
-	ax::Layer* getPlayLayer() { return gameLayer; }
+	ax::Layer* getPlayLayer()
+	{
+		return gameLayer;
+	}
 
 	void playDeathEffect();
 
@@ -128,13 +143,20 @@ public:
 	bool noclip;
 
 	ax::Vec2 getLastGroundPos();
-	void setLastGroundPos(ax::Vec2 pos) { m_obLastGroundPos = pos; }
+	void setLastGroundPos(ax::Vec2 pos)
+	{
+		m_obLastGroundPos = pos;
+	}
 	void update(float dt);
 
-	float getVehicleSize() {return _mini ? 0.6f : 1.0f; }
-
-	float getPlayerSpeed() { return m_playerSpeed; }
-	void setPlayerSpeed(float v) { m_playerSpeed = v; }
+	float getPlayerSpeed()
+	{
+		return m_playerSpeed;
+	}
+	void setPlayerSpeed(float v)
+	{
+		m_playerSpeed = v;
+	}
 
 	void propellPlayer(double force);
 
@@ -147,15 +169,33 @@ public:
 	ax::Vec2 _portalP;
 	ax::Vec2 _lastP;
 
-	ax::Vec2 getPortalP() { return _portalP; }
-	ax::Vec2 getLastP() { return _lastP; }
-	void setPortalP(ax::Vec2 portalP) { _portalP = portalP; }
-	void setLastP(ax::Vec2 lastP) { _lastP = lastP; }
+	ax::Vec2 getPortalP()
+	{
+		return _portalP;
+	}
+	ax::Vec2 getLastP()
+	{
+		return _lastP;
+	}
+	void setPortalP(ax::Vec2 portalP)
+	{
+		_portalP = portalP;
+	}
+	void setLastP(ax::Vec2 lastP)
+	{
+		_lastP = lastP;
+	}
 
 	GameObject* _portalObject;
 
-	GameObject* getPortalObject() { return _portalObject; }
-	void setPortalObject(GameObject* portal) { _portalObject = portal; }
+	GameObject* getPortalObject()
+	{
+		return _portalObject;
+	}
+	void setPortalObject(GameObject* portal)
+	{
+		_portalObject = portal;
+	}
 
 	void spawnPortalCircle(ax::Color4B color, float radius);
 };

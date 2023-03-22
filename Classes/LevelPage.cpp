@@ -31,13 +31,13 @@ bool LevelPage::init(GJGameLevel* level)
 
 	auto winSize = ax::Director::getInstance()->getWinSize();
 
-	auto normalBar = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto normalBar = ax::Sprite::create("GJ_progressBar_001-uhd.png");
 	normalBar->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
 	normalBar->setColor({0, 0, 0});
 	normalBar->setOpacity(125);
 	addChild(normalBar, 3);
 
-	auto normalProgress = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto normalProgress = ax::Sprite::create("GJ_progressBar_001-uhd.png");
 	normalProgress->setPosition({1.36f, 10});
 	normalProgress->setColor({0, 255, 0});
 	normalProgress->setOpacity(255);
@@ -48,13 +48,13 @@ bool LevelPage::init(GJGameLevel* level)
 	normalProgress->setScaleY(0.86f);
 	normalBar->addChild(normalProgress);
 
-	auto practiceBar = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto practiceBar = ax::Sprite::create("GJ_progressBar_001-uhd.png");
 	practiceBar->setPosition({ winSize.width / 2, winSize.height / 2.f - 80 });
 	practiceBar->setColor({0, 0, 0});
 	practiceBar->setOpacity(125);
 	addChild(practiceBar, 3);
 
-	auto practiceProgress = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto practiceProgress = ax::Sprite::create("GJ_progressBar_001-uhd.png");
 	practiceProgress->setPosition({1.36f, 10});
 	practiceProgress->setColor({0, 255, 0});
 	practiceProgress->setOpacity(255);

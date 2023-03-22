@@ -291,8 +291,7 @@ void PlayerObject::update(float dt)
 
 	if (this->getPositionX() >= 500 && !this->inPlayLayer) this->m_bIsHolding = true;
 
-	setScaleX(direction < -0.05f ? -1.f : direction > 0.05f ? 1.f : getScaleX());
-	setScaleY(_currentGamemode == PlayerGamemodeShip ? isGravityFlipped() ? -1.f : 1.f : 1.f);
+	//setScaleX(direction < -0.05f ? -1.f : direction > 0.05f ? 1.f : getScaleX());
 
 	dragEffect1->setPosition(this->getPosition() + Vec2 {-10.f, flipMod() * -13.f});
 	dragEffect2->setPosition(this->getPosition() + m_pShipSprite->getPosition() + Vec2 {-10.f, flipMod() * -3.f});
@@ -358,7 +357,7 @@ void PlayerObject::propellPlayer(double force)
 {
 	m_isRising = true;
 	setIsOnGround(false);
-	m_dYVel = flipMod() * 16 * force * (getVehicleSize() == 1.0 ? 1.0 : 0.8);
+	m_dYVel = flipMod() * 16 * force * (_vehicleSize == 1.0 ? 1.0 : 0.8);
 
 	if(_currentGamemode == PlayerGamemodeBall || _currentGamemode == PlayerGamemodeSpider)
 		m_dYVel *= 0.6;
@@ -411,10 +410,10 @@ void PlayerObject::ringJump(GameObject* obj)
 			switch (_currentGamemode)
 			{
 			case PlayerGamemodeShip:
-				if (getVehicleSize() != 1.0f) newYVel *= 1.4;
+				if (_vehicleSize != 1.0f) newYVel *= 1.4;
 				break;
 			case PlayerGamemodeUFO:
-				if (getVehicleSize() == 1.0f)
+				if (_vehicleSize == 1.0f)
 					newYVel *= 1.02;
 				else
 					newYVel *= 1.36;
@@ -487,6 +486,8 @@ void PlayerObject::flipGravity(bool gravity)
 	{
 		m_bGravityFlipped = gravity;
 		m_dYVel /= 2.f;
+
+		setScaleY(gravity ? getScale() * -1.f : getScale() * 1.f);
 
 		activateStreak();
 
@@ -636,7 +637,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 	Vec2 pos = getPosition();
 	Rect rect = obj->getOuterBounds();
 
-	Rect playerRectO = getOuterBounds();
+	Rect playerRectO = _mini ? getOuterBounds(0.6f, 0.6f) : getOuterBounds();
 	Rect playerRectI = getInnerBounds();
 
 	float flipModV = flipMod();
@@ -902,7 +903,7 @@ void PlayerObject::runRotateAction()
 void PlayerObject::runBallRotation()
 {
 	if(getActionByTag(3)) stopActionByTag(3);
-	auto action = RotateBy::create(0.5f, 360.f * flipMod() * getScaleX());
+	auto action = RotateBy::create(0.5f, 360.f * flipMod());
 	auto loop = RepeatForever::create(action);
 	loop->setTag(3);
 	runAction(loop);
@@ -925,6 +926,15 @@ void PlayerObject::stopRotation()
 }
 
 void PlayerObject::jump() { this->m_dYVel = this->m_dJumpHeight; }
+
+void PlayerObject::toggleMini(bool active)
+{
+	GameToolbox::log("dshufasdiofhasdf");
+	_mini = active;
+	auto ac = ScaleTo::create(0.5f, active ? 0.5f : 1.f);
+	auto bounce = EaseBounceOut::create(ac);
+	this->runAction(bounce);
+}
 
 bool PlayerObject::onTouchBegan(ax::Touch* touch, ax::Event* event)
 {

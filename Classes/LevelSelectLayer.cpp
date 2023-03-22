@@ -23,7 +23,6 @@ bool LevelSelectLayer::init()
 
 	if(!Layer::init()) return false;
 
-
 	auto director = Director::getInstance();
 	auto winSize = director->getWinSize();
 
@@ -182,6 +181,8 @@ bool LevelSelectLayer::init()
 
 	auto listener = EventListenerKeyboard::create();
 
+	// int currentlevel = 0;
+
 	listener->onKeyPressed = [=](EventKeyboard::KeyCode code, Event*) {
 		if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
 			auto scene = MenuLayer::scene();
@@ -191,7 +192,15 @@ bool LevelSelectLayer::init()
 		} else if (code == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
 			bsl->changePageRight();
 		} else if (code == EventKeyboard::KeyCode::KEY_SPACE) {
-			// :kafif:
+			// ax::AudioEngine::stopAll();
+			// ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
+			// auto currentLevelPage = dynamic_cast<LevelPage*>(bsl->_layers.at(bsl->_currentPage));
+			// if (currentLevelPage) {
+			// 	auto level = currentLevelPage->_level;
+			// 	ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+			// 	LevelPage::replacingScene = true;
+			// 	MenuLayer::music = false;
+			// }
 		}
 	};
 

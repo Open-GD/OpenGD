@@ -2136,6 +2136,8 @@ void GameObject::customSetup()
 	if (childJson[std::to_string(getID())].contains("default_secondary_channel"))
 		_secColorChannel = (int)childJson[std::to_string(getID())]["default_secondary_channel"];
 
+	setGameObjectType((GameObjectType)childJson[std::to_string(getID())]["object_type"]);
+
 	for (nlohmann::json jsonObj : childJson[std::to_string(getID())]["childrens"])
 	{
 		ax::Sprite* s = ax::Sprite::createWithSpriteFrameName(static_cast<std::string>(jsonObj["texture_name"]));
@@ -2213,83 +2215,6 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 	_particle->retain();
 	_particle->stopSystem();
 }
-void GameObject::updateObjectType()
-{
-	if (std::find(std::begin(GameObject::_pSolids), std::end(GameObject::_pSolids), getID()) !=
-		std::end(GameObject::_pSolids))
-		setGameObjectType(kGameObjectTypeSolid);
-	else if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), getID()) !=
-			 std::end(GameObject::_pTriggers))
-	{
-		setGameObjectType(kGameObjectTypeSpecial);
-		setVisible(false);
-	}
-	else
-	{
-		switch (getID())
-		{
-		case 35:
-			setGameObjectType(kGameObjectTypeYellowJumpPad);
-			break;
-		case 36:
-			setGameObjectType(kGameObjectTypeYellowJumpRing);
-			break;
-		case 141:
-			setGameObjectType(kGameObjectTypePinkJumpRing);
-			break;
-		case 1333:
-			setGameObjectType(kGameObjectTypeRedJumpRing);
-			break;
-		case 84:
-			setGameObjectType(kGameObjectTypeGravityRing);
-			break;
-		case 1330:
-			setGameObjectType(kGameObjectTypeDropRing);
-			break;
-		case 67:
-			setGameObjectType(kGameObjectTypeGravityPad);
-			break;
-		case 140:
-			setGameObjectType(kGameObjectTypePinkJumpPad);
-			break;
-		case 1332:
-			setGameObjectType(kGameObjectTypeRedJumpPad);
-			break;
-		case 15:
-		case 16:
-		case 17:
-		case 18:
-		case 19:
-		case 20:
-		case 21:
-		case 41:
-			setGameObjectType(kGameObjectTypeDecoration);
-			// setBlendFunc(GameToolbox::getBlending());
-			break;
-		case 10:
-			setGameObjectType(kGameObjectTypeNormalGravityPortal);
-			break;
-		case 11:
-			setGameObjectType(kGameObjectTypeInverseGravityPortal);
-			break;
-		case 12:
-			setGameObjectType(kGameObjectTypeCubePortal);
-			break;
-		case 13:
-			setGameObjectType(kGameObjectTypeShipPortal);
-			break;
-		case 47:
-			setGameObjectType(kGameObjectTypeBallPortal);
-			break;
-		case 1859: // H block
-			setGameObjectType(kGameObjectTypeSpecial);
-			break;
-		default:
-			setGameObjectType(kGameObjectTypeHazard);
-			break;
-		}
-	}
-}
 
 GameObject* GameObject::createObject(std::string_view frame, std::string_view glowFrame)
 {
@@ -2317,7 +2242,8 @@ void GameObject::update()
 	if (_hasGlow)
 	{
 		auto pos = getPosition();
-		if(_glowSprite->getPosition() != pos) _glowSprite->setPosition(pos);
+		if (_glowSprite->getPosition() != pos)
+			_glowSprite->setPosition(pos);
 		_glowSprite->setScaleX(getScaleX());
 		_glowSprite->setScaleY(getScaleY());
 		_glowSprite->setRotation(getRotation());
@@ -2325,17 +2251,20 @@ void GameObject::update()
 		_glowSprite->setFlippedY(isFlippedY());
 		_glowSprite->setLocalZOrder(-1);
 		float op = getOpacity();
-		if(_glowSprite->getOpacity() != op) _glowSprite->setOpacity(op);
+		if (_glowSprite->getOpacity() != op)
+			_glowSprite->setOpacity(op);
 	}
 	if (_hasParticle)
 	{
 		auto pos = getPosition();
-		if(_particle->getPosition() != pos) _particle->setPosition(pos);
+		if (_particle->getPosition() != pos)
+			_particle->setPosition(pos);
 		_particle->setRotation(getRotation());
 		_particle->setScaleX(getScaleX() * isFlippedX() ? -1.f : 1.f);
 		_particle->setScaleY(getScaleY() * isFlippedY() ? -1.f : 1.f);
 		float op = getOpacity();
-		if(_particle->getOpacity() != op) _particle->setOpacity(op);
+		if (_particle->getOpacity() != op)
+			_particle->setOpacity(op);
 	}
 
 	if (getEnterEffectID() == 0)
@@ -2353,17 +2282,21 @@ void GameObject::update()
 	if (pl->m_pColorChannels.contains(_mainColorChannel))
 	{
 		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
-		if(getColor() != sp1._color) setColor(sp1._color);
+		if (getColor() != sp1._color)
+			setColor(sp1._color);
 		float op = sp1._opacity;
-		if(getOpacity() != op) setOpacity(op);
+		if (getOpacity() != op)
+			setOpacity(op);
 		if (pl->m_pColorChannels.contains(_secColorChannel))
 		{
 			auto sp2 = pl->m_pColorChannels[_secColorChannel];
 			for (auto sp : _detailSprites)
 			{
-				if(sp->getColor() != sp2._color) sp->setColor(sp2._color);
+				if (sp->getColor() != sp2._color)
+					sp->setColor(sp2._color);
 				op = sp2._opacity;
-				if(sp->getOpacity() != op) sp->setOpacity(op);
+				if (sp->getOpacity() != op)
+					sp->setOpacity(op);
 			}
 		}
 		else
@@ -2371,9 +2304,11 @@ void GameObject::update()
 			auto sp1 = pl->m_pColorChannels[_mainColorChannel];
 			for (auto sp : _detailSprites)
 			{
-				if(sp->getColor() != sp1._color) sp->setColor(sp1._color);
+				if (sp->getColor() != sp1._color)
+					sp->setColor(sp1._color);
 				float op = sp1._opacity;
-				if(sp->getOpacity() != op) sp->setOpacity(op);
+				if (sp->getOpacity() != op)
+					sp->setOpacity(op);
 			}
 		}
 	}
@@ -2381,15 +2316,19 @@ void GameObject::update()
 	{
 		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
 		auto sp2 = pl->m_pColorChannels[_secColorChannel];
-		if(getColor() != sp1._color) setColor(sp1._color);
+		if (getColor() != sp1._color)
+			setColor(sp1._color);
 		float op = sp1._opacity;
-		if(getOpacity() != op) setOpacity(op);
+		if (getOpacity() != op)
+			setOpacity(op);
 		for (auto sp : _detailSprites)
-			{
-				if(sp->getColor() != sp2._color) sp->setColor(sp2._color);
-				op = sp2._opacity;
-				if(sp->getOpacity() != op) sp->setOpacity(op);
-			}
+		{
+			if (sp->getColor() != sp2._color)
+				sp->setColor(sp2._color);
+			op = sp2._opacity;
+			if (sp->getOpacity() != op)
+				sp->setOpacity(op);
+		}
 	}
 }
 
@@ -2435,4 +2374,16 @@ std::map<std::string, std::string> GameObject::stringSetupToDict(std::string str
 void GameObject::triggerActivated()
 {
 	m_bHasBeenActivated = true;
+}
+
+ax::Rect GameObject::getOuterBounds(float a, float b)
+{
+	ax::Rect r = getOuterBounds();
+	r.origin.x += r.size.width / 2;
+	r.origin.y += r.size.height / 2;
+	r.size.width *= a;
+	r.size.height *= b;
+	r.origin.x -= r.size.width / 2;
+	r.origin.y -= r.size.height / 2;
+	return r;
 }
