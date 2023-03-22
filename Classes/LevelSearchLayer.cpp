@@ -5,6 +5,7 @@
 #include "LevelSearchLayer.h"
 #include "MenuItemSpriteExtra.h"
 #include <ui/CocosGUI.h>
+#include "LevelBrowserLayer.h"
 
 USING_NS_AX;
 
@@ -13,7 +14,7 @@ const Color3B UNSELECTED_COLOR = { 125, 125, 125 };
 
 Menu* LevelSearchLayer::m_pDifficultyFilterMenu = nullptr;
 Menu* LevelSearchLayer::m_pLengthFilterMenu = nullptr;
-TextInputNode* LevelSearchLayer::m_pTextField = nullptr;
+TextInputNode* LevelSearchLayer::_searchField = nullptr;
 
 // these are supposed to be stored in GameManager, but we dont have that yet.
 std::vector<int> LevelSearchLayer::m_dSelectedDifficulties = {};
@@ -140,8 +141,15 @@ bool LevelSearchLayer::init()
 
 	this->addChild(searchBg);
 
+	auto searchObject = GJSearchObject::create();
+	searchObj = searchObject;
+
+	addChild(searchObject);
+
 	auto menuSearch = Menu::create();
-	auto searchBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn02_001.png", "Search", 0.6, ""), [&](Node*) {
+	auto searchBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn02_001.png", "Search", 0.6, ""), [&, searchObject](Node*) {
+		searchObject->_searchQuery = _searchField->m_pTextField->getString();
+		ax::Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
 	});
 	menuSearch->addChild(searchBtn);
 	menuSearch->setPosition({ (winSize.width / 2) + 128.0f, (winSize.height / 2) + 120.0f });
@@ -156,7 +164,7 @@ bool LevelSearchLayer::init()
 	field->m_pPlaceholder->setColor({ 120, 170, 240 });
 	field->setPosition(winSize / 2);
 	field->setPosition({ (winSize.width / 2) - 174.0f, (winSize.height / 2) + 105.f });
-	m_pTextField = field;
+	_searchField = field;
 
 	this->addChild(field);
 

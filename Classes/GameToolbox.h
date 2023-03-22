@@ -55,7 +55,6 @@ namespace GameToolbox
 	std::string getClipboardString();
 	ax::BlendFunc getBlending();
 
-
 	template <typename T>
 	inline T inRange(T value, T min, T max) {
 		return MIN(MAX(value, min), max);

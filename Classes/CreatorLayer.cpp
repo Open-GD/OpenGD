@@ -55,21 +55,7 @@ bool CreatorLayer::init() {
     auto savedBtn    = MenuItemSpriteExtra::create(savedBtnSpr, [=](Node*) { GameToolbox::log("on saved"); });
     auto featuredBtn = MenuItemSpriteExtra::create(featuredBtnSpr, [=](Node*) { GameToolbox::log("on featured"); });
     auto searchBtn   = MenuItemSpriteExtra::create(searchBtnSpr, [=](Node*) {
-        //	director->replaceScene(TransitionFade::create(0.5f, LevelSearchLayer::scene()));
-
-        std::string levelID(_levelField->getString());
-        std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", levelID);
-        GameToolbox::log("postData: {}", postData);
-        HttpRequest* request = new HttpRequest();
-        request->setTag(levelID);
-        request->setUrl("http://www.boomlings.com/database/downloadGJLevel22.php");
-        request->setRequestType(HttpRequest::Type::POST);
-        request->setHeaders(std::vector<std::string>{"User-Agent: "});
-        request->setRequestData(postData.c_str(), postData.length());
-        request->setResponseCallback(AX_CALLBACK_2(CreatorLayer::onHttpRequestCompleted, this));
-        request->setTag("GET test3");
-        HttpClient::getInstance()->send(request);
-        request->release();
+        director->replaceScene(TransitionFade::create(0.5f, LevelSearchLayer::scene()));
     });
     auto createBtn   = MenuItemSpriteExtra::create(createBtnSpr, [=](Node*) {
         auto scene = LevelEditorLayer::scene(GJGameLevel::createWithMinimumData("cool level", "partur", 5));
@@ -132,27 +118,5 @@ void CreatorLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* 
     case EventKeyboard::KeyCode::KEY_CTRL:
         _ctrlDown = false;
         break;
-    }
-}
-
-void CreatorLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response) {
-    if (auto str = GameToolbox::getResponse(response)) {
-        // validate by checking if level ID key/value is set
-        if ((*str).find(fmt::format("1:{}", _levelField->getString())) == std::string::npos)
-            return GameToolbox::log("invalid response: {}", *str);
-
-        GJGameLevel* level = GJGameLevel::createWithResponse(*str);
-        GameToolbox::log("playing level<{}>:{},{}*", level->_LevelID, level->_LevelName, level->_Stars);
-
-        Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(level)));
-
-        /*
-        ax::AudioEngine::stopAll();
-        ax::AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
-        ax::director->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
-        LevelPage::replacingScene = true;
-        */
-    } else {
-        GameToolbox::log("request failed");
     }
 }

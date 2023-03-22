@@ -74,4 +74,6 @@ public:
 
 	static std::string getLevelStrFromID(int gdLevelID);
 	static std::string decompressLvlStr(std::string compressedLvlStr);
+
+	static std::string getDifficultySprite(GJGameLevel* level);
 };

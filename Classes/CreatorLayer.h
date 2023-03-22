@@ -8,7 +8,7 @@ public:
     static ax::Scene* scene();
     static CreatorLayer* create();
     bool init();
-    void onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response);
+    
     void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
     void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 

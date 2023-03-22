@@ -1,6 +1,6 @@
 #include "ListLayer.h"
 
-ListLayer* ListLayer::create(ax::Layer* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
+ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
     auto pRet = new(std::nothrow) ListLayer();
 
 	if (pRet && pRet->init(scrollLayer, label, color, size)) {
@@ -12,15 +12,15 @@ ListLayer* ListLayer::create(ax::Layer* scrollLayer, const char* label, ax::Colo
 	}
 }
 
-ListLayer* ListLayer::create(ax::Layer* scrollLayer, const char* label, ax::Color4B color){
+ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color4B color){
 	return ListLayer::create(scrollLayer, label, color, {356, 240});
 }
 
-ListLayer* ListLayer::create(ax::Layer* scrollLayer, const char* label){
+ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label){
 	return ListLayer::create(scrollLayer, label, {0, 0, 0, 125}, {356, 240});
 }
 
-bool ListLayer::init(ax::Layer* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
+bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
     if(!this->initWithColor(color)) return false;
     
     auto winSize = ax::Director::getInstance()->getWinSize();
