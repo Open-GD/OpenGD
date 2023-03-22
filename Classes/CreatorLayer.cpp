@@ -142,8 +142,8 @@ void CreatorLayer::onHttpSearchRequestCompleted(ax::network::HttpClient* sender,
         if ((*str).find(fmt::format("1:{}", _levelField->getString())) == std::string::npos)
             return GameToolbox::log("invalid response: {}", *str);
 
-        auto stuff = GameToolbox::splitByDelim(*str, ':');
-        Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(stuff)));
+        GJGameLevel* level = GJGameLevel::createWithResponse(*str);
+        Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(level)));
     } else {
         GameToolbox::log("request failed");
     }

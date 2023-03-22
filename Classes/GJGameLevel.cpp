@@ -20,6 +20,10 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 	level->_LevelName = stuff[3];
 	level->_Version = std::stoi(stuff[9]);
 	level->_PlayerID = std::stoi(stuff[11]);
+    level->_LevelCreator = stuff[54];
+    level->_Downloads = std::stoi(stuff[13]);
+    level->_Length = std::stoi(stuff[37]);
+    level->_Likes = std::stoi(stuff[19]);
 	//level->_Stars = std::stoi(stuff[17]);
 	level->_MusicID = std::stoi(stuff[19]);
 	

@@ -13,11 +13,11 @@
 USING_NS_AX;
 using namespace ax::network;
 
-LevelInfoLayer* LevelInfoLayer::create(std::vector<std::string> levelinfo)
+LevelInfoLayer* LevelInfoLayer::create(GJGameLevel* level)
 {
 	LevelInfoLayer* pRet = new LevelInfoLayer();
 
-	if (pRet->init(levelinfo))
+	if (pRet->init(level))
 	{
 		pRet->autorelease();
 		return pRet;
@@ -27,22 +27,15 @@ LevelInfoLayer* LevelInfoLayer::create(std::vector<std::string> levelinfo)
 	return nullptr;
 }
 
-Scene* LevelInfoLayer::scene(std::vector<std::string> levelinfo)
+Scene* LevelInfoLayer::scene(GJGameLevel* level)
 {
 	auto scene = Scene::create();
-	scene->addChild(LevelInfoLayer::create(levelinfo));
+	scene->addChild(LevelInfoLayer::create(level));
 	return scene;
 }
 
-bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
+bool LevelInfoLayer::init(GJGameLevel* level)
 {
-	std::string _levelname = levelinfo[3];
-	std::string _levelcreator = levelinfo[54];
-	int _leveldownloads = std::stoi(levelinfo[13]);
-	int _levellength = std::stoi(levelinfo[37]);
-	int _levellikes = std::stoi(levelinfo[19]);
-	int _levelID = std::stoi(levelinfo[1]);
-
 	if (!Layer::init()) return false;
 	auto winSize = Director::getInstance()->getWinSize();
 
@@ -63,7 +56,7 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 	backBtnMenu->setPosition({ 24.0, winSize.height - 23.0f });
 	this->addChild(backBtnMenu);
 
-	auto levelName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), _levelname);
+	auto levelName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_LevelName);
 	levelName->setPosition({ winSize.width / 2, winSize.height - 30.f });
 
 	if (levelName->getContentSize().width > 300.0f)
@@ -73,7 +66,7 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 
 	this->addChild(levelName);
 
-	auto levelCreator = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("By %s", _levelcreator));
+	auto levelCreator = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("By %s", level->_LevelCreator));
 	levelCreator->setPosition({ winSize.width / 2, levelName->getPositionY() - 30.f});
 
 	if (levelCreator->getContentSize().width > 300.0f)
@@ -111,7 +104,7 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 		default:
 			return "Long";
 		}
-	}(_levellength);
+	}(level->_Length);
 
 	auto timeLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), length));
 	timeLabel->setScale(0.5);
@@ -122,7 +115,7 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 	Node* downloadNode = Node::create();
 	auto downloadSprite = Sprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png");
 	downloadNode->addChild(downloadSprite);
-	auto downloadLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i", _leveldownloads)));
+	auto downloadLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i", level->_Downloads)));
 	downloadLabel->setScale(0.5);
 	downloadNode->addChild(downloadLabel);
 	GameToolbox::alignItemsHorizontallyWithPadding(downloadNode->getChildren(), 5);
@@ -131,7 +124,7 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 	Node* likeNode = Node::create();
 	auto likeSprite = Sprite::createWithSpriteFrameName("GJ_likesIcon_001.png");
 	likeNode->addChild(likeSprite);
-	auto likeLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i", _levellikes)));
+	auto likeLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i", level->_Likes)));
 	likeLabel->setScale(0.5);
 	likeNode->addChild(likeLabel);
 	GameToolbox::alignItemsHorizontallyWithPadding(likeNode->getChildren(), 5);
@@ -162,12 +155,12 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 	normalProgress->setColor({ 0, 255, 0 });
 	normalProgress->setOpacity(255);
 	normalProgress->setAnchorPoint({ 0, 0.5 });
-	normalProgress->setTextureRect({0, 0, normalBar->getContentSize().width * (0 / 100.f), normalBar->getTextureRect().size.height});
+	normalProgress->setTextureRect({0, 0, normalBar->getContentSize().width * (level->_normalPercent / 100.f), normalBar->getTextureRect().size.height});
 	normalProgress->setScale(0.992f);
 	normalProgress->setScaleX(0.992f);
 	normalProgress->setScaleY(0.86f);
 
-	auto normalPercentage = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", 0));
+	auto normalPercentage = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", level->_normalPercent));
 	normalPercentage->setScale(0.5);
 	normalPercentage->setPosition(normalBar->getContentSize() / 2);
 
@@ -193,12 +186,12 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 	practiceProgress->setColor({ 0, 255, 0 });
 	practiceProgress->setOpacity(255);
 	practiceProgress->setAnchorPoint({ 0, 0.5 });
-	practiceProgress->setTextureRect({ 0, 0, practiceBar->getContentSize().width * (0 / 100.f), practiceBar->getTextureRect().size.height });
+	practiceProgress->setTextureRect({ 0, 0, practiceBar->getContentSize().width * (level->_practicePercent / 100.f), practiceBar->getTextureRect().size.height });
 	practiceProgress->setScale(0.992f);
 	practiceProgress->setScaleX(0.992f);
 	practiceProgress->setScaleY(0.86f);
 
-	auto practicePercentage = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", 0));
+	auto practicePercentage = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", level->_practicePercent));
 	practicePercentage->setScale(0.5);
 	practicePercentage->setPosition(normalBar->getContentSize() / 2);
 
@@ -232,15 +225,15 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 	menu->addChild(updateBtn);
 	updateBtn->setPosition(deleteBtn->getPositionX(), deleteBtn->getPositionY() - 50.f);
 
-	auto infoBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_infoBtn_001.png"), [levelinfo](Node*) {
-		InfoLayer::create(levelinfo)->show();
+	auto infoBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_infoBtn_001.png"), [level](Node*) {
+		InfoLayer::create(level)->show();
 	});
 	menu->addChild(infoBtn);
 	infoBtn->setPosition(updateBtn->getPositionX(), updateBtn->getPositionY() - 50.f);
 
 	auto rateDiffSprite = Sprite::createWithSpriteFrameName("GJ_rateDiffBtn_001.png");
-	auto rateDiffBtn = MenuItemSpriteExtra::create(rateDiffSprite, [_levelID](Node*) {
-		RateLevelLayer::create(_levelID)->show();
+	auto rateDiffBtn = MenuItemSpriteExtra::create(rateDiffSprite, [level](Node*) {
+		RateLevelLayer::create(level->_LevelID)->show();
 		});
 	rateDiffBtn->setDisabledImage(Sprite::createWithSpriteFrameName("GJ_rateDiffBtn2_001.png"));
 
@@ -273,7 +266,7 @@ bool LevelInfoLayer::init(std::vector<std::string> levelinfo)
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
-		std::string levelID(std::to_string(_levelID));
+		std::string levelID(std::to_string(level->_LevelID));
         std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", levelID);
         GameToolbox::log("postData: {}", postData);
         HttpRequest* request = new HttpRequest();
