@@ -53,7 +53,7 @@ bool RateLevelLayer::init(int)
 	if (!PopupLayer::init()) return false;
 	auto winSize = Director::getInstance()->getWinSize();
 
-	auto bg = ui::Scale9Sprite::create("GJ_square01-hd.png");
+	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_square01.png"));
 	bg->setContentSize({ 360, 180 });
 	bg->setPosition(winSize / 2);
 

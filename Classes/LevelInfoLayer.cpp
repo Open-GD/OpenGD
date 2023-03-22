@@ -38,7 +38,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	if (!Layer::init()) return false;
 	auto winSize = Director::getInstance()->getWinSize();
 
-	auto bg = Sprite::create(GameToolbox::getTextureString("GJ_gradientBG.png"));
+	auto bg = Sprite::create("GJ_gradientBG-hd.png");
 	bg->setScaleX(winSize.width / bg->getContentSize().width);
 	bg->setScaleY(winSize.height / bg->getContentSize().height);
 	bg->setAnchorPoint({ 0, 0 });
@@ -155,14 +155,14 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	addChild(layer);
 
 	// Normal Progressbar
-	auto normalBar = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto normalBar = ax::Sprite::create(GameToolbox::getTextureString("GJ_progressBar_001.png"));
 	normalBar->setPosition({ winSize.width / 2, 78.0 });
 	normalBar->setColor({ 0, 0, 0 });
 	normalBar->setOpacity(125);
 
 	addChild(normalBar, 3);
 
-	auto normalProgress = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto normalProgress = ax::Sprite::create(GameToolbox::getTextureString("GJ_progressBar_001.png"));
 	normalProgress->setPosition({ 1.36f, 10 });
 	normalProgress->setColor({ 0, 255, 0 });
 	normalProgress->setOpacity(255);
@@ -187,13 +187,13 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	this->addChild(normalLabel);
 
 	// Practice Progress Bar
-	auto practiceBar = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto practiceBar = ax::Sprite::create(GameToolbox::getTextureString("GJ_progressBar_001.png"));
 	practiceBar->setPosition({ winSize.width / 2, normalBar->getPositionY() - 50.f});
 	practiceBar->setColor({ 0, 0, 0 });
 	practiceBar->setOpacity(125);
 	addChild(practiceBar, 3);
 
-	auto practiceProgress = ax::Sprite::create("GJ_progressBar_001-hd.png");
+	auto practiceProgress = ax::Sprite::create(GameToolbox::getTextureString("GJ_progressBar_001.png"));
 	practiceProgress->setPosition({ 1.36f, 10 });
 	practiceProgress->setColor({ 0, 255, 0 });
 	practiceProgress->setOpacity(255);
