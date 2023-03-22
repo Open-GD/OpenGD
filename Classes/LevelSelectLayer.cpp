@@ -10,7 +10,6 @@
 
 USING_NS_AX;
 
-std::vector<GJGameLevel*> LevelSelectLayer::_levels;
 
 Scene* LevelSelectLayer::scene()
 {
@@ -21,21 +20,8 @@ Scene* LevelSelectLayer::scene()
 
 bool LevelSelectLayer::init()
 {
-	if (_levels.empty())
-	{
-		// fuck you andy mf
-		_levels.push_back(GJGameLevel::createWithMinimumData("Stereo Madness", "RobTop", 1));
-		_levels.push_back(GJGameLevel::createWithMinimumData("Back On Track", "RobTop", 2));
-		_levels.push_back(GJGameLevel::createWithMinimumData("Polargeist", "RobTop", 3));
-		_levels.push_back(GJGameLevel::createWithMinimumData("Dry Out", "RobTop", 4));
-		_levels.push_back(GJGameLevel::createWithMinimumData("Base After Base", "RobTop", 5));
-		_levels.push_back(GJGameLevel::createWithMinimumData("Cant Let Go", "RobTop", 6));
-		_levels.push_back(GJGameLevel::createWithMinimumData("Jumper", "RobTop", 7));
-	}
-
 
 	if(!Layer::init()) return false;
-
 
 	auto director = Director::getInstance();
 	auto winSize = director->getWinSize();
@@ -62,15 +48,30 @@ bool LevelSelectLayer::init()
 
 	GameToolbox::createCorners(this, false, false, true, true);
 	
-	std::vector<Layer*> layers;
-	
+
 	//for(uint32_t i = 0; i < 20; i++)
 	//{
 	//	layers.push_back(LevelPage::create(GJGameLevel::createWithMinimumData(fmt::format("Stereo Madness {}", i), "RobTop", 1)));
 	//}
-
-	for (auto level : _levels)
+	constexpr auto levelData = std::to_array<std::tuple<const char*, const char*, int>>({
+		{ "Stereo Madness", "Robtop", 1 },
+		{ "Back on Track", "Robtop", 2 },
+		{ "Polargeist", "Robtop", 3 },
+		{ "Dry Out", "Robtop", 4 },
+		{ "Base After Base", "Robtop", 5 },
+		{ "Cant Let Go", "Robtop", 6 },
+		{ "Jumper", "Robtop", 7 },
+		{ "Performance Test", "OpenGD", -1 }
+	});
+	
+	//TODO: add getters on bsl and level page because they are actually owning the stuff
+	
+	std::vector<Layer*> layers;
+	layers.reserve(levelData.size());
+	
+	for (const auto [name, creator, id] : levelData)
 	{
+		auto level = GJGameLevel::createWithMinimumData(name, creator, id);
 		layers.push_back(LevelPage::create(level));
 	}
 	
@@ -180,6 +181,8 @@ bool LevelSelectLayer::init()
 
 	auto listener = EventListenerKeyboard::create();
 
+	// int currentlevel = 0;
+
 	listener->onKeyPressed = [=](EventKeyboard::KeyCode code, Event*) {
 		if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
 			auto scene = MenuLayer::scene();
@@ -189,7 +192,15 @@ bool LevelSelectLayer::init()
 		} else if (code == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
 			bsl->changePageRight();
 		} else if (code == EventKeyboard::KeyCode::KEY_SPACE) {
-			// :kafif:
+			// ax::AudioEngine::stopAll();
+			// ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
+			// auto currentLevelPage = dynamic_cast<LevelPage*>(bsl->_layers.at(bsl->_currentPage));
+			// if (currentLevelPage) {
+			// 	auto level = currentLevelPage->_level;
+			// 	ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+			// 	LevelPage::replacingScene = true;
+			// 	MenuLayer::music = false;
+			// }
 		}
 	};
 

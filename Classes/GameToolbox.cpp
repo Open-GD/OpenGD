@@ -200,28 +200,28 @@ static inline std::string getTextureString_AppendResources(std::string texture) 
 	std::string nTexture = "Resources/";
 	nTexture += texture;
 	bool low = false;
-	bool medium = true;
-	bool high = false;
+	bool medium = false;
+	bool high = true;
 
 	size_t pos = nTexture.find(".");
 	if(!low && pos != std::string::npos) {
 		nTexture.insert(pos, high ? "-uhd" : "-hd");
 	}
-	GameToolbox::log("texture: {}", nTexture);
+	//GameToolbox::log("texture: {}", nTexture);
 	return nTexture;
 }
 
 static inline std::string getTextureString_WithoutResources(std::string texture)
 {
 	bool low = false;
-	bool medium = true;
-	bool high = false;
+	bool medium = false;
+	bool high = true;
 
 	size_t pos = texture.find(".");
 	if(!low && pos != std::string::npos) {
 		texture.insert(pos, high ? "-uhd" : "-hd");
 	}
-	GameToolbox::log("texture: {}", texture);
+	//GameToolbox::log("texture: {}", texture);
 	return texture;
 }
 std::string GameToolbox::getTextureString(std::string texture)

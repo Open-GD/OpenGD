@@ -119,6 +119,8 @@ class GameObject : public ax::Sprite
 
 	int _uniqueID = -1;
 
+	float _radius = -1;
+
 	ax::ParticleSystemQuad* _particle;
 
 	static const std::map<int, Hitbox> _pHitboxes;
@@ -132,16 +134,18 @@ class GameObject : public ax::Sprite
 	static GameObject* createObject(std::string_view frame, std::string_view glowFrame = "");
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
-	void updateObjectType();
-
 	void customSetup();
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);
 
+	float getRadius() { return _radius * getScale(); }
+
 	void setOuterBounds(const ax::Rect& value) { _pOuterBounds = value; }
 
 	ax::Rect getOuterBounds() { return _pOuterBounds; }
+
+	ax::Rect getOuterBounds(float a, float b);
 
 	void setInnerBounds(const ax::Rect& value) { _pInnerBounds = value; }
 
@@ -149,7 +153,7 @@ class GameObject : public ax::Sprite
 
 	GameObjectType getGameObjectType() { return _pObjectType; }
 
-	void setGameObjectType(const GameObjectType& value) { _pObjectType = value; }
+	void setGameObjectType(GameObjectType value) { _pObjectType = value; }
 
 	int getID() { return m_pId; }
 

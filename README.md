@@ -54,7 +54,7 @@ cd axmol
 python setup.py
 ```
 
-After installing axmol, you can build OpenGD as a CMake project.
+After installing Axmol, you can build OpenGD as a CMake project.
 ```
 git clone https://github.com/Open-GD/OpenGD
 cd OpenGD
@@ -77,7 +77,7 @@ Distributed under the GPL v3 License . See `LICENSE` for more information.
 
 
 <!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
+## ACKNOWLEDGMENTS
 
 * [axmol](https://github.com/axmolengine/axmol)
 * [GD 1.0 Decomp by Wylie](https://github.com/Wyliemaster/Geometry-Dash-1.0)

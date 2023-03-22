@@ -53,8 +53,7 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 	GameToolbox::log("1: {}, 2: {}", sprStr1, sprStr2);
 
 	// initialize
-	if (!GameObject::init(sprStr1))
-		return false;
+	if (!GameObject::init(sprStr1)) return false;
 
 	gameLayer = gameLayer_;
 
@@ -192,20 +191,11 @@ void PlayerObject::setSecondaryColor(Color3B col)
 	this->m_pShipSecondarySprite->setColor(col);
 }
 
-Color3B PlayerObject::getMainColor()
-{
-	return this->m_pMainSprite->getColor();
-}
+Color3B PlayerObject::getMainColor() { return this->m_pMainSprite->getColor(); }
 
-Color3B PlayerObject::getSecondaryColor()
-{
-	return this->m_pSecondarySprite->getColor();
-}
+Color3B PlayerObject::getSecondaryColor() { return this->m_pSecondarySprite->getColor(); }
 
-void PlayerObject::setIsDead(bool value)
-{
-	m_bIsDead = value;
-}
+void PlayerObject::setIsDead(bool value) { m_bIsDead = value; }
 
 void PlayerObject::setIsOnGround(bool value)
 {
@@ -215,10 +205,9 @@ void PlayerObject::setIsOnGround(bool value)
 void PlayerObject::update(float dt)
 {
 	m_prevPos = getPosition();
-	if (this->m_bIsDead)
-		return;
+	if (this->m_bIsDead) return;
 
-	if (!_currentGamemode == PlayerGamemodeShip)
+	if (_currentGamemode == PlayerGamemodeCube)
 	{
 		if (isOnGround())
 		{
@@ -227,19 +216,18 @@ void PlayerObject::update(float dt)
 				dragEffect1->resumeEmissions();
 				_particles1Activated = true;
 			}
-			if (getActionByTag(2))
-				stopActionByTag(2);
+			if (getActionByTag(2)) stopActionByTag(2);
 		}
 		else
 		{
 			if (_particles1Activated && !getActionByTag(2))
 			{
-				Sequence* action = Sequence::create(DelayTime::create(0.06f), CallFunc::create([=]() {
-														if (_particles1Activated)
-															dragEffect1->pauseEmissions();
-														_particles1Activated = false;
-													}),
-													nullptr);
+				Sequence* action = Sequence::create(
+					DelayTime::create(0.06f), CallFunc::create([=]() {
+						if (_particles1Activated) dragEffect1->pauseEmissions();
+						_particles1Activated = false;
+					}),
+					nullptr);
 				action->setTag(2);
 				runAction(action);
 			}
@@ -260,14 +248,12 @@ void PlayerObject::update(float dt)
 	{
 		if (m_bIsHolding)
 		{
-			if (!_particles3Activated)
-				dragEffect3->resumeEmissions();
+			if (!_particles3Activated) dragEffect3->resumeEmissions();
 			_particles3Activated = true;
 		}
 		else
 		{
-			if (_particles3Activated)
-				dragEffect3->pauseEmissions();
+			if (_particles3Activated) dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
 		if (!_particles2Activated)
@@ -290,8 +276,7 @@ void PlayerObject::update(float dt)
 	{
 		direction = clampf(direction, -1.f, 1.f);
 
-		if (!m_bIsPlatformer)
-			direction = 1.f;
+		if (!m_bIsPlatformer) direction = 1.f;
 
 		float dtSlow = dt * 0.9f;
 		this->updateJump(dtSlow);
@@ -299,21 +284,19 @@ void PlayerObject::update(float dt)
 		float velY = (float)((double)dtSlow * m_dYVel);
 		float velX = (float)((double)dt * m_dXVel * (!m_bIsPlatformer ? 1.f : direction) * getPlayerSpeed());
 
-		ax::Vec2 velocity{velX, velY};
+		ax::Vec2 velocity {velX, velY};
 
 		setPosition(getPosition() + velocity);
 	}
 
-	if (this->getPositionX() >= 500 && !this->inPlayLayer)
-		this->m_bIsHolding = true;
+	if (this->getPositionX() >= 500 && !this->inPlayLayer) this->m_bIsHolding = true;
 
-	setScaleX(direction < -0.05f ? -1.f : direction > 0.05f ? 1.f : getScaleX());
-	setScaleY(_currentGamemode == PlayerGamemodeShip ? isGravityFlipped() ? -1.f : 1.f : 1.f);
+	//setScaleX(direction < -0.05f ? -1.f : direction > 0.05f ? 1.f : getScaleX());
 
-	dragEffect1->setPosition(this->getPosition() + Vec2{-10.f, flipMod() * -13.f});
-	dragEffect2->setPosition(this->getPosition() + m_pShipSprite->getPosition() + Vec2{-10.f, flipMod() * -3.f});
+	dragEffect1->setPosition(this->getPosition() + Vec2 {-10.f, flipMod() * -13.f});
+	dragEffect2->setPosition(this->getPosition() + m_pShipSprite->getPosition() + Vec2 {-10.f, flipMod() * -3.f});
 	dragEffect3->setPosition(dragEffect2->getPosition());
-	shipDragEffect->setPosition(this->getPosition() + Vec2{1.f, flipMod() * -15.f});
+	shipDragEffect->setPosition(this->getPosition() + Vec2 {1.f, flipMod() * -15.f});
 
 	/*if (!_currentGamemode == PlayerGamemodeShip)
 		motionStreak->setPosition(this->getPosition() + Vec2{ -5.f, 0.f });
@@ -370,38 +353,131 @@ void PlayerObject::activateStreak()
 	// motionStreak->resumeStroke();
 }
 
-void PlayerObject::propellPlayer()
+void PlayerObject::propellPlayer(double force)
 {
 	m_isRising = true;
 	setIsOnGround(false);
-	m_dYVel = flipMod() * 16.0f;
+	m_dYVel = flipMod() * 16 * force * (_vehicleSize == 1.0 ? 1.0 : 0.8);
+
+	if(_currentGamemode == PlayerGamemodeBall || _currentGamemode == PlayerGamemodeSpider)
+		m_dYVel *= 0.6;
+
 	runRotateAction();
 	setLastGroundPos(getPosition());
 
 	activateStreak();
 }
 
-void PlayerObject::setTouchedRing(GameObject* obj)
-{
-	_touchedRingObject = obj;
-}
+void PlayerObject::setTouchedRing(GameObject* obj) { _touchedRingObject = obj; }
 
-void PlayerObject::ringJump()
+void PlayerObject::ringJump(GameObject* obj)
 {
-	if (_touchedRingObject && !_isHoldingFromGround && m_bIsHolding)
+	if (_touchedRingObject && (_queuedHold || isOnGround()) && m_bIsHolding)
 	{
+		obj->m_bHasBeenActivated = true;
 		_touchedRingObject->triggerActivated();
 		m_isRising = true;
-		_isHoldingFromGround = true;
+		_queuedHold = false;
 		setIsOnGround(false);
-		m_dYVel = m_dJumpHeight * flipMod();
+
+		double newYVel = m_dJumpHeight;
+
+		switch (obj->getGameObjectType())
+		{
+		case kGameObjectTypeDropRing:
+			switch (_currentGamemode)
+			{
+			case PlayerGamemodeUFO:
+				newYVel = -11.2 * flipMod();
+				break;
+			case PlayerGamemodeShip:
+			case PlayerGamemodeWave:
+				newYVel = -14 * flipMod();
+				break;
+			case PlayerGamemodeSpider:
+				newYVel = -16.5 * flipMod();
+				break;
+			default:
+				newYVel = -15 * flipMod();
+				break;
+			}
+			m_dYVel = newYVel;
+			activateStreak();
+			if (_currentGamemode == PlayerGamemodeBall) m_bIsHolding = false;
+			_touchedRingObject = nullptr;
+			return;
+		case kGameObjectTypeRedJumpRing:
+			switch (_currentGamemode)
+			{
+			case PlayerGamemodeShip:
+				if (_vehicleSize != 1.0f) newYVel *= 1.4;
+				break;
+			case PlayerGamemodeUFO:
+				if (_vehicleSize == 1.0f)
+					newYVel *= 1.02;
+				else
+					newYVel *= 1.36;
+				break;
+			case PlayerGamemodeSpider:
+			case PlayerGamemodeBall:
+				newYVel *= 1.34;
+				break;
+			case PlayerGamemodeRobot:
+				newYVel *= 1.28;
+				break;
+			default:
+				newYVel *= 1.38;
+				break;
+			}
+			break;
+		case kGameObjectTypePinkJumpRing:
+			switch (_currentGamemode)
+			{
+			case PlayerGamemodeShip:
+				newYVel *= 0.37;
+				break;
+			case PlayerGamemodeUFO:
+				newYVel *= 0.42;
+				break;
+			case PlayerGamemodeBall:
+				newYVel *= 0.77;
+				break;
+			default:
+				newYVel *= 0.72;
+				break;
+			}
+			break;
+		case kGameObjectTypeGravityRing:
+			newYVel *= 0.8;
+			break;
+		default:
+			if (_currentGamemode == PlayerGamemodeRobot) newYVel *= 0.9;
+			break;
+		}
+
+		newYVel *= flipMod();
+
+		m_dYVel = newYVel;
+
 		runRotateAction();
 		_touchedRingObject = nullptr;
 		_hasRingJumped = true;
 		setLastGroundPos(getPosition());
 
 		activateStreak();
+
+		if (_currentGamemode == PlayerGamemodeBall || _currentGamemode == PlayerGamemodeSpider)
+		{
+			m_bIsHolding = false;
+			m_dYVel *= 0.7;
+		}
+
+		if (obj->getGameObjectType() == kGameObjectTypeGravityRing)
+		{
+			flipGravity(!isGravityFlipped());
+		}
 	}
+	_touchedRingObject = nullptr;
 }
 
 void PlayerObject::flipGravity(bool gravity)
@@ -411,19 +487,21 @@ void PlayerObject::flipGravity(bool gravity)
 		m_bGravityFlipped = gravity;
 		m_dYVel /= 2.f;
 
+		setScaleY(gravity ? getScale() * -1.f : getScale() * 1.f);
+
 		activateStreak();
 
 		dragEffect1->setAngle(dragEffect1->getAngle() + 180);
-		dragEffect1->setGravity(Vec2{dragEffect1->getGravity().x, -dragEffect1->getGravity().y});
+		dragEffect1->setGravity(Vec2 {dragEffect1->getGravity().x, -dragEffect1->getGravity().y});
 
 		dragEffect2->setAngle(dragEffect2->getAngle() + 180);
-		dragEffect2->setGravity(Vec2{dragEffect2->getGravity().x, -dragEffect2->getGravity().y});
+		dragEffect2->setGravity(Vec2 {dragEffect2->getGravity().x, -dragEffect2->getGravity().y});
 
 		dragEffect3->setAngle(dragEffect3->getAngle() + 180);
-		dragEffect3->setGravity(Vec2{dragEffect3->getGravity().x, -dragEffect3->getGravity().y});
+		dragEffect3->setGravity(Vec2 {dragEffect3->getGravity().x, -dragEffect3->getGravity().y});
 
 		shipDragEffect->setAngle(shipDragEffect->getAngle() + 180);
-		shipDragEffect->setGravity(Vec2{shipDragEffect->getGravity().x, -shipDragEffect->getGravity().y});
+		shipDragEffect->setGravity(Vec2 {shipDragEffect->getGravity().x, -shipDragEffect->getGravity().y});
 	}
 }
 
@@ -445,8 +523,7 @@ void PlayerObject::updateJump(float dt)
 		{
 			float shipAccel = 0.8f;
 
-			if (this->m_bIsHolding)
-				shipAccel = -1.0f;
+			if (this->m_bIsHolding) shipAccel = -1.0f;
 
 			if (!this->m_bIsHolding && !this->playerIsFalling())
 			{
@@ -454,39 +531,34 @@ void PlayerObject::updateJump(float dt)
 			}
 
 			float extraBoost = 0.4f;
-			if (this->m_bIsHolding && this->playerIsFalling())
-				extraBoost = 0.5;
+			if (this->m_bIsHolding && this->playerIsFalling()) extraBoost = 0.5;
 
 			this->m_dYVel -= localGravity * dt * flipGravityMult * shipAccel * extraBoost / playerSize;
 		}
 		if (!this->isGravityFlipped())
 		{
-			if (this->m_dYVel <= lowerVelocityLimit)
-				this->m_dYVel = lowerVelocityLimit;
+			if (this->m_dYVel <= lowerVelocityLimit) this->m_dYVel = lowerVelocityLimit;
 		}
 		else
 		{
-			if (this->m_dYVel <= -upperVelocityLimit)
-				this->m_dYVel = -upperVelocityLimit;
+			if (this->m_dYVel <= -upperVelocityLimit) this->m_dYVel = -upperVelocityLimit;
 
 			upperVelocityLimit = 6.4f / playerSize;
 		}
-		if (this->m_dYVel >= upperVelocityLimit)
-			this->m_dYVel = upperVelocityLimit;
+		if (this->m_dYVel >= upperVelocityLimit) this->m_dYVel = upperVelocityLimit;
 	}
 	else
 	{
 		float gravityMultiplier = 1.0f;
 
-		if (_currentGamemode == PlayerGamemodeBall)
-			gravityMultiplier = 0.6f;
+		if (_currentGamemode == PlayerGamemodeBall) gravityMultiplier = 0.6f;
 
 		bool shouldJump = m_bIsHolding;
 
 		if (shouldJump && isOnGround())
 		{
 			m_isRising = true;
-			m_bOnGround = false;
+			setIsOnGround(false);
 
 			float jumpAccel = m_dJumpHeight;
 
@@ -499,7 +571,10 @@ void PlayerObject::updateJump(float dt)
 				this->m_dYVel *= 0.6;
 			}
 			else if (_currentGamemode == PlayerGamemodeCube)
+			{
+				_queuedHold = false;
 				runRotateAction();
+			}
 		}
 		else
 		{
@@ -514,42 +589,35 @@ void PlayerObject::updateJump(float dt)
 			}
 			else
 			{
-				if (isGravityFlipped())
+				if (!isGravityFlipped())
 				{
-					if (m_dYVel > m_dGravity * 2.f)
-						m_bOnGround = false;
+					if (m_dYVel < -m_dGravity * 2.f) m_bOnGround = false;
 				}
 				else
 				{
-					if (m_dGravity * 2.f > m_dYVel)
-						m_bOnGround = false;
+					if (m_dYVel > m_dGravity * 2.f) m_bOnGround = false;
 				}
 
 				m_dYVel -= localGravity * dt * flipGravityMult * gravityMultiplier;
 				m_dYVel = isGravityFlipped() ? std::min(m_dYVel, 15.0) : std::max(m_dYVel, -15.0);
 				if (!isGravityFlipped())
 				{
-					if (m_dYVel >= m_dGravity * 2.0f)
-						return;
+					if (m_dYVel >= m_dGravity * 2.0f) return;
 				}
 				else
 				{
-					if (m_dYVel <= m_dGravity * 2.0f)
-						return;
+					if (m_dYVel <= m_dGravity * 2.0f) return;
 				}
 
-				if (_currentGamemode != PlayerGamemodeBall && getActionByTag(0) == nullptr)
-					runRotateAction();
+				if (_currentGamemode != PlayerGamemodeBall && getActionByTag(0) == nullptr) runRotateAction();
 
 				if (isGravityFlipped())
 				{
-					if (m_dYVel >= -4.0)
-						return;
+					if (m_dYVel >= -4.0) return;
 				}
 				else
 				{
-					if (m_dYVel <= 4.0)
-						return;
+					if (m_dYVel <= 4.0) return;
 				}
 			}
 		}
@@ -569,15 +637,14 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 	Vec2 pos = getPosition();
 	Rect rect = obj->getOuterBounds();
 
-	Rect playerRectO = getOuterBounds();
+	Rect playerRectO = _mini ? getOuterBounds(0.6f, 0.6f) : getOuterBounds();
 	Rect playerRectI = getInnerBounds();
 
 	float flipModV = flipMod();
 
 	float mod = flipModV * 10.0f;
 
-	if (_currentGamemode == PlayerGamemodeShip)
-		mod = flipModV * 6.0f;
+	if (_currentGamemode == PlayerGamemodeShip) mod = flipModV * 6.0f;
 
 	float topP = (pos.y + (playerRectO.origin.height * -0.5f * -flipMod())) - mod;
 	float bottomP = (pos.y + (playerRectO.origin.height * -0.5f * flipMod())) + mod;
@@ -594,8 +661,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 
 	if (isGravityFlipped())
 	{
-		if (!_currentGamemode == PlayerGamemodeShip)
-			goto topCollision;
+		if (!_currentGamemode == PlayerGamemodeShip) goto topCollision;
 		t = bottomP;
 		b = topP;
 	}
@@ -621,8 +687,7 @@ void PlayerObject::collidedWithObject(float dt, GameObject* obj)
 
 	if (!isGravityFlipped())
 	{
-		if (_currentGamemode != PlayerGamemodeShip)
-			goto death;
+		if (_currentGamemode != PlayerGamemodeShip) goto death;
 		t = bottomP;
 		b = topP;
 	}
@@ -648,8 +713,7 @@ topCollision:
 		}
 	}
 death:
-	if (playerRectI.intersectsRect(rect))
-		static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer();
+	if (playerRectI.intersectsRect(rect)) static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer();
 }
 
 void PlayerObject::setGamemode(PlayerGamemode mode)
@@ -659,31 +723,38 @@ void PlayerObject::setGamemode(PlayerGamemode mode)
 		switch (mode)
 		{
 		case PlayerGamemodeCube:
+			setIsOnGround(false);
 			m_pShipSprite->setVisible(false);
 			_ballSprite->setVisible(false);
 			m_pMainSprite->setVisible(true);
 			m_pMainSprite->setScale(1.f);
 			m_pMainSprite->setPositionY(0);
 			deactivateStreak();
+			stopActionByTag(3);
 			break;
 		case PlayerGamemodeShip:
 			m_pShipSprite->setVisible(true);
 			_ballSprite->setVisible(false);
+			m_pMainSprite->setVisible(true);
 			m_pMainSprite->setScale(0.55f);
 			m_pMainSprite->setPositionY(5);
-			stopRotation();
+			stopActionByTag(1);
+			stopActionByTag(0);
 			setRotation(0.f);
 			m_dYVel /= 2.f;
 			setIsOnGround(false);
-
+			stopActionByTag(3);
 			activateStreak();
 			runRotateAction();
 			break;
 		case PlayerGamemodeBall:
+			stopActionByTag(1);
+			stopActionByTag(0);
 			m_pShipSprite->setVisible(false);
 			_ballSprite->setVisible(true);
 			m_pMainSprite->setVisible(false);
 			deactivateStreak();
+			runBallRotation();
 			break;
 		}
 
@@ -749,8 +820,7 @@ void PlayerObject::checkSnapJumpToObject(GameObject* obj)
 
 			float someMultiplier = (isGravityFlipped() ? 30.0 : -30.0);
 
-			if (unknownUse >= upOneGap)
-				oldSnapPos.y = fabs(newSnapPos.x - upOneGap) + someMultiplier;
+			if (unknownUse >= upOneGap) oldSnapPos.y = fabs(newSnapPos.x - upOneGap) + someMultiplier;
 
 			float value1 = fabs(newSnapPos.y - (oldSnapPos.y + someMultiplier));
 			float value2 = fabs(newSnapPos.y - (oldSnapPos.y + someMultiplier * 2));
@@ -790,59 +860,53 @@ void PlayerObject::hitGround(bool reverseGravity)
 
 	if (!isOnGround() && !reverseGravity)
 	{
-		landEffect1->setPosition(getPosition() + Vec2{0.f, flipMod() * -15.f});
+		landEffect1->setPosition(getPosition() + Vec2 {0.f, flipMod() * -15.f});
 		landEffect1->resetSystem();
 		landEffect1->start();
 	}
 
+	if(_currentGamemode == PlayerGamemodeBall && !isOnGround()) runBallRotation();
+
+	_queuedHold = false;
 	setIsOnGround(true);
 
-	if (getActionByTag(0))
-		stopRotation();
+	if (getActionByTag(0)) stopRotation();
 
 	m_obLastGroundPos = getPosition();
 
-	if (_currentGamemode != PlayerGamemode::PlayerGamemodeShip)
-		deactivateStreak();
+	if (_currentGamemode != PlayerGamemode::PlayerGamemodeShip) deactivateStreak();
 }
 
-float PlayerObject::flipMod()
-{
-	return this->m_bGravityFlipped ? -1.0f : 1.0f;
-}
+float PlayerObject::flipMod() { return this->m_bGravityFlipped ? -1.0f : 1.0f; }
 
-bool PlayerObject::isGravityFlipped()
-{
-	return this->m_bGravityFlipped;
-}
+bool PlayerObject::isGravityFlipped() { return this->m_bGravityFlipped; }
 
-bool PlayerObject::isDead()
-{
-	return this->m_bIsDead;
-}
+bool PlayerObject::isDead() { return this->m_bIsDead; }
 
-bool PlayerObject::isOnGround()
-{
-	return this->m_bOnGround;
-}
+bool PlayerObject::isOnGround() { return this->m_bOnGround; }
 
-ax::Vec2 PlayerObject::getLastGroundPos()
-{
-	return this->m_obLastGroundPos;
-}
+ax::Vec2 PlayerObject::getLastGroundPos() { return this->m_obLastGroundPos; }
 
 void PlayerObject::logValues()
 {
-	GameToolbox::log("xVel: {} | yVel: {} | gravity: {} | jumpHeight: {} ", m_dXVel, m_dYVel, m_dGravity,
-					 m_dJumpHeight);
+	GameToolbox::log("xVel: {} | yVel: {} | gravity: {} | jumpHeight: {} ", m_dXVel, m_dYVel, m_dGravity, m_dJumpHeight);
 }
 
 void PlayerObject::runRotateAction()
 {
 	stopRotation();
-	auto action = RotateBy::create(0.43333f, 180.f * flipMod() * getScaleX());
+	auto action = RotateBy::create(0.41f, 180.f * flipMod() * getScaleX());
 	action->setTag(0);
 	runAction(action);
+}
+
+void PlayerObject::runBallRotation()
+{
+	if(getActionByTag(3)) stopActionByTag(3);
+	auto action = RotateBy::create(0.5f, 360.f * flipMod());
+	auto loop = RepeatForever::create(action);
+	loop->setTag(3);
+	runAction(loop);
 }
 
 void PlayerObject::stopRotation()
@@ -853,7 +917,7 @@ void PlayerObject::stopRotation()
 	{
 		if (getRotation() != 0)
 		{
-			auto degrees = (int)getRotation() % 360;
+			int degrees = (int)getRotation() % 360;
 			auto action = RotateTo::create(0.075f, (90 * roundf(degrees / 90.0f)));
 			action->setTag(1);
 			runAction(action);
@@ -861,9 +925,15 @@ void PlayerObject::stopRotation()
 	}
 }
 
-void PlayerObject::jump()
+void PlayerObject::jump() { this->m_dYVel = this->m_dJumpHeight; }
+
+void PlayerObject::toggleMini(bool active)
 {
-	this->m_dYVel = this->m_dJumpHeight;
+	GameToolbox::log("dshufasdiofhasdf");
+	_mini = active;
+	auto ac = ScaleTo::create(0.5f, active ? 0.5f : 1.f);
+	auto bounce = EaseBounceOut::create(ac);
+	this->runAction(bounce);
 }
 
 bool PlayerObject::onTouchBegan(ax::Touch* touch, ax::Event* event)
@@ -871,7 +941,7 @@ bool PlayerObject::onTouchBegan(ax::Touch* touch, ax::Event* event)
 	if (this->inPlayLayer)
 	{
 		m_bIsHolding = true;
-		_isHoldingFromGround = isOnGround();
+		_queuedHold = true;
 		return true;
 	}
 	return false;
@@ -881,7 +951,7 @@ void PlayerObject::onTouchEnded(ax::Touch* touch, ax::Event* event)
 {
 	if (this->inPlayLayer)
 	{
-		_isHoldingFromGround = false;
+		_queuedHold = false;
 		m_bIsHolding = false;
 	}
 }

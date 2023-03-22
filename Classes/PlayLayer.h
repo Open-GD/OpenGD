@@ -28,6 +28,7 @@ class PlayLayer : public ax::Layer
 	void onDrawImGui();
 	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	void createLevelEnd();
 
 	void fillColorChannel(std::vector<std::string>& colorString, int id);
 
@@ -106,8 +107,6 @@ public:
 	// dt?
 	void checkCollisions(float delta);
 	void renderRect(ax::Rect rect, ax::Color4B col);
-
-	void processTriggers();
 
 	void applyEnterEffect(GameObject* obj);
 	float getRelativeMod(ax::Vec2 objPos, float v1, float v2, float v3);

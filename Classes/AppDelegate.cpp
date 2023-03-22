@@ -125,7 +125,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	}
 
 	// turn off display FPS
-	director->setStatsDisplay(SHOW_FPS);
+	director->setStatsDisplay(true);
 
 	// set FPS. the default value is 1.0/60 if you don't call this
 	director->setAnimationInterval(1.0f / applicationGetRefreshRate());
@@ -158,7 +158,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 #endif
 
-	director->setContentScaleFactor(2.0f);
+	director->setContentScaleFactor(4.0f);
 
 	register_all_packages();
 

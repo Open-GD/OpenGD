@@ -8,6 +8,7 @@
 #include "LevelSelectLayer.h"
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
+#include "benchmark.h"
 #include "constants.h"
 #include <LevelPage.h>
 #include <fstream>
@@ -237,6 +238,8 @@ void PlayLayer::loadLevel(std::string levelStr)
 			case 1: {
 				int id = std::stoi(d[i + 1]);
 
+				if(!GameObject::_pBlocks.contains(id)) continue;
+
 				auto block = GameObject::_pBlocks.at(id);
 				std::string frame = static_cast<std::string>(block[0]);
 				std::string glowFrame = "";
@@ -264,6 +267,8 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 				if (GameObject::_pHitboxes.contains(id))
 					hb = GameObject::_pHitboxes.at(id);
+				if (GameObject::_pHitboxRadius.contains(id))
+					obj->_radius = GameObject::_pHitboxRadius.at(id);
 
 				obj->_uniqueID = _pObjects.size();
 
@@ -324,31 +329,23 @@ void PlayLayer::loadLevel(std::string levelStr)
 		}
 		if (obj)
 		{
-			obj->updateObjectType();
-
+			ax::Mat4 tr;
+			ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
 			switch (obj->getGameObjectType())
 			{
-			case kGameObjectTypeYellowJumpRing:
-			case kGameObjectTypeYellowJumpPad:
-			case kGameObjectTypeNormalGravityPortal:
-			case kGameObjectTypeInverseGravityPortal:
-			case kGameObjectTypeCubePortal:
-			case kGameObjectTypeShipPortal:
-			case kGameObjectTypeSolid:
-			case kGameObjectTypeSpecial:
-			case kGameObjectTypeHazard:
-				ax::Mat4 tr;
-
+			default:
 				tr.rotate(obj->getRotationQuat());
 
 				tr.scale(obj->getScaleX() * (obj->isFlippedX() ? -1.f : 1.f),
 						 obj->getScaleY() * (obj->isFlippedY() ? -1.f : 1.f), 1);
 
-				ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
 				rec = RectApplyTransform(rec, tr);
 
 				obj->setOuterBounds(Rect(obj->getPosition() + Vec2(rec.origin.x, rec.origin.y) + Vec2(15, 15),
 										 {rec.size.width, rec.size.height}));
+				break;
+			case kGameObjectTypeDecoration:
+			case kGameObjectTypeSpecial:
 				break;
 			}
 			obj->setStartPosition(obj->getPosition());
@@ -446,16 +443,20 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	this->m_pPlayer = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
 	this->m_pPlayer->setPosition({-20, 105});
-	_main2BatchNode->addChild(this->m_pPlayer, 2);
+	_main2BatchNode->addChild(this->m_pPlayer, 3);
 	this->m_pPlayer->setAnchorPoint({0, 0});
 
 	m_pPlayer->setMainColor({125, 255, 0});
 	m_pPlayer->setSecondaryColor({0, 255, 255});
 
 	// std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
-	std::string levelStr = getLevel()->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(getLevel()->_LevelID)
-															: getLevel()->_LevelString;
-	loadLevel(levelStr);
+	std::string levelStr =
+		level->_LevelString.empty() ? GJGameLevel::getLevelStrFromID(level->_LevelID) : level->_LevelString;
+	// scope based timer
+	{
+		auto s = BenchmarkTimer("load level");
+		loadLevel(levelStr);
+	}
 
 	this->_bottomGround = GroundLayer::create(_groundID);
 	this->_ceiling = GroundLayer::create(_groundID);
@@ -484,17 +485,20 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	if (_pObjects.size() != 0)
 	{
-		this->m_lastObjXPos = std::numeric_limits<float>().min();
+		this->m_lastObjXPos = 570.0f;
 
 		for (GameObject* object : _pObjects)
+		{
+			// GameToolbox::log("pos: {}", object->getPositionX());
 			if (this->m_lastObjXPos < object->getPositionX())
 				this->m_lastObjXPos = object->getPositionX();
+		}
 
-		if (this->m_lastObjXPos < 570.f)
-			this->m_lastObjXPos = 570.f;
+		GameToolbox::log("last x: {}", m_lastObjXPos);
 
 		for (size_t i = 0; i < sectionForPos(this->m_lastObjXPos); i++)
 		{
+			// GameToolbox::log("i = {}", i);
 			std::vector<GameObject*> vec;
 			m_pSectionObjects.push_back(vec);
 		}
@@ -537,6 +541,8 @@ bool PlayLayer::init(GJGameLevel* level)
 		loadfailedstr->setPosition({winSize.width / 2, winSize.height / 2});
 		addChild(loadfailedstr, 128);
 	}
+
+	updateVisibility();
 	updateVisibility();
 
 	m_bCanExitScene = false;
@@ -546,7 +552,6 @@ bool PlayLayer::init(GJGameLevel* level)
 			m_bCanExitScene = true;
 			if (levelValid)
 			{
-				scheduleUpdate();
 				resetLevel();
 			}
 			else
@@ -557,6 +562,10 @@ bool PlayLayer::init(GJGameLevel* level)
 		1.f, "k");
 
 	return true;
+}
+
+void PlayLayer::createLevelEnd()
+{
 }
 
 double lastY = 0;
@@ -595,8 +604,9 @@ void PlayLayer::update(float dt)
 		{
 			this->m_pPlayer->update(step);
 
-			m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), {30, 30}));
-			m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), {7.5, 7.5}));
+			auto scale = m_pPlayer->getScale();
+			m_pPlayer->setOuterBounds(Rect(m_pPlayer->getPosition(), Vec2(30, 30)));
+			m_pPlayer->setInnerBounds(Rect(m_pPlayer->getPosition() + Vec2(11.25f, 11.25f), Vec2(7.5, 7.5)));
 
 			this->checkCollisions(step);
 			if (this->m_pPlayer->isDead())
@@ -684,7 +694,7 @@ void PlayLayer::updateCamera(float dt)
 								  dt * player->getPlayerSpeed() * _bottomGround->getSpeed() * 0.1175f);
 		_bottomGround->update(dt * player->getPlayerSpeed());
 		_ceiling->update(dt * player->getPlayerSpeed());
-		cam.x += dt * player->getPlayerSpeed() * 5.770002f;
+		cam.x = pPos.x - (winSize.width / 2.5f);
 	}
 	else if (player->m_bIsPlatformer)
 		cam.x = pPos.x - winSize.width / 2.f;
@@ -1006,6 +1016,7 @@ void PlayLayer::updateVisibility()
 
 void PlayLayer::changeGameMode(GameObject* obj, PlayerGamemode gameMode)
 {
+	obj->triggerActivated();
 	switch (gameMode)
 	{
 	default:
@@ -1060,27 +1071,10 @@ void PlayLayer::moveCameraToPos(Vec2 pos)
 	moveX(pos.x, 1.2f, 1.8f);
 	moveY(pos.y, 1.2f, 1.8f);
 }
-
-void PlayLayer::processTriggers()
-{
-	// int current_section = this->sectionForPos(m_pPlayer->getPositionX());
-	// if (m_pSectionObjects.size() == 0) return;
-
-	// std::vector<GameObject*> section =
-	// 	m_pSectionObjects[sectionForPos(m_pPlayer->getPositionX()) <= 0 ? 0 : sectionForPos(m_pPlayer->getPositionX()) -
-	// 1];
-
-	// int i = 0;
-	// while (i < section.size())
-	// {
-	// 	i++;
-	// }
-}
-
 void PlayLayer::checkCollisions(float dt)
 {
-	auto playerOuterBounds = this->m_pPlayer->getOuterBounds();
-	if (this->m_pPlayer->getPositionY() < 105.0f && this->m_pPlayer->_currentGamemode != PlayerGamemodeShip)
+	auto playerOuterBounds = m_pPlayer->_mini ? m_pPlayer->getOuterBounds(0.6f, 0.6f) : m_pPlayer->getOuterBounds();
+	if (this->m_pPlayer->getPositionY() < (m_pPlayer->_mini ? 99.f : 105.0f) && this->m_pPlayer->_currentGamemode == PlayerGamemodeCube)
 	{
 		if (this->m_pPlayer->isGravityFlipped())
 		{
@@ -1101,18 +1095,18 @@ void PlayLayer::checkCollisions(float dt)
 
 	if (this->m_pPlayer->_currentGamemode != PlayerGamemodeCube)
 	{
-		if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + cameraFollow->getPositionY() + 93.0f)
+		if (this->m_pPlayer->getPositionY() < _bottomGround->getPositionY() + cameraFollow->getPositionY() + (m_pPlayer->_mini ? 87.f : 93.0f))
 		{
-			this->m_pPlayer->setPositionY(_bottomGround->getPositionY() + cameraFollow->getPositionY() + 93.0f);
+			this->m_pPlayer->setPositionY(_bottomGround->getPositionY() + cameraFollow->getPositionY() + (m_pPlayer->_mini ? 87.f : 93.0f));
 
 			if (!this->m_pPlayer->isGravityFlipped())
 				this->m_pPlayer->hitGround(false);
 
 			m_pPlayer->setYVel(0.f);
 		}
-		if (m_pPlayer->getPositionY() > _ceiling->getPositionY() - 240.f + m_fCameraYCenter - 12.f)
+		if (m_pPlayer->getPositionY() > _ceiling->getPositionY() - (m_pPlayer->_mini ? 234.f : 240.f) + m_fCameraYCenter - 12.f)
 		{
-			this->m_pPlayer->setPositionY(_ceiling->getPositionY() - 240.f + m_fCameraYCenter - 12.f);
+			this->m_pPlayer->setPositionY(_ceiling->getPositionY() - (m_pPlayer->_mini ? 234.f : 240.f) + m_fCameraYCenter - 12.f);
 
 			if (m_pPlayer->isGravityFlipped())
 				this->m_pPlayer->hitGround(true);
@@ -1152,7 +1146,12 @@ void PlayLayer::checkCollisions(float dt)
 						continue;
 					m_pHazards.push_back(obj);
 					if (showDn)
-						renderRect(objBounds, ax::Color4B::RED);
+					{
+						if (obj->_radius <= 0)
+							renderRect(objBounds, ax::Color4B::RED);
+						else
+							dn->drawCircle(obj->getPosition() + Vec2(15, 15), obj->_radius, 0, 20, 0, ax::Color4B::RED);
+					}
 				}
 				else if (obj->isActive())
 				{
@@ -1168,14 +1167,14 @@ void PlayLayer::checkCollisions(float dt)
 						continue;
 					if (showDn)
 						renderRect(objBounds, ax::Color4B::BLUE);
-					if (playerOuterBounds.intersectsRect(objBounds))
+					if (playerOuterBounds.intersectsRect(objBounds) && !obj->m_bHasBeenActivated)
 					{
 						switch (obj->getGameObjectType())
 						{
 						case GameObjectType::kGameObjectTypeInverseGravityPortal:
 							// if (!m_pPlayer->isGravityFlipped())
 							//	 this->playGravityEffect(true);
-
+							obj->triggerActivated();
 							m_pPlayer->setPortalP(obj->getPosition());
 							m_pPlayer->setPortalObject(obj);
 
@@ -1185,7 +1184,7 @@ void PlayLayer::checkCollisions(float dt)
 						case GameObjectType::kGameObjectTypeNormalGravityPortal:
 							// if (m_pPlayer->isGravityFlipped())
 							//	 this->playGravityEffect(false);
-
+							obj->triggerActivated();
 							m_pPlayer->setPortalP(obj->getPosition());
 							m_pPlayer->setPortalObject(obj);
 
@@ -1207,6 +1206,7 @@ void PlayLayer::checkCollisions(float dt)
 							break;
 
 						case GameObjectType::kGameObjectTypeCubePortal:
+
 							m_pPlayer->setPortalP(obj->getPosition());
 							m_pPlayer->setPortalObject(obj);
 
@@ -1214,28 +1214,69 @@ void PlayLayer::checkCollisions(float dt)
 							break;
 
 						case GameObjectType::kGameObjectTypeYellowJumpPad:
-							if (!obj->m_bHasBeenActivated)
-							{
-								m_pPlayer->setPortalP(obj->getPosition());
-								m_pPlayer->setPortalObject(obj);
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
 
-								obj->triggerActivated();
-								m_pPlayer->propellPlayer();
-							}
+							obj->triggerActivated();
+							m_pPlayer->propellPlayer(1);
 							break;
 
-						case GameObjectType::kGameObjectTypeYellowJumpRing:
-							if (!obj->m_bHasBeenActivated)
-							{
-								m_pPlayer->setPortalP(obj->getPosition());
-								m_pPlayer->setPortalObject(obj);
+						case kGameObjectTypeGravityPad: {
+							auto pos = obj->getPosition();
+							pos.y -= 10;
+							m_pPlayer->setPortalP(pos);
+							m_pPlayer->setPortalObject(obj);
 
-								m_pPlayer->setTouchedRing(obj);
+							obj->triggerActivated();
+							m_pPlayer->propellPlayer(0.8);
+							m_pPlayer->flipGravity(!m_pPlayer->isGravityFlipped());
+							break;
+						}
 
-								m_pPlayer->ringJump();
-							}
+						case kGameObjectTypePinkJumpPad:
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+
+							obj->triggerActivated();
+							m_pPlayer->propellPlayer(0.65);
+							break;
+
+						case kGameObjectTypeRedJumpPad:
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+
+							obj->triggerActivated();
+							m_pPlayer->propellPlayer(1.25);
+							break;
+
+						case kGameObjectTypeYellowJumpRing:
+						case kGameObjectTypeDashRing:
+						case kGameObjectTypeGravityRing:
+						case kGameObjectTypeRedJumpRing:
+						case kGameObjectTypePinkJumpRing:
+						case kGameObjectTypeDropRing:
+
+							obj->triggerActivated();
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+
+							m_pPlayer->setTouchedRing(obj);
+
+							m_pPlayer->ringJump(obj);
 							break;
 						case GameObjectType::kGameObjectTypeSpecial:
+							break;
+						case kGameObjectTypeMiniSizePortal:
+							obj->triggerActivated();
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+							m_pPlayer->toggleMini(true);
+							break;
+						case kGameObjectTypeRegularSizePortal:
+							obj->triggerActivated();
+							m_pPlayer->setPortalP(obj->getPosition());
+							m_pPlayer->setPortalObject(obj);
+							m_pPlayer->toggleMini(false);
 							break;
 						default:
 							m_pPlayer->collidedWithObject(dt, obj);
@@ -1249,14 +1290,20 @@ void PlayLayer::checkCollisions(float dt)
 	for (unsigned int i = 0; i < m_pHazards.size(); ++i)
 	{
 		GameObject* hazard = m_pHazards[i];
-
-		if (playerOuterBounds.intersectsRect(hazard->getOuterBounds()))
+		if (hazard->_radius > 0)
+		{
+			if (playerOuterBounds.intersectsCircle(hazard->getPosition() + Vec2(15, 15), hazard->_radius))
+				destroyPlayer();
+		}
+		else if (playerOuterBounds.intersectsRect(hazard->getOuterBounds()))
 		{
 			destroyPlayer();
-			return;
 		}
 	}
 	m_pHazards.clear();
+
+	if (m_pPlayer->_currentGamemode == PlayerGamemodeShip)
+		m_pPlayer->_queuedHold = false;
 }
 
 void PlayLayer::onDrawImGui()
@@ -1267,6 +1314,8 @@ void PlayLayer::onDrawImGui()
 	ImGui::SetNextWindowPos({1000.0f, 200.0f}, ImGuiCond_FirstUseEver);
 
 	ImGui::Begin("PlayLayer Debug");
+
+	ImGui::Text(std::to_string(m_pPlayer->_queuedHold).c_str());
 
 	ImGui::Checkbox("Freeze Player", &m_freezePlayer);
 	ImGui::Checkbox("Platformer Mode (Basic)", &m_platformerMode);
@@ -1280,8 +1329,11 @@ void PlayLayer::onDrawImGui()
 			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
 								 monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 		else
+		{
 			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
 								 NULL, 0, 0, 1280, 720, 0);
+			glfwWindowHint(GLFW_DECORATED, true);
+		}
 	}
 
 	ImGui::SameLine();
@@ -1444,6 +1496,8 @@ void PlayLayer::resetLevel()
 								_levelSettings.songOffset);
 
 	changeGameMode(m_pPlayer, _levelSettings.gamemode);
+	m_pPlayer->toggleMini(_levelSettings.mini);
+	m_obCamPos.y = m_fCameraYCenter;
 	scheduleUpdate();
 }
 
@@ -1554,6 +1608,7 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 		m_pPlayer->onTouchBegan(nullptr, nullptr);
 	}
 	break;
+		break;
 	case EventKeyboard::KeyCode::KEY_BACK: {
 		m_pPlayer->onTouchEnded(nullptr, nullptr);
 		this->exit();

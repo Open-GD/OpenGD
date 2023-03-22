@@ -10,7 +10,6 @@ private:
 	GroundLayer* _ground;
 
 public:
-	static std::vector<GJGameLevel*> _levels;
 	static ax::Scene* scene();
 	bool init();
 	CREATE_FUNC(LevelSelectLayer);
