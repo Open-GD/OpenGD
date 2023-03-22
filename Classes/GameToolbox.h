@@ -65,6 +65,4 @@ namespace GameToolbox
 		void log(fmt::format_string<T...> fmt, T&&... args) {
 		return fmt::print("[{:%H:%M:%S}] {}\n", fmt::gmtime(std::time(NULL)), fmt::format(fmt, std::forward<T>(args)...));
 	}
-
-	std::string getClipboardString();
 };

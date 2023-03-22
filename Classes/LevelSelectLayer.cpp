@@ -5,20 +5,31 @@
 #include "PlayLayer.h"
 #include "GameToolbox.h"
 #include "MenuLayer.h"
-#include "BoomScrollLayer.h"
 #include "LevelPage.h"
 
 USING_NS_AX;
 
 
-Scene* LevelSelectLayer::scene()
+Scene* LevelSelectLayer::scene(int page)
 {
 	auto scene = Scene::create();
-	scene->addChild(LevelSelectLayer::create());
+	scene->addChild(LevelSelectLayer::create(page));
 	return scene;
 }
 
-bool LevelSelectLayer::init()
+LevelSelectLayer* LevelSelectLayer::create(int page) {
+	LevelSelectLayer* pRet = new LevelSelectLayer();
+	if (pRet->init(page)) {
+		pRet->autorelease();
+		return pRet;
+	} else {
+		delete pRet;
+		pRet = nullptr;
+		return nullptr;
+	}
+}
+
+bool LevelSelectLayer::init(int page)
 {
 
 	if(!Layer::init()) return false;
@@ -34,25 +45,12 @@ bool LevelSelectLayer::init()
 	_background->setScaleY((winSize.height + 10.0f) / _background->getTextureRect().size.height);
 	_background->setPosition({-5.0f, -5.0f});
 	_background->setColor({0x28, 0x7D, 0xFF});
-
-	// why does game manager store the ground id? who knows!
 	_ground = GroundLayer::create(1);
 	_ground->setPositionY(-25.f);
 	addChild(_ground, -1);
 
-	// auto topBar = Sprite::create("GJ_topBar_001.png");
-	// topBar->setAnchorPoint({0.5f, 1.0f});
-	// topBar->setPosition({winSize.width / 2, winSize.height + 1.0f});
-
-	// addChild(topBar, 1);
-
 	GameToolbox::createCorners(this, false, false, true, true);
 	
-
-	//for(uint32_t i = 0; i < 20; i++)
-	//{
-	//	layers.push_back(LevelPage::create(GJGameLevel::createWithMinimumData(fmt::format("Stereo Madness {}", i), "RobTop", 1)));
-	//}
 	constexpr auto levelData = std::to_array<std::tuple<const char*, const char*, int>>({
 		{ "Stereo Madness", "Robtop", 1 },
 		{ "Back on Track", "Robtop", 2 },
@@ -75,11 +73,11 @@ bool LevelSelectLayer::init()
 		{ "Geometrical Dominator", "Robtop", 19 },
 		{ "Deadlocked", "Robtop", 20 },
 		{ "Fingerdash", "Robtop", 21 },
-		{ "Performance Test", "OpenGD", -1 }
+		{ "Performance Test", "OpenGD", 22 }
 	});
 	
-	//TODO: add getters on bsl and level page because they are actually owning the stuff
-	
+	//TODO: add getters on level page because they are actually owning the stuff
+
 	std::vector<Layer*> layers;
 	layers.reserve(levelData.size());
 	
@@ -88,55 +86,8 @@ bool LevelSelectLayer::init()
 		auto level = GJGameLevel::createWithMinimumData(name, creator, id);
 		layers.push_back(LevelPage::create(level));
 	}
-	
-	auto bsl = BoomScrollLayer::create(layers, 0);
-	addChild(bsl);
-
-	/* std::vector<GJGameLevel> mainLevels;
-	cocos2d::CCArray* levelPages = cocos2d::CCArray::create();
-	for (size_t i = 0; i < 22; i++)
-		mainLevels->addObject(GLM->getMainLevel(i, true));
-
-	for (size_t i = 0; i < 3; i++)
-		levelPages->addObject(LevelPage::create(nullptr)); // the class takes a level object?
-
-	GJGameLevel* defaultLevel = GJGameLevel::create();
-	defaultLevel->setLevelID(-1);
-	mainLevels->addObject(defaultLevel);
-
-	m_pBoomScrollLayer =
-		BoomScrollLayer::create(mainLevels, 0, true, levelPages, static_cast<DynamicScrollDelegate*>(this));
-	addChild(m_pBoomScrollLayer);
-
-	m_pBoomScrollLayer->setPagesIndicatorPosition({winSize / 2, director->getScreenBottom() + 15.0f});
-
-	m_fWindowWidth = winSize.width;
-
-	m_pBoomScrollLayer->m_pExtendedLayer->m_pDelegate = static_cast<BoomScrollLayerDelegate*>(this);
-
-	if (page)
-	{
-		if (page == 21) m_pBoomScrollLayer->instantMoveToPage(20);
-		m_pBoomScrollLayer->instantMoveToPage(page);
-	}
-	else
-	{
-		scrollLayerMoved(&Globals::gScollLayerPos); //
-	} */
-
-	// auto download = Label::createWithBMFont("Download the soundtracks", "bigFont.fnt");
-	// download->setScale(0.5f);
-
-	// MenuItemSpriteExtra* downloadBtn = MenuItemSpriteExtra::create(download, [&](Node* btn) {
-	// //auto a = GJMoreGamesLayer::create();
-	// //addChild(a);
-	// });
-	// downloadBtn->setScale(2.0f);
-
-	// Menu* DLMenu = Menu::create();
-	// addChild(DLMenu);
-
-	// DLMenu->setPosition({winSize.width / 2, 0 + 35.0f});
+	_bsl = BoomScrollLayer::create(layers, page);
+	addChild(_bsl);
 
 	auto btnMenu = Menu::create();
 	addChild(btnMenu, 5);
@@ -148,8 +99,8 @@ bool LevelSelectLayer::init()
 		Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Left_001.png" : "navArrowBtn_001.png");
 	if (!controller) left->setFlippedX(true);
 
-	MenuItemSpriteExtra* leftBtn = MenuItemSpriteExtra::create(left, [&, bsl](Node* btn) {
-		bsl->changePageLeft();
+	MenuItemSpriteExtra* leftBtn = MenuItemSpriteExtra::create(left, [this](Node* btn) {
+		_bsl->changePageLeft();
 	});
 	btnMenu->addChild(leftBtn);
 
@@ -158,8 +109,8 @@ bool LevelSelectLayer::init()
 
 	auto right = Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Right_001.png" : "navArrowBtn_001.png");
 
-	MenuItemSpriteExtra* rightBtn = MenuItemSpriteExtra::create(right, [&, bsl](Node* btn) {
-		bsl->changePageRight();
+	MenuItemSpriteExtra* rightBtn = MenuItemSpriteExtra::create(right, [this](Node* btn) {
+		_bsl->changePageRight();
 	});
 	btnMenu->addChild(rightBtn);
 
@@ -167,7 +118,7 @@ bool LevelSelectLayer::init()
 	rightBtn->setPosition(btnMenu->convertToNodeSpace({ winSize.width - 25.0f, winSize.height / 2 }));
 
 	auto back = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
-	MenuItemSpriteExtra* backBtn = MenuItemSpriteExtra::create(back, [&](Node* btn) {
+	MenuItemSpriteExtra* backBtn = MenuItemSpriteExtra::create(back, [](Node* btn) {
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
 	//backBtn->setScale(1.6f);
@@ -197,14 +148,14 @@ bool LevelSelectLayer::init()
 
 	// int currentlevel = 0;
 
-	listener->onKeyPressed = [=](EventKeyboard::KeyCode code, Event*) {
+	listener->onKeyPressed = [this](EventKeyboard::KeyCode code, Event*) {
 		if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
 			auto scene = MenuLayer::scene();
 			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene));
 		} else if (code == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
-			bsl->changePageLeft();
+			_bsl->changePageLeft();
 		} else if (code == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
-			bsl->changePageRight();
+			_bsl->changePageRight();
 		} else if (code == EventKeyboard::KeyCode::KEY_SPACE) {
 			// ax::AudioEngine::stopAll();
 			// ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);

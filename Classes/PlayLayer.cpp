@@ -451,7 +451,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	if (levelStr.empty())
 	{
 		nlohmann::json file = nlohmann::json::parse(GameToolbox::getFileContentsResources("Custom/mainLevels.json"));
-		levelStr = "H4sIAAAAAAAAA" + (std::string)file[std::to_string(level->_LevelID)];
+		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_LevelID)]);
 	}
 
 	// scope based timer
@@ -1574,15 +1574,13 @@ void PlayLayer::exit()
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+	
+	auto id = getLevel()->_LevelID;
+	if(id <= 0 || id > 22)
+		return Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
+	
+	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_LevelID - 1)));
 
-	if (getLevel()->_LevelID <= 16)
-	{
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene()));
-	}
-	else
-	{
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
-	}
 }
 
 void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)

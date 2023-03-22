@@ -33,6 +33,18 @@ Scene* MenuLayer::scene()
 	return scene;
 }
 
+MenuLayer* MenuLayer::create() {
+	MenuLayer* pRet = new MenuLayer();
+	if (pRet->init()) {
+		pRet->autorelease();
+		return pRet;
+	} else {
+		delete pRet;
+		pRet = nullptr;
+		return nullptr;
+	}
+}
+
 bool MenuLayer::init()
 {
 	if (!Layer::init()) return false;
@@ -57,7 +69,7 @@ bool MenuLayer::init()
 		AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
 		auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 5));
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene)); */
-		auto scene = LevelSelectLayer::scene();
+		auto scene = LevelSelectLayer::scene(0);
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
 	playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
@@ -161,7 +173,7 @@ bool MenuLayer::init()
 
 	listener->onKeyPressed = [&](EventKeyboard::KeyCode code, Event*) {
 		if (code == EventKeyboard::KeyCode::KEY_SPACE) {
-			auto scene = LevelSelectLayer::scene();
+			auto scene = LevelSelectLayer::scene(0);
 			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
 			// auto closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to <cr>Quit</c>?", "Cancel", "Yes", NULL, NULL);

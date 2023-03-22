@@ -97,23 +97,17 @@ GJGameLevel* GJGameLevel::createWithMinimumData(std::string levelName, std::stri
 
 std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 {
-	std::string result = compressedLvlStr;
-
+	if (compressedLvlStr.empty())
+		return "";
+	
 	std::replace(compressedLvlStr.begin(), compressedLvlStr.end(), '_', '/');
 	std::replace(compressedLvlStr.begin(), compressedLvlStr.end(), '-', '+');
-
-	if (!compressedLvlStr.empty())
-	{
-		std::string decoded = base64_decode(compressedLvlStr);
-		unsigned char* data = (unsigned char*)decoded.data();
-		unsigned char* a = nullptr;
-
-		ssize_t deflatedLen = ax::ZipUtils::inflateMemory(data, decoded.length(), &a);
+	
+	std::string decoded = base64_decode(compressedLvlStr);
+	
+	unsigned char* data = (unsigned char*)decoded.data();
+	unsigned char* a = nullptr;
+	ssize_t deflatedLen = ax::ZipUtils::inflateMemory(data, decoded.length(), &a);
 		
-		result = std::string(reinterpret_cast<char*>(a));
-	}
-
-	//GameToolbox::log("\n\n{}\n\n", result);
-
-	return result;
+	return std::string(reinterpret_cast<char*>(a));
 }

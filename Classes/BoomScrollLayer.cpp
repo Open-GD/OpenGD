@@ -32,7 +32,7 @@ void BoomScrollLayer::selectPage(int current)
 	if (change < -1) change = 1;
 	if (change > 1) change = -1;
 
-	_currentPage = current;
+	_currentPage = current - 1;
 }
 
 void BoomScrollLayer::changePageRight()
@@ -89,7 +89,8 @@ bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 	if (!Layer::init()) return false;
 
 	_totalPages = layers.size();
-	if (currentPage > _totalPages) return false;
+
+	currentPage = std::clamp(currentPage, 0, _totalPages);
 
 	_layers = layers;
 	_currentPage = currentPage;
@@ -97,7 +98,6 @@ bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 	_internalLayer->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	auto dir = Director::getInstance();
 	auto winSize = dir->getWinSize();
-
 	if (_internalLayer->getChildrenCount() < _totalPages)
 	{
 		int i = 0;

@@ -10,5 +10,5 @@ public:
 	static bool music;
 	static ax::Scene* scene();
 	bool init();
-	CREATE_FUNC(MenuLayer);
+	static MenuLayer* create();
 };
