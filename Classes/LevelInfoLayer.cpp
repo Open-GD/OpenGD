@@ -268,10 +268,10 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 		switch (key)
 		{
 		case EventKeyboard::KeyCode::KEY_SPACE:
-				if (level->_LevelString.empty()) break;
-				AudioEngine::stopAll();
-				AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
-				Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+			if (level->_LevelString.empty()) break;
+			AudioEngine::stopAll();
+			AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
+			Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
 			break;
 		case EventKeyboard::KeyCode::KEY_ESCAPE:
 			Director::getInstance()->popScene();
