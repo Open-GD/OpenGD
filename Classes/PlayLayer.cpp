@@ -1391,6 +1391,7 @@ void PlayLayer::onDrawImGui()
 
 void PlayLayer::resetLevel()
 {
+	auto dir = Director::getInstance();
 	m_pPlayer->setPosition({2, 105});
 	m_pPlayer->setRotation(0);
 	m_pPlayer->setVisible(true);
@@ -1399,7 +1400,7 @@ void PlayLayer::resetLevel()
 	_bottomGround->setPositionX(0);
 	_ceiling->setPositionX(0);
 	m_pPlayer->reset();
-	m_pBG->setPositionX(0);
+	m_pBG->setPositionX(dir->getWinSize().x/2);
 	_enterEffectID = 0;
 
 	for (auto obj : this->_pObjects)
@@ -1485,7 +1486,7 @@ void PlayLayer::resetLevel()
 		}
 	}
 
-	ax::Director::getInstance()->getActionManager()->removeAllActions();
+	dir->getActionManager()->removeAllActions();
 
 	m_pColorChannels = std::unordered_map<int, SpriteColor>(_originalColors);
 
