@@ -44,6 +44,7 @@ bool LevelCell::init(GJGameLevel* level) {
     songText->setScale(0.5f, 0.5f);
     songText->setPosition({52, 33});
     songText->setAnchorPoint({0, 0.5});
+    songText->setColor(ax::Color3B(255, 132, 211));
     layer->addChild(songText);
 
     auto diffSprite = ax::Sprite::createWithSpriteFrameName(GJGameLevel::getDifficultySprite(level));
@@ -83,7 +84,7 @@ bool LevelCell::init(GJGameLevel* level) {
     menu->setPosition({315.45, 45});
     layer->addChild(menu);
 
-    auto creatorText = ax::Label::createWithBMFont("bigFont-uhd.fnt", fmt::format("By {}", level->_LevelCreator.empty() ? "-" : level->_LevelCreator));
+    auto creatorText = ax::Label::createWithBMFont("goldFont-uhd.fnt", fmt::format("By {}", level->_LevelCreator.empty() ? "-" : level->_LevelCreator));
     creatorText->setScale(0.6f);
     if(creatorText->getContentSize().width > 200) creatorText->setScale(creatorText->getScale() * (200 / creatorText->getContentSize().width));
     creatorText->setPosition({-260.525, 8});
