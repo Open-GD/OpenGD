@@ -16,9 +16,9 @@ MenuItemSpriteExtra::MenuItemSpriteExtra(const char* spriteStr, Node* sprNode, s
 }
 
 void MenuItemSpriteExtra::setDestination(ax::Vec2 dest) {
-    _altAnim = true;
-    _startPos  = m_pSprite->getPosition();
-    _offsetPos = ax::Vec2{_startPos.x + dest.x, _startPos.y + dest.y};
+	_altAnim = true;
+	_startPos  = m_pSprite->getPosition();
+	_offsetPos = ax::Vec2{_startPos.x + dest.x, _startPos.y + dest.y};
 }
 
 void MenuItemSpriteExtra::setScaleMultiplier(float s) {
@@ -26,15 +26,15 @@ void MenuItemSpriteExtra::setScaleMultiplier(float s) {
 	m_fSelectedScale = m_fUnselectedScale * s;
 }
 void MenuItemSpriteExtra::selected() {
-    if (_altAnim) m_pSprite->runAction(EaseInOut::create(MoveTo::create(m_fAnimDuration, _offsetPos), 1.5f));
-    else m_pSprite->runAction(EaseBounceOut::create(ScaleTo::create(m_fAnimDuration, m_fSelectedScale)));
-    MenuItemSprite::selected();
+	if (_altAnim) m_pSprite->runAction(EaseInOut::create(MoveTo::create(m_fAnimDuration, _offsetPos), 1.5f));
+	else m_pSprite->runAction(EaseBounceOut::create(ScaleTo::create(m_fAnimDuration, m_fSelectedScale)));
+	MenuItemSprite::selected();
 }
 
 void MenuItemSpriteExtra::unselected() {
 	m_pSprite->stopAllActions();
-    if (_altAnim) m_pSprite->runAction(EaseInOut::create(MoveTo::create(m_fAnimDuration, _startPos), 2.0f));
-    else m_pSprite->runAction(EaseBounceOut::create(ScaleTo::create(0.4f, m_fUnselectedScale)));
+	if (_altAnim) m_pSprite->runAction(EaseInOut::create(MoveTo::create(m_fAnimDuration, _startPos), 2.0f));
+	else m_pSprite->runAction(EaseBounceOut::create(ScaleTo::create(0.4f, m_fUnselectedScale)));
 	MenuItemSprite::unselected();
 }
 
@@ -45,8 +45,8 @@ void MenuItemSpriteExtra::setScale(float s) {
 }
 void MenuItemSpriteExtra::activate() {
 	m_pSprite->stopAllActions();
-    if (_altAnim) m_pSprite->setPosition(_startPos);
-    else m_pSprite->setScale(m_fUnselectedScale);
+	if (_altAnim) m_pSprite->setPosition(_startPos);
+	else m_pSprite->setScale(m_fUnselectedScale);
 	m_fCallback(this);
 }
 
