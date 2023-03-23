@@ -64,6 +64,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 
 	auto levelCreator =
 		Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
+	 if (level->_LevelCreator == "-") levelCreator->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
 	levelCreator->setPosition({winSize.width / 2, levelName->getPositionY() - 30.f});
 
 	if (levelCreator->getContentSize().width > 300.0f)

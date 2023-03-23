@@ -84,8 +84,9 @@ bool LevelCell::init(GJGameLevel* level) {
     menu->setPosition({315.45, 45});
     layer->addChild(menu);
 
-    auto creatorText = ax::Label::createWithBMFont("goldFont-uhd.fnt", fmt::format("By {}", level->_LevelCreator.empty() ? "-" : level->_LevelCreator));
+    auto creatorText = ax::Label::createWithBMFont("goldFont-uhd.fnt", fmt::format("By {}", level->_LevelCreator));
     creatorText->setScale(0.6f);
+    if (level->_LevelCreator == "-") creatorText->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
     if(creatorText->getContentSize().width > 200) creatorText->setScale(creatorText->getScale() * (200 / creatorText->getContentSize().width));
     creatorText->setPosition({-260.525, 8});
     creatorText->setAnchorPoint({0, 0.5});
