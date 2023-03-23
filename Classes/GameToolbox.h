@@ -11,6 +11,19 @@
 #include <filesystem>
 
 //general purpose class for helper functions that can be useful with any class at any moment
+enum IconType {
+    kIconTypeCube        = 0,
+    kIconTypeShip        = 1,
+    kIconTypeBall        = 2,
+    kIconTypeUfo         = 3,
+    kIconTypeWave        = 4,
+    kIconTypeRobot       = 5,
+    kIconTypeSpider      = 6,
+    kIconTypeSwing       = 7,
+    kIconTypeDeathEffect = 98,
+    kIconTypeSpecial     = 99,
+};
+
 namespace GameToolbox
 {
 	enum GTRes {
