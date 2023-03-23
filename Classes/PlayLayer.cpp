@@ -697,7 +697,12 @@ void PlayLayer::updateCamera(float dt)
 
 	if (!this->m_bMoveCameraX) m_obCamPos.x = cam.x;
 
-	if (!this->m_bMoveCameraY) m_obCamPos.y = GameToolbox::iLerp(m_obCamPos.y, cam.y, 0.1f, dt / 60.f);
+	//if camera reset then do not lerp
+	if (!this->m_bMoveCameraY && cam.x != 0) {
+		m_obCamPos.y = GameToolbox::iLerp(m_obCamPos.y, cam.y, 0.1f, dt / 60.f);
+	} else {
+		m_obCamPos.y = cam.y;
+	}
 
 	Camera::getDefaultCamera()->setPosition(this->m_obCamPos + winSize / 2);
 
