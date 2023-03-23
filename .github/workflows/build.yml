@@ -1,6 +1,5 @@
 name: Build All
 on:
-  push:
   workflow_dispatch:
 
 jobs:
