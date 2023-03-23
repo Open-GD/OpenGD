@@ -9,6 +9,61 @@ bool _showDebugImgui = true;
 
 // general purpose class for helper functions that can be useful anywhere
 
+int GameToolbox::getValueForGamemode(IconType mode) {
+        switch (mode) {
+        case kIconTypeCube:
+            return 142;
+        case kIconTypeShip:
+            return 51;
+        case kIconTypeBall:
+            return 43;
+        case kIconTypeUfo:
+        case kIconTypeWave:
+            return 35;
+        case kIconTypeRobot:
+            return 26;
+        case kIconTypeSpider:
+            return 17;
+        case kIconTypeSwing:
+            return 0;
+        case kIconTypeDeathEffect:
+            return 17;
+        case kIconTypeSpecial:
+            return 7;
+        default:
+            return 0;
+        }
+}
+const char* GameToolbox::getNameGamemode(IconType mode) {
+        switch (mode) {
+        case kIconTypeShip:
+            return "ship";
+        case kIconTypeBall:
+            return "player_ball";
+        case kIconTypeUfo:
+            return "bird";
+        case kIconTypeWave:
+            return "dart";
+        case kIconTypeRobot:
+            return "robot";
+        case kIconTypeSpider:
+            return "spider";
+        case kIconTypeSwing:
+            return "swing";
+        default:
+            return "player";
+        }
+}
+void GameToolbox::createBG(ax::Node* self, const ax::Color3B color) {
+        auto winSize = Director::getInstance()->getWinSize();
+        auto bg = Sprite::create("GJ_gradientBG.png");
+        bg->setStretchEnabled(false);
+        bg->setScaleX(winSize.width / bg->getContentSize().width);
+        bg->setScaleY(winSize.height / bg->getContentSize().height);
+        bg->setAnchorPoint({0, 0});
+        bg->setColor(color);
+        self->addChild(bg);
+}
 int GameToolbox::randomInt(int min, int max) {
     std::random_device device;
     std::mt19937 generator(device());
