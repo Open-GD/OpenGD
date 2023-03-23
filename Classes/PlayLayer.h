@@ -69,6 +69,7 @@ class PlayLayer : public ax::Layer
 	bool m_platformerMode;
 
 	bool m_bCanExitScene;
+	bool m_bEndAnimation;
 
 public:
 	int _enterEffectID = 0;
@@ -94,6 +95,10 @@ public:
 	void destroyPlayer();
 
 	void loadLevel(std::string levelStr);
+
+	void spawnCircle();
+	void showEndLayer();
+	void showCompleteText();
 
 	void update(float delta);
 	void updateCamera(float dt);

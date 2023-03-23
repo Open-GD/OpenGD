@@ -14,6 +14,7 @@
 #include <fstream>
 #include "json.hpp"
 #include "LevelInfoLayer.h"
+#include "ccRandom.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -34,6 +35,77 @@ Scene* PlayLayer::scene(GJGameLevel* level)
 	auto scene = Scene::create();
 	scene->addChild(PlayLayer::create(level));
 	return scene;
+}
+
+void PlayLayer::showCompleteText() {
+	m_bEndAnimation = true;
+
+	auto size = Director::getInstance()->getWinSize();
+
+	float scale = 1.1f;
+	const char* spr = "GJ_levelComplete_001.png";
+	/*if (m_isPracticeMode) {
+		spr = "GJ_practiceComplete_001.png";
+		scale = 1;
+	}*/
+
+	auto sprite = Sprite::createWithSpriteFrameName(spr);
+	sprite->setScale(0.01f);
+	sprite->setPosition({ size.width / 2, size.height / 2 + 35 });
+	m_pHudLayer->addChild(sprite);
+
+	sprite->runAction(Sequence::create(EaseElasticOut::create(ScaleTo::create(0.66f, scale), 0.6), DelayTime::create(0.88f), EaseIn::create(ScaleTo::create(0.22f, 0), 2.0f), RemoveSelf::create(true), nullptr));
+
+	auto col1 = m_pPlayer->getMainColor();
+	auto col2 = m_pPlayer->getSecondaryColor();
+
+	auto par1 = ParticleSystemQuad::create("levelComplete01.plist");
+	par1->setPosition(sprite->getPosition());
+	par1->setStartColor({ (GLfloat)col1.r, (GLfloat)col1.g, (GLfloat)col1.b, 255 });
+	par1->setEndColor({ (GLfloat)col1.r, (GLfloat)col1.g, (GLfloat)col1.b, 0 });
+	m_pHudLayer->addChild(par1, -1);
+
+	auto par2 = ParticleSystemQuad::create("levelComplete01.plist");
+	par2->setPosition(par1->getPosition());
+	par2->setStartColor({ (GLfloat)col2.r, (GLfloat)col2.g, (GLfloat)col2.b, 255 });
+	par2->setEndColor({ (GLfloat)col2.r, (GLfloat)col2.g, (GLfloat)col2.b, 0 });
+	m_pHudLayer->addChild(par2, -1);
+
+	auto cir = CircleWave::create(0.8f, { col1.r, col1.g, col1.b, 255 }, 5.f, size.width - 10, true, false);
+	cir->setPosition({ size.width - 10, size.height / 2 });
+	m_pHudLayer->addChild(cir, -1);
+
+	auto cir2 = CircleWave::create(0.8f, { col1.r, col1.g, col1.b, 255 }, 5.f, 250.0f, true, false);
+	cir2->setPosition(sprite->getPosition());
+	m_pHudLayer->addChild(cir2, -1);
+
+	for (int i = 0; i < 9; i++)
+		m_pHudLayer->runAction(Sequence::createWithTwoActions(DelayTime::create(0.16f * i), CallFunc::create([&]() {
+		PlayLayer::spawnCircle();
+			})));
+
+	m_pHudLayer->runAction(Sequence::createWithTwoActions(DelayTime::create(1.5f), CallFunc::create([&]() {
+		PlayLayer::showEndLayer();
+		})));
+}
+
+void PlayLayer::spawnCircle() {
+	auto size = Director::getInstance()->getWinSize();
+
+	auto minArea = Vec2({ 40, 70 });
+	auto maxArea = Vec2({ size.width - 40, size.height - 70 });
+
+	float x = ((float)rand() / RAND_MAX) * (maxArea.x - minArea.x) + minArea.x;
+	float y = ((float)rand() / RAND_MAX) * (maxArea.y - minArea.y) + minArea.y;
+
+	auto col1 = m_pPlayer->getMainColor();
+	auto cir = CircleWave::create(0.5f, { col1.r, col1.g, col1.b, 255 }, 5.f, 50, true, false);
+	cir->setPosition({ x, y });
+	m_pHudLayer->addChild(cir, -1);
+}
+
+void PlayLayer::showEndLayer() {
+	// DropDown layer
 }
 
 int PlayLayer::sectionForPos(float x)
@@ -625,6 +697,8 @@ void PlayLayer::update(float dt)
 	m_pBar->setPercentage(m_pPlayer->getPositionX() / this->m_lastObjXPos * 100.f);
 	float val = m_pPlayer->getPositionX() * 100 / this->m_lastObjXPos;
 	m_pPercentage->setString(StringUtils::format("%.02f%%", val > 100 ? 100 : val < 0 ? 0 : val));
+
+	if (val >= 100 && !m_bEndAnimation) this->showCompleteText();
 
 	this->updateVisibility();
 	this->updateCamera(step);
@@ -1418,6 +1492,7 @@ void PlayLayer::resetLevel()
 	m_pPlayer->reset();
 	m_pBG->setPositionX(dir->getWinSize().x/2);
 	_enterEffectID = 0;
+	m_bEndAnimation = false;
 
 	for (auto obj : this->_pObjects)
 	{
