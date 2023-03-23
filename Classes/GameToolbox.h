@@ -31,20 +31,21 @@ namespace GameToolbox
 		Medium,
 		High
 	};
-	const char* getNameGamemode(IconType mode);
-        int getValueForGamemode(IconType mode);
-	void createBG(ax::Node* layer, ax::Color3B color);
-        void createBG(ax::Node* layer) { return createBG(layer, {0, 102, 255}); };
 	int randomInt(int min, int max);
 	int randomInt(int max);
 	float randomFloat(int min, int max);
 	float randomFloat(int max);
 	
+        const char* getNameGamemode(IconType mode);
+        int getValueForGamemode(IconType mode);
+
 	ax::Color3B randomColor3B();
 	std::string getTextureString(std::string texture);
 	void alignItemsInColumnsWithPadding(ax::Menu* menu, const int rows, const int x_padding, const int y_padding);
 	void alignItemsVerticallyWithPadding(ax::Vector<ax::Node*> children, float padding);
 	void alignItemsHorizontallyWithPadding(ax::Vector<ax::Node*> children, float padding);
+        void createBG(ax::Node* layer, ax::Color3B color);
+		void createBG(ax::Node* layer);
 	void createCorners(ax::Node* layer, bool topRight, bool topLeft, bool botLeft, bool botRight);
 	inline void createAllCorners(ax::Node* self) { return createCorners(self, true, true, true, true); }
 	inline std::string getFileContentsResources(std::string_view file) { return ax::FileUtils::getInstance()->getStringFromFile(file); }

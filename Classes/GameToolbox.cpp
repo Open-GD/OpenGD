@@ -9,6 +9,29 @@ bool _showDebugImgui = true;
 
 // general purpose class for helper functions that can be useful anywhere
 
+int GameToolbox::randomInt(int min, int max) {
+    std::random_device device;
+    std::mt19937 generator(device());
+    std::uniform_int_distribution<int> distribution(min, max);
+
+    return distribution(generator);
+}
+
+void GameToolbox::createBG(ax::Node* self, const ax::Color3B color) {
+    auto winSize = Director::getInstance()->getWinSize();
+    auto bg = Sprite::create("GJ_gradientBG.png");
+    bg->setStretchEnabled(false);
+    bg->setScaleX(winSize.width / bg->getContentSize().width);
+    bg->setScaleY(winSize.height / bg->getContentSize().height);
+    bg->setAnchorPoint({ 0, 0 });
+    bg->setColor(color);
+    self->addChild(bg);
+}
+
+void GameToolbox::createBG(ax::Node* self) {
+    return createBG(self, { 0, 102, 255 });
+}
+
 int GameToolbox::getValueForGamemode(IconType mode) {
         switch (mode) {
         case kIconTypeCube:
@@ -54,23 +77,6 @@ const char* GameToolbox::getNameGamemode(IconType mode) {
             return "player";
         }
 }
-void GameToolbox::createBG(ax::Node* self, const ax::Color3B color) {
-        auto winSize = Director::getInstance()->getWinSize();
-        auto bg = Sprite::create("GJ_gradientBG.png");
-        bg->setStretchEnabled(false);
-        bg->setScaleX(winSize.width / bg->getContentSize().width);
-        bg->setScaleY(winSize.height / bg->getContentSize().height);
-        bg->setAnchorPoint({0, 0});
-        bg->setColor(color);
-        self->addChild(bg);
-}
-int GameToolbox::randomInt(int min, int max) {
-    std::random_device device;
-    std::mt19937 generator(device());
-    std::uniform_int_distribution<int> distribution(min, max);
-
-    return distribution(generator);
-}
 int GameToolbox::randomInt(int max) {
     return GameToolbox::randomInt(0, max);
 }
@@ -95,20 +101,20 @@ ax::BlendFunc GameToolbox::getBlending() {
 
 void GameToolbox::createCorners(ax::Node* self, bool topLeft, bool topRight, bool botLeft, bool botRight) {
     Sprite* corner = nullptr;
-    auto winSize   = Director::getInstance()->getWinSize();
+    auto winSize = Director::getInstance()->getWinSize();
     if (botLeft) {
         corner = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
         corner->setStretchEnabled(false);
-        corner->setPosition({0, 0});
-        corner->setAnchorPoint({0.0, 0.0});
+        corner->setPosition({ 0, 0 });
+        corner->setAnchorPoint({ 0.0, 0.0 });
         self->addChild(corner);
     }
 
     if (topLeft) {
         corner = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
         corner->setStretchEnabled(false);
-        corner->setPosition({0, winSize.height});
-        corner->setAnchorPoint({0, 1});
+        corner->setPosition({ 0, winSize.height });
+        corner->setAnchorPoint({ 0, 1 });
         corner->setFlippedY(true);
         self->addChild(corner);
     }
@@ -117,7 +123,7 @@ void GameToolbox::createCorners(ax::Node* self, bool topLeft, bool topRight, boo
         corner = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
         corner->setStretchEnabled(false);
         corner->setPosition(winSize);
-        corner->setAnchorPoint({1, 1});
+        corner->setAnchorPoint({ 1, 1 });
         corner->setFlippedX(true);
         corner->setFlippedY(true);
         self->addChild(corner);
@@ -126,12 +132,13 @@ void GameToolbox::createCorners(ax::Node* self, bool topLeft, bool topRight, boo
     if (botRight) {
         corner = Sprite::createWithSpriteFrameName("GJ_sideArt_001.png");
         corner->setStretchEnabled(false);
-        corner->setPosition({winSize.width, 0});
-        corner->setAnchorPoint({1, 0});
+        corner->setPosition({ winSize.width, 0 });
+        corner->setAnchorPoint({ 1, 0 });
         corner->setFlippedX(true);
         self->addChild(corner);
     }
 }
+
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
 #    include <windows.h>
 #endif
