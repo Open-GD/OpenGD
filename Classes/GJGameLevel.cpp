@@ -21,7 +21,7 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 	{
 		if (!stuff[i + 1].empty()) levelResponse.insert({stuff[i], stuff[i + 1]});
 	}
-
+	
 	if (levelResponse.contains("1")) level->_LevelID = std::stoi(levelResponse["1"]);
 	if (levelResponse.contains("2")) level->_LevelName = levelResponse["2"];
 	if (levelResponse.contains("3")) level->_Description = levelResponse["3"];
