@@ -561,3 +561,15 @@ std::string GameToolbox::getClipboardString() {
 		return "";
 	#endif
 }
+
+void GameToolbox::executeHttpRequest(const std::string& url, const std::string& postData, ax::network::HttpRequest::Type type, const ax::network::ccHttpRequestCallback& callback)
+{
+    ax::network::HttpRequest* request = new ax::network::HttpRequest();
+    request->setUrl(url);
+    request->setRequestType(type);
+    request->setHeaders(std::vector<std::string>{"User-Agent: "});
+    request->setRequestData(postData.c_str(), postData.length());
+    request->setResponseCallback(callback);
+    ax::network::HttpClient::getInstance()->send(request);
+    request->release();
+}

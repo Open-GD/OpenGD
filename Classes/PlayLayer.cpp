@@ -13,6 +13,7 @@
 #include <LevelPage.h>
 #include <fstream>
 #include "json.hpp"
+#include "LevelInfoLayer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -1586,7 +1587,7 @@ void PlayLayer::exit()
 	
 	auto id = getLevel()->_LevelID;
 	if(id <= 0 || id > 22)
-		return Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
+		return Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelInfoLayer::scene(getLevel())));
 	
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_LevelID - 1)));
 

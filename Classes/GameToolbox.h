@@ -63,6 +63,8 @@ namespace GameToolbox
 
 	std::optional<std::string> getResponse(ax::network::HttpResponse* response);
 	std::vector<std::string> splitByDelim(const std::string& s, char delim);
+
+	void executeHttpRequest(const std::string& url, const std::string& postData, ax::network::HttpRequest::Type type, const ax::network::ccHttpRequestCallback& callback);
 	
 	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int *outLength, unsigned int outLenghtHint);
 	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int outLengthHint);

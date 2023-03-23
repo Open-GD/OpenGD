@@ -3,9 +3,9 @@
 #include <axmol.h>
 
 enum SearchType {
-    kGJSearchTypeLiked = 0,
+    kGJSearchTypeLiked = 2,
     kGJSearchTypeDownloaded = 1,
-    kGJSearchTypeSearch = 2,
+    kGJSearchTypeSearch = 0,
     kGJSearchTypeTrending = 3,
     kGJSearchTypeRecent = 4,
     kGJSearchTypeUsersLevels = 5,
@@ -31,7 +31,7 @@ enum SearchType {
     class GJSearchObject : public ax::Node {
     public:
             SearchType _screenID;
-            std::string _searchQuery;
+            std::string _searchQuery = "favij";
             std::string _difficulty;
             std::string _length;
             int _page;
