@@ -6,22 +6,22 @@
 
 class LevelSearchLayer : public ax::Layer {
 private:
-    static void toggleDifficulty(ax::Node*);
-    static void toggleTime(ax::Ref*);
+	static void toggleDifficulty(ax::Node*);
+	static void toggleTime(ax::Ref*);
 
-    static ax::Menu* m_pDifficultyFilterMenu;
-    static ax::Menu* m_pLengthFilterMenu;
+	static ax::Menu* m_pDifficultyFilterMenu;
+	static ax::Menu* m_pLengthFilterMenu;
 
-    GJSearchObject* searchObj;
+	GJSearchObject* searchObj;
 
 public:
-    static TextInputNode* _searchField;
+	static TextInputNode* _searchField;
 
-    static std::vector<int> m_dSelectedDifficulties;
-    static std::vector<int> m_dSelectedTimes;
+	static std::vector<int> m_dSelectedDifficulties;
+	static std::vector<int> m_dSelectedTimes;
 
-    CREATE_FUNC(LevelSearchLayer);
-    static ax::Scene* scene();
+	CREATE_FUNC(LevelSearchLayer);
+	static ax::Scene* scene();
 
-    bool init();
+	bool init();
 };

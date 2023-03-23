@@ -134,17 +134,39 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 	listView->removeAllItems();
 	if (auto str = GameToolbox::getResponse(response))
 	{
-		;
+		//error codes -1, -2 etc
+		if((*str).length() < 5)
+			return;
+		
+		GameToolbox::log("response: {}", *str);
 		auto splits = GameToolbox::splitByDelim((*str), '#');
 		auto levels = GameToolbox::splitByDelim(splits[0], '|');
-		auto authors = GameToolbox::splitByDelim(splits[1], '|');
+		auto authorsStrings = GameToolbox::splitByDelim(splits[1], '|');
+		
+		std::vector<std::vector<std::string>> authors;
+		authors.reserve(authorsStrings.size()); //pre-allocate enough memory
+		for(const std::string& aStr : authorsStrings) {
+			authors.push_back(std::move(GameToolbox::splitByDelim(aStr, ':')));
+		}
+		
+		auto getAuthor = [&](GJGameLevel* gjlevel) -> std::string
+		{
+			for(const auto& author : authors)
+			{
+				if(std::stoi(author[0]) == gjlevel->_PlayerID)
+					return author[1];
+			}
+			return std::string("-");
+		};
+		
 		std::vector<GJGameLevel*> toInsert;
-
+		toInsert.reserve(levels.size()); //pre-allocate enough memory
+		
 		for (size_t i = 0; i < levels.size(); i++)
 		{
 			auto gjlevel = GJGameLevel::createWithResponse(levels[i]);
-            gjlevel->_LevelCreator = "DummyCreator"; //cant figure out how to use authors, i keep getting an error when splitting the string with :
-            gjlevel->_SongName = "Cool catchy song";
+			gjlevel->_LevelCreator = getAuthor(gjlevel);
+			gjlevel->_SongName = "Cool catchy song";
 			toInsert.push_back(gjlevel);
 		}
 

@@ -5,7 +5,7 @@
 
 class LevelEditorLayer : public ax::Layer {
 private:
-    bool init(GJGameLevel* level);
+	bool init(GJGameLevel* level);
 	void exit();
 
 	AX_SYNTHESIZE(GJGameLevel*, _level, Level);

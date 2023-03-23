@@ -69,7 +69,7 @@ bool InfoLayer::init(GJGameLevel* level)
 	this->m_pMainLayer->addChild(levelCreator);
 
 
-	auto desc = level->_Description.empty() ? "(No description provided)" : level->_Description;
+	auto desc = level->_Description.empty() ? "(No description provided)" : base64_decode(level->_Description);
 	
 	auto descField = ax::ui::UICCTextField::createWithBMFont(GameToolbox::getTextureString("chatFont.fnt"), desc, TextHAlignment::CENTER, 380.f);
 	descField->setPosition({ winSize.width / 2, (winSize.height / 2) + 10.f /*+ 20.f */});

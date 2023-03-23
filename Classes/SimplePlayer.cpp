@@ -7,21 +7,21 @@ bool SimplePlayer::init(int cubeID) {
 
 	this->updateGamemode(cubeID, kIconTypeCube);
 	this->setContentSize({ 60, 60 });
-    this->setAnchorPoint({.25f, .25f});
+	this->setAnchorPoint({.25f, .25f});
 
 	return true;
 }
 
 void SimplePlayer::updateGamemode(int iconID, IconType mode) {
-        iconID = GameToolbox::inRange(iconID, 1, GameToolbox::getValueForGamemode(mode));
+		iconID = GameToolbox::inRange(iconID, 1, GameToolbox::getValueForGamemode(mode));
 
-    auto tipo = GameToolbox::getNameGamemode(mode);
+	auto tipo = GameToolbox::getNameGamemode(mode);
 
-    auto mainFrame = StringUtils::format("%s_%02d_001.png", tipo, iconID);
-    auto secFrame = StringUtils::format("%s_%02d_2_001.png", tipo, iconID);
-    auto extFrame = StringUtils::format("%s_%02d_extra_001.png", tipo, iconID);
-    auto glowFrame = StringUtils::format("%s_%02d_glow_001.png", tipo, iconID);
-    auto domeFrame = StringUtils::format("%s_%02d_3_001.png", tipo, iconID);
+	auto mainFrame = StringUtils::format("%s_%02d_001.png", tipo, iconID);
+	auto secFrame = StringUtils::format("%s_%02d_2_001.png", tipo, iconID);
+	auto extFrame = StringUtils::format("%s_%02d_extra_001.png", tipo, iconID);
+	auto glowFrame = StringUtils::format("%s_%02d_glow_001.png", tipo, iconID);
+	auto domeFrame = StringUtils::format("%s_%02d_3_001.png", tipo, iconID);
 
 	if (m_pMainSprite) this->removeChild(m_pMainSprite);
 	if (m_pSecondarySprite) this->removeChild(m_pSecondarySprite);
@@ -29,7 +29,7 @@ void SimplePlayer::updateGamemode(int iconID, IconType mode) {
 	if (m_pExtraSprite) this->removeChild(m_pExtraSprite);
 	if (m_pDomeSprite) this->removeChild(m_pDomeSprite);
 
-    // Main Color
+	// Main Color
 	m_pMainSprite = Sprite::createWithSpriteFrameName(mainFrame);
 	if (!m_pMainSprite) m_pMainSprite = Sprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
 	m_pMainSprite->setAnchorPoint({ 0, 0 });
@@ -48,14 +48,14 @@ void SimplePlayer::updateGamemode(int iconID, IconType mode) {
 	if (!m_pGlowSprite) m_pGlowSprite = Sprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
 	m_pGlowSprite->setPosition(m_pMainSprite->getContentSize() / 2);
 	m_pGlowSprite->setStretchEnabled(false);
-    m_pGlowSprite->setVisible(m_bHasGlow);
+	m_pGlowSprite->setVisible(m_bHasGlow);
 	this->addChild(m_pGlowSprite, -1);
 
 	// Extra
 	m_pExtraSprite = Sprite::createWithSpriteFrameName(extFrame);
 	if (m_pExtraSprite) {
 		m_pExtraSprite->setPosition(this->m_pMainSprite->getContentSize() / 2);
-        m_pExtraSprite->setStretchEnabled(false);
+		m_pExtraSprite->setStretchEnabled(false);
 		this->addChild(m_pExtraSprite);
 	}
 
@@ -75,7 +75,7 @@ void SimplePlayer::updateGamemode(int iconID, IconType mode) {
 void SimplePlayer::updateIconColors() {
 	m_pMainSprite->setColor(m_MainColor);
 	m_pSecondarySprite->setColor(m_SecondaryColor);
-    m_pGlowSprite->setColor(m_GlowColor);
+	m_pGlowSprite->setColor(m_GlowColor);
 }
 
 void SimplePlayer::setMainColor(Color3B col) {
@@ -89,13 +89,13 @@ void SimplePlayer::setSecondaryColor(Color3B col) {
 }
 
 void SimplePlayer::setGlow(bool glow) {
-    m_pGlowSprite->setVisible(glow);
-    m_bHasGlow = glow;
+	m_pGlowSprite->setVisible(glow);
+	m_bHasGlow = glow;
 }
 
 void SimplePlayer::setGlowColor(Color3B col) {
-    m_pGlowSprite->setColor(col);
-    m_GlowColor = col;
+	m_pGlowSprite->setColor(col);
+	m_GlowColor = col;
 }
 
 SimplePlayer* SimplePlayer::create(int cubeID) {

@@ -5,7 +5,7 @@
 
 class MoreGamesLayer : public DropDownLayer {
 private:
-    bool init();
+	bool init();
 public:
-    static MoreGamesLayer* create();
+	static MoreGamesLayer* create();
 };

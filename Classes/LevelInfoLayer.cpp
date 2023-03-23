@@ -37,13 +37,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 
 	_level = level;
 
-	auto bg = Sprite::create("GJ_gradientBG-hd.png");
-	bg->setScaleX(winSize.width / bg->getContentSize().width);
-	bg->setScaleY(winSize.height / bg->getContentSize().height);
-	bg->setAnchorPoint({0, 0});
-	bg->setColor({0, 102, 255});
-	this->addChild(bg);
-
+	GameToolbox::createBG(this);
 	GameToolbox::createCorners(this, false, false, true, true);
 
 	auto backBtnMenu = Menu::create();
@@ -64,6 +58,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 
 	auto levelCreator =
 		Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
+	 if (level->_LevelCreator == "-") levelCreator->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
 	levelCreator->setPosition({winSize.width / 2, levelName->getPositionY() - 30.f});
 
 	if (levelCreator->getContentSize().width > 300.0f)
@@ -87,12 +82,13 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 		Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(_level)));
 	});
 	playBtn->setEnabled(false);
+	playBtn->setVisible(false);
 
 	playBtnMenu->addChild(playBtn);
 
 	loading = LoadingCircle::create();
 	loading->setPosition(playBtnMenu->getPosition());
-	loading->getCircle()->setScale(2.f);
+	loading->getCircle()->setScale(3.f);
 	loading->setVisible(true);
 
 	this->addChild(loading);
@@ -232,6 +228,10 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	auto deleteBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"), [](Node*) {
 		auto alert =
 			AlertLayer::create("Delete Level", "Are you sure you want to delete this level?", "NO", "YES", NULL, NULL);
+			alert->setBtn2Callback([=](TextButton*) {
+				alert->close();
+				Director::getInstance()->popScene();
+			});
 		alert->show();
 	});
 	menu->addChild(deleteBtn);
@@ -269,6 +269,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 		switch (key)
 		{
 		case EventKeyboard::KeyCode::KEY_SPACE:
+			if (level->_LevelString.empty()) break;
 			AudioEngine::stopAll();
 			AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
 			Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
@@ -285,6 +286,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	{
 		loading->setVisible(false);
 		playBtn->setEnabled(true);
+		playBtn->setVisible(true);
 		return true;
 	}
 
@@ -302,6 +304,7 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 	if (auto str = GameToolbox::getResponse(response))
 	{
 		playBtn->setEnabled(true);
+		playBtn->setVisible(true);
 		_level = GJGameLevel::createWithResponse((*str));
 	}
 	else

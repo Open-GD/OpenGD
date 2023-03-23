@@ -6,6 +6,6 @@
 class LevelCell : public ax::ui::Widget
 {
 public:
-    static LevelCell* create(GJGameLevel* level);
-    bool init(GJGameLevel* level);
+	static LevelCell* create(GJGameLevel* level);
+	bool init(GJGameLevel* level);
 };
