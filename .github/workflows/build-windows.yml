@@ -61,7 +61,7 @@ jobs:
           ls build
           cmake --build build
           ls build/bin/
-          cp Resources/* build/bin/OpenGD/${CMAKE_BUILD_TYPE}/Resources
+          # cp -Recurse Resources/* build/bin/OpenGD/${CMAKE_BUILD_TYPE}/Resources
       - uses: actions/upload-artifact@v3
         with:
           name: Debug_Windows_Binary
