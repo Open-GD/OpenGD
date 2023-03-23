@@ -526,13 +526,22 @@ bool PlayLayer::init(GJGameLevel* level)
 		}
 	}
 
+	m_pHudLayer = Layer::create();
+
 	this->m_pBar = SimpleProgressBar::create();
 	this->m_pBar->setPercentage(0.f);
 	this->m_pBar->setPosition({winSize.width / 2, winSize.height - 20});
-	this->addChild(m_pBar, 1000);
+	m_pHudLayer->addChild(m_pBar);
 
-	m_pBar->setPosition(this->m_obCamPos + winSize / 2);
-	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
+	m_pBar->setPosition({ winSize.width / 2, winSize.height - 10 });
+
+	m_pPercentage = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "0%");
+	m_pPercentage->setScale(.5f);
+	m_pPercentage->setAnchorPoint({ 0, .5f });
+	m_pPercentage->setPosition({ m_pBar->getPositionX() + 110, m_pBar->getPositionY() + 1 });
+	m_pHudLayer->addChild(m_pPercentage);
+
+	addChild(m_pHudLayer, 1000);
 
 	bool levelValid = LevelTools::verifyLevelIntegrity(this->getLevel()->_LevelString, this->getLevel()->_LevelID);
 
@@ -547,7 +556,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	updateVisibility();
 
 	m_bCanExitScene = false;
-
+	
 	scheduleOnce(
 		[=](float d) {
 			m_bCanExitScene = true;
@@ -561,7 +570,7 @@ bool PlayLayer::init(GJGameLevel* level)
 			}
 		},
 		1.f, "k");
-
+		
 	return true;
 }
 
@@ -614,6 +623,8 @@ void PlayLayer::update(float dt)
 	}
 
 	m_pBar->setPercentage(m_pPlayer->getPositionX() / this->m_lastObjXPos * 100.f);
+	float val = m_pPlayer->getPositionX() * 100 / this->m_lastObjXPos;
+	m_pPercentage->setString(StringUtils::format("%.02f%%", val > 100 ? 100 : val < 0 ? 0 : val));
 
 	this->updateVisibility();
 	this->updateCamera(step);
@@ -711,8 +722,7 @@ void PlayLayer::updateCamera(float dt)
 	_ceiling->setVisible(m_pPlayer->_currentGamemode != PlayerGamemodeCube);
 	if (m_pPlayer->_currentGamemode == PlayerGamemodeCube) _bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
 
-	m_pBar->setPosition(this->m_obCamPos + winSize / 2);
-	m_pBar->setPositionY((this->m_obCamPos + winSize).height - 10);
+	m_pHudLayer->setPosition(this->m_obCamPos);
 }
 
 float PlayLayer::getRelativeMod(Vec2 pos, float v1, float v2, float v3)

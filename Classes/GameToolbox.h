@@ -36,6 +36,7 @@ namespace GameToolbox
 	float randomFloat(int min, int max);
 	float randomFloat(int max);
 	
+	ax::Color3B colorForIdx(int col);
         const char* getNameGamemode(IconType mode);
         int getValueForGamemode(IconType mode);
 

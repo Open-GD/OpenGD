@@ -230,7 +230,7 @@ void PlayerObject::update(float dt)
 		{
 			if (!_particles1Activated)
 			{
-				dragEffect1->resumeEmissions();
+				//dragEffect1->resumeEmissions();
 				_particles1Activated = true;
 			}
 			if (getActionByTag(2)) stopActionByTag(2);
@@ -241,7 +241,7 @@ void PlayerObject::update(float dt)
 			{
 				Sequence* action = Sequence::create(
 					DelayTime::create(0.06f), CallFunc::create([=]() {
-						if (_particles1Activated) dragEffect1->pauseEmissions();
+						//if (_particles1Activated) dragEffect1->pauseEmissions();
 						_particles1Activated = false;
 					}),
 					nullptr);
@@ -252,12 +252,12 @@ void PlayerObject::update(float dt)
 		// shipDragEffect->pauseEmissions();
 		if (_particles3Activated)
 		{
-			dragEffect3->pauseEmissions();
+			//dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
 		if (_particles2Activated)
 		{
-			dragEffect2->pauseEmissions();
+			//dragEffect2->pauseEmissions();
 			_particles2Activated = false;
 		}
 	}
@@ -265,22 +265,22 @@ void PlayerObject::update(float dt)
 	{
 		if (m_bIsHolding)
 		{
-			if (!_particles3Activated) dragEffect3->resumeEmissions();
+			//if (!_particles3Activated) dragEffect3->resumeEmissions();
 			_particles3Activated = true;
 		}
 		else
 		{
-			if (_particles3Activated) dragEffect3->pauseEmissions();
+			//if (_particles3Activated) dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
 		if (!_particles2Activated)
 		{
-			dragEffect2->resumeEmissions();
+			//dragEffect2->resumeEmissions();
 			_particles2Activated = true;
 		}
 		if (_particles1Activated)
 		{
-			dragEffect1->pauseEmissions();
+			//dragEffect1->pauseEmissions();
 			_particles1Activated = false;
 		}
 		// if (isOnGround() && m_dYVel > -1.f)
@@ -911,19 +911,19 @@ void PlayerObject::checkSnapJumpToObject(GameObject* obj)
 void PlayerObject::hitGround(bool reverseGravity)
 {
 	m_dYVel = 0.0f;
-
+	
 	if (!isOnGround() && !reverseGravity)
 	{
 		landEffect1->setPosition(getPosition() + Vec2 {0.f, flipMod() * -15.f});
 		landEffect1->resetSystem();
 		landEffect1->start();
 	}
-
+	
 	if (_currentGamemode == PlayerGamemodeBall && !isOnGround()) runBallRotation();
-
+	
 	_queuedHold = false;
 	setIsOnGround(true);
-
+	
 	if (getActionByTag(0)) stopRotation();
 
 	m_obLastGroundPos = getPosition();

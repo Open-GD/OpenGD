@@ -62,7 +62,7 @@ bool LoadingLayer::init() {
 	auto bgSpr = Sprite::create(getTextureString("game_bg_01_001.png"));
 	bgSpr->setStretchEnabled(false);
 	bgSpr->setPosition(winSize / 2);
-	bgSpr->setScale(1.185f);
+	bgSpr->setScale(winSize.width / bgSpr->getContentSize().width);
 	bgSpr->setColor({ 0, 102, 255 });
 	this->addChild(bgSpr);
 

@@ -59,7 +59,7 @@ bool MenuGameLayer::init(){
 	this->bgStartPos = bgSprites->getPositionX();
 	this->addChild(bgSprites, -3);
 	sep = 0.3f;
-	bgSprites->setScale(1.185f);
+	bgSprites->setScale(winSize.width / bgSprites->getContentSize().width);
 	bgSprites->setPositionY(0);
 
 	//this is not how it works lol

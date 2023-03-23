@@ -296,21 +296,8 @@ void GarageLayer::setupPage(IconType type) {
 
 void GarageLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) {
     switch (keyCode) {
-    case EventKeyboard::KeyCode::KEY_CTRL:
-        _ctrlDown = true;
-        break;
-
-    case EventKeyboard::KeyCode::KEY_V: {
-        if (_ctrlDown) {
-            GameToolbox::log("paste");
-            _userNameField->setString(GameToolbox::getClipboardString());
-        }
-        break;
-    }
-
-    case EventKeyboard::KeyCode::KEY_BACK: {
+    case EventKeyboard::KeyCode::KEY_BACK:
         Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
-    }
     }
 }
 

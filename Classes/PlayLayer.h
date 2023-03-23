@@ -59,7 +59,9 @@ class PlayLayer : public ax::Layer
 	bool m_bIsJumpPressed;
 
 	SimpleProgressBar* m_pBar;
+	ax::Label* m_pPercentage;
 
+	ax::Layer* m_pHudLayer;
 	LevelSettings _levelSettings;
 
 	//----IMGUI DEBUG MEMBERS----
