@@ -145,6 +145,7 @@ bool LevelSearchLayer::init()
 		searchObject->_searchQuery = _searchField->m_pTextField->getString();
 		searchObject->_difficulty = "";
 		searchObject->_length = "";
+		searchObject->_screenID = SearchType::kGJSearchTypeSearch;
 		for(int i = 0; i < m_dSelectedDifficulties.size(); i++) searchObject->_difficulty += fmt::format("{}{}", m_dSelectedDifficulties[i], i == m_dSelectedDifficulties.size() - 1 ? "" : ",");
 		for(int i = 0; i < m_dSelectedTimes.size(); i++) searchObject->_length += fmt::format("{}{}", m_dSelectedTimes[i], i == m_dSelectedTimes.size() - 1 ? "" : ",");
 		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
