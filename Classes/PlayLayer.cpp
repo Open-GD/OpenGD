@@ -1399,7 +1399,7 @@ void PlayLayer::resetLevel()
 	_bottomGround->setPositionX(0);
 	_ceiling->setPositionX(0);
 	m_pPlayer->reset();
-	m_pBG->setPositionX(0);
+	m_pBG->setPositionX(Director::getInstance()->getWinSize().x/2);
 	_enterEffectID = 0;
 
 	for (auto obj : this->_pObjects)
