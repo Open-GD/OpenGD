@@ -37,13 +37,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 
 	_level = level;
 
-	auto bg = Sprite::create("GJ_gradientBG-hd.png");
-	bg->setScaleX(winSize.width / bg->getContentSize().width);
-	bg->setScaleY(winSize.height / bg->getContentSize().height);
-	bg->setAnchorPoint({0, 0});
-	bg->setColor({0, 102, 255});
-	this->addChild(bg);
-
+	GameToolbox::createBG(this);
 	GameToolbox::createCorners(this, false, false, true, true);
 
 	auto backBtnMenu = Menu::create();
