@@ -82,12 +82,13 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 		Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(_level)));
 	});
 	playBtn->setEnabled(false);
+	playBtn->setVisible(false);
 
 	playBtnMenu->addChild(playBtn);
 
 	loading = LoadingCircle::create();
 	loading->setPosition(playBtnMenu->getPosition());
-	loading->getCircle()->setScale(2.f);
+	loading->getCircle()->setScale(3.f);
 	loading->setVisible(true);
 
 	this->addChild(loading);
@@ -285,6 +286,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	{
 		loading->setVisible(false);
 		playBtn->setEnabled(true);
+		playBtn->setVisible(true);
 		return true;
 	}
 
@@ -302,6 +304,7 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 	if (auto str = GameToolbox::getResponse(response))
 	{
 		playBtn->setEnabled(true);
+		playBtn->setVisible(true);
 		_level = GJGameLevel::createWithResponse((*str));
 	}
 	else
