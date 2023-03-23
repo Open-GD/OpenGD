@@ -18,7 +18,10 @@ namespace GameToolbox
 		Medium,
 		High
 	};
-	
+	const char* getNameGamemode(IconType mode);
+        int getValueForGamemode(IconType mode);
+	void createBG(ax::Node* layer, ax::Color3B color);
+        void createBG(ax::Node* layer) { return createBG(layer, {0, 102, 255}); };
 	int randomInt(int min, int max);
 	int randomInt(int max);
 	float randomFloat(int min, int max);
