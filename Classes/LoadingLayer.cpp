@@ -10,17 +10,68 @@ USING_NS_AX;
 using GameToolbox::getTextureString, GameToolbox::log;
 
 constexpr static auto splashes = std::to_array <const char*>({
-	"Listen to the music to help time your jumps", 
-	"Back for more are ya?", 
-	"Use practice mode to learn the layout of a level", 
-	"Build your own levels using the level editor", 
-	"Go online to play other players levels!", 
-	"If at first you don't succeed, try, try again...",
-	"Can you beat them all?",
+	"Use practice mode to learn the layout of a level",
+	"Back for more are ya?",
 	"Customize your character's icon and color!",
-	"You can download all songs from the level select page!",
+	"If at first you don't succeed, try, try again...",
+	"Listen to the music to help time your jumps",
+	"Loading resources",
+	"Here be dragons...",
+	"Can you beat them all?",
+	"Hold down to keep jumping",
+	"Pro tip: Don't crash",
 	"Spikes are not your friends, don't forget to jump",
-	"Unlock new icons and colors by completing achievements!"
+	"You can download all songs from the level select page!",
+	"Go online to play other players levels!",
+	"Build your own levels using the level editor",
+	"Does anyone even read this?",
+	"Pro tip: Jump",
+	"Waiting for planets to align",
+	"Collecting scrap metal",
+	"Looking for pixels",
+	"The spikes whisper to me...",
+	"What if the spikes are the good guys?",
+	"Loading awesome soundtracks...",
+	"Hiding secrets",
+	"Calculating chance of success",
+	"Programmer is sleeping, please wait",
+	"Drawing pretty pictures",
+	"Wandering around aimlessly",
+	"Starting the flux capacitor",
+	"Loading the progressbar",
+	"Where did I put that coin...",
+	"Loading Rage Cannon",
+	"Fus Ro DASH!",
+	"It's all in the timing",
+	"Counting to 1337",
+	"Play, Crash, Rage, Quit, Repeat",
+	"RobTop is Love, RobTop is Life",
+	"Such wow, very amaze.",
+	"Only one button required to crash",
+	"The Vault Keeper's name is 'Spooky'...",
+	"This seems like a good place to hide a secret...",
+	"Shhhh! You're gonna wake the big one!",
+	"Hope the big guy doesn't wake up...",
+	"Spikes... OF DOOM!",
+	"Fake spikes are fake",
+	"Loading will be finished... soon",
+	"Why don't you go outside?",
+	"Programming amazing AI",
+	"It's Over 9000!",
+	"Spooky doesn't get out much",
+	"Hiding secret vault",
+	"A wild RubRub appeared!",
+	"I have been expecting you.",
+	"Hiding rocket launcher",
+	"So many secrets...",
+	"Why u have to be mad?",
+	"I don't know how this works...",
+	"Unlock new icons and colors by completing achievements!",
+	"It is only game...",
+	"Warp Speed",
+	"RubRub was here",
+	"Hold on, reading the manual",
+	"So, what's up?"
 });
 
 constexpr static auto pngs = std::to_array<const char*>({
@@ -82,18 +133,10 @@ bool LoadingLayer::init() {
 	splashText->setScale(0.7f);
 
 	this->addChild(splashText);
-	m_pGrooveSprite = Sprite::create(getTextureString("slidergroove.png"));
-	m_pGrooveSprite->setStretchEnabled(false);
-	m_pGrooveSprite->setPosition({ winSize.width / 2, 100.0f });
-	this->m_fTotalBarWidth = m_pGrooveSprite->getContentSize().width - 8;
-	this->addChild(m_pGrooveSprite);
-
-	m_pBarSprite = Sprite::create(getTextureString("sliderBar.png"));
-	m_pBarSprite->setStretchEnabled(false);
-	m_pBarSprite->getTexture()->setTexParameters({ backend::SamplerFilter::NEAREST, backend::SamplerFilter::NEAREST, backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT });
-	m_pBarSprite->setAnchorPoint({0, 0});
-	m_pBarSprite->setPosition({ 2.0f, 4.0f });
-	m_pGrooveSprite->addChild(m_pBarSprite, -1);
+	_pBar = SimpleProgressBar::create();
+	_pBar->setPercentage(0.f);
+	_pBar->setPosition({ winSize.width / 2, 100.0f });
+	this->addChild(_pBar);
 	
 	this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([&]() { this->loadAssets(); }), nullptr));
 	
@@ -131,9 +174,9 @@ void LoadingLayer::loadAssets() {
 void LoadingLayer::assetLoaded(ax::Ref*) {
 	
 	this->m_nAssetsLoaded++;
-	GameToolbox::log("loading asset {}", m_nAssetsLoaded);
-	m_pBarSprite->setTextureRect({0, 0, m_fTotalBarWidth * (this->m_nAssetsLoaded / this->m_nTotalAssets), m_pBarSprite->getContentSize().height});
-	
+	GameToolbox::log("loading asset {} out of {}", (int)m_nAssetsLoaded, (int)m_nTotalAssets);
+	_pBar->setPercentage((m_nAssetsLoaded / m_nTotalAssets)*100.f);
+
 	if(m_nAssetsLoaded == m_nTotalAssets) {
 		Director::getInstance()->replaceScene(MenuLayer::scene());
 	}
