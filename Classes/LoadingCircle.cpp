@@ -7,10 +7,9 @@ bool LoadingCircle::init() {
 	if(!m_pCircle) {
 		GameToolbox::log("WARN: loadingCircle is not present in your gd textures!");
 	} else {
+		m_pCircle->setBlendFunc(GameToolbox::getBlending());
 		this->addChild(m_pCircle);
 	}
-
-	m_pCircle->setBlendFunc(GameToolbox::getBlending());
 
 	scheduleUpdate();
 
