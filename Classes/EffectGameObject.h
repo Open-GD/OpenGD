@@ -12,6 +12,8 @@ public:
 	float m_fOpacity;
 	int m_nTargetColorId = 1;
 
+	bool _triggerActivated;
+
 	void triggerActivated(float idk);
 	static EffectGameObject *create(std::string_view frame);
 };

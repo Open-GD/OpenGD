@@ -171,18 +171,6 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 
 	// scheduleUpdate();
 
-	auto dir = Director::getInstance();
-	auto listener = EventListenerTouchOneByOne::create();
-
-	listener->setEnabled(true);
-	listener->setSwallowTouches(true);
-
-	// trigger when you start touch
-	listener->onTouchBegan = AX_CALLBACK_2(PlayerObject::onTouchBegan, this);
-	listener->onTouchEnded = AX_CALLBACK_2(PlayerObject::onTouchEnded, this);
-
-	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-
 	return true;
 }
 
@@ -396,7 +384,7 @@ void PlayerObject::ringJump(GameObject* obj)
 	if (_touchedRingObject && _queuedHold && m_bIsHolding)
 	{
 		GameToolbox::log("h ffsiofsfsdofs");
-		_touchedRingObject->triggerActivated();
+		_touchedRingObject->triggerActivated(this);
 		m_isRising = true;
 		_queuedHold = false;
 		setIsOnGround(false);
@@ -760,7 +748,7 @@ topCollision:
 		}
 	}
 death:
-	if (playerRectI.intersectsRect(rect)) static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer();
+	if (playerRectI.intersectsRect(rect)) static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer(this);
 }
 
 void PlayerObject::setGamemode(PlayerGamemode mode)
@@ -911,19 +899,19 @@ void PlayerObject::checkSnapJumpToObject(GameObject* obj)
 void PlayerObject::hitGround(bool reverseGravity)
 {
 	m_dYVel = 0.0f;
-	
+
 	if (!isOnGround() && !reverseGravity)
 	{
 		landEffect1->setPosition(getPosition() + Vec2 {0.f, flipMod() * -15.f});
 		landEffect1->resetSystem();
 		landEffect1->start();
 	}
-	
+
 	if (_currentGamemode == PlayerGamemodeBall && !isOnGround()) runBallRotation();
-	
+
 	_queuedHold = false;
 	setIsOnGround(true);
-	
+
 	if (getActionByTag(0)) stopRotation();
 
 	m_obLastGroundPos = getPosition();
@@ -990,19 +978,17 @@ void PlayerObject::toggleMini(bool active)
 	this->runAction(bounce);
 }
 
-bool PlayerObject::onTouchBegan(ax::Touch* touch, ax::Event* event)
+void PlayerObject::pushButton()
 {
 	if (this->inPlayLayer)
 	{
 		m_bIsHolding = true;
 		_hasJustHeld = true;
 		_queuedHold = true;
-		return true;
 	}
-	return false;
 }
 
-void PlayerObject::onTouchEnded(ax::Touch* touch, ax::Event* event)
+void PlayerObject::releaseButton()
 {
 	if (this->inPlayLayer)
 	{

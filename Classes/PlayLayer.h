@@ -10,6 +10,7 @@
 
 #include "GJGameLevel.h"
 #include "SpriteColor.h"
+#include "UILayer.h"
 
 struct LevelSettings
 {
@@ -34,7 +35,7 @@ class PlayLayer : public ax::Layer
 
 	ax::Sprite* m_pBG;
 	GroundLayer *_bottomGround, *_ceiling;
-	PlayerObject* m_pPlayer;
+	
 	ax::Vec2 m_obCamPos;
 
 	MenuItemSpriteExtra* backbtn;
@@ -61,7 +62,7 @@ class PlayLayer : public ax::Layer
 	SimpleProgressBar* m_pBar;
 	ax::Label* m_pPercentage;
 
-	ax::Layer* m_pHudLayer;
+	UILayer* m_pHudLayer;
 	LevelSettings _levelSettings;
 
 	//----IMGUI DEBUG MEMBERS----
@@ -76,6 +77,11 @@ public:
 
 	int _groundID = 1;
 	int _bgID = 1;
+
+	PlayerObject* _player1;
+	PlayerObject* _player2;
+
+	bool _isDualMode;
 
 	std::string _mainBatchNodeTexture = "GJ_GameSheet.png";
 	std::string _main2BatchNodeTexture = "GJ_GameSheet02.png";
@@ -92,7 +98,7 @@ public:
 
 	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 
-	void destroyPlayer();
+	void destroyPlayer(PlayerObject* player);
 
 	void loadLevel(std::string levelStr);
 
@@ -104,7 +110,7 @@ public:
 	void updateCamera(float dt);
 	void updateVisibility();
 	void moveCameraToPos(ax::Vec2);
-	void changeGameMode(GameObject* obj, PlayerGamemode gameMode);
+	void changeGameMode(GameObject* obj, PlayerObject* player, PlayerGamemode gameMode);
 	void resetLevel();
 	void exit();
 
@@ -112,7 +118,7 @@ public:
 	void tweenCeiling(float y);
 
 	// dt?
-	void checkCollisions(float delta);
+	void checkCollisions(PlayerObject* player, float delta);
 	void renderRect(ax::Rect rect, ax::Color4B col);
 
 	void applyEnterEffect(GameObject* obj);
@@ -121,6 +127,9 @@ public:
 	bool isObjectBlending(GameObject* obj);
 
 	int sectionForPos(float x);
+
+	void changePlayerSpeed(int speed);
+	void changeGravity(bool gravityFlipped);
 
 	static ax::Scene* scene(GJGameLevel* level);
 	static PlayLayer* create(GJGameLevel* level);

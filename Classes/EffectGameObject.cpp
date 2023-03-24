@@ -8,7 +8,7 @@ PlayLayer* pl;
 
 void EffectGameObject::triggerActivated(float idk)
 {
-	this->m_bHasBeenActivated = true;
+	this->_triggerActivated = true;
 	pl = PlayLayer::getInstance();
 
 	if(getID() == 29)

@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
+#include "PlayerObject.h"
 #include "json.hpp"
 #include <fmt/format.h>
 #include <fstream>
@@ -2372,9 +2373,16 @@ std::map<std::string, std::string> GameObject::stringSetupToDict(std::string str
 
 	return output;
 }
-void GameObject::triggerActivated()
+void GameObject::triggerActivated(PlayerObject* player)
 {
-	m_bHasBeenActivated = true;
+	auto pl = PlayLayer::getInstance();
+	player == pl->_player1 ? _hasBeenActivatedP1 = true : _hasBeenActivatedP2 = true;
+}
+
+bool GameObject::hasBeenActiavedByPlayer(PlayerObject* player)
+{
+	auto pl = PlayLayer::getInstance();
+	return player == pl->_player1 ? _hasBeenActivatedP1 : _hasBeenActivatedP2;
 }
 
 ax::Rect GameObject::getOuterBounds(float a, float b)
