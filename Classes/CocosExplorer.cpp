@@ -114,6 +114,18 @@ static void drawProperties()
 	float _anch[2] = {anchor.x, anchor.y};
 	ImGui::DragFloat2("Anchor Point", _anch);
 	selected_node->setAnchorPoint({_anch[0], _anch[1]});
+	
+	float rotation[3] = { selected_node->getRotation(), selected_node->getRotationSkewX(), selected_node->getRotationSkewY()};
+	if (ImGui::DragFloat3("Rotation", rotation, 1.0f))
+	{
+		if (selected_node->getRotation() != rotation[0]) 
+			selected_node->setRotation(rotation[0]); 
+		else
+		{ 
+			selected_node->setRotationSkewX(rotation[1]);
+			selected_node->setRotationSkewY(rotation[2]);
+		}
+	}
 
 	int zOrder = selected_node->getLocalZOrder();
 	ImGui::InputInt("Z", &zOrder);
