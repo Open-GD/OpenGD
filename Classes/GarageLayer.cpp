@@ -205,16 +205,25 @@ void GarageLayer::setupIconSelect() {
 
 const char* GarageLayer::getSpriteName(int id, bool actived) {
 	switch (id) {
-		case 0: if (actived) return "gj_iconBtn_on_001.png"; else return "gj_iconBtn_off_001.png";
-		case 1: if (actived) return "gj_shipBtn_on_001.png"; else return "gj_shipBtn_off_001.png";
-		case 2: if (actived) return "gj_ballBtn_on_001.png"; else return "gj_ballBtn_off_001.png";
-		case 3: if (actived) return "gj_birdBtn_on_001.png"; else return "gj_birdBtn_off_001.png";
-		case 4: if (actived) return "gj_dartBtn_on_001.png"; else return "gj_dartBtn_off_001.png";
-		case 5: if (actived) return "gj_robotBtn_on_001.png"; else return "gj_robotBtn_off_001.png";
-		case 6: if (actived) return "gj_spiderBtn_on_001.png"; else return "gj_spiderBtn_off_001.png";
-		case 7: if (actived) return "gj_streakBtn_on_001.png"; else return "gj_streakBtn_off_001.png";
-		case 8: if (actived) return "gj_explosionBtn_on_001.png"; else return "gj_explosionBtn_off_001.png";
-		}
+		case 0:
+			return actived ? "gj_iconBtn_on_001.png" : "gj_iconBtn_off_001.png";
+		case 1:	
+			return actived ? "gj_shipBtn_on_001.png" : "gj_shipBtn_off_001.png";
+		case 2:
+			return actived ? "gj_ballBtn_on_001.png" : "gj_ballBtn_off_001.png";
+		case 3:
+			return actived ? "gj_birdBtn_on_001.png" : "gj_birdBtn_off_001.png";
+		case 4:
+			return actived ? "gj_dartBtn_on_001.png" : "gj_dartBtn_off_001.png";
+		case 5:
+			return actived ? "gj_robotBtn_on_001.png" : "gj_robotBtn_off_001.png";
+		case 6:
+			return actived ? "gj_spiderBtn_on_001.png" : "gj_spiderBtn_off_001.png";
+		case 7:
+			return actived ? "gj_streakBtn_on_001.png" : "gj_streakBtn_off_001.png";
+		case 8:
+			return actived ? "gj_explosionBtn_on_001.png" : "gj_explosionBtn_off_001.png";
+	}
 }
 
 void GarageLayer::setupPage(IconType type) {
