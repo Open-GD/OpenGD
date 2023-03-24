@@ -2,7 +2,7 @@
 #include "GameToolbox.h"
 
 bool LoadingCircle::init() {
-	m_pCircle = ax::Sprite::create("loadingCircle.png");
+	m_pCircle = ax::Sprite::create(GameToolbox::getTextureString("loadingCircle.png"));
 
 	if(!m_pCircle) {
 		GameToolbox::log("WARN: loadingCircle is not present in your gd textures!");

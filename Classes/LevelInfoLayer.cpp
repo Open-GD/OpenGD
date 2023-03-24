@@ -88,7 +88,6 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 
 	loading = LoadingCircle::create();
 	loading->setPosition(playBtnMenu->getPosition());
-	loading->getCircle()->setScale(3.f);
 	loading->setVisible(true);
 
 	this->addChild(loading);
