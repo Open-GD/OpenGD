@@ -41,6 +41,7 @@ public:
 	int _EditorTime = 0;
 	int _EditorTimeTotal = 0;
 	int _SongID = 0;
+	int _OfficialSongID = 0;
 
 	float _normalPercent = 0;
 	float _practicePercent = 0;

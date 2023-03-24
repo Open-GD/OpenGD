@@ -2,6 +2,7 @@
 #include <axmol.h>
 #include "GJGameLevel.h"
 #include "ui/UIWidget.h"
+#include "LevelTools.h"
 
 class LevelCell : public ax::ui::Widget {
 public:

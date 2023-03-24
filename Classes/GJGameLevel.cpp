@@ -32,7 +32,7 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 	if (levelResponse.contains("9")) level->_DifficultyNumerator = std::stoi(levelResponse["9"]);
 	if (levelResponse.contains("10")) level->_Downloads = std::stoi(levelResponse["10"]);
 	if (levelResponse.contains("11")) level->_SetCompletes = std::stoi(levelResponse["11"]);
-	if (levelResponse.contains("12")) level->_SongID = std::stoi(levelResponse["12"]);
+	if (levelResponse.contains("12")) level->_OfficialSongID = std::stoi(levelResponse["12"]);
 	if (levelResponse.contains("13")) level->_GameVersion = std::stoi(levelResponse["13"]);
 	if (levelResponse.contains("14")) level->_Likes = std::stoi(levelResponse["14"]);
 	if (levelResponse.contains("15")) level->_Length = std::stoi(levelResponse["15"]);
