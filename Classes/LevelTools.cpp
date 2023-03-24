@@ -46,7 +46,7 @@ std::string LevelTools::getAudioTitle(int lid) {
 		case 7:  return "Time Machine";
 		case 8:  return "Cycles";
 		case 9:  return "xStep";
-		case 10:  return "Clutterfunk.";
+		case 10:  return "Clutterfunk";
 		case 11:  return "Theory Of Everything";
 		case 12:  return "Electroman";
 		case 13:  return "Clubstep";
