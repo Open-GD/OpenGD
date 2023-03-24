@@ -59,7 +59,8 @@ bool LevelCell::init(GJGameLevel* level) {
 	{
 		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", LevelTools::getAudioTitle(level->_OfficialSongID)));
 		songText->setColor(ax::Color3B(39, 206, 250));
-	} else
+	}
+	else
 	{
 		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_SongName));
 		songText->setColor(ax::Color3B(255, 132, 211));
