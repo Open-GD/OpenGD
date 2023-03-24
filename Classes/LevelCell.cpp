@@ -51,11 +51,21 @@ bool LevelCell::init(GJGameLevel* level) {
 	nameText->setAnchorPoint({0, 0.5});
 	layer->addChild(nameText);
 
-	auto songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_SongName));
+	GameToolbox::log("{}", level->_OfficialSongID);
+
+	ax::Label* songText;
+
+	if (level->_OfficialSongID > 0) {
+		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", LevelTools::getAudioTitle(level->_OfficialSongID)));
+		songText->setColor(ax::Color3B(39, 206, 250));
+	} else {
+		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_SongName));
+		songText->setColor(ax::Color3B(255, 132, 211));
+	}
+
 	songText->setScale(0.5f, 0.5f);
 	songText->setPosition({52, 33});
 	songText->setAnchorPoint({0, 0.5});
-	songText->setColor(ax::Color3B(255, 132, 211));
 	layer->addChild(songText);
 
 	auto diffSprite = ax::Sprite::createWithSpriteFrameName(GJGameLevel::getDifficultySprite(level));
