@@ -27,11 +27,16 @@ LevelBrowserLayer* LevelBrowserLayer::create(GJSearchObject* search)
 
 bool LevelBrowserLayer::init(GJSearchObject* search)
 {
+
 	if (!Layer::init()) return false;
 	_searchObj = search;
 
 	auto director = ax::Director::getInstance();
 	auto winSize = director->getWinSize();
+
+	_loading = LoadingCircle::create();
+	_loading->setPosition(winSize.x/2, winSize.y/2);
+	_loading->setVisible(true);
 
 	GameToolbox::createCorners(this, false, false, true, true);
 
@@ -48,6 +53,8 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 		_leftBtn->setVisible(false);
 		_rightBtn->setEnabled(false);
 		_rightBtn->setVisible(false);
+		_loading->setVisible(true);
+		listView->removeAllItems();
 
 		if (_cachedLevels.contains(_searchObj->_page))
 		{
@@ -72,6 +79,8 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 		_leftBtn->setVisible(false);
 		_rightBtn->setEnabled(false);
 		_rightBtn->setVisible(false);
+		_loading->setVisible(true);
+		listView->removeAllItems();
 
 		if (_cachedLevels.contains(_searchObj->_page))
 		{
@@ -119,6 +128,7 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 	listView->setTopPadding(25);
 
 	addChild(list);
+	addChild(_loading);
 
 	std::string postData = fmt::format(
 		"str={}&secret=Wmfd2893gb7&type={}&page={}", _searchObj->_searchQuery, (int)_searchObj->_screenID,
@@ -133,6 +143,7 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	listView->removeAllItems();
+	_loading->setVisible(false);
 	if (auto str = GameToolbox::getResponse(response))
 	{
 		//error codes -1, -2 etc
@@ -184,6 +195,7 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 void LevelBrowserLayer::fillList()
 {
 	listView->removeAllItems();
+	_loading->setVisible(false);
 	_leftBtn->setEnabled(_searchObj->_page > 0);
 	_leftBtn->setVisible(_searchObj->_page > 0);
 	_rightBtn->setEnabled(true);
