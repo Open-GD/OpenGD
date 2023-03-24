@@ -99,18 +99,19 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 	pageMenu->setPosition({283.5, 160});
 	this->addChild(pageMenu, 5);
 
-	auto bg = ax::Sprite::create("GJ_gradientBG.png");
-	bg->setStretchEnabled(false);
-	bg->setScaleX(winSize.width / bg->getContentSize().width);
-	bg->setScaleY(winSize.height / bg->getContentSize().height);
-	bg->setAnchorPoint({0, 0});
-	bg->setColor({0, 102, 255});
-	addChild(bg);
+	GameToolbox::createBG(this);
+	GameToolbox::createCorners(this, false, false, true, true);
+
+	auto pageTxt = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), "");
+	pageTxt->setScale(100 / 0.6f);
+	pageTxt->setAnchorPoint({ 1, 0.5 });
+	pageTxt->setPosition({ winSize.width - 7, winSize.height - 9.05f });
+	this->addChild(pageTxt, 5);
 
 	listView = ax::ui::ListView::create();
 	listView->setAnchorPoint({0.5, 0.5});
 	listView->setBackGroundColorType(ax::ui::Layout::BackGroundColorType::SOLID);
-	listView->setBackGroundColor(ax::Color3B::ORANGE);
+	listView->setBackGroundColor({ 191, 114, 62 });
 
 	auto list = ListLayer::create(listView, "Online Levels");
 	listView->setPosition({180, 120});
@@ -188,9 +189,12 @@ void LevelBrowserLayer::fillList()
 	_rightBtn->setEnabled(true);
 	_rightBtn->setVisible(true);
 
+	int col = 0;
 	for (auto l : _cachedLevels[_searchObj->_page])
 	{
 		auto levelCell = LevelCell::create(l);
+		levelCell->updateBGColor(col);
 		listView->pushBackCustomItem(levelCell);
+		col++;
 	}
 }

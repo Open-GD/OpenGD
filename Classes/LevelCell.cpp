@@ -16,11 +16,20 @@ LevelCell* LevelCell::create(GJGameLevel* level) {
 	}
 }
 
+void LevelCell::updateBGColor(int num) {
+	BGColor = ax::LayerColor::create();
+	if (num % 2 == 0) BGColor->initWithColor({ 161, 88, 44, 255 });
+	else BGColor->initWithColor({ 191, 114, 62, 255 });
+	BGColor->setContentSize(this->getContentSize());
+	BGColor->setPositionY(5);
+	layer->addChild(BGColor, -1);
+}
+
 bool LevelCell::init(GJGameLevel* level) {
 	setContentSize({396, 90});
-	auto layer = ax::Layer::create();
+	layer = ax::Layer::create();
 	addChild(layer);
-	
+
 	auto bigFontStr = GameToolbox::getTextureString("bigFont.fnt");
 	
 	if (level->_Stars > 0) {
@@ -58,6 +67,13 @@ bool LevelCell::init(GJGameLevel* level) {
 	lenSprite->setScale(0.6f);
 	layer->addChild(lenSprite, 2);
 
+	auto lenText = ax::Label::createWithBMFont(bigFontStr, GameToolbox::lenghtString(level->_Length));
+	lenText->setScale(0.4f);
+	if (lenText->getContentSize().width > 120) lenText->setScale(lenText->getScale() * (120 / lenText->getContentSize().width));
+	lenText->setPosition({ 69, 14 });
+	lenText->setAnchorPoint({ 0, 0.5 });
+	layer->addChild(lenText);
+
 	auto dwnSprite = ax::Sprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png");
 	dwnSprite->setPosition({136.4, 14});
 	dwnSprite->setScale(0.6f);
@@ -90,7 +106,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	creatorText->setScale(0.6f);
 	if (level->_LevelCreator == "-") creatorText->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
 	if(creatorText->getContentSize().width > 200) creatorText->setScale(creatorText->getScale() * (200 / creatorText->getContentSize().width));
-	creatorText->setPosition({-260.525, 8});
+	creatorText->setPosition({-263.525, 8});
 	creatorText->setAnchorPoint({0, 0.5});
 	menu->addChild(creatorText);
 
@@ -99,16 +115,16 @@ bool LevelCell::init(GJGameLevel* level) {
 	scale9->setContentSize({63.1, 30});
 
 	auto view = ax::Label::createWithBMFont(bigFontStr, "View");
-	view->setPosition({30.55, 17});
-	view->setScale(0.8);
+	view->setPosition({ scale9->getContentSize().width / 2 - 2, scale9->getContentSize().height / 2 + 2 });
+	view->setScale(0.6f);
+	scale9->addChild(view);
 
 	auto button = MenuItemSpriteExtra::create(scale9, [&, level](Node* btn) 
 		{
 			ax::Director::getInstance()->pushScene((ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(level))));
 		});
 	button->setContentSize({88.340, 42});
-	button->setPosition({10, 21});
-	button->addChild(view);
+	button->setPosition({10, 11});
 	menu->addChild(button);
 
 	return true;

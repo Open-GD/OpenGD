@@ -101,21 +101,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	auto timeSprite = Sprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
 	timeNode->addChild(timeSprite);
 
-	const char* length = [&](int i) {
-		switch (i)
-		{
-		case 0:
-			return "Tiny";
-		case 1:
-			return "Short";
-		case 2:
-			return "Medium";
-		default:
-			return "Long";
-		}
-	}(level->_Length);
-
-	auto timeLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), length));
+	auto timeLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::lenghtString(level->_Length)));
 	timeLabel->setScale(0.5);
 	timeNode->addChild(timeLabel);
 	GameToolbox::alignItemsHorizontallyWithPadding(timeNode->getChildren(), 5);

@@ -9,6 +9,17 @@ bool _showDebugImgui = true;
 
 // general purpose class for helper functions that can be useful anywhere
 
+const char* GameToolbox::lenghtString(int len) {
+	switch (len) {
+	case 1: return "Short";
+	case 2: return "Medium";
+	case 3: return "Long";
+	case 4: return "XL";
+	case 5: return "Plat.";
+	default: return "Tiny";
+	}
+}
+
 Color3B GameToolbox::colorForIdx(int col) {
 	switch (col) {
 	case 0:

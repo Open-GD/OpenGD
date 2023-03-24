@@ -31,6 +31,7 @@ namespace GameToolbox
 		Medium,
 		High
 	};
+	const char* lenghtString(int len);
 	int randomInt(int min, int max);
 	int randomInt(int max);
 	float randomFloat(int min, int max);
