@@ -43,6 +43,20 @@ std::string LevelTools::getAudioTitle(int lid) {
 		case 4:  return "Base After Base";
 		case 5:  return "Cant Let Go";
 		case 6:  return "Jumper";
+		case 7:  return "Time Machine";
+		case 8:  return "Cycles";
+		case 9:  return "xStep";
+		case 10:  return "Clutterfunk.";
+		case 11:  return "Theory Of Everything";
+		case 12:  return "Electroman";
+		case 13:  return "Clubstep";
+		case 14:  return "Electrodynamix";
+		case 15:  return "Hexagon Force";
+		case 16:  return "Blast Processing";
+		case 17:  return "Theory Of Everything 2";
+		case 18:  return "Geometrical Dominator";
+		case 19:  return "Deadlocked";
+		case 20:  return "Fingerdash";
 		default: return "Stereo Madness";
 	}
 }
