@@ -81,9 +81,9 @@ bool LevelCell::init(GJGameLevel* level) {
 	}
 	else if (level->_FeatureScore > 0)
 	{
-		auto _FeatureScore = ax::Sprite::createWithSpriteFrameName("GJ_featuredCoin_001.png");
-		_FeatureScore->setPosition(diffPos);
-		layer->addChild(_FeatureScore, 2);
+		auto featureScore = ax::Sprite::createWithSpriteFrameName("GJ_featuredCoin_001.png");
+		featureScore->setPosition(diffPos);
+		layer->addChild(featureScore, 2);
 	}
 
 	auto diffSprite = ax::Sprite::createWithSpriteFrameName(GJGameLevel::getDifficultySprite(level));
