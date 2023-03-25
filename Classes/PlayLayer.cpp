@@ -1277,7 +1277,8 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 					if (obj->_isTrigger)
 					{
 						auto trigger = dynamic_cast<EffectGameObject*>(obj);
-						if (!trigger->_wasTriggerActivated && trigger->getPositionX() <= player->getPositionX()) {
+						if (!trigger->_wasTriggerActivated && trigger->getPositionX() <= player->getPositionX())
+						{
 							trigger->triggerActivated(dt);
 						}
 					}
