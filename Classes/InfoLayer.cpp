@@ -32,7 +32,7 @@ bool InfoLayer::init(GJGameLevel* level)
 
 	bg->setPosition(winSize / 2);
 
-	this->m_pMainLayer->addChild(bg);
+	this->_mainLayer->addChild(bg);
 
 	auto closeBtnMenu = Menu::create();
 	auto closeBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_closeBtn_001.png"), [&](Node*) {this->close();});
@@ -41,7 +41,7 @@ bool InfoLayer::init(GJGameLevel* level)
 
 	closeBtn->setPosition({ (winSize.width / 2) - 200.0f, (winSize.height / 2.0f) + 120.f});
 
-	this->m_pMainLayer->addChild(closeBtnMenu);
+	this->_mainLayer->addChild(closeBtnMenu);
 
 
 	auto levelName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_LevelName);
@@ -52,7 +52,7 @@ bool InfoLayer::init(GJGameLevel* level)
 		levelName->setScale(300.0f / levelName->getContentSize().width);
 	}
 
-	this->m_pMainLayer->addChild(levelName);
+	this->_mainLayer->addChild(levelName);
 
 	auto levelCreator = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
 	levelCreator->setPosition({ winSize.width / 2, levelName->getPositionY() - 30.f });
@@ -66,14 +66,14 @@ bool InfoLayer::init(GJGameLevel* level)
 		levelCreator->setScale(0.8);
 	}
 
-	this->m_pMainLayer->addChild(levelCreator);
+	this->_mainLayer->addChild(levelCreator);
 
 
 	auto desc = level->_Description.empty() ? "(No description provided)" : base64_decode(level->_Description);
 	
 	auto descField = ax::ui::UICCTextField::createWithBMFont(GameToolbox::getTextureString("chatFont.fnt"), desc, TextHAlignment::CENTER, 380.f);
 	descField->setPosition({ winSize.width / 2, (winSize.height / 2) + 10.f /*+ 20.f */});
-	this->m_pMainLayer->addChild(descField, 4);
+	this->_mainLayer->addChild(descField, 4);
 
 	auto moreBtnMenu = Menu::create();
 
@@ -81,18 +81,18 @@ bool InfoLayer::init(GJGameLevel* level)
 	moreBtnMenu->addChild(moreBtn);
 	moreBtnMenu->setPosition({ winSize.width / 2, (winSize.height / 2) - 70.f });
 
-	this->m_pMainLayer->addChild(moreBtnMenu);
+	this->_mainLayer->addChild(moreBtnMenu);
 	
 	// Level Info (ID, Version)
 	auto versionLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("Version: %i", level->_Version));
 	versionLabel->setPosition({ (winSize.width / 2) - 50.f, (winSize.height / 2) - 110.0f });
 	versionLabel->setScale(0.6);
-	this->m_pMainLayer->addChild(versionLabel);
+	this->_mainLayer->addChild(versionLabel);
 
 	auto idLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("ID: %i", level->_LevelID));
 	idLabel->setPosition({ (winSize.width / 2) + 50.f, (winSize.height / 2) - 110.0f });
 	idLabel->setScale(0.6);
-	this->m_pMainLayer->addChild(idLabel);
+	this->_mainLayer->addChild(idLabel);
 
 	return true;
 }

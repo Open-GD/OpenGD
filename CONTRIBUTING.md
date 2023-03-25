@@ -110,7 +110,7 @@ int method2() {
   ```
   If the statements are short, consistent and straightforward prefer the following
   ```cpp
-switch(n) 
+switch (n) 
 {
 	default: return "GJ_createBtn_001.png"; 
 	case 1: return "GJ_savedBtn_001.png";

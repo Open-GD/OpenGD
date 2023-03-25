@@ -18,29 +18,34 @@ Scene* CreatorLayer::scene() {
 	return CreatorLayer::create();
 }
 
-CreatorLayer* CreatorLayer::create() {
+CreatorLayer* CreatorLayer::create()
+{
 	CreatorLayer* ret = new CreatorLayer();
-	if (ret->init()) {
+	if (ret->init())
+	{
 		ret->autorelease();
 		return ret;
-	} else {
+	} 
+	else
+	{
 		delete ret;
 		ret = nullptr;
 		return nullptr;
 	}
 }
 
-bool CreatorLayer::init() {
+bool CreatorLayer::init()
+{
 	if (!Scene::init())
 		return false;
 
 	auto director = Director::getInstance();
-	auto winSize  = director->getWinSize();
+	auto winSize = director->getWinSize();
 
 	GameToolbox::createBG(this);
 	GameToolbox::createAllCorners(this);
-	auto menu = Menu::create();
 
+	auto menu = Menu::create();
 
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [](Node*) {
 		Director::getInstance()->replaceScene(TransitionFade::create(.5, MenuLayer::scene()));
@@ -50,7 +55,7 @@ bool CreatorLayer::init() {
 	
 	auto buttonTexture = [](int n) -> const char*
 	{
-		switch(n) 
+		switch (n) 
 		{
 			default: return "GJ_createBtn_001.png"; 
 			case 1: return "GJ_savedBtn_001.png";
@@ -68,7 +73,7 @@ bool CreatorLayer::init() {
 	
 	auto onButtonsCallback = [this](Node* btn) -> void
 	{
-		switch(btn->getTag())
+		switch (btn->getTag())
 		{
 			case 0:
 			{
@@ -80,7 +85,7 @@ bool CreatorLayer::init() {
 		}
 	};
 	
-	for(int i = 0; i < 11; i++)
+	for (int i = 0; i < 11; i++)
 	{
 		auto spr = Sprite::createWithSpriteFrameName(buttonTexture(i));
 		spr->setScale(.85f);

@@ -1,16 +1,18 @@
 #include "CocosExplorer.h"
+#include <axmol.h>
 
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
 #include <sstream>
 #include <queue>
 #include <mutex>
+#include <fmt/format.h>
 
 USING_NS_AX;
 USING_NS_AX_EXT;
 
-static bool operator!=(const Size &a, const Size &b) { return a.width != b.width || a.height != b.height; }
-
+static bool operator!=(const Size& a, const Size& b) { return a.width != b.width || a.height != b.height; }
+ 
 static Node *selected_node = nullptr;
 static bool reached_selected_node = false;
 static Node *hovered_node = nullptr;
@@ -166,13 +168,14 @@ static void drawProperties()
 
 static void generateTree(Node *node, unsigned int i = 0)
 {
-	std::stringstream stream;
-	stream << "[" << i << "] " << getNodeName(node);
+
+	std::string str = fmt::format("[{}] {}", i, getNodeName(node));
 	if (node->getTag() != -1)
-		stream << " (" << node->getTag() << ")";
+		str += fmt::format(" ({})", node->getTag());
 	const auto childrenCount = node->getChildrenCount();
 	if (childrenCount)
-		stream << " {" << childrenCount << "}";
+		str += fmt::format(" {{{}}}", childrenCount);
+
 
 	auto flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_SpanFullWidth;
 	if (selected_node == node)
@@ -183,7 +186,7 @@ static void generateTree(Node *node, unsigned int i = 0)
 	if (node->getChildrenCount() == 0)
 		flags |= ImGuiTreeNodeFlags_Leaf;
 
-	const bool is_open = ImGui::TreeNodeEx(node, flags, stream.str().c_str());
+	const bool is_open = ImGui::TreeNodeEx(node, flags, str.c_str());
 
 	if (ImGui::IsItemClicked())
 	{
@@ -252,8 +255,7 @@ void CocosExplorer::openForever()
 
 	openForever = true;
 	auto e = Director::getInstance()->getEventDispatcher();
-	e->addCustomEventListener(Director::EVENT_AFTER_SET_NEXT_SCENE, [&](EventCustom *)
-							  { CocosExplorer::open(); });
+	e->addCustomEventListener(Director::EVENT_AFTER_SET_NEXT_SCENE, [&](EventCustom *) { CocosExplorer::open(); });
 }
 
 void CocosExplorer::open()
@@ -262,7 +264,6 @@ void CocosExplorer::open()
 	ImGuiPresenter::getInstance()->addRenderLoop("#cocosExplorer", draw, current);
 }
 
-void CocosExplorer::close()
-{
+void CocosExplorer::close() {
 	ImGuiPresenter::getInstance()->removeRenderLoop("#cocosExplorer");
 }

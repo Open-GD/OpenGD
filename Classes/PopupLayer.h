@@ -3,7 +3,7 @@
 
 class PopupLayer : public ax::LayerColor {
 public:
-	ax::Layer* m_pMainLayer;
+	ax::Layer* _mainLayer;
 
 	virtual void setup() {};
 	
