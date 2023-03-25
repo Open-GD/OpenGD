@@ -56,7 +56,7 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 	if (levelResponse.contains("45")) level->_Objects = std::stoi(levelResponse["45"]);
 	if (levelResponse.contains("46")) level->_EditorTime = std::stoi(levelResponse["46"]);
 	if (levelResponse.contains("47")) level->_EditorTimeTotal = std::stoi(levelResponse["47"]);
-
+	
 	return level;
 }
 

@@ -14,12 +14,7 @@ public:
     bool init();
     
     void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
-#ifdef AX_PLATFORM_PC
-    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-#endif
-    static CreatorLayer* getInstance();
 
 private:
-    static CreatorLayer* Instance;
     ax::ui::TextField* _levelField;
 };

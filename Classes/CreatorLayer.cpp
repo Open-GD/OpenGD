@@ -14,13 +14,6 @@
 USING_NS_AX;
 using namespace ax::network;
 
-CreatorLayer* CreatorLayer::Instance = nullptr;
-
-CreatorLayer* CreatorLayer::getInstance()
-{
-    return Instance;
-}
-
 Scene* CreatorLayer::scene() {
 	return CreatorLayer::create();
 }
@@ -124,8 +117,6 @@ bool CreatorLayer::init()
 
     listener->onKeyPressed  = AX_CALLBACK_2(CreatorLayer::onKeyPressed, this);
 
-    glfwSetKeyCallback(static_cast<GLViewImpl*>(director->getOpenGLView())->getWindow(), keyCallback);
-
     director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 #endif
 
@@ -141,27 +132,3 @@ void CreatorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* e
         break;
     }
 }
-#ifdef AX_PLATFORM_PC
-void CreatorLayer::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (action == GLFW_PRESS)
-    {
-        switch (key)
-        {
-        case GLFW_KEY_C:
-            if (mods == GLFW_KEY_LEFT_CONTROL)
-                glfwSetClipboardString(window, getInstance()->_levelField->getString().data());
-                break;
-        case GLFW_KEY_V:
-            if (mods == GLFW_KEY_LEFT_CONTROL)
-            {
-                std::string str(getInstance()->_levelField->getString());
-                getInstance()->_levelField->setString(str);
-            }
-            break;
-        default:
-            break;
-        }
-    }
-}
-#endif

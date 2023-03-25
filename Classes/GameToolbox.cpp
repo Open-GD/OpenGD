@@ -7,9 +7,7 @@ USING_NS_AX;
 
 bool _showDebugImgui = true;
 
-// general purpose class for helper functions that can be useful anywhere
-
-const char* GameToolbox::lenghtString(int len) {
+const char* GameToolbox::lengthString(int len) {
 	switch (len) {
 	case 1: return "Short";
 	case 2: return "Medium";
@@ -707,36 +705,6 @@ int GameToolbox::ccInflateMemoryWithHint(unsigned char* in,
 int GameToolbox::ccInflateMemory(unsigned char* in, unsigned int inLength, unsigned char** out) {
 	// 256k for hint
 	return ccInflateMemoryWithHint(in, inLength, out, 256 * 1024);
-}
-
-std::string GameToolbox::getClipboardString() {
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
-	if (!OpenClipboard(nullptr))
-		return "";
-
-		HANDLE hData = GetClipboardData(CF_TEXT);
-		if (hData == nullptr)
-		{
-			GlobalUnlock(hData);
-			CloseClipboard();
-			return "";
-		}
-
-		char* pszText = static_cast<char*>(GlobalLock(hData));
-		if (pszText == nullptr)
-		{
-			GlobalUnlock(hData);
-			CloseClipboard();
-			return "";
-		}
-		
-		std::string ret(pszText);
-		GlobalUnlock(hData);
-		CloseClipboard();
-		return ret;
-	#else
-		return "";
-	#endif
 }
 
 void GameToolbox::executeHttpRequest(const std::string& url, const std::string& postData, ax::network::HttpRequest::Type type, const ax::network::ccHttpRequestCallback& callback)

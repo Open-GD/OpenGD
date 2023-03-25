@@ -142,7 +142,7 @@ bool LevelSearchLayer::init()
 
 	auto menuSearch = Menu::create();
 	auto searchBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn02_001.png", "Search", 0.6, ""), [&, searchObject](Node*) {
-		searchObject->_searchQuery = _searchField->m_pTextField->getString();
+		searchObject->_searchQuery = _searchField->_pTextField->getString();
 		searchObject->_difficulty = "";
 		searchObject->_length = "";
 		searchObject->_screenID = SearchType::kGJSearchTypeSearch;
@@ -156,11 +156,11 @@ bool LevelSearchLayer::init()
 	this->addChild(menuSearch);
 
 	auto field = TextInputNode::create(240.f, 30.f, GameToolbox::getTextureString("bigFont.fnt").c_str(), "Search for a level or id", 18);
-	field->m_pTextField->setAnchorPoint({ 0.0, 0.5 });
-	field->m_pTextField->setMaxLength(20);
-	field->m_pTextField->setMaxLengthEnabled(true);
+	field->_pTextField->setAnchorPoint({ 0.0, 0.5 });
+	field->_pTextField->setMaxLength(20);
+	field->_pTextField->setMaxLengthEnabled(true);
 
-	field->m_pPlaceholder->setColor({ 120, 170, 240 });
+	field->_pPlaceholder->setColor({ 120, 170, 240 });
 	field->setPosition(winSize / 2);
 	field->setPosition({ (winSize.width / 2) - 174.0f, (winSize.height / 2) + 105.f });
 	_searchField = field;
