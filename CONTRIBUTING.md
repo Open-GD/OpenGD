@@ -96,17 +96,20 @@ int method2() {
 
 8. ##### Use the following indenting for "switch" statements:
 
+If the cases are long, prefer adding {} like so:
   ```cpp
-  switch (test)
-  {
-      case 1:
-      {
-          // Do something
-          break;
-      }
-      default:
-          // Do something else
-  } // No semi-colon here
+	switch (test)
+	{
+		case 1:
+		{
+			//Do something
+			break;
+		}
+		default:
+		{
+			//Do something else
+		}
+	}
   ```
   If the statements are short, consistent and straightforward prefer the following
   ```cpp
@@ -123,6 +126,18 @@ switch (n)
 	case 8: return "GJ_fameBtn_001.png";
 	case 9: return "GJ_mapPacksBtn_001.png";
 	case 10: return "GJ_searchBtn_001.png";
+}
+```
+and if the cases don't fit well in a single line, prefer this
+```
+switch (1)
+{
+	case 1:
+		cout << '1';
+		break;
+	case 2:
+		cout << '2';
+		break;
 }
 ```
 9. ##### Prefer enums for integer constants.
@@ -220,17 +235,26 @@ switch (n)
 	}
     ```
 
+16. ##### Class definition order
+
+```cpp
+class MyClass
+{
+private:
+	int _privateMembers;
+
+public:
+	int _publicMembers;
+	
+private:
+	void privateFunctions();
+
+public:
+	void publicFunctions();
+```
+
 #### NAMING CONVENTIONS
 
-  * ###### Good:
-    ```cpp
-    if (!PathFileExists(dir2Search))
-    ```
-
-  * ###### Bad:
-    ```cpp
-    if (not PathFileExists(dir2Search))
-    ```
 1. ##### Classes uses Pascal Case
 
   * ###### Good:
