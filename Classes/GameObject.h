@@ -133,7 +133,8 @@ class GameObject : public ax::Sprite
 	// from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35
 	static const std::unordered_map<int, std::vector<const char*>> _pBlocks;
 
-	static const std::vector<int> _pSolids, _pTriggers;
+	static const std::vector<int> _pSolids;
+	static const std::vector<int> _pTriggers;
 
 	static GameObject* create(std::string_view frame, std::string_view glowFrame = "");
 	static GameObject* createObject(std::string_view frame, std::string_view glowFrame = "");
