@@ -14,7 +14,7 @@ public:
 	ax::Color3B _color;
 	float _opacity;
 	int _targetColorId = 1;
-	bool _triggerActivated;
+	bool _wasTriggerActivated;
 
 private:
 	virtual void updateTweenAction(float value, std::string_view key) override;

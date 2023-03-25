@@ -1277,10 +1277,14 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 					if (obj->_isTrigger)
 					{
 						auto trigger = dynamic_cast<EffectGameObject*>(obj);
-						if (trigger->_triggerActivated && trigger->getPositionX() <= player->getPositionX())
+						if (!trigger->_wasTriggerActivated && trigger->getPositionX() <= player->getPositionX()) {
 							trigger->triggerActivated(dt);
+						}
 					}
-					if (showDn) renderRect(objBounds, ax::Color4B::BLUE);
+					if (showDn) {
+						renderRect(objBounds, ax::Color4B::BLUE);
+					}
+					
 					if (playerOuterBounds.intersectsRect(objBounds) && !obj->hasBeenActiavedByPlayer(player))
 					{
 						switch (obj->getGameObjectType())

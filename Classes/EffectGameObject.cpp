@@ -9,11 +9,11 @@ void EffectGameObject::triggerActivated(float idk)
 {
 	if (!_pl) return;
 
-	this->_triggerActivated = true;
+	this->_wasTriggerActivated = true;
 
 	auto id = getID();
 
-	if(id == 29)
+	if (id == 29)
 		_targetColorId = 1000;
 	else if (id == 30)
 		_targetColorId = 1001;
@@ -63,6 +63,7 @@ EffectGameObject* EffectGameObject::create(std::string_view frame)
 
 	if (pRet && pRet->init(frame))
 	{
+		pRet->_pl = PlayLayer::getInstance();
 		pRet->autorelease();
 		return pRet;
 	}
