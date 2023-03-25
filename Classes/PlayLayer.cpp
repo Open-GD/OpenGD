@@ -364,16 +364,16 @@ void PlayLayer::loadLevel(std::string levelStr)
 				obj->setRotation(std::stof(d[i + 1]));
 				break;
 			case 7:
-				dynamic_cast<EffectGameObject*>(obj)->m_cColor.r = std::stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_color.r = std::stof(d[i + 1]);
 				break;
 			case 8:
-				dynamic_cast<EffectGameObject*>(obj)->m_cColor.g = std::stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_color.g = std::stof(d[i + 1]);
 				break;
 			case 9:
-				dynamic_cast<EffectGameObject*>(obj)->m_cColor.b = std::stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_color.b = std::stof(d[i + 1]);
 				break;
 			case 10:
-				dynamic_cast<EffectGameObject*>(obj)->m_fDuration = std::stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_duration = std::stof(d[i + 1]);
 				break;
 			case 21:
 				obj->_mainColorChannel = std::stoi(d[i + 1]);
@@ -382,7 +382,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 				obj->_secColorChannel = std::stoi(d[i + 1]);
 				break;
 			case 23:
-				dynamic_cast<EffectGameObject*>(obj)->m_nTargetColorId = std::stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_targetColorId = std::stof(d[i + 1]);
 				break;
 			case 24:
 				obj->_zLayer = std::stoi(d[i + 1]);
