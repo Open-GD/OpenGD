@@ -113,13 +113,7 @@ bool LevelSearchLayer::init()
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	auto bg = Sprite::create(GameToolbox::getTextureString("GJ_gradientBG.png"));
-	bg->setScaleX(winSize.width / bg->getContentSize().width);
-	bg->setScaleY(winSize.height / bg->getContentSize().height);
-	bg->setAnchorPoint({ 0, 0 });
-	bg->setColor({ 0, 102, 255 });
-	this->addChild(bg);
-
+	GameToolbox::createBG(this);
 	GameToolbox::createCorners(this, false, false, true, true);
 
 	auto backBtnMenu = Menu::create();
@@ -149,7 +143,12 @@ bool LevelSearchLayer::init()
 	auto menuSearch = Menu::create();
 	auto searchBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn02_001.png", "Search", 0.6, ""), [&, searchObject](Node*) {
 		searchObject->_searchQuery = _searchField->m_pTextField->getString();
-		ax::Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
+		searchObject->_difficulty = "";
+		searchObject->_length = "";
+		searchObject->_screenID = SearchType::kGJSearchTypeSearch;
+		for(int i = 0; i < m_dSelectedDifficulties.size(); i++) searchObject->_difficulty += fmt::format("{}{}", m_dSelectedDifficulties[i], i == m_dSelectedDifficulties.size() - 1 ? "" : ",");
+		for(int i = 0; i < m_dSelectedTimes.size(); i++) searchObject->_length += fmt::format("{}{}", m_dSelectedTimes[i], i == m_dSelectedTimes.size() - 1 ? "" : ",");
+		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
 	});
 	menuSearch->addChild(searchBtn);
 	menuSearch->setPosition({ (winSize.width / 2) + 128.0f, (winSize.height / 2) + 120.0f });
@@ -186,16 +185,28 @@ bool LevelSearchLayer::init()
 	auto quickSearchMenu = Menu::create();
 	quickSearchMenu->setPosition(winSize.width / 2, (winSize.height / 2) * 1.16);
 
-	auto mostDownloadedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Downloaded", 0.45, "GJ_sDownloadIcon_001.png"), [&](Node*) {});
+	auto mostDownloadedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Downloaded", 0.45, "GJ_sDownloadIcon_001.png"), [&](Node*) {
+		searchObj->_screenID = SearchType::kGJSearchTypeDownloaded;
+		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
+	});
 	quickSearchMenu->addChild(mostDownloadedBtn);
 
-	auto mostLikedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Liked", 0.6, "GJ_sLikeIcon_001.png"), [&](Node*) {});
+	auto mostLikedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Liked", 0.6, "GJ_sLikeIcon_001.png"), [&](Node*) {
+		searchObj->_screenID = SearchType::kGJSearchTypeLiked;
+		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
+	});
 	quickSearchMenu->addChild(mostLikedBtn);
 
-	auto trendingBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Trending", 0.6, "GJ_sTrendingIcon_001.png"), [&](Node*) {});
+	auto trendingBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Trending", 0.6, "GJ_sTrendingIcon_001.png"), [&](Node*) {
+		searchObj->_screenID = SearchType::kGJSearchTypeTrending;
+		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
+	});
 	quickSearchMenu->addChild(trendingBtn);
 	
-	auto mostRecentBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Recent", 0.6, "GJ_sRecentIcon_001.png"), [&](Node*) {});
+	auto mostRecentBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Recent", 0.6, "GJ_sRecentIcon_001.png"), [&](Node*) {
+		searchObj->_screenID = SearchType::kGJSearchTypeRecent;
+		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(searchObj)));
+	});
 	quickSearchMenu->addChild(mostRecentBtn);
 
 	quickSearchMenu->alignItemsVertically();

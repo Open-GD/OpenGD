@@ -153,8 +153,8 @@ bool BoomScrollLayer::onTouchBegan(ax::Touch* touch, ax::Event* event)
 void BoomScrollLayer::onTouchEnded(ax::Touch* touch, ax::Event* event)
 {
 	//GameToolbox::log("ended");
-	if(_dragMovement < -30) changePageRight();
-	else if(_dragMovement > 30) changePageLeft();
+	if (_dragMovement < -30) changePageRight();
+	else if (_dragMovement > 30) changePageLeft();
 	_dragMovement = 0;
 }
 
@@ -162,7 +162,7 @@ void BoomScrollLayer::onTouchMoved(ax::Touch* touch, ax::Event* event)
 {
 	auto touchPos = touch->getLocationInView();
 	auto previous = touch->getPreviousLocationInView();
-	for(auto l : _internalLayer->getChildren())
+	for (auto l : _internalLayer->getChildren())
 	{
 		auto layerPos = l->getPosition();
 		l->setPositionX(layerPos.x + (touchPos.x - previous.x));
@@ -177,7 +177,7 @@ void BoomScrollLayer::onExit()
 {
 	for (auto layer : _layers)
 	{
-		if(layer->getParent() == nullptr) layer->autorelease();
+		if (layer->getParent() == nullptr) layer->autorelease();
 	}
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	Layer::onExit();

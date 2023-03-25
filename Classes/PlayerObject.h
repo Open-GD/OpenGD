@@ -45,7 +45,7 @@ class PlayerObject : public GameObject
 	ax::ParticleSystemQuad* landEffect1;
 	ax::ParticleSystemQuad* landEffect2;
 
-	double m_dXVel = 5.770002;
+	
 	double m_dYVel = 0;
 	double m_dGravity = 0.958199;
 	double m_dJumpHeight = 11.180032;
@@ -73,6 +73,8 @@ class PlayerObject : public GameObject
 
   public:
 
+  double m_dXVel = 5.770002;
+
 	GameObject* _touchedPadObject;
 
 	bool _mini = false;
@@ -95,9 +97,6 @@ class PlayerObject : public GameObject
 	float direction, _vehicleSize = 1.f;
 
 	static PlayerObject* create(int, ax::Layer*);
-
-	bool onTouchBegan(ax::Touch* touch, ax::Event* event);
-	void onTouchEnded(ax::Touch* touch, ax::Event* event);
 
 	void setMainColor(ax::Color3B col);
 	void setSecondaryColor(ax::Color3B col);
@@ -173,6 +172,9 @@ class PlayerObject : public GameObject
 
 	void activateStreak();
 	void deactivateStreak();
+
+	void pushButton();
+	void releaseButton();
 
 	ax::Vec2 _portalP;
 	ax::Vec2 _lastP;

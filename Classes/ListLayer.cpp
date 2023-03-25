@@ -1,7 +1,7 @@
 #include "ListLayer.h"
 
 ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
-    auto pRet = new(std::nothrow) ListLayer();
+	auto pRet = new(std::nothrow) ListLayer();
 
 	if (pRet && pRet->init(scrollLayer, label, color, size)) {
 		pRet->autorelease();
@@ -21,21 +21,21 @@ ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label){
 }
 
 bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
-    if(!this->initWithColor(color)) return false;
-    
-    auto winSize = ax::Director::getInstance()->getWinSize();
+	if(!this->initWithColor(color)) return false;
+	
+	auto winSize = ax::Director::getInstance()->getWinSize();
 
-    //this->listlayer = ax::Layer::create();
+	//this->listlayer = ax::Layer::create();
 	this->setContentSize(size);
-    
-    //menu start
+	
+	//menu start
 	if(scrollLayer != nullptr){
 		scrollLayer->setPosition({size.x / 2, size.y / 1.5f});
 		scrollLayer->setContentSize(size);
 		this->addChild(scrollLayer);
 	}
 
-    auto bottom = ax::Sprite::createWithSpriteFrameName("GJ_table_bottom_001.png");
+	auto bottom = ax::Sprite::createWithSpriteFrameName("GJ_table_bottom_001.png");
 	bottom->setPosition({size.x / 2, -10});
 	
 
@@ -58,7 +58,7 @@ bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color
 	this->addChild(left);
 	this->addChild(right);
 	this->addChild(top);
-    this->addChild(bottom);
+	this->addChild(bottom);
 
 	auto text = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), label, ax::TextHAlignment::CENTER);
 		
@@ -67,8 +67,8 @@ bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color
 	text->setScale(0.8f);
 	this->addChild(text);
 	//menu end
-    
-    //this->addChild(listlayer);
+	
+	//this->addChild(listlayer);
 
-    return true;
+	return true;
 }

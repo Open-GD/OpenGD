@@ -118,8 +118,9 @@ bool LevelSelectLayer::init(int page)
 	rightBtn->setPosition(btnMenu->convertToNodeSpace({ winSize.width - 25.0f, winSize.height / 2 }));
 
 	auto back = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
-	MenuItemSpriteExtra* backBtn = MenuItemSpriteExtra::create(back, [](Node* btn) {
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+		MenuItemSpriteExtra* backBtn =
+			MenuItemSpriteExtra::create(back, [](Node* btn) { 
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
 	//backBtn->setScale(1.6f);
 

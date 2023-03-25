@@ -171,18 +171,6 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 
 	// scheduleUpdate();
 
-	auto dir = Director::getInstance();
-	auto listener = EventListenerTouchOneByOne::create();
-
-	listener->setEnabled(true);
-	listener->setSwallowTouches(true);
-
-	// trigger when you start touch
-	listener->onTouchBegan = AX_CALLBACK_2(PlayerObject::onTouchBegan, this);
-	listener->onTouchEnded = AX_CALLBACK_2(PlayerObject::onTouchEnded, this);
-
-	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-
 	return true;
 }
 
@@ -230,7 +218,7 @@ void PlayerObject::update(float dt)
 		{
 			if (!_particles1Activated)
 			{
-				dragEffect1->resumeEmissions();
+				//dragEffect1->resumeEmissions();
 				_particles1Activated = true;
 			}
 			if (getActionByTag(2)) stopActionByTag(2);
@@ -241,7 +229,7 @@ void PlayerObject::update(float dt)
 			{
 				Sequence* action = Sequence::create(
 					DelayTime::create(0.06f), CallFunc::create([=]() {
-						if (_particles1Activated) dragEffect1->pauseEmissions();
+						//if (_particles1Activated) dragEffect1->pauseEmissions();
 						_particles1Activated = false;
 					}),
 					nullptr);
@@ -252,12 +240,12 @@ void PlayerObject::update(float dt)
 		// shipDragEffect->pauseEmissions();
 		if (_particles3Activated)
 		{
-			dragEffect3->pauseEmissions();
+			//dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
 		if (_particles2Activated)
 		{
-			dragEffect2->pauseEmissions();
+			//dragEffect2->pauseEmissions();
 			_particles2Activated = false;
 		}
 	}
@@ -265,22 +253,22 @@ void PlayerObject::update(float dt)
 	{
 		if (m_bIsHolding)
 		{
-			if (!_particles3Activated) dragEffect3->resumeEmissions();
+			//if (!_particles3Activated) dragEffect3->resumeEmissions();
 			_particles3Activated = true;
 		}
 		else
 		{
-			if (_particles3Activated) dragEffect3->pauseEmissions();
+			//if (_particles3Activated) dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
 		if (!_particles2Activated)
 		{
-			dragEffect2->resumeEmissions();
+			//dragEffect2->resumeEmissions();
 			_particles2Activated = true;
 		}
 		if (_particles1Activated)
 		{
-			dragEffect1->pauseEmissions();
+			//dragEffect1->pauseEmissions();
 			_particles1Activated = false;
 		}
 		// if (isOnGround() && m_dYVel > -1.f)
@@ -396,7 +384,7 @@ void PlayerObject::ringJump(GameObject* obj)
 	if (_touchedRingObject && _queuedHold && m_bIsHolding)
 	{
 		GameToolbox::log("h ffsiofsfsdofs");
-		_touchedRingObject->triggerActivated();
+		_touchedRingObject->triggerActivated(this);
 		m_isRising = true;
 		_queuedHold = false;
 		setIsOnGround(false);
@@ -760,7 +748,7 @@ topCollision:
 		}
 	}
 death:
-	if (playerRectI.intersectsRect(rect)) static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer();
+	if (playerRectI.intersectsRect(rect)) static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer(this);
 }
 
 void PlayerObject::setGamemode(PlayerGamemode mode)
@@ -990,19 +978,17 @@ void PlayerObject::toggleMini(bool active)
 	this->runAction(bounce);
 }
 
-bool PlayerObject::onTouchBegan(ax::Touch* touch, ax::Event* event)
+void PlayerObject::pushButton()
 {
 	if (this->inPlayLayer)
 	{
 		m_bIsHolding = true;
 		_hasJustHeld = true;
 		_queuedHold = true;
-		return true;
 	}
-	return false;
 }
 
-void PlayerObject::onTouchEnded(ax::Touch* touch, ax::Event* event)
+void PlayerObject::releaseButton()
 {
 	if (this->inPlayLayer)
 	{

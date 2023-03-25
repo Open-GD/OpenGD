@@ -8,12 +8,12 @@ private:
 	bool init(float duration, ax::Color4B color, float radiusMin, float radiusMax, bool easing, float lineWidth, bool filled);
 	void update(float dt);
 
-	ax::Color4F m_eColor; // damn CC_SYNTHESIZE doesnt work with it :skull:
-	ax::Node* m_pFollowedNode;
-	AX_SYNTHESIZE(float, m_fLineWidth, LineWidth)
-	AX_SYNTHESIZE(float, m_fRadius, Radius)
-	AX_SYNTHESIZE(float, m_fWidth, Width)
-	AX_SYNTHESIZE(bool, m_bFilled, Filled)
+	ax::Color4F _color; // damn CC_SYNTHESIZE doesnt work with it :skull:
+	ax::Node* _followedNode;
+	AX_SYNTHESIZE(float, _lineWidth, LineWidth)
+	AX_SYNTHESIZE(float, _radius, Radius)
+	AX_SYNTHESIZE(float, _width, Width)
+	AX_SYNTHESIZE(bool, _filled, Filled)
 	
 public:
 	void followNode(ax::Node* node);

@@ -4,6 +4,8 @@
 #include <string>
 #include "json.hpp"
 
+class PlayerObject;
+
 enum GameObjectType
 {
 	kGameObjectTypeSolid = 0,
@@ -74,6 +76,8 @@ class GameObject : public ax::Sprite
 
 	ax::Vec2 _startPosition;
 
+
+
 	void setStartPosition(ax::Vec2 pos) { _startPosition = pos; }
 
 	void setStartPositionX(float x) { _startPosition.x = x; }
@@ -110,10 +114,11 @@ class GameObject : public ax::Sprite
 
 	int getEnterEffectID() { return _enterEffectID; }
 
-	bool m_bHasBeenActivated;
+	bool _hasBeenActivatedP1, _hasBeenActivatedP2;
 	int _mainColorChannel = -1, _secColorChannel = -1;
 
 	bool _hasGlow, _hasParticle;
+	bool _isTrigger;
 
 	int _zLayer = 0;
 
@@ -163,7 +168,8 @@ class GameObject : public ax::Sprite
 
 	bool isActive() { return m_bActive; }
 
-	void triggerActivated();
+	void triggerActivated(PlayerObject* player);
+	bool hasBeenActiavedByPlayer(PlayerObject* player);
 
 	void update();
 

@@ -1,5 +1,5 @@
-# Contributing
 
+# Contributing
 
 ## Reporting Issues
 
@@ -14,7 +14,6 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
     * ...and any other relevant information
 
 #### GENERAL
-
 1. ##### Do not use Java-like braces.
 
   * ###### Good:
@@ -36,25 +35,16 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
         }
     }
     ```
-  However, the method definition could be defined in a header file (.h), if there's one line code only. In this case, Java-like braces should be used.
-  * ###### Good:
-    ```cpp
-    class MyClass
-    {
-    public:
-        void method1();
-        int method2() {
-            return _x; // only one line code can be placed in .h as method definition
-        };
-
-    private:
-        int _x;
-    }
-    ```
-2. ##### Use tabs instead of white-spaces (we usually set our editors to 4 white-spaces for 1 tab, but the choice is up to you).
+  If the method requires only 1 line, Java-like braces should be used.
+```cpp
+int method2() {
+	return _x; // only one line code can be placed in .h as method definition
+};
+```
+3. ##### Use tabs instead of white-spaces (we usually set our editors to 4 white-spaces for 1 tab, but the choice is up to you).
 
 
-3. ##### Always leave one space before and after binary and ternary operators.
+4. ##### Always leave one space before and after binary and ternary operators.
 
   * ###### Good:
     ```cpp
@@ -66,7 +56,7 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
     if (a==10&&b==42)
     ```
 
-4. ##### Only leave one space after semi-colons in "for" statements.
+5. ##### Only leave one space after semi-colons in "for" statements.
 
   * ###### Good:
     ```cpp
@@ -78,7 +68,7 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
     for(int i=0;i<10;++i)
     ```
 
-5. ##### Function names are not separated from the first parenthesis.
+6. ##### Function names are not separated from the first parenthesis.
 
   * ###### Good:
     ```cpp
@@ -91,7 +81,7 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
     foo ();
     ```
 
-6. ##### Keywords are separated from the first parenthesis by one space.
+7. ##### Keywords are separated from the first parenthesis by one space.
 
   * ###### Good:
     ```cpp
@@ -104,7 +94,7 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
     if(myCondition)
     ```
 
-7. ##### Use the following indenting for "switch" statements:
+8. ##### Use the following indenting for "switch" statements:
 
   ```cpp
   switch (test)
@@ -118,21 +108,23 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
           // Do something else
   } // No semi-colon here
   ```
-
-8. ##### Avoid magic numbers.
-
-  * ###### Good:
-    ```cpp
-    if (foo == I_CAN_PUSH_ON_THE_RED_BUTTON)
-        startTheNuclearWar();
-    ```
-
-  * ###### Bad:
-    ```cpp
-    while (lifeTheUniverseAndEverything != 42)
-        lifeTheUniverseAndEverything = buildMorePowerfulComputerForTheAnswer();
-    ```
-
+  If the statements are short, consistent and straightforward prefer the following
+  ```cpp
+switch (n) 
+{
+	default: return "GJ_createBtn_001.png"; 
+	case 1: return "GJ_savedBtn_001.png";
+	case 2: return "GJ_highscoreBtn_001.png";
+	case 3: return "GJ_challengeBtn_001.png";
+	case 4: return "GJ_dailyBtn_001.png";
+	case 5: return "GJ_weeklyBtn_001.png";
+	case 6: return "GJ_gauntletsBtn_001.png";
+	case 7: return "GJ_featuredBtn_001.png";
+	case 8: return "GJ_fameBtn_001.png";
+	case 9: return "GJ_mapPacksBtn_001.png";
+	case 10: return "GJ_searchBtn_001.png";
+}
+```
 9. ##### Prefer enums for integer constants.
 
 10. ##### Use initialization with curly braces.
@@ -178,16 +170,67 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
 
   * ###### Good:
     ```cpp
-    if (!::PathFileExists(dir2Search))
+    if (!PathFileExists(dir2Search))
     ```
 
   * ###### Bad:
     ```cpp
-    if (not ::PathFileExists(dir2Search))
+    if (not PathFileExists(dir2Search))
+    ```
+
+14. ##### Use C++17 initialization statements for variables only used in if/for statements
+
+  * ###### Good:
+    ```cpp
+    if (int temp = 5; temp != 0)
+	{
+		//use temp
+	}
+	//good: temp scope is limited to the if statement condition and block
+    ```
+
+  * ###### Bad:
+    ```cpp
+	int temp = 5;
+    if (temp != 0)
+	{
+		//use temp
+	}
+	//bad: temp scope is not limited
+    ```
+
+
+15. ##### Use the pointer to bool conversion to check if a pointer is nullptr
+
+  * ###### Good:
+    ```cpp
+    if (myPointer && !myOtherPointer)
+	{
+		//myPointer is not nullptr
+		//myOtherPointer is nullptr
+	}
+    ```
+
+  * ###### Bad:
+    ```cpp
+    if (myPointer != nullptr && myOtherPointer == nullptr)
+	{
+		//myPointer is not nullptr
+		//myOtherPointer is nullptr
+	}
     ```
 
 #### NAMING CONVENTIONS
 
+  * ###### Good:
+    ```cpp
+    if (!PathFileExists(dir2Search))
+    ```
+
+  * ###### Bad:
+    ```cpp
+    if (not PathFileExists(dir2Search))
+    ```
 1. ##### Classes uses Pascal Case
 
   * ###### Good:
@@ -204,8 +247,7 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
     {};
     ```
 
-2. ##### Methods & method parameters use camel Case
-
+2. ##### Methods
   ```cpp
   void myMethod(uint myVeryLongParameter);
   ```
@@ -216,10 +258,9 @@ Any member variable name of class/struct should be preceded by an underscore.
 
   ```cpp
   public:
-      int _publicAttribute;
+      int _myInt;
   private:
-      int _pPrivateAttribute;
-      float _pAccount;
+      float _myFloat;
   ```
 
 4. ##### Always prefer a variable name that describes what the variable is used for.
@@ -238,12 +279,10 @@ Any member variable name of class/struct should be preceded by an underscore.
 
 #### COMMENTS
 
-1. ##### Use C++ comment line style rather than C comment style.
-
   * ###### Good:
     ```
     // Two lines comment
-    // Use still C++ comment line style
+    // Two lines comment
     ```
 
   * ###### Bad:
@@ -259,16 +298,7 @@ Any member variable name of class/struct should be preceded by an underscore.
 
 1. ##### Use C++11/14/17 whenever it is possible
 
-2. ##### Use C++11 member initialization feature whenever it is possible
-
-  ```cpp
-  class Foo
-  {
-      int value = 0;
-  };
-  ```
-
-3. ##### Prefer Pre-increment:
+2. ##### Prefer Pre-increment:
   ```cpp
   ++i
   ```
@@ -280,8 +310,8 @@ Any member variable name of class/struct should be preceded by an underscore.
   (It does not change anything for built-in types but it would bring consistency)
 
 
-4. ##### Don't place any "using namespace" directives in headers.
+3. ##### Don't place any "using namespace" directives in headers.
 
-5. ##### Compile time is without incidence. Increasing compile time to reduce execution time is encouraged.
+4. ##### Compile time is without incidence. Increasing compile time to reduce execution time is encouraged.
 
-6. ##### Code legibility and length is less important than easy and fast end-user experience.
+5. ##### Code legibility and length is less important than easy and fast end-user experience.

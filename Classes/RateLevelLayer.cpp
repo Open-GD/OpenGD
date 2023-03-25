@@ -57,12 +57,12 @@ bool RateLevelLayer::init(int)
 	bg->setContentSize({ 360, 180 });
 	bg->setPosition(winSize / 2);
 
-	this->m_pMainLayer->addChild(bg);
+	this->_mainLayer->addChild(bg);
 
 	auto label = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Rate Difficulty");
 	label->setPosition({ winSize.width / 2, (winSize.height / 2) + 70.0f });
 
-	this->m_pMainLayer->addChild(label);
+	this->_mainLayer->addChild(label);
 
 	auto menu = Menu::create();
 
@@ -81,11 +81,11 @@ bool RateLevelLayer::init(int)
 
 	menu->alignItemsHorizontallyWithPadding(38);
 	menu->setPosition(winSize / 2);
-	this->m_pMainLayer->addChild(menu);
+	this->_mainLayer->addChild(menu);
 
 	auto btnMenu = Menu::create();
 	btnMenu->setPosition({ (winSize.width / 2), (winSize.height / 2) - 65 });
-	this->m_pMainLayer->addChild(btnMenu);
+	this->_mainLayer->addChild(btnMenu);
 
 	auto cancelBtn = TextButton::create("Cancel", [&](TextButton*){
 		this->close();
