@@ -30,7 +30,8 @@ Sprite* searchButton(std::string texture, std::string text, float scale, std::st
 	label->setScale(scale);
 	menu->addChild(label);
 
-	if (!icon.empty()) {
+	if (!icon.empty())
+	{
 		auto icon_sprite = Sprite::createWithSpriteFrameName(icon);
 		icon_sprite->setScale(1.1f);
 		menu->addChild(icon_sprite);
@@ -50,6 +51,7 @@ Scene* LevelSearchLayer::scene()
 	scene->addChild(LevelSearchLayer::create());
 	return scene;
 }
+
 bool LevelSearchLayer::init()
 {
 	if (!Layer::init()) return false;
@@ -62,7 +64,8 @@ bool LevelSearchLayer::init()
 	auto backBtnMenu = Menu::create();
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) {
 		Director::getInstance()->replaceScene(TransitionFade::create(.5, CreatorLayer::scene()));
-		});
+	});
+	
 	backBtnMenu->addChild(backBtn);
 	backBtnMenu->setPosition({ 24.0, winSize.height - 23.0f });
 	this->addChild(backBtnMenu);
@@ -100,16 +103,16 @@ bool LevelSearchLayer::init()
 	searchProfileBtn->setPosition(menuSearch->convertToNodeSpace({ searchPos.x + 156.0f, searchPos.y }));
 	menuSearch->addChild(searchProfileBtn);
 	this->addChild(menuSearch);
-	/*
-	auto field = TextInputNode::create(194.0f, 50.0f, GameToolbox::getTextureString("bigFont.fnt").c_str(), "Enter a level, user or id", 18);
-	field->_pTextField->setAnchorPoint({ 0.0, 0.5 });
-	field->_pTextField->setMaxLength(20);
-	field->_pTextField->setMaxLengthEnabled(true);
-	field->_pPlaceholder->setColor({ 120, 170, 240 });
-	field->_pTextField->setPosition({searchPos.x - 174.0f, searchPos.y});
-	_searchField = field;
-	this->addChild(field);
-	*/
+	
+	// auto field = TextInputNode::create(194.0f, 50.0f, GameToolbox::getTextureString("bigFont.fnt").c_str(), "Enter a level, user or id", 18);
+	// field->_pTextField->setAnchorPoint({ 0.0, 0.5 });
+	// field->_pTextField->setMaxLength(20);
+	// field->_pTextField->setMaxLengthEnabled(true);
+	// field->_pPlaceholder->setColor({ 120, 170, 240 });
+	// field->_pTextField->setPosition({searchPos.x - 174.0f, searchPos.y});
+	// _searchField = field;
+	// this->addChild(field);
+	
 
 	_searchField = ui::TextField::create("Enter a level, user or id", GameToolbox::getTextureString("bigFont.fnt"), 15);
 	_searchField->setPlaceHolderColor({ 120, 170, 240 });
@@ -242,8 +245,7 @@ bool LevelSearchLayer::init()
 
 	this->addChild(_difficultyMenu);
 
-	for (size_t tag : _selectedDifficulties)
-	{
+	for (size_t tag : _selectedDifficulties) {
 		_difficultyMenu->getChildByTag(tag)->setColor(SELECTED_COLOR);
 	}
 
