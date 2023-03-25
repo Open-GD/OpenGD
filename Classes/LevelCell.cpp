@@ -51,11 +51,11 @@ bool LevelCell::init(GJGameLevel* level) {
 	nameText->setAnchorPoint({0, 0.5});
 	layer->addChild(nameText);
 
-	GameToolbox::log("{}", level->_OfficialSongID);
+	GameToolbox::log("{}", level->_SongID);
 
 	ax::Label* songText = nullptr;
 
-	if (level->_OfficialSongID > 0)
+	if (level->_SongID == 0)
 	{
 		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", LevelTools::getAudioTitle(level->_OfficialSongID)));
 		songText->setColor(ax::Color3B(39, 206, 250));
@@ -71,8 +71,23 @@ bool LevelCell::init(GJGameLevel* level) {
 	songText->setAnchorPoint({0, 0.5});
 	layer->addChild(songText);
 
+	ax::Vec2 diffPos = {26, 59};
+
+	if (level->_Epic == 1)
+	{
+		auto epicSprite = ax::Sprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
+		epicSprite->setPosition(diffPos);
+		layer->addChild(epicSprite, 2);
+	}
+	else if (level->_FeatureScore > 0)
+	{
+		auto featureScore = ax::Sprite::createWithSpriteFrameName("GJ_featuredCoin_001.png");
+		featureScore->setPosition(diffPos);
+		layer->addChild(featureScore, 2);
+	}
+
 	auto diffSprite = ax::Sprite::createWithSpriteFrameName(GJGameLevel::getDifficultySprite(level));
-	diffSprite->setPosition({26, 59});
+	diffSprite->setPosition(diffPos);
 	layer->addChild(diffSprite, 2);
 
 	auto lenSprite = ax::Sprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
