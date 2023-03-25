@@ -3,22 +3,27 @@
 #include <axmol.h>
 #include "GJSearchObject.h"
 #include "TextInputNode.h"
+#include <ui/CocosGUI.h>
 
 class LevelSearchLayer : public ax::Layer {
 private:
-	static void toggleDifficulty(ax::Node*);
-	static void toggleTime(ax::Ref*);
+	void toggleDifficulty(ax::Node*);
+	void toggleTime(ax::Ref*);
+	void onSearchProfile(ax::Node*);
+	void onSearch(ax::Node*);
 
-	static ax::Menu* m_pDifficultyFilterMenu;
-	static ax::Menu* m_pLengthFilterMenu;
+	static ax::Menu* _difficultyMenu;
+	static ax::Menu* _lengthFilter;
 
-	GJSearchObject* searchObj;
+	GJSearchObject* _searchObject;
+	ax::Node* _extraDemonsBtn;
+	ax::Node* _starIcon;
 
 public:
-	static TextInputNode* _searchField;
+	ax::ui::TextField* _searchField;
 
-	static std::vector<int> m_dSelectedDifficulties;
-	static std::vector<int> m_dSelectedTimes;
+	static std::vector<int> _selectedDifficulties;
+	static std::vector<int> _selectedTimes;
 
 	CREATE_FUNC(LevelSearchLayer);
 	static ax::Scene* scene();

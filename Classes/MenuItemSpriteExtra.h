@@ -3,7 +3,7 @@
 
 class MenuItemSpriteExtra : public ax::MenuItemSprite {
 private:
-	MenuItemSpriteExtra(const char* sprite, ax::Node* sprNode, std::function<void(Node*)> callback);
+	MenuItemSpriteExtra(std::string_view sprite, ax::Node* sprNode, std::function<void(Node*)> callback);
 	bool init() override;
 	void selected() override;
 	void unselected() override;
@@ -25,7 +25,7 @@ private:
 	/// @param sprite The name of the sprite FRAME (it should be in a plist)
 	/// @param callback Runs when you release the button with mouse hovered. Can be a lambda func. The Node* param is the button itself
 	/// @return The button
-	static MenuItemSpriteExtra* create(const char* sprite, std::function<void(Node*)> callback);
+	static MenuItemSpriteExtra* create(std::string_view sprite, std::function<void(Node*)> callback);
 	static MenuItemSpriteExtra* create(ax::Node* , std::function<void(Node*)> callback);
 	void setScaleMultiplier(float);
 	void setDestination(ax::Vec2 dest);

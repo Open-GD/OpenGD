@@ -4,8 +4,8 @@ USING_NS_AX;
 
 static constexpr float BUTTON_MULTIPLIER = 1.26f;
 
-MenuItemSpriteExtra::MenuItemSpriteExtra(const char* spriteStr, Node* sprNode, std::function<void(Node*)> callback) {
-	m_pSprite = !spriteStr ? sprNode : Sprite::createWithSpriteFrameName(spriteStr);
+MenuItemSpriteExtra::MenuItemSpriteExtra(std::string_view spriteStr, Node* sprNode, std::function<void(Node*)> callback) {
+	m_pSprite = spriteStr.empty() ? sprNode : Sprite::createWithSpriteFrameName(spriteStr);
 	//m_pSprite->setStretchEnabled(false);
 	float nodescale = m_pSprite->getScale();
 	m_fScaleMult = BUTTON_MULTIPLIER;
@@ -60,7 +60,7 @@ bool MenuItemSpriteExtra::init() {
 	return true;
 }
 
-MenuItemSpriteExtra* MenuItemSpriteExtra::create(const char* sprite, std::function<void(Node*)> callback) {
+MenuItemSpriteExtra* MenuItemSpriteExtra::create(std::string_view sprite, std::function<void(Node*)> callback) {
 	MenuItemSpriteExtra* pRet = new(std::nothrow) MenuItemSpriteExtra(sprite, nullptr, callback);
 
 	if (pRet && pRet->init()) {
@@ -73,7 +73,7 @@ MenuItemSpriteExtra* MenuItemSpriteExtra::create(const char* sprite, std::functi
 }
 
 MenuItemSpriteExtra* MenuItemSpriteExtra::create(Node* sprite, std::function<void(Node*)> callback) {
-	MenuItemSpriteExtra* pRet = new(std::nothrow) MenuItemSpriteExtra(nullptr, sprite, callback);
+	MenuItemSpriteExtra* pRet = new(std::nothrow) MenuItemSpriteExtra("", sprite, callback);
 
 	if (pRet && pRet->init()) {
 		pRet->autorelease();
