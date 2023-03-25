@@ -1,3 +1,4 @@
+
 # Contributing
 
 ## Reporting Issues
@@ -169,12 +170,12 @@ switch(n)
 
   * ###### Good:
     ```cpp
-    if (!::PathFileExists(dir2Search))
+    if (!PathFileExists(dir2Search))
     ```
 
   * ###### Bad:
     ```cpp
-    if (not ::PathFileExists(dir2Search))
+    if (not PathFileExists(dir2Search))
     ```
 
 14. ##### Use C++17 initialization statements for variables only used in if/for statements
@@ -196,6 +197,27 @@ switch(n)
 		//use temp
 	}
 	//bad: temp scope is not limited
+    ```
+
+
+15. ##### Use the pointer to bool conversion to check if a pointer is nullptr
+
+  * ###### Good:
+    ```cpp
+    if (myPointer && !myOtherPointer)
+	{
+		//myPointer is not nullptr
+		//myOtherPointer is nullptr
+	}
+    ```
+
+  * ###### Bad:
+    ```cpp
+    if (myPointer != nullptr && myOtherPointer == nullptr)
+	{
+		//myPointer is not nullptr
+		//myOtherPointer is nullptr
+	}
     ```
 
 #### NAMING CONVENTIONS
@@ -257,12 +279,10 @@ Any member variable name of class/struct should be preceded by an underscore.
 
 #### COMMENTS
 
-1. ##### Use C++ comment line style rather than C comment style.
-
   * ###### Good:
     ```
     // Two lines comment
-    // Use still C++ comment line style
+    // Two lines comment
     ```
 
   * ###### Bad:
@@ -278,16 +298,7 @@ Any member variable name of class/struct should be preceded by an underscore.
 
 1. ##### Use C++11/14/17 whenever it is possible
 
-2. ##### Use C++11 member initialization feature whenever it is possible
-
-  ```cpp
-  class Foo
-  {
-      int value = 0;
-  };
-  ```
-
-3. ##### Prefer Pre-increment:
+2. ##### Prefer Pre-increment:
   ```cpp
   ++i
   ```
@@ -299,8 +310,8 @@ Any member variable name of class/struct should be preceded by an underscore.
   (It does not change anything for built-in types but it would bring consistency)
 
 
-4. ##### Don't place any "using namespace" directives in headers.
+3. ##### Don't place any "using namespace" directives in headers.
 
-5. ##### Compile time is without incidence. Increasing compile time to reduce execution time is encouraged.
+4. ##### Compile time is without incidence. Increasing compile time to reduce execution time is encouraged.
 
-6. ##### Code legibility and length is less important than easy and fast end-user experience.
+5. ##### Code legibility and length is less important than easy and fast end-user experience.
