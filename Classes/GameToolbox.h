@@ -10,7 +10,6 @@
 #include <iostream>
 #include <filesystem>
 
-//general purpose class for helper functions that can be useful with any class at any moment
 enum IconType {
 	kIconTypeCube		= 0,
 	kIconTypeShip		= 1,
@@ -24,6 +23,7 @@ enum IconType {
 	kIconTypeSpecial	 = 99,
 };
 
+//general purpose namespace for helper functions that can be useful with any class at any moment
 namespace GameToolbox
 {
 	enum GTRes {
@@ -31,7 +31,10 @@ namespace GameToolbox
 		Medium,
 		High
 	};
-	const char* lenghtString(int len);
+
+	static bool _isCtrlPressed;
+
+	const char* lengthString(int len);
 	int randomInt(int min, int max);
 	int randomInt(int max);
 	float randomFloat(int min, int max);
@@ -73,7 +76,6 @@ namespace GameToolbox
 	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int outLengthHint);
 	int ccInflateMemory(unsigned char *in, unsigned int inLength, unsigned char **out);
 	
-	std::string getClipboardString();
 	ax::BlendFunc getBlending();
 
 	template <typename T>

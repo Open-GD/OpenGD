@@ -93,7 +93,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	lenSprite->setScale(0.6f);
 	layer->addChild(lenSprite, 2);
 
-	auto lenText = ax::Label::createWithBMFont(bigFontStr, GameToolbox::lenghtString(level->_Length));
+	auto lenText = ax::Label::createWithBMFont(bigFontStr, GameToolbox::lengthString(level->_Length));
 	lenText->setScale(0.4f);
 	if (lenText->getContentSize().width > 120) lenText->setScale(lenText->getScale() * (120 / lenText->getContentSize().width));
 	lenText->setPosition({ 69, 14 });

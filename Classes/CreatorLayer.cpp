@@ -115,9 +115,9 @@ bool CreatorLayer::init()
 #ifdef AX_PLATFORM_PC
 	auto listener = EventListenerKeyboard::create();
 
-	listener->onKeyPressed  = AX_CALLBACK_2(CreatorLayer::onKeyPressed, this);
-	listener->onKeyReleased = AX_CALLBACK_2(CreatorLayer::onKeyReleased, this);
-	director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+    listener->onKeyPressed  = AX_CALLBACK_2(CreatorLayer::onKeyPressed, this);
+
+    director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 #endif
 
 	return true;
@@ -125,33 +125,10 @@ bool CreatorLayer::init()
 
 //TODO: add keybinds for other stuff
 void CreatorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) {
-	
-	// switch (keyCode) 
-	// {
-		// case EventKeyboard::KeyCode::KEY_CTRL:
-			// _ctrlDown = true;
-		// break;
-		
-		// case EventKeyboard::KeyCode::KEY_V: 
-		// {
-			// if (_ctrlDown) {
-				// GameToolbox::log("paste");
-				// _levelField->setString(GameToolbox::getClipboardString());
-			// }
-		// }
-		// break;
-		
-		// case EventKeyboard::KeyCode::KEY_BACK:
-			// Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
-	// }
-}
-
-void CreatorLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event)
-{
-	// switch (keyCode)
-	// {
-		// case EventKeyboard::KeyCode::KEY_CTRL:
-		// _ctrlDown = false;
-		// break;
-	// }
+    switch (keyCode) 
+    {
+    case EventKeyboard::KeyCode::KEY_BACK:
+        Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+        break;
+    }
 }
