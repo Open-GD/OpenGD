@@ -290,13 +290,13 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 		playBtn->setEnabled(true);
 		playBtn->setVisible(true);
 		_level = GJGameLevel::createWithResponse((*str));
+		_level->_MusicID = _level->_OfficialSongID;
 	}
-	
-	//else
-	//{
+	else
+	{
 		auto alert = AlertLayer::create("Error", "Level download failed, please try\nagain later.", "OK", "", NULL, NULL);
 		addChild(alert);
 		alert->show();
 		GameToolbox::log("request failed");
-	//}
+	}
 }

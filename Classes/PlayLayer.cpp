@@ -1646,8 +1646,6 @@ void PlayLayer::resetLevel()
 	this->_bottomGround->update(0);
 	this->_ceiling->update(0);
 
-	getLevel()->_MusicID = getLevel()->_OfficialSongID;
-
 	AudioEngine::stopAll();
 	AudioEngine::setCurrentTime(
 		AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f), _levelSettings.songOffset);
