@@ -476,33 +476,3 @@ int GameToolbox::ccInflateMemory(unsigned char* in, unsigned int inLength, unsig
     // 256k for hint
     return ccInflateMemoryWithHint(in, inLength, out, 256 * 1024);
 }
-
-std::string GameToolbox::getClipboardString() {
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
-    if (!OpenClipboard(nullptr))
-        return "";
-
-		HANDLE hData = GetClipboardData(CF_TEXT);
-		if (hData == nullptr)
-		{
-			GlobalUnlock(hData);
-			CloseClipboard();
-			return "";
-		}
-
-		char* pszText = static_cast<char*>(GlobalLock(hData));
-		if (pszText == nullptr)
-		{
-			GlobalUnlock(hData);
-			CloseClipboard();
-			return "";
-		}
-		
-		std::string ret(pszText);
-		GlobalUnlock(hData);
-		CloseClipboard();
-		return ret;
-	#else
-		return "";
-	#endif
-}

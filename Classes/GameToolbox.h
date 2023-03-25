@@ -52,7 +52,6 @@ namespace GameToolbox
 	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int outLengthHint);
 	int ccInflateMemory(unsigned char *in, unsigned int inLength, unsigned char **out);
 	
-	std::string getClipboardString();
 	ax::BlendFunc getBlending();
 
 	template <typename T>
