@@ -641,11 +641,9 @@ bool PlayLayer::init(GJGameLevel* level)
 	updateVisibility();
 	updateVisibility();
 
-	m_bCanExitScene = false;
 
 	scheduleOnce(
 		[=](float d) {
-			m_bCanExitScene = true;
 			if (levelValid)
 			{
 				resetLevel();
@@ -736,7 +734,6 @@ void PlayLayer::update(float dt)
 
 void PlayLayer::destroyPlayer(PlayerObject* player)
 {
-	m_bCanExitScene = false;
 
 	if (player->isDead() || player->noclip) return;
 
@@ -748,7 +745,6 @@ void PlayLayer::destroyPlayer(PlayerObject* player)
 	scheduleOnce(
 		[=](float d) {
 			resetLevel();
-			m_bCanExitScene = true;
 		},
 		1.f, "restart");
 }
@@ -1695,7 +1691,6 @@ void PlayLayer::onEnter()
 
 void PlayLayer::onExit()
 {
-	if (!m_bCanExitScene) return;
 
 #if SHOW_IMGUI == true
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
@@ -1707,7 +1702,6 @@ void PlayLayer::onExit()
 
 void PlayLayer::exit()
 {
-	if (!m_bCanExitScene) return;
 
 	_player1->deactivateStreak();
 	_player2->deactivateStreak();

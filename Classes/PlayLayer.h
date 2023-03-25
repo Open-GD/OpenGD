@@ -69,7 +69,6 @@ class PlayLayer : public ax::Layer
 	bool m_freezePlayer;
 	bool m_platformerMode;
 
-	bool m_bCanExitScene;
 	bool m_bEndAnimation;
 
 public:
