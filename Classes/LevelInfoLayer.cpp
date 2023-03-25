@@ -94,7 +94,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	this->addChild(playBtnMenu);
 
 	// Info (length, downloads, likes)
-	ax::Vector<Node*> final = {};
+	ax::Vector<Node*> nodeVector = {};
 
 	Node* timeNode = Node::create();
 	auto timeSprite = Sprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
@@ -104,7 +104,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	timeLabel->setScale(0.5);
 	timeNode->addChild(timeLabel);
 	GameToolbox::alignItemsHorizontallyWithPadding(timeNode->getChildren(), 5);
-	final.pushBack(timeNode);
+	nodeVector.pushBack(timeNode);
 
 	Node* downloadNode = Node::create();
 	auto downloadSprite = Sprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png");
@@ -114,7 +114,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	downloadLabel->setScale(0.5);
 	downloadNode->addChild(downloadLabel);
 	GameToolbox::alignItemsHorizontallyWithPadding(downloadNode->getChildren(), 5);
-	final.pushBack(downloadNode);
+	nodeVector.pushBack(downloadNode);
 
 	Node* likeNode = Node::create();
 	auto likeSprite = Sprite::createWithSpriteFrameName("GJ_likesIcon_001.png");
@@ -124,13 +124,13 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	likeLabel->setScale(0.5);
 	likeNode->addChild(likeLabel);
 	GameToolbox::alignItemsHorizontallyWithPadding(likeNode->getChildren(), 5);
-	final.pushBack(likeNode);
+	nodeVector.pushBack(likeNode);
 
-	GameToolbox::alignItemsHorizontallyWithPadding(final, 100);
+	GameToolbox::alignItemsHorizontallyWithPadding(nodeVector, 100);
 
 	auto layer = Layer::create();
 
-	for (Node* child : final)
+	for (Node* child : nodeVector)
 	{
 		layer->addChild(child);
 	}
@@ -170,7 +170,6 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	auto normalLabel = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Normal Mode");
 	normalLabel->setPosition({normalBar->getPositionX(), normalBar->getPositionY() + 20.0f});
 	normalLabel->setScale(0.5);
-
 	this->addChild(normalLabel);
 
 	// Practice Progress Bar
@@ -292,10 +291,12 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 		playBtn->setVisible(true);
 		_level = GJGameLevel::createWithResponse((*str));
 	}
-	else
-	{
+	
+	//else
+	//{
 		auto alert = AlertLayer::create("Error", "Level download failed, please try\nagain later.", "OK", "", NULL, NULL);
+		addChild(alert);
 		alert->show();
 		GameToolbox::log("request failed");
-	}
+	//}
 }

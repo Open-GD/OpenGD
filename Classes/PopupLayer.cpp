@@ -9,8 +9,11 @@ void PopupLayer::show()
 	this->_mainLayer->runAction(EaseElasticOut::create(ScaleTo::create(0.5f, 1.0f), 0.6f));
 	this->runAction(FadeTo::create(0.14, 100));
 
-	auto scene = Director::getInstance()->getRunningScene();
-	scene->addChild(this);
+	if(!getParent())
+	{
+		auto scene = Director::getInstance()->getRunningScene();
+		scene->addChild(this);
+	}
 }
 
 bool PopupLayer::init()
