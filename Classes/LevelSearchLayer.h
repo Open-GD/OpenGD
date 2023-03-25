@@ -20,7 +20,7 @@ private:
 	ax::Node* _starIcon;
 
 public:
-	ax::ui::TextField* _searchField;
+	TextInputNode* _searchField;
 
 	static std::vector<int> _selectedDifficulties;
 	static std::vector<int> _selectedTimes;
