@@ -14,7 +14,7 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
     * ...and any other relevant information
 
 #### GENERAL
-1. ##### Do not use Java-like braces.
+1. ##### Keep braces in separate lines
 
   * ###### Good:
     ```cpp
@@ -35,11 +35,11 @@ Bug reports are appreciated. Following a few guidelines listed below will help s
         }
     }
     ```
-  If the method requires only 1 line, Java-like braces should be used.
+  If the method requires only 1 line, same line braces can be used
 ```cpp
 int method2() {
-	return _x; // only one line code can be placed in .h as method definition
-};
+	return _x;
+}
 ```
 3. ##### Use tabs instead of white-spaces (we usually set our editors to 4 white-spaces for 1 tab, but the choice is up to you).
 
@@ -129,7 +129,7 @@ switch (n)
 }
 ```
 and if the cases don't fit well in a single line, prefer this
-```
+```cpp
 switch (1)
 {
 	case 1:
