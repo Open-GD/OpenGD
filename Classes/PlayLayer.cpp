@@ -1553,6 +1553,11 @@ void PlayLayer::resetLevel()
 	for (auto obj : this->_pObjects)
 	{
 		if (!obj) continue;
+		if (obj->_isTrigger)
+		{
+			auto trigger = dynamic_cast<EffectGameObject*>(obj);
+			trigger->_wasTriggerActivated = false;
+		}
 		obj->_hasBeenActivatedP1 = false;
 		obj->_hasBeenActivatedP2 = false;
 		obj->setActive(false);
@@ -1644,6 +1649,8 @@ void PlayLayer::resetLevel()
 	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
 	this->_bottomGround->update(0);
 	this->_ceiling->update(0);
+
+	getLevel()->_MusicID = getLevel()->_OfficialSongID;
 
 	AudioEngine::stopAll();
 	AudioEngine::setCurrentTime(

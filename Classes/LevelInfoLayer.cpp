@@ -294,6 +294,8 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 	}
 	else
 	{
+		auto alert = AlertLayer::create("Error", "Level download failed, please try\nagain later.", "OK", "", NULL, NULL);
+		alert->show();
 		GameToolbox::log("request failed");
 	}
 }

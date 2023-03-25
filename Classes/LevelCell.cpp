@@ -51,8 +51,6 @@ bool LevelCell::init(GJGameLevel* level) {
 	nameText->setAnchorPoint({0, 0.5});
 	layer->addChild(nameText);
 
-	GameToolbox::log("{}", level->_SongID);
-
 	ax::Label* songText = nullptr;
 
 	if (level->_SongID == 0)
