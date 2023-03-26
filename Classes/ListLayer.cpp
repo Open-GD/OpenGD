@@ -30,7 +30,7 @@ bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color
 	
 	//menu start
 	if(scrollLayer != nullptr){
-		scrollLayer->setPosition({size.x / 2, size.y / 1.5f});
+		scrollLayer->setPosition({size.x / 2, size.y / 2.0f});
 		scrollLayer->setContentSize(size);
 		this->addChild(scrollLayer);
 	}

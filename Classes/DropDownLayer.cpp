@@ -2,7 +2,7 @@
 
 USING_NS_AX;
 
-DropDownLayer* DropDownLayer::create(Layer* scrollLayer, const char* label)
+DropDownLayer* DropDownLayer::create(Node* scrollLayer, const char* label)
 {
 	auto pRet = new(std::nothrow) DropDownLayer();
 
@@ -18,7 +18,7 @@ DropDownLayer* DropDownLayer::create(Layer* scrollLayer, const char* label)
 	}
 }
 
-bool DropDownLayer::init(Layer* scrollLayer, const char* label)
+bool DropDownLayer::init(Node* scrollLayer, const char* label)
 {
 	if(!this->initWithColor({0, 0, 0, 0})) return false;
 	
@@ -35,7 +35,7 @@ bool DropDownLayer::init(Layer* scrollLayer, const char* label)
 		this->hideLayer();
 	});
 
-	backBtn->setPosition(menu->convertToNodeSpace({25, winSize.height - 25}));
+	backBtn->setPosition(menu->convertToNodeSpace({24, winSize.height - 23}));
 	menu->addChild(backBtn);
 	_dropLayer->addChild(menu);
 
@@ -51,11 +51,13 @@ bool DropDownLayer::init(Layer* scrollLayer, const char* label)
 
 
 	auto listlayer = ListLayer::create(scrollLayer, label);
-	listlayer->setPosition({(winSize.width - 356) / 2, ((winSize.height - 220) / 2) + 5});
+	listlayer->setPosition({ (winSize.width - 356) / 2, ((winSize.height - 220) / 2) - 5 });
 	_dropLayer->addChild(listlayer);
 	//menu end
 
 	this->addChild(_dropLayer);
+
+	this->customSetup();
 
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->setEnabled(true);

@@ -5,12 +5,13 @@
 #include "ListLayer.h"
 
 class DropDownLayer : public ax::LayerColor {
-	private:
-		bool init(ax::Layer* scrollLayer, const char* label);
+	protected:
+		bool init(Node* scrollLayer, const char* label);
+		virtual void customSetup() {};
 	public:
 		ax::Layer* _dropLayer;
 
-		static DropDownLayer* create(ax::Layer* scrollLayer, const char* label);
+		static DropDownLayer* create(Node* scrollLayer, const char* label);
 		void showLayer();
 		void hideLayer();
 };

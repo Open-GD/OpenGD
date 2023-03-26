@@ -6,6 +6,7 @@
 #include "GameToolbox.h"
 #include "MenuLayer.h"
 #include "LevelPage.h"
+#include "SongsLayer.h"
 
 USING_NS_AX;
 
@@ -144,6 +145,20 @@ bool LevelSelectLayer::init(int page)
 	infoMenu->addChild(infoBtn, 1);
 
 	infoMenu->setPosition({ winSize.width - 20.0f, winSize.height - 20.0f });
+
+
+	auto dlLabel = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Download the soundtracks");
+	dlLabel->setScale(0.5);
+
+	auto dlMenuItem = MenuItemSpriteExtra::create(dlLabel, [](Node*) {
+		SongsLayer::create()->showLayer();
+	});
+
+	auto dlLabelMenu = Menu::create();
+	dlLabelMenu->addChild(dlMenuItem);
+	addChild(dlLabelMenu);
+	dlLabelMenu->setPosition({ winSize.width / 2, 35 });
+
 
 	auto listener = EventListenerKeyboard::create();
 
