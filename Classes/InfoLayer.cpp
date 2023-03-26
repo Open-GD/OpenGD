@@ -5,6 +5,7 @@
 #include "TextButton.h"
 #include <ui/CocosGUI.h>
 #include <ui/UITextField.h>
+#include "external/base64.h"
 
 USING_NS_AX;
 

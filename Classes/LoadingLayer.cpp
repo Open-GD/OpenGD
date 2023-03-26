@@ -2,11 +2,13 @@
 #include "GameToolbox.h"
 #include "MenuLayer.h"
 #include "CocosExplorer.h"
-#include "external/constants.h"
+#include "GameManager.h"
 
+#include "external/constants.h"
 #include <array>
 
 USING_NS_AX;
+
 using GameToolbox::getTextureString, GameToolbox::log;
 
 constexpr static auto splashes = std::to_array <const char*>({
@@ -90,7 +92,7 @@ constexpr static auto plists = std::to_array<const char*>({
 	
 	
 const char* LoadingLayer::getSplash() {
-	return splashes[rand() % (splashes.size()-1)];
+	return splashes[GameToolbox::randomInt(0, splashes.size() - 1)];
 }
 
 Scene* LoadingLayer::scene() {
@@ -101,6 +103,7 @@ Scene* LoadingLayer::scene() {
 
 bool LoadingLayer::init() {
 	if (!Layer::init()) return false;
+	
 	
 	size_t totalAssets = fonts.size() + plists.size() + pngs.size();
 	this->m_nTotalAssets = static_cast<int>(totalAssets);
@@ -180,4 +183,5 @@ void LoadingLayer::assetLoaded(ax::Ref*) {
 	if(m_nAssetsLoaded == m_nTotalAssets) {
 		Director::getInstance()->replaceScene(MenuLayer::scene());
 	}
+	auto gm = GameManager::getInstance();
 }

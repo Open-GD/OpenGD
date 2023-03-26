@@ -13,6 +13,7 @@
 #include "LevelSelectLayer.h"
 #include "DropDownLayer.h"
 #include "MoreGamesLayer.h"
+#include "GameManager.h"
 
 /*
 #include "ColoursPalette.h"
@@ -45,6 +46,19 @@ MenuLayer* MenuLayer::create() {
 
 bool MenuLayer::init()
 {
+	// auto gm = GameManager::getInstance();
+
+	// gm->set<std::string>("key1", "value");
+	// gm->set<bool>("key2", true);
+	// gm->set<int>("key3", 523423);
+	
+	// std::string key = gm->get<std::string>("key1");
+	// bool otherKey = gm->get<bool>("key2");
+	// int myKey = gm->get<int>("key3");
+	
+	// GameToolbox::log("key1: {}, key2: {}, key3: {}", key, otherKey, myKey);
+	
+	
 	if (!Layer::init()) return false;
 
 	if (music)
@@ -106,8 +120,10 @@ bool MenuLayer::init()
 
 	auto achievementsBtn = MenuItemSpriteExtra::create("GJ_achBtn_001.png", [&](Node* btn) {
 		//AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
-		auto dropdownlayer = DropDownLayer::create(nullptr, "Achievements");
-		dropdownlayer->showLayer();
+		//auto dropdownlayer = DropDownLayer::create(nullptr, "Achievements");
+		//dropdownlayer->showLayer();
+		GameManager::getInstance()->save();
+		Director::getInstance()->end();
 	});
 	achievementsBtn->setScale(1.f);
 	//static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
