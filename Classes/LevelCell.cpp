@@ -140,15 +140,15 @@ bool LevelCell::init(GJGameLevel* level) {
 	
 	if (level->_CopiedID > 0)
 	{
-    	auto collabSprite = ax::Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
-    	collabSprite->setPosition(levelBadgePosition, 52);
-    	layer->addChild(collabSprite);
+		auto collabSprite = ax::Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
+		collabSprite->setPosition(levelBadgePosition, 52);
+		layer->addChild(collabSprite);
 	}
 	if (level->_Objects > 40000)
 	{
-    	auto highObjectSprite = ax::Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
-    	highObjectSprite->setPosition(levelBadgePosition + (level->_CopiedID > 0 ? 18 : 0), 52);
-    	layer->addChild(highObjectSprite);
+		auto highObjectSprite = ax::Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
+		highObjectSprite->setPosition(levelBadgePosition + (level->_CopiedID > 0 ? 18 : 0), 52);
+		layer->addChild(highObjectSprite);
 	}
 
 	auto scale9 = ax::ui::Scale9Sprite::create("GJ_button_01-uhd.png");
