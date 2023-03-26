@@ -24,7 +24,6 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(APP_NAME OpenGD)
-
 project(${APP_NAME})
 
 SET(AX_ENABLE_EXT_IMGUI ON)
