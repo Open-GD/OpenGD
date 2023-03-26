@@ -60,11 +60,13 @@ void GameManager::load()
 	GameToolbox::log("gamemanager load");
 	std::string byteStr = ax::FileUtils::getInstance()->getStringFromFile(_filepath);
 	_options = hps::from_string<GameOptions>(byteStr);
+	loadMembersFromMap();
 	print();
 }
 
 void GameManager::save()
 {
+	setMembersToMap();
 	GameToolbox::log("gamemanager save");
 	const std::string& serialized = hps::to_string(_options);
 	ax::FileUtils::getInstance()->writeStringToFile(serialized, _filepath);
@@ -125,4 +127,19 @@ void GameManager::set<int>(const std::string& key, const int& val) {
 template<>
 void GameManager::set<std::string>(const std::string& key, const std::string& val) {
     _options.stringOptions[key] = val;
+}
+
+
+void GameManager::setMembersToMap()
+{
+	set<bool>("_openedGarage", _openedGarage);
+	set<bool>("_openedCreator", _openedCreator);
+	set<bool>("_openedPracticeMode", _openedPracticeMode);
+}
+
+void GameManager::loadMembersFromMap()
+{
+	_openedGarage = get<bool>("_openedGarage");
+	_openedCreator = get<bool>("_openedCreator");
+	_openedPracticeMode = get<bool>("_openedPracticeMode");
 }

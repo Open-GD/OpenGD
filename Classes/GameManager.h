@@ -6,9 +6,12 @@ class GameManager final
 {
 private:
 	std::string _filepath;
-
+	
 public:
-
+	bool _openedGarage;
+	bool _openedCreator;
+	bool _openedPracticeMode;
+	
 private:
 	bool init();
 	void load();
@@ -23,5 +26,9 @@ public:
     void set(const std::string& key, const T& val);
 	
 	void save();
+	
+	void setMembersToMap();
+	void loadMembersFromMap();
+	
 	void print();
 };
