@@ -2,7 +2,7 @@
 #include "GameToolbox.h"
 #include "MenuLayer.h"
 #include "CocosExplorer.h"
-#include "constants.h"
+#include "external/constants.h"
 
 #include <array>
 

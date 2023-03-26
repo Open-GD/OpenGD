@@ -1,9 +1,8 @@
 #include "GJGameLevel.h"
-#include "base64.h"
+#include "external/base64.h"
 
 #include <cstring>
 #include <iostream>
-
 #include <ZipUtils.h>
 
 GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)

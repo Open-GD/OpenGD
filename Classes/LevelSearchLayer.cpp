@@ -340,8 +340,10 @@ void LevelSearchLayer::toggleTime(Ref* btn)
 	}
 }
 
-void LevelSearchLayer::toggleDifficulty(Node* btn)
+void LevelSearchLayer::toggleDifficulty(Ref* ref)
 {
+	auto btn = dynamic_cast<ax::Node*>(ref);
+
 	int tag = btn->getTag();
 
 	bool naSelected = false;

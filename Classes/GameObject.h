@@ -2,7 +2,6 @@
 #include <axmol.h>
 #include <map>
 #include <string>
-#include "json.hpp"
 
 class PlayerObject;
 

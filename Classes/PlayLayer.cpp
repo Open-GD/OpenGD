@@ -8,11 +8,11 @@
 #include "LevelSelectLayer.h"
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
-#include "benchmark.h"
-#include "constants.h"
+#include "external/benchmark.h"
+#include "external/constants.h"
 #include <LevelPage.h>
 #include <fstream>
-#include "json.hpp"
+#include "external/json.hpp"
 #include "LevelInfoLayer.h"
 #include "ccRandom.h"
 

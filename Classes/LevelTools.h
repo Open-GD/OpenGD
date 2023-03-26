@@ -9,7 +9,4 @@ namespace LevelTools {
 	std::string getAudioTitle(int lid);
 	std::string getArtistForAudio(int lid);
 	std::string getURLForAudio(int lid);
-
-	std::string base64EncodeString(std::string str);
-	std::string base64DecodeString(std::string str);
 }

@@ -7,7 +7,7 @@
 
 class LevelSearchLayer : public ax::Layer {
 private:
-	void toggleDifficulty(ax::Node*);
+	void toggleDifficulty(ax::Ref*);
 	void toggleTime(ax::Ref*);
 	void onSearchProfile(ax::Node*);
 	void onSearch(ax::Node*);

@@ -3,9 +3,7 @@
 #include <string>
 #include <vector>
 #include <axmol.h>
-#include <zlib.h>
 #include "GameToolbox.h"
-#include "base64.h"
 
 #define PKSTRING 0
 #define PKINT 1

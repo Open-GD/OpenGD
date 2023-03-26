@@ -1,6 +1,6 @@
 #include "LevelTools.h"
 #include "base64.h"
-#include "constants.h"
+#include "external/constants.h"
 #include <cstring>
 
 bool LevelTools::verifyLevelIntegrity(std::string levelData, int id) {
@@ -83,14 +83,4 @@ std::string LevelTools::getURLForAudio(int lid) {
 		case 6:  return "https://www.youtube.com/watch?v=ZXHO4AN_49Q";
 		default: return "https://www.youtube.com/watch?v=JhKyKEDxo8Q";
 	}
-}
-
-std::string LevelTools::base64EncodeString(std::string str) {
-	char *buffer = (char *)malloc(str.size());
-	memcpy(buffer, str.data(), str.size());
-
-	return base64_encode((const BYTE *)buffer, str.size());
-}
-std::string LevelTools::base64DecodeString(std::string str) {
-	return std::string((char *)base64_decode(str).data());
 }

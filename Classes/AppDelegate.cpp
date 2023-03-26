@@ -27,7 +27,7 @@
 #include "LoadingLayer.h"
 #include "ResourcesLoadingLayer.h"
 #include "GameToolbox.h"
-#include "constants.h"
+#include "external/constants.h"
 
 #define USE_AUDIO_ENGINE 1
 
