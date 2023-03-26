@@ -107,7 +107,7 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	auto dwnText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_Downloads));
 	dwnText->setScale(0.4f);
-	if(dwnText->getContentSize().width > 120) dwnText->setScale(dwnText->getScale() * (120 / dwnText->getContentSize().width));
+	if (dwnText->getContentSize().width > 120) dwnText->setScale(dwnText->getScale() * (120 / dwnText->getContentSize().width));
 	dwnText->setPosition({145.4, 14});
 	dwnText->setAnchorPoint({0, 0.5});
 	layer->addChild(dwnText);
@@ -119,7 +119,7 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	auto likeText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_Likes));
 	likeText->setScale(0.4f);
-	if(likeText->getContentSize().width > 120) likeText->setScale(likeText->getScale() * (120 / likeText->getContentSize().width));
+	if (likeText->getContentSize().width > 120) likeText->setScale(likeText->getScale() * (120 / likeText->getContentSize().width));
 	likeText->setPosition({222.8, 14});
 	likeText->setAnchorPoint({0, 0.5});
 	layer->addChild(likeText);
@@ -131,10 +131,25 @@ bool LevelCell::init(GJGameLevel* level) {
 	auto creatorText = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
 	creatorText->setScale(0.6f);
 	if (level->_LevelCreator == "-") creatorText->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
-	if(creatorText->getContentSize().width > 200) creatorText->setScale(creatorText->getScale() * (200 / creatorText->getContentSize().width));
+	if (creatorText->getContentSize().width > 200) creatorText->setScale(creatorText->getScale() * (200 / creatorText->getContentSize().width));
 	creatorText->setPosition({-263.525, 8});
 	creatorText->setAnchorPoint({0, 0.5});
 	menu->addChild(creatorText);
+
+	auto levelBadgePosition = creatorText->getContentSize().width * creatorText->getScale() + 65;
+	
+	if (level->_CopiedID > 0)
+	{
+		auto collabSprite = ax::Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
+		collabSprite->setPosition(levelBadgePosition, 52);
+		layer->addChild(collabSprite);
+	}
+	if (level->_Objects > 40000)
+	{
+		auto highObjectSprite = ax::Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
+		highObjectSprite->setPosition(levelBadgePosition + (level->_CopiedID > 0 ? 18 : 0), 52);
+		layer->addChild(highObjectSprite);
+	}
 
 	auto scale9 = ax::ui::Scale9Sprite::create("GJ_button_01-uhd.png");
 	scale9->setPosition({31.55, 15});
