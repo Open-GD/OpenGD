@@ -10,6 +10,8 @@
 #include "MenuLayer.h"
 #include "PlayLayer.h"
 #include "base64.h"
+#include "GameManager.h"
+
 
 USING_NS_AX;
 using namespace ax::network;
@@ -39,6 +41,7 @@ bool CreatorLayer::init()
 	if (!Scene::init())
 		return false;
 
+	GameManager::getInstance()->_openedCreator = true;
 	auto director = Director::getInstance();
 	auto winSize = director->getWinSize();
 

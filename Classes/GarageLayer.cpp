@@ -3,29 +3,37 @@
 #include "MenuItemSpriteExtra.h"
 #include "MenuLayer.h"
 #include "SimplePlayer.h"
+#include "GameManager.h"
 
 USING_NS_AX;
 
-Scene* GarageLayer::scene() {
+Scene* GarageLayer::scene()
+{
 	auto s = Scene::create();
 	s->addChild(GarageLayer::create());
 	return s;
 }
 
-GarageLayer* GarageLayer::create() {
+GarageLayer* GarageLayer::create()
+{
 	auto r = new GarageLayer();
-	if (r && r->init()) r->autorelease();
-	else {
+	if (r && r->init())
+		r->autorelease();
+	else
+	{
 		delete r;
 		r = nullptr;
 	}
 	return r;
 }
 
-bool GarageLayer::init() {
+bool GarageLayer::init()
+{
 	if (!Scene::init())
 		return false;
 
+	GameManager::getInstance()->_openedGarage = true;
+	
 	auto director = Director::getInstance();
 	auto size  = director->getWinSize();
 
@@ -109,7 +117,8 @@ bool GarageLayer::init() {
 	return true;
 }
 
-void GarageLayer::createStat(const char* sprite, const char* statKey) {
+void GarageLayer::createStat(const char* sprite, const char* statKey)
+{
 	auto size = Director::getInstance()->getWinSize();
 
 	auto stat = Sprite::createWithSpriteFrameName(sprite);
@@ -126,7 +135,8 @@ void GarageLayer::createStat(const char* sprite, const char* statKey) {
 	stats++;
 }
 
-void GarageLayer::setupIconSelect() {
+void GarageLayer::setupIconSelect()
+{
 	auto size = Director::getInstance()->getWinSize();
 
 	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("square02_001.png"));
@@ -141,13 +151,15 @@ void GarageLayer::setupIconSelect() {
 
 	auto menu = Menu::create();
 
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < 9; i++)
+	{
 		auto s1 = Sprite::createWithSpriteFrameName(this->getSpriteName(i, false));
 		s1->setScale(.9f);
 		auto s2 = Sprite::createWithSpriteFrameName(this->getSpriteName(i, true));
 		s2->setScale(s1->getScale());
 
-		auto i1 = MenuItemSpriteExtra::create(s1, [=](Node* a) {
+		auto i1 = MenuItemSpriteExtra::create(s1, [=](Node* a)
+		{
 			int tag = a->getTag();
 			if (tag == 7)
 				tag = kIconTypeSpecial;
@@ -177,7 +189,8 @@ void GarageLayer::setupIconSelect() {
 
 	auto arrow1 = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
 	arrow1->setScale(.8f);
-	auto arrBtn1 = MenuItemSpriteExtra::create(arrow1, [=](Node*) {
+	auto arrBtn1 = MenuItemSpriteExtra::create(arrow1, [=](Node*)
+	{
 
 	});
 	//arrBtn1->setSizeMult(2.2f);
@@ -187,7 +200,8 @@ void GarageLayer::setupIconSelect() {
 	auto arrow2 = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
 	arrow2->setScale(.8f);
 	arrow2->setFlippedX(true);
-	auto arrBtn2 = MenuItemSpriteExtra::create(arrow2, [=](Node*) {
+	auto arrBtn2 = MenuItemSpriteExtra::create(arrow2, [=](Node*)
+	{
 
 	});
 	//arrBtn2->setSizeMult(2.2f);
@@ -203,30 +217,24 @@ void GarageLayer::setupIconSelect() {
 	this->setupPage(kIconTypeCube);
 }
 
-const char* GarageLayer::getSpriteName(int id, bool actived) {
-	switch (id) {
-		case 0:
-			return actived ? "gj_iconBtn_on_001.png" : "gj_iconBtn_off_001.png";
-		case 1:	
-			return actived ? "gj_shipBtn_on_001.png" : "gj_shipBtn_off_001.png";
-		case 2:
-			return actived ? "gj_ballBtn_on_001.png" : "gj_ballBtn_off_001.png";
-		case 3:
-			return actived ? "gj_birdBtn_on_001.png" : "gj_birdBtn_off_001.png";
-		case 4:
-			return actived ? "gj_dartBtn_on_001.png" : "gj_dartBtn_off_001.png";
-		case 5:
-			return actived ? "gj_robotBtn_on_001.png" : "gj_robotBtn_off_001.png";
-		case 6:
-			return actived ? "gj_spiderBtn_on_001.png" : "gj_spiderBtn_off_001.png";
-		case 7:
-			return actived ? "gj_streakBtn_on_001.png" : "gj_streakBtn_off_001.png";
-		case 8:
-			return actived ? "gj_explosionBtn_on_001.png" : "gj_explosionBtn_off_001.png";
+const char* GarageLayer::getSpriteName(int id, bool actived)
+{
+	switch (id)
+	{
+		case 0: return actived ? "gj_iconBtn_on_001.png" : "gj_iconBtn_off_001.png";
+		case 1:	return actived ? "gj_shipBtn_on_001.png" : "gj_shipBtn_off_001.png";
+		case 2: return actived ? "gj_ballBtn_on_001.png" : "gj_ballBtn_off_001.png";
+		case 3: return actived ? "gj_birdBtn_on_001.png" : "gj_birdBtn_off_001.png";
+		case 4: return actived ? "gj_dartBtn_on_001.png" : "gj_dartBtn_off_001.png";
+		case 5: return actived ? "gj_robotBtn_on_001.png" : "gj_robotBtn_off_001.png";
+		case 6: return actived ? "gj_spiderBtn_on_001.png" : "gj_spiderBtn_off_001.png";
+		case 7: return actived ? "gj_streakBtn_on_001.png" : "gj_streakBtn_off_001.png";
+		case 8: return actived ? "gj_explosionBtn_on_001.png" : "gj_explosionBtn_off_001.png";
 	}
 }
 
-void GarageLayer::setupPage(IconType type) {
+void GarageLayer::setupPage(IconType type)
+{
 		selectedMode = type;
 		// aqui robtop hace cosas con funciones del gamemanager, ni idea
 		auto size = Director::getInstance()->getWinSize();
@@ -237,73 +245,86 @@ void GarageLayer::setupPage(IconType type) {
 		menuIcons->setPosition(0, 0);
 
 		float paddingX = 0, paddingY = 0;
-		for (int i = 1; i <= 36; i++) {
-		if (i > GameToolbox::getValueForGamemode(type))
-			break;
-		auto browserItem = Sprite::createWithSpriteFrameName("playerSquare_001.png");
-		browserItem->setOpacity(0);
-
-		if (type == kIconTypeSpecial) {
-			auto icono = Sprite::createWithSpriteFrameName(StringUtils::format("player_special_%02d_001.png", i));
-			icono->setPosition(browserItem->getContentSize() / 2);
-			icono->setScale(27.0f / icono->getContentSize().width);
-			browserItem->addChild(icono);
-		} else if (type == kIconTypeDeathEffect) {
-			auto icono = Sprite::createWithSpriteFrameName(StringUtils::format("explosionIcon_%02d_001.png", i));
-			icono->setPosition(browserItem->getContentSize() / 2);
-			icono->setScale(0.9f);
-			browserItem->addChild(icono);
-		} else {
-			auto icono = SimplePlayer::create(0);
-			icono->updateGamemode(i, type);
-			icono->setMainColor({175, 175, 175});
-			icono->setPosition(browserItem->getContentSize() / 2);
-			if (type == kIconTypeUfo) {
-				icono->setPositionY(icono->getPositionY() + 5);
-				icono->m_pDomeSprite->setVisible(false);
+		for (int i = 1; i <= 36; i++)
+		{
+			if (i > GameToolbox::getValueForGamemode(type))
+				break;
+			
+			auto browserItem = Sprite::createWithSpriteFrameName("playerSquare_001.png");
+			browserItem->setOpacity(0);
+	
+			if (type == kIconTypeSpecial)
+			{
+				auto icono = Sprite::createWithSpriteFrameName(StringUtils::format("player_special_%02d_001.png", i));
+				icono->setPosition(browserItem->getContentSize() / 2);
+				icono->setScale(27.0f / icono->getContentSize().width);
+				browserItem->addChild(icono);
 			}
-			icono->setScale(27.0f / icono->m_pMainSprite->getContentSize().width);
-			browserItem->addChild(icono);
-		}
-		/*
-		if (!gm->isIconUnlocked(i, type)) {
-			auto icon = reinterpret_cast<Sprite*>(browserItem->getChildren()->objectAtIndex(0));
-			icon->setOpacity(75);
-
-			const char* name = "GJ_lock_001.png";
-			float scale	  = .75f;  // 2147483648, 4294967295
-
-			if (GameStatsManager::sharedState()->getStoreItem(
-					i, AchievementManager::sharedState()->convertIconTypeToUnlockType(type))) {
-				name  = "storeItemIcon_001.png";
-				scale = .9f;
+			else if (type == kIconTypeDeathEffect)
+			{
+				auto icono = Sprite::createWithSpriteFrameName(StringUtils::format("explosionIcon_%02d_001.png", i));
+				icono->setPosition(browserItem->getContentSize() / 2);
+				icono->setScale(0.9f);
+				browserItem->addChild(icono);
+			} 
+			else 
+			{
+				auto icono = SimplePlayer::create(0);
+				icono->updateGamemode(i, type);
+				icono->setMainColor({175, 175, 175});
+				icono->setPosition(browserItem->getContentSize() / 2);
+				if (type == kIconTypeUfo)
+				{
+					icono->setPositionY(icono->getPositionY() + 5);
+					icono->m_pDomeSprite->setVisible(false);
+				}
+				icono->setScale(27.0f / icono->m_pMainSprite->getContentSize().width);
+				browserItem->addChild(icono);
 			}
-
-			auto lock = Sprite::createWithSpriteFrameName(name);
-			lock->setScale(scale);
-			lock->setPosition(browserItem->getContentSize() / 2);
-			browserItem->addChild(lock);
-		}*/
-
-		auto btn = MenuItemSpriteExtra::create(browserItem, [=](Node* a) { 
-			m_pSelect->setPosition(a->getPosition());
-			_iconPrev->updateGamemode(a->getTag(), selectedMode);
-		});
-		btn->setTag(i);
-		btn->setPosition({size.width / 2 - 165 + paddingX, size.height / 2 - 65 + 30 - paddingY});
-		menuIcons->addChild(btn);
-
-		if (i % numPerRow == 0) {
-			paddingX = 0;
-			paddingY += 30;
-		} else
-			paddingX += 30;
+			
+			// if (!gm->isIconUnlocked(i, type))
+			// {
+				// auto icon = reinterpret_cast<Sprite*>(browserItem->getChildren()->objectAtIndex(0));
+				// icon->setOpacity(75);
+	
+				// const char* name = "GJ_lock_001.png";
+				// float scale	  = .75f;  // 2147483648, 4294967295
+	
+				// if (GameStatsManager::sharedState()->getStoreItem(
+						// i, AchievementManager::sharedState()->convertIconTypeToUnlockType(type))) {
+					// name  = "storeItemIcon_001.png";
+					// scale = .9f;
+				// }
+	
+				// auto lock = Sprite::createWithSpriteFrameName(name);
+				// lock->setScale(scale);
+				// lock->setPosition(browserItem->getContentSize() / 2);
+				// browserItem->addChild(lock);
+			// }
+	
+			auto btn = MenuItemSpriteExtra::create(browserItem, [=](Node* a)
+			{ 
+				m_pSelect->setPosition(a->getPosition());
+				_iconPrev->updateGamemode(a->getTag(), selectedMode);
+			});
+			btn->setTag(i);
+			btn->setPosition({size.width / 2 - 165 + paddingX, size.height / 2 - 65 + 30 - paddingY});
+			menuIcons->addChild(btn);
+	
+			if (i % numPerRow == 0)
+			{
+				paddingX = 0;
+				paddingY += 30;
+			}
+			else
+				paddingX += 30;
 		}
 
 		this->addChild(menuIcons);
 }
 
-void GarageLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) {
+void GarageLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event)
+{
 	switch (keyCode) {
 	case EventKeyboard::KeyCode::KEY_BACK:
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));

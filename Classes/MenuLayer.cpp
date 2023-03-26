@@ -46,7 +46,7 @@ MenuLayer* MenuLayer::create() {
 
 bool MenuLayer::init()
 {
-	// auto gm = GameManager::getInstance();
+	 auto gm = GameManager::getInstance();
 
 	// gm->set<std::string>("key1", "value");
 	// gm->set<bool>("key2", true);
@@ -77,23 +77,17 @@ bool MenuLayer::init()
 	log_oSpr->setPosition({ winSize.width / 2.f, winSize.height - 50 });
 	this->addChild(log_oSpr);
 	auto playBtn = MenuItemSpriteExtra::create("GJ_playBtn_001.png", [&](Node* btn) {
-		/* AudioEngine::stopAll();
-		AudioEngine::play2d("playSound_01.ogg", false, 0.1f);
-		auto scene = PlayLayer::scene(GJGameLevel::createWithMinimumData("My awesome level", "MikaKC", 5));
-		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene)); */
 		auto scene = LevelSelectLayer::scene(0);
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
 	playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
 	playBtn->setPosition({ 0, 0 });
-	//static_cast<ax::Sprite*>(playBtn->getSprite())->setStretchEnabled(false);
 
 	auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, GarageLayer::scene()));
 	});
 
 	garageBtn->setPosition({-110, 0});
-
 	garageBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
 
 	auto creatorBtn = MenuItemSpriteExtra::create("GJ_creatorBtn_001.png", [&](Node* btn) {
@@ -108,15 +102,43 @@ bool MenuLayer::init()
 
 	mainButtonMenu->setPosition({ winSize.width / 2.f , winSize.height / 2.f + 10 });
 	addChild(mainButtonMenu);
+	
+	if(!gm->_openedGarage)
+	{
+		auto spr = Sprite::createWithSpriteFrameName("GJ_chrSel_001.png");
+		spr->setPosition({-150.0f, -50.0f});
+		mainButtonMenu->addChild(spr);
+	}
+	
+	if(!gm->_openedCreator)
+	{
+		auto spr = Sprite::createWithSpriteFrameName("GJ_lvlEdit_001.png");
+		spr->setPosition({150.0f, -50.0f});
+		mainButtonMenu->addChild(spr);
+	}
 
-	auto robBtn = MenuItemSpriteExtra::create(
-		"robtoplogo_small.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
-	robBtn->setScale(1.f);
 
-	auto otherMenu = Menu::create();
-	otherMenu->setPosition({58, 24});
-	otherMenu->addChild(robBtn);
-	addChild(otherMenu);
+	auto rbBtn = MenuItemSpriteExtra::create("robtoplogo_small.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
+	auto fbBtn = MenuItemSpriteExtra::create("gj_fbIcon_001.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
+	auto twBtn = MenuItemSpriteExtra::create("gj_twIcon_001.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
+	auto ytBtn = MenuItemSpriteExtra::create("gj_ytIcon_001.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
+	
+	rbBtn->setScale(0.8f);
+	fbBtn->setScale(0.8f);
+	twBtn->setScale(0.8f);
+	ytBtn->setScale(0.8f);
+
+	auto socialMenu = Menu::create(rbBtn, fbBtn, twBtn, ytBtn, nullptr);
+	socialMenu->setPosition({50, 24});
+	addChild(socialMenu);
+	
+	Vec2 fbPos {socialMenu->convertToNodeSpace({22, 55})};
+	
+	fbBtn->setPosition(fbPos);
+	twBtn->setPosition({fbPos.x + 30.0f, fbPos.y});
+	ytBtn->setPosition({fbPos.x + 60.0f, fbPos.y});
+	
+
 
 	auto achievementsBtn = MenuItemSpriteExtra::create("GJ_achBtn_001.png", [&](Node* btn) {
 		//AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
@@ -132,9 +154,7 @@ bool MenuLayer::init()
 		auto dropdownlayer = DropDownLayer::create(nullptr, "Options");
 		dropdownlayer->showLayer();
 	});
-
-	static_cast<ax::Sprite*>(optionsBtn->getSprite())->setStretchEnabled(false);
-
+	
 	auto statsBtn = MenuItemSpriteExtra::create("GJ_statsBtn_001.png", [&](Node* btn) {
 		auto alert = AlertLayer::create("WIP!", "This feature is not yet supported!", "Close", "Click me!", NULL, NULL);
 		alert->setBtn2Callback([=](TextButton*) {
@@ -146,11 +166,14 @@ bool MenuLayer::init()
 		});
 		alert->show();
 	});
+	
+	auto ngButton = MenuItemSpriteExtra::create("GJ_ngBtn_001.png", [&](Node* btn) {});
+	ngButton->setScale(0.93);
 	//static_cast<ax::Sprite*>(statsBtn->getSprite())->setStretchEnabled(false);
 
-	auto bottomMenu = Menu::create(achievementsBtn, optionsBtn, statsBtn, nullptr);
+	auto bottomMenu = Menu::create(achievementsBtn, optionsBtn, statsBtn, ngButton, nullptr);
 
-	bottomMenu->setPosition({ winSize.width / 2.f, 45 });
+	bottomMenu->setPosition({ winSize.width / 2.0f, 45 });
 	//bottomMenu->setPositionY(100);
 	bottomMenu->alignItemsHorizontallyWithPadding(5);
 
@@ -160,28 +183,35 @@ bool MenuLayer::init()
 		auto moregames = MoreGamesLayer::create();
 		this->addChild(moregames);
 	});
-
-	auto moreMenu = Menu::create();
-	moreMenu->setPosition({ winSize.width - 45, 45 });
-	moreMenu->addChild(moreGamesBtn);
+	moreGamesBtn->setScale(.9f); //no setScale in 2.1 but oversized for some reason in opengd
+	
+	auto moreMenu = Menu::create(moreGamesBtn, nullptr);
+	moreMenu->setPosition({ winSize.width - 43, 45 });
 	addChild(moreMenu);
-
-	moreGamesBtn->setContentSize({74.25f, 63});
-	//moreGamesBtn->getSprite()->setStretchEnabled(false);
-	moreGamesBtn->getSprite()->setPosition({37.125f, 31.5f});
-	moreGamesBtn->getSprite()->setScale(1.f);
-
-	// auto lctest = LoadingCircle::create();
-	// lctest->setVisible(false);
-	// lctest->setPosition({winSize.width / 2, winSize.height / 2});
-	// this->addChild(lctest, 1024);
-
-	/*auto pbtest = SimpleProgressBar::create();
-	pbtest->setPercentage(10.f);
-	pbtest->setPosition({winSize.width / 2, winSize.height / 2});
-	pbtest->setVisible(false);
-	this->addChild(pbtest, 1024);
-	*/
+	
+	Vec2 profilePos {mainButtonMenu->convertToNodeSpace({45.0f, 105.0f})};
+	
+	_profileBtn = MenuItemSpriteExtra::create("GJ_profileButton_001.png", [](Node*){});
+	_profileBtn->setPosition(profilePos);
+	_profileBtn->setScale(0.92f); //no setScale in 2.1 but oversized for some reason in opengd
+	mainButtonMenu->addChild(_profileBtn);
+	
+	_profileLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), "Player");
+	_profileLabel->setPosition({profilePos.x + 2.0f, profilePos.y + 36.0f});
+	_profileLabel->setScale(.8); //no setScale in 2.1 but oversized for some reason in opengd
+	mainButtonMenu->addChild(_profileLabel);
+	
+	//TODO: add option to game manager when profile is done
+	if(true)
+	{
+		auto spr = Sprite::createWithSpriteFrameName("GJ_viewProfileTxt_001.png");
+		spr->setPosition({profilePos.x + 76.0f, profilePos.y - 1.0f});
+		addChild(spr);
+	}
+	
+	auto dailyRewardBtn = MenuItemSpriteExtra::create("GJ_dailyRewardBtn_001.png", [](Node*){});
+	dailyRewardBtn->setPosition(bottomMenu->convertToNodeSpace({winSize.width - 40.0f, winSize.height / 2 + 20.0f}));
+	bottomMenu->addChild(dailyRewardBtn);
 
 	auto listener = EventListenerKeyboard::create();
 
