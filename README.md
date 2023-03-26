@@ -1,4 +1,5 @@
 
+
 <a name="readme-top"></a>
 
 ![issues](https://img.shields.io/github/issues/Open-GD/OpenGD?style=for-the-badge&logo=appveyor)
@@ -77,11 +78,13 @@ Distributed under the GPL v3 License . See `LICENSE` for more information.
 
 
 <!-- ACKNOWLEDGMENTS -->
-## ACKNOWLEDGMENTS
+## Credits
 
-* [axmol](https://github.com/axmolengine/axmol)
-* [GD 1.0 Decomp by Wylie](https://github.com/Wyliemaster/Geometry-Dash-1.0)
-* [GD Physics Decomp by Camila](https://github.com/camila314/gdp)
+* [axmol](https://github.com/axmolengine/axmol) a fork of cocos2d-x-4.0
+* [GD 1.0 decomps](https://github.com/Wyliemaster/Geometry-Dash-1.0) by Wylie
+* [GD Physics decomps](https://github.com/camila314/gdp) by Camila
+* [GD 2.1 decomps](https://github.com/matcool/gd-decomps) by mat
+* [hps](https://github.com/jl2922/hps) high performance C++11 serialization library
 
 ### Contributors
 This project exists thanks to all the people who have contributed:
