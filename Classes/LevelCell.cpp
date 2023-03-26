@@ -107,7 +107,7 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	auto dwnText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_Downloads));
 	dwnText->setScale(0.4f);
-	if(dwnText->getContentSize().width > 120) dwnText->setScale(dwnText->getScale() * (120 / dwnText->getContentSize().width));
+	if (dwnText->getContentSize().width > 120) dwnText->setScale(dwnText->getScale() * (120 / dwnText->getContentSize().width));
 	dwnText->setPosition({145.4, 14});
 	dwnText->setAnchorPoint({0, 0.5});
 	layer->addChild(dwnText);
@@ -119,7 +119,7 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	auto likeText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_Likes));
 	likeText->setScale(0.4f);
-	if(likeText->getContentSize().width > 120) likeText->setScale(likeText->getScale() * (120 / likeText->getContentSize().width));
+	if (likeText->getContentSize().width > 120) likeText->setScale(likeText->getScale() * (120 / likeText->getContentSize().width));
 	likeText->setPosition({222.8, 14});
 	likeText->setAnchorPoint({0, 0.5});
 	layer->addChild(likeText);
@@ -140,15 +140,15 @@ bool LevelCell::init(GJGameLevel* level) {
 	
 	if (level->_CopiedID > 0)
 	{
-    auto collabSprite = ax::Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
-    collabSprite->setPosition(levelBadgePosition, 52);
-    layer->addChild(collabSprite);
+    	auto collabSprite = ax::Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
+    	collabSprite->setPosition(levelBadgePosition, 52);
+    	layer->addChild(collabSprite);
 	}
 	if (level->_Objects > 40000)
 	{
-    auto highObjectSprite = ax::Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
-    highObjectSprite->setPosition(levelBadgePosition + (level->_CopiedID > 0 ? 18 : 0), 52);
-    layer->addChild(highObjectSprite);
+    	auto highObjectSprite = ax::Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
+    	highObjectSprite->setPosition(levelBadgePosition + (level->_CopiedID > 0 ? 18 : 0), 52);
+    	layer->addChild(highObjectSprite);
 	}
 
 	auto scale9 = ax::ui::Scale9Sprite::create("GJ_button_01-uhd.png");
