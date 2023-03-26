@@ -33,6 +33,8 @@ bool UILayer::init()
 	listener->onTouchEnded = AX_CALLBACK_2(UILayer::onTouchEnded, this);
 
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+
+	return true;
 }
 
 bool UILayer::onTouchBegan(ax::Touch* touch, ax::Event* event)
