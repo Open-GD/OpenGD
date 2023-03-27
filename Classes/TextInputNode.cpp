@@ -41,7 +41,7 @@ bool TextInputNode::onTouchBegan(Touch* touch, Event* event)
 bool TextInputNode::init(float width, float height, const char* placeholder, const char* font, int scale)
 {
 	if (!Layer::init()) return false;
-	_pAllowedChars = " abcdefghijkmlnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+	_pAllowedChars = " abcdefghijkmlnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
 	this->setContentSize({ width, height });
 	
