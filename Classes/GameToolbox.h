@@ -9,6 +9,7 @@
 #include <sstream>
 #include <iostream>
 #include <filesystem>
+#include <string>
 
 enum IconType {
 	kIconTypeCube		= 0,
@@ -23,6 +24,11 @@ enum IconType {
 	kIconTypeSpecial	 = 99,
 };
 
+enum popTransition {
+	kTransitionFade = 0,
+	kTransitionShop
+};
+
 //general purpose namespace for helper functions that can be useful with any class at any moment
 namespace GameToolbox
 {
@@ -32,8 +38,14 @@ namespace GameToolbox
 		High
 	};
 
+
 	static bool _isCtrlPressed;
 
+	void popSceneWithTransition(float time, popTransition type = kTransitionFade);
+	void limitLabelWidth(ax::Label* label, float width, float normalScale, float minScale = 0);
+	ax::Label* createBMFont(std::string text, std::string font);
+	ax::Label* createBMFont(std::string text, std::string font, int width);
+	ax::Label* createBMFont(std::string text, std::string font, int width, ax::TextHAlignment alignment);
 	const char* lengthString(int len);
 	int randomInt(int min, int max);
 	int randomInt(int max);

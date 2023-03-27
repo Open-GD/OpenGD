@@ -7,10 +7,12 @@
 
 USING_NS_AX;
 
-Scene* GarageLayer::scene()
+Scene* GarageLayer::scene(bool popSceneWithTransition)
 {
 	auto s = Scene::create();
-	s->addChild(GarageLayer::create());
+	auto garage = GarageLayer::create();
+	garage->_popSceneWithTransition = popSceneWithTransition;
+	s->addChild(garage);
 	return s;
 }
 
@@ -69,7 +71,8 @@ bool GarageLayer::init()
 	menu->setPosition({0, 0});
 
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [=](Node*) {
-		director->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+		if (_popSceneWithTransition) GameToolbox::popSceneWithTransition(0.5f, kTransitionShop);
+		else director->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
 	backBtn->setPosition({24, size.height - 23});
 	//backBtn->setSizeMult(1.6f);
@@ -96,7 +99,7 @@ bool GarageLayer::init()
 	menu->addChild(paint);
 
 	
-	// estadisticas
+	// stats
 	this->createStat("GJ_starsIcon_001.png", "6");
 	this->createStat("GJ_coinsIcon_001.png", "8");
 	this->createStat("GJ_coinsIcon2_001.png", "12");
@@ -106,13 +109,14 @@ bool GarageLayer::init()
 
 	this->addChild(menu);
 
-#ifdef AX_PLATFORM_PC
-	auto listener = EventListenerKeyboard::create();
-
-	listener->onKeyPressed  = AX_CALLBACK_2(GarageLayer::onKeyPressed, this);
-	listener->onKeyReleased = AX_CALLBACK_2(GarageLayer::onKeyReleased, this);
-	director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-#endif
+	auto listener = ax::EventListenerKeyboard::create();
+	listener->onKeyPressed = [=](ax::EventKeyboard::KeyCode key, ax::Event*) {
+		if (key == ax::EventKeyboard::KeyCode::KEY_ESCAPE) {
+			if (_popSceneWithTransition) GameToolbox::popSceneWithTransition(0.5f, kTransitionShop);
+			else Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+		}
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 	return true;
 }
@@ -321,15 +325,4 @@ void GarageLayer::setupPage(IconType type)
 		}
 
 		this->addChild(menuIcons);
-}
-
-void GarageLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event)
-{
-	switch (keyCode) {
-	case EventKeyboard::KeyCode::KEY_BACK:
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
-	}
-}
-
-void GarageLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) {
 }

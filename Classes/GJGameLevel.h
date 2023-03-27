@@ -10,6 +10,12 @@
 #define PKBOOL 2
 #define PKBASE64 3
 
+enum DifficultyType {
+	kMainLevels = 0,
+	kLevelCell,
+	kLevelInfoLayer
+};
+
 class GJGameLevel { 
 public:
 
@@ -78,5 +84,5 @@ public:
 	static std::string getLevelStrFromID(int gdLevelID);
 	static std::string decompressLvlStr(std::string compressedLvlStr);
 
-	static std::string getDifficultySprite(GJGameLevel* level);
+	static std::string getDifficultySprite(GJGameLevel* level, DifficultyType type = kLevelCell);
 };

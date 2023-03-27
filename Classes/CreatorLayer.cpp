@@ -84,7 +84,7 @@ bool CreatorLayer::init()
 				return Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 			}
 			case 10:
-				return Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSearchLayer::scene()));
+				return Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelSearchLayer::scene()));
 		}
 	};
 	

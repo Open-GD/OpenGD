@@ -42,7 +42,7 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 
 	auto backBtnMenu = ax::Menu::create();
 	auto backBtn =
-		MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) { ax::Director::getInstance()->popScene(); });
+		MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) { GameToolbox::popSceneWithTransition(0.5f, kTransitionFade); });
 	backBtnMenu->addChild(backBtn);
 	backBtnMenu->setPosition({24.0, winSize.height - 23.0f});
 	this->addChild(backBtnMenu, 5);
@@ -126,6 +126,16 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 	listView->setPosition({180, 120});
 	list->setPosition({106.5, 45});
 	listView->setTopPadding(25);
+
+	auto listener = ax::EventListenerKeyboard::create();
+	listener->onKeyPressed = [=](ax::EventKeyboard::KeyCode key, ax::Event*) {
+		switch (key) {
+		case ax::EventKeyboard::KeyCode::KEY_ESCAPE:
+			GameToolbox::popSceneWithTransition(0.5f);
+			break;
+		}
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 	addChild(list);
 	addChild(_loading);

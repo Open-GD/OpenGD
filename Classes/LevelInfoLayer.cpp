@@ -6,6 +6,7 @@
 #include "PlayLayer.h"
 #include "RateLevelLayer.h"
 #include "AlertLayer.h"
+#include "GarageLayer.h"
 
 USING_NS_AX;
 
@@ -41,102 +42,104 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	GameToolbox::createCorners(this, false, false, true, true);
 
 	auto backBtnMenu = Menu::create();
-	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) { Director::getInstance()->popScene(); });
+	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) { GameToolbox::popSceneWithTransition(0.5f); });
 	backBtnMenu->addChild(backBtn);
 	backBtnMenu->setPosition({24.0, winSize.height - 23.0f});
 	this->addChild(backBtnMenu);
 
-	auto levelName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_LevelName);
-	levelName->setPosition({winSize.width / 2, winSize.height - 30.f});
-
-	if (levelName->getContentSize().width > 300.0f)
-	{
-		levelName->setScale(300.0f / levelName->getContentSize().width);
-	}
-
+	auto levelName = GameToolbox::createBMFont(level->_LevelName, "bigFont.fnt");
+	levelName->setPosition({winSize.width / 2, winSize.height - 17.0f});
+	GameToolbox::limitLabelWidth(levelName, 300, 0.8f);
 	this->addChild(levelName);
 
-	auto levelCreator =
-		Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
+	auto levelCreator = GameToolbox::createBMFont(fmt::format("By {}", level->_LevelCreator), "goldFont.fnt");
 	 if (level->_LevelCreator == "-") levelCreator->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
 	levelCreator->setPosition({winSize.width / 2, levelName->getPositionY() - 30.f});
-
-	if (levelCreator->getContentSize().width > 300.0f)
-	{
-		levelCreator->setScale(300.0f / levelCreator->getContentSize().width);
-	}
-	if (levelCreator->getScale() > 0.8)
-	{
-		levelCreator->setScale(0.8);
-	}
-
+	GameToolbox::limitLabelWidth(levelCreator, 300, 0.8f);
 	this->addChild(levelCreator);
 
+	auto rate = Sprite::createWithSpriteFrameName("GJ_featuredCoin_001.png");
+	rate->setPosition({ winSize.width / 2 - 100, winSize.height / 2 + 70 });
+	rate->setVisible(false);
+	this->addChild(rate);
+
+	if (level->_FeatureScore > 0) rate->setVisible(true);
+	if (level->_Epic) {
+		rate->createWithSpriteFrameName("GJ_epicCoin_001.png");
+		rate->initWithSpriteFrameName("GJ_epicCoin_001.png");
+		rate->setVisible(true);
+	}
+
+	auto diff = Sprite::createWithSpriteFrameName(GJGameLevel::getDifficultySprite(level, kLevelInfoLayer));
+	diff->setPosition(rate->getPosition());
+	this->addChild(diff);
+
+	if(level->_Stars > 0) {
+		auto star = Sprite::createWithSpriteFrameName("star_small01_001.png");
+		star->setPosition({ diff->getPositionX() + 8, diff->getPositionY() - 38 });
+		this->addChild(star);
+
+		auto starCount = GameToolbox::createBMFont(std::to_string(level->_Stars), "bigFont.fnt");
+		if (level->_normalPercent >= 100) starCount->setColor({ 255, 255, 0 });
+		starCount->setScale(.38);
+		starCount->setPosition({ diff->getPositionX() - 6, star->getPositionY() });
+		this->addChild(starCount);
+	}
+	auto downIcon = Sprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png");
+	downIcon->setPosition({ winSize.width / 2 + 90.5f, winSize.height / 2 + 90 });
+	this->addChild(downIcon);
+
+	auto downCount = GameToolbox::createBMFont(std::to_string(level->_Downloads), "bigFont.fnt");
+	GameToolbox::limitLabelWidth(downCount, 60, 0.5f);
+	downCount->setAnchorPoint({ 0, 0.5f });
+	downCount->setPosition({ downIcon->getPositionX() + 20, downIcon->getPositionY()});
+	this->addChild(downCount);
+
+	auto likeIcon = Sprite::createWithSpriteFrameName(level->_Dislikes > 0 ? "GJ_dislikesIcon_001.png" : "GJ_likesIcon_001.png");
+	likeIcon->setPosition({ downIcon->getPositionX(), downIcon->getPositionY() - 28});
+	this->addChild(likeIcon);
+
+	auto likeCount = GameToolbox::createBMFont(level->_Dislikes > 0 ? std::to_string(level->_Dislikes) : std::to_string(level->_Likes), "bigFont.fnt");
+	GameToolbox::limitLabelWidth(likeCount, 60, 0.5f);
+	likeCount->setAnchorPoint(downCount->getAnchorPoint());
+	likeCount->setPosition({ downCount->getPositionX(), likeIcon->getPositionY()});
+	this->addChild(likeCount);
+
+	auto timeIcon = Sprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
+	timeIcon->setPosition({ downIcon->getPositionX(), likeIcon->getPositionY() - 28});
+	this->addChild(timeIcon);
+
+	auto lenght = GameToolbox::createBMFont(GameToolbox::lengthString(level->_Length), "bigFont.fnt");
+	GameToolbox::limitLabelWidth(lenght, 60, 0.5f);
+	lenght->setAnchorPoint(downCount->getAnchorPoint());
+	lenght->setPosition({ downCount->getPositionX(), timeIcon->getPositionY()});
+	this->addChild(lenght);
+
 	// Play button
-	auto playBtnMenu = Menu::create();
-	playBtnMenu->setPosition({winSize.width / 2, (winSize.height / 2) + 35.0f});
+	auto menu = Menu::create();
+	menu->setPosition(0, 0);
 
 	playBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_playBtn2_001.png"), [&](Node*) {
 		AudioEngine::stopAll();
 		AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
 		Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(_level)));
 	});
+	playBtn->setPosition({ winSize.width / 2, winSize.height / 2 + 51.0f });
 	playBtn->setEnabled(false);
 	playBtn->setVisible(false);
+	menu->addChild(playBtn);
 
-	playBtnMenu->addChild(playBtn);
+	auto shop = MenuItemSpriteExtra::create("garageRope_001.png", [](Node*) { Director::getInstance()->pushScene(TransitionMoveInT::create(0.5f, GarageLayer::scene(true))); });
+	shop->setPosition({ winSize.width - 85, winSize.height - 25 });
+	shop->setDestination({ 0, -8 });
+	menu->addChild(shop);
 
 	loading = LoadingCircle::create();
-	loading->setPosition(playBtnMenu->getPosition());
+	loading->setPosition(playBtn->getPosition());
 	loading->setVisible(true);
 
 	this->addChild(loading);
-	this->addChild(playBtnMenu);
-
-	// Info (length, downloads, likes)
-	ax::Vector<Node*> nodeVector = {};
-
-	Node* timeNode = Node::create();
-	auto timeSprite = Sprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
-	timeNode->addChild(timeSprite);
-
-	auto timeLabel = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::lengthString(level->_Length)));
-	timeLabel->setScale(0.5);
-	timeNode->addChild(timeLabel);
-	GameToolbox::alignItemsHorizontallyWithPadding(timeNode->getChildren(), 5);
-	nodeVector.pushBack(timeNode);
-
-	Node* downloadNode = Node::create();
-	auto downloadSprite = Sprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png");
-	downloadNode->addChild(downloadSprite);
-	auto downloadLabel = MenuItemLabel::create(
-		Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i", level->_Downloads)));
-	downloadLabel->setScale(0.5);
-	downloadNode->addChild(downloadLabel);
-	GameToolbox::alignItemsHorizontallyWithPadding(downloadNode->getChildren(), 5);
-	nodeVector.pushBack(downloadNode);
-
-	Node* likeNode = Node::create();
-	auto likeSprite = Sprite::createWithSpriteFrameName("GJ_likesIcon_001.png");
-	likeNode->addChild(likeSprite);
-	auto likeLabel = MenuItemLabel::create(Label::createWithBMFont(
-		GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i", level->_Likes - level->_Dislikes)));
-	likeLabel->setScale(0.5);
-	likeNode->addChild(likeLabel);
-	GameToolbox::alignItemsHorizontallyWithPadding(likeNode->getChildren(), 5);
-	nodeVector.pushBack(likeNode);
-
-	GameToolbox::alignItemsHorizontallyWithPadding(nodeVector, 100);
-
-	auto layer = Layer::create();
-
-	for (Node* child : nodeVector)
-	{
-		layer->addChild(child);
-	}
-
-	layer->setPosition({winSize.width / 2, (winSize.height / 2) - 30.0f});
-	addChild(layer);
+	this->addChild(menu);
 
 	// Normal Progressbar
 	auto normalBar = ax::Sprite::create(GameToolbox::getTextureString("GJ_progressBar_001.png"));
@@ -207,7 +210,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	this->addChild(practiceLabel);
 
 	// Side Menu
-	auto menu = Menu::create();
+	auto buttonsMenu = Menu::create();
 
 	auto deleteBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"), [](Node*) {
 		auto alert =
@@ -218,40 +221,35 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 			});
 		alert->show();
 	});
-	menu->addChild(deleteBtn);
-	deleteBtn->setPosition(Node::convertToNodeSpace(menu->getPosition()));
+	buttonsMenu->addChild(deleteBtn);
+	deleteBtn->setPosition(Node::convertToNodeSpace(buttonsMenu->getPosition()));
 	deleteBtn->setPositionX(deleteBtn->getPositionX() - 30.f);
 	deleteBtn->setPositionY(deleteBtn->getPositionY() - 30.f);
 
-	auto updateBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_updateBtn_001.png"), [](Node*) {});
-	menu->addChild(updateBtn);
+	auto updateBtn = MenuItemSpriteExtra::create("GJ_updateBtn_001.png", [](Node*) {});
 	updateBtn->setPosition(deleteBtn->getPositionX(), deleteBtn->getPositionY() - 50.f);
+	buttonsMenu->addChild(updateBtn);
 
-	auto infoBtn = MenuItemSpriteExtra::create(
-		Sprite::createWithSpriteFrameName("GJ_infoBtn_001.png"), [level](Node*) { InfoLayer::create(level)->show(); });
-	menu->addChild(infoBtn);
+	auto infoBtn = MenuItemSpriteExtra::create("GJ_infoBtn_001.png", [level](Node*) { InfoLayer::create(level)->show(); });
 	infoBtn->setPosition(updateBtn->getPositionX(), updateBtn->getPositionY() - 50.f);
+	buttonsMenu->addChild(infoBtn);
 
 	auto rateDiffSprite = Sprite::createWithSpriteFrameName("GJ_rateDiffBtn_001.png");
-	auto rateDiffBtn =
-		MenuItemSpriteExtra::create(rateDiffSprite, [level](Node*) { RateLevelLayer::create(level->_LevelID)->show(); });
+	auto rateDiffBtn = MenuItemSpriteExtra::create(rateDiffSprite, [level](Node*) { RateLevelLayer::create(level->_LevelID)->show(); });
 	rateDiffBtn->setDisabledImage(Sprite::createWithSpriteFrameName("GJ_rateDiffBtn2_001.png"));
-
-	menu->addChild(rateDiffBtn);
 	rateDiffBtn->setPosition(infoBtn->getPositionX(), infoBtn->getPositionY() - 50.f);
+	buttonsMenu->addChild(rateDiffBtn);
 
 	auto likeBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_likeBtn_001.png"), [](Node*) {});
 	likeBtn->setDisabledImage(Sprite::createWithSpriteFrameName("GJ_likeBtn2_001.png"));
-
-	menu->addChild(likeBtn);
 	likeBtn->setPosition(rateDiffBtn->getPositionX(), rateDiffBtn->getPositionY() - 50.f);
+	buttonsMenu->addChild(likeBtn);
 
-	this->addChild(menu);
+	this->addChild(buttonsMenu);
 
 	auto listener = EventListenerKeyboard::create();
 	listener->onKeyPressed = [=](EventKeyboard::KeyCode key, Event*) {
-		switch (key)
-		{
+		switch (key) {
 		case EventKeyboard::KeyCode::KEY_SPACE:
 			if (level->_LevelString.empty()) break;
 			AudioEngine::stopAll();
@@ -259,7 +257,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 			Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
 			break;
 		case EventKeyboard::KeyCode::KEY_ESCAPE:
-			Director::getInstance()->popScene();
+			GameToolbox::popSceneWithTransition(0.5f);
 			break;
 		}
 	};

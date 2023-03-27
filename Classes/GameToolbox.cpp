@@ -1,10 +1,51 @@
 #include "GameToolbox.h"
 #include <fmt/format.h>
 #include <fstream>
+#include "AltDirector.h"
 
 USING_NS_AX;
 
 bool _showDebugImgui = true;
+
+void GameToolbox::popSceneWithTransition(float duration, popTransition type) {
+	auto dir = AltDirector::getInstance();
+
+	if (dir->getRunningScene() != nullptr) {
+		dir->popScene();
+
+		unsigned int c = dir->getScenesStack().size();
+		if (c == 0) dir->end();
+		else {
+			dir->setSendCleanupToScene(true);
+			auto scene = dir->getScenesStack().back();
+
+			switch (type) {
+			case kTransitionShop:
+				dir->replaceScene(TransitionMoveInB::create(duration, scene)); // i will change this transition later / att: Sai
+				break;
+			default:
+				dir->replaceScene(TransitionFade::create(duration, scene));
+				break;
+			}
+		}
+	}
+}
+
+void GameToolbox::limitLabelWidth(ax::Label* label, float width, float normalScale, float minScale) {
+	float val = width / label->getContentSize().width;
+	label->setScale(val > normalScale ? normalScale : val < minScale ? minScale : val);
+}
+
+// no more "GameToolbox::getTextureString" in Label::createWithBMFont
+Label* GameToolbox::createBMFont(std::string text, std::string font, int width, TextHAlignment alignment) {
+	return Label::createWithBMFont(GameToolbox::getTextureString(font), text, alignment, width);
+}
+Label* GameToolbox::createBMFont(std::string text, std::string font, int width) {
+	return createBMFont(text, font, width, TextHAlignment::LEFT);
+}
+Label* GameToolbox::createBMFont(std::string text, std::string font) {
+	return createBMFont(text, font, 0, TextHAlignment::LEFT);
+}
 
 const char* GameToolbox::lengthString(int len) {
 	switch (len) {

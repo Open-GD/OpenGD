@@ -64,8 +64,8 @@ bool LevelSearchLayer::init()
 	auto backBtnMenu = Menu::create();
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) {
 		Director::getInstance()->replaceScene(TransitionFade::create(.5, CreatorLayer::scene()));
-	});
-	
+		});
+
 	backBtnMenu->addChild(backBtn);
 	backBtnMenu->setPosition({ 24.0, winSize.height - 23.0f });
 	this->addChild(backBtnMenu);
@@ -96,22 +96,22 @@ bool LevelSearchLayer::init()
 	auto menuSearch = Menu::create();
 	auto searchBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn02_001.png", "Search", 0.6, ""), AX_CALLBACK_1(LevelSearchLayer::onSearch, this));
 
-	searchBtn->setPosition(menuSearch->convertToNodeSpace({searchPos.x + 84.0f, searchPos.y}));
+	searchBtn->setPosition(menuSearch->convertToNodeSpace({ searchPos.x + 84.0f, searchPos.y }));
 	menuSearch->addChild(searchBtn);
 
 	auto searchProfileBtn = MenuItemSpriteExtra::create("GJ_longBtn05_001.png", AX_CALLBACK_1(LevelSearchLayer::onSearchProfile, this));
 	searchProfileBtn->setPosition(menuSearch->convertToNodeSpace({ searchPos.x + 156.0f, searchPos.y }));
 	menuSearch->addChild(searchProfileBtn);
 	this->addChild(menuSearch);
-	
+
 	_searchField = TextInputNode::create(194.0f, 50.0f, GameToolbox::getTextureString("bigFont.fnt").c_str(), "Enter a level, user or id", 18);
 	_searchField->_pTextField->setAnchorPoint({ 0.0, 0.5 });
 	_searchField->_pTextField->setMaxLength(20);
 	_searchField->_pTextField->setMaxLengthEnabled(true);
 	_searchField->_pPlaceholder->setColor({ 120, 170, 240 });
-	_searchField->setPosition({searchPos.x - 174.0f, searchPos.y - 25.0f});
+	_searchField->setPosition({ searchPos.x - 174.0f, searchPos.y - 25.0f });
 	this->addChild(_searchField);
-	
+
 
 	// _searchField = ui::TextField::create("Enter a level, user or id", GameToolbox::getTextureString("bigFont.fnt"), 15);
 	// _searchField->setPlaceHolderColor({ 120, 170, 240 });
@@ -123,10 +123,10 @@ bool LevelSearchLayer::init()
 	// this->addChild(_searchField);
 
 	// Quick Search
-	Vec2 quickSearchPos { winSize.width / 2, winSize.height / 2 + 28.0f };
+	Vec2 quickSearchPos{ winSize.width / 2, winSize.height / 2 + 28.0f };
 
 	auto quickSearchLabel = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Quick Search", TextHAlignment::CENTER);
-	quickSearchLabel->setPosition({quickSearchPos.x, quickSearchPos.y + 69.5f});
+	quickSearchLabel->setPosition({ quickSearchPos.x, quickSearchPos.y + 69.5f });
 	quickSearchLabel->setScale(0.5f);
 	this->addChild(quickSearchLabel);
 
@@ -143,43 +143,43 @@ bool LevelSearchLayer::init()
 
 	auto mostDownloadedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Downloaded", 0.45, "GJ_sDownloadIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeDownloaded;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 	auto mostLikedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn03_001.png", "Most Liked", 0.6, "GJ_sLikeIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeLiked;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 	auto trendingBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn04_001.png", "Trending", 0.5, "GJ_sTrendingIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeTrending;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 	auto recentBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn04_001.png", "Recent", 0.5, "GJ_sRecentIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeRecent;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 	auto magicBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn04_001.png", "Magic", 0.5, "GJ_sMagicIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeMagic;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 	auto awardedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn04_001.png", "Awarded", 0.5, "GJ_sStarsIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeAwarded;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 	auto followedBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn04_001.png", "Followed", 0.5, "GJ_sFollowedIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeFollowed;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 	auto friendsBtn = MenuItemSpriteExtra::create(searchButton("GJ_longBtn04_001.png", "Friends", 0.5, "GJ_sFriendsIcon_001.png"), [&](Node*) {
 		_searchObject->_screenID = SearchType::kGJSearchTypeFriends;
-		ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
-	});
+	ax::Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(_searchObject)));
+		});
 
 
 	auto quickSearchMenu = Menu::create(mostDownloadedBtn, mostLikedBtn, trendingBtn, recentBtn, magicBtn, awardedBtn, followedBtn, friendsBtn, nullptr);
@@ -188,8 +188,8 @@ bool LevelSearchLayer::init()
 	mostDownloadedBtn->setPosition({ -90.5f, 36.0f });
 	mostLikedBtn->setPosition({ 90.5f, 36.0f });
 
-	trendingBtn->setPosition({ -119.0f, 0.0f});
-	recentBtn->setPosition({ 0.0f, 0.0f});
+	trendingBtn->setPosition({ -119.0f, 0.0f });
+	recentBtn->setPosition({ 0.0f, 0.0f });
 	magicBtn->setPosition({ 119.0f, 0.0f });
 
 	awardedBtn->setPosition({ -119.9f, -36.0f });
@@ -202,7 +202,7 @@ bool LevelSearchLayer::init()
 
 	// Difficulty filters
 	auto filterLabel = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Filters", TextHAlignment::CENTER);
-	filterLabel->setPosition({ filtersPos.x, filtersPos.y + 37.0f});
+	filterLabel->setPosition({ filtersPos.x, filtersPos.y + 37.0f });
 	filterLabel->setScale(0.5f);
 	this->addChild(filterLabel);
 
@@ -237,9 +237,9 @@ bool LevelSearchLayer::init()
 
 	_extraDemonsBtn = MenuItemSpriteExtra::create("GJ_plus2Btn_001.png", [this](Node*) {
 		//DemonFilterSelectLayer
-	});
+		});
 	_extraDemonsBtn->setVisible(false);
-	_extraDemonsBtn->setPosition(_difficultyMenu->convertToNodeSpace({filtersPos.x + 202.5f, filtersPos.y}));
+	_extraDemonsBtn->setPosition(_difficultyMenu->convertToNodeSpace({ filtersPos.x + 202.5f, filtersPos.y }));
 	_difficultyMenu->addChild(_extraDemonsBtn);
 
 	this->addChild(_difficultyMenu);
@@ -250,7 +250,7 @@ bool LevelSearchLayer::init()
 
 
 	// Length filter
-	Vec2 lengthFilterPos { winSize.width / 2, (winSize.height / 2) - 128.0f };
+	Vec2 lengthFilterPos{ winSize.width / 2, (winSize.height / 2) - 128.0f };
 
 	auto lengthFilterBg = ui::Scale9Sprite::create(GameToolbox::getTextureString("square02b_001.png"));
 	lengthFilterBg->setOpacity(255);
@@ -279,9 +279,9 @@ bool LevelSearchLayer::init()
 	}
 
 	_starIcon = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_starsIcon_001.png"), [&](Node* btn)
-	{
-		_starIcon->setColor(_starIcon->getColor() == UNSELECTED_COLOR ? SELECTED_COLOR : UNSELECTED_COLOR);
-	});
+		{
+			_starIcon->setColor(_starIcon->getColor() == UNSELECTED_COLOR ? SELECTED_COLOR : UNSELECTED_COLOR);
+		});
 	_starIcon->setColor(UNSELECTED_COLOR);
 	_lengthFilter->addChild(_starIcon);
 
@@ -294,6 +294,16 @@ bool LevelSearchLayer::init()
 	{
 		_lengthFilter->getChildByTag(tag)->setColor(SELECTED_COLOR);
 	}
+
+	auto listener = ax::EventListenerKeyboard::create();
+	listener->onKeyPressed = [=](ax::EventKeyboard::KeyCode key, ax::Event*) {
+		switch (key) {
+		case ax::EventKeyboard::KeyCode::KEY_ESCAPE:
+			GameToolbox::popSceneWithTransition(0.5f);
+			break;
+		}
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 	return true;
 }

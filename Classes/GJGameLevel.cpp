@@ -95,7 +95,7 @@ std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 	return std::string(reinterpret_cast<char*>(a));
 }
 
-std::string GJGameLevel::getDifficultySprite(GJGameLevel* level)
+std::string GJGameLevel::getDifficultySprite(GJGameLevel* level, DifficultyType type)
 {
 	if (level->_Auto)
 	{
@@ -108,37 +108,36 @@ std::string GJGameLevel::getDifficultySprite(GJGameLevel* level)
 
 	if (level->_Demon)
 	{
-		switch (level->_DemonDifficulty)
-		{
+		switch (level->_DemonDifficulty) {
 		case 3:
-			return "difficulty_07_btn_001.png";
+			return type == kLevelInfoLayer ? "difficulty_07_btn2_001.png" : "difficulty_07_btn_001.png";
 		case 4:
-			return "difficulty_08_btn_001.png";
+			return type == kLevelInfoLayer ? "difficulty_08_btn2_001.png" : "difficulty_08_btn_001.png";
 		case 5:
-			return "difficulty_09_btn_001.png";
+			return type == kLevelInfoLayer ? "difficulty_09_btn2_001.png" : "difficulty_09_btn_001.png";
 		case 6:
-			return "difficulty_10_btn_001.png";
+			return type == kLevelInfoLayer ? "difficulty_10_btn2_001.png" : "difficulty_10_btn_001.png";
 		default:
 		case 0:
-			return "difficulty_06_btn_001.png";
+			return type == kLevelInfoLayer ? "difficulty_06_btn2_001.png" : "difficulty_06_btn_001.png";
 		}
 	}
 
 	switch (diff)
 	{
 	case 1:
-		return "difficulty_01_btn_001.png";
+		return type == kMainLevels ? "diffIcon_01_btn_001.png" : "difficulty_01_btn_001.png";
 	case 2:
-		return "difficulty_02_btn_001.png";
+		return type == kMainLevels ? "diffIcon_02_btn_001.png" : "difficulty_02_btn_001.png";
 	case 3:
-		return "difficulty_03_btn_001.png";
+		return type == kMainLevels ? "diffIcon_03_btn_001.png" : "difficulty_03_btn_001.png";
 	case 4:
-		return "difficulty_04_btn_001.png";
+		return type == kMainLevels ? "diffIcon_04_btn_001.png" : "difficulty_04_btn_001.png";
 	case 5:
-		return "difficulty_05_btn_001.png";
+		return type == kMainLevels ? "diffIcon_05_btn_001.png" : "difficulty_05_btn_001.png";
 	case 6:
-		return "difficulty_06_btn_001.png";
+		return type == kMainLevels ? "diffIcon_06_btn_001.png" : "difficulty_06_btn_001.png";
 	default:
-		return "difficulty_00_btn_001.png";
+		return type == kMainLevels ? "diffIcon_01_btn_001.png" : "difficulty_00_btn_001.png";
 	}
 }
