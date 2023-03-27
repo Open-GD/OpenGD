@@ -78,43 +78,58 @@ void GameObject::customSetup()
 		addChild(s);
 	}
 
-	switch (getID())
-	{
-		case 10:
-			createAndAddParticle("portalEffect01.plist", 3);
-			_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
-			_particle->start();
-			//_particle->setEmissionRate(10);
-			break;
-		case 11:
-			createAndAddParticle("portalEffect02.plist", 3);
-			_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
-			_particle->start();
-			//_particle->setEmissionRate(10);
-			break;
-		case 12:
-			createAndAddParticle("portalEffect03.plist", 3);
-			_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
-			_particle->start();
-			//_particle->setEmissionRate(10);
-			break;
-		case 13:
-			createAndAddParticle("portalEffect04.plist", 3);
-			_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
-			_particle->start();
-			//_particle->setEmissionRate(10);
-			break;
-		case 35:
-			createAndAddParticle("bumpEffect.plist", 0);
-			_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
-			_particle->setPositionY(getPositionY() - 4.f);
-			_particle->start();
-			break;
-		case 36:
-			createAndAddParticle("ringEffect.plist", 3);
-			_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
-			_particle->start();
-			break;
+	switch (getID()) {
+	case 10:
+		createAndAddParticle("portalEffect01.plist", 3);
+		break;
+	case 11:
+		createAndAddParticle("portalEffect02.plist", 3);
+		break;
+	case 12:
+		createAndAddParticle("portalEffect03.plist", 3);
+		break;
+	case 13:
+		createAndAddParticle("portalEffect04.plist", 3);
+		break;
+	case 35: // yellow pad
+		createAndAddParticle("bumpEffect.plist", 0);
+		_particle->setPositionY(getPositionY() - 4.f);
+		break;
+	case 67: // blue pad
+		createAndAddParticle("bumpEffect.plist", 0);
+		_particle->setStartColor({ 0, 255, 255, 255 });
+		_particle->setPositionY(getPositionY() - 4.f);
+		break;
+	case 140: // pink pad
+		createAndAddParticle("bumpEffect.plist", 0);
+		_particle->setStartColor({ 255, 0, 255, 255 });
+		_particle->setPositionY(getPositionY() - 4.f);
+		break;
+	case 1332: // red pad
+		createAndAddParticle("bumpEffect.plist", 0);
+		_particle->setStartColor({ 255, 0, 0, 255 });
+		_particle->setPositionY(getPositionY() - 4.f);
+		break;
+	case 36: // yellow orb
+		createAndAddParticle("ringEffect.plist", 3);
+		_particle->setStartColor({ 255, 255, 0, 255 });
+		break;
+	case 84: // blue orb
+		createAndAddParticle("ringEffect.plist", 3);
+		_particle->setStartColor({ 0, 255, 255, 255 });
+		break;
+	case 141: // pink orb
+		createAndAddParticle("ringEffect.plist", 3);
+		_particle->setStartColor({ 255, 0, 255, 255 });
+		break;
+	case 1022: // green orb
+		createAndAddParticle("ringEffect.plist", 3);
+		_particle->setStartColor({ 0, 255, 0, 255 });
+		break;
+	case 1333: // red orb
+		createAndAddParticle("ringEffect.plist", 3);
+		_particle->setStartColor({ 255, 0, 0, 255 });
+		break;
 	}
 }
 
@@ -133,6 +148,10 @@ void GameObject::createAndAddParticle(const char* path, int zOrder)
 	_particle->setGlobalZOrder(zOrder);
 	_particle->retain();
 	_particle->stopSystem();
+
+	_particle->setPositionType(ParticleSystem::PositionType::GROUPED);
+	_particle->setRotation(getRotation());
+	_particle->start();
 }
 
 GameObject* GameObject::createObject(std::string_view frame, std::string_view glowFrame)

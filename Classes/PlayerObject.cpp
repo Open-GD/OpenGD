@@ -109,13 +109,20 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 	_ufoTertiarySprite->setPosition(_ufoSprite->getContentSize() / 2.f);
 
 	// particles
+	auto image = new Image();
+	image->initWithImageFile("Resources/square.png");
+	auto texture = new Texture2D();
+	texture->initWithImage(image);
+
 	dragEffect1 = ParticleSystemQuad::create("dragEffect.plist");
+	dragEffect1->setTexture(texture);
 	dragEffect1->setPositionType(ParticleSystem::PositionType::FREE);
 	dragEffect1->pauseEmissions();
 
 	gameLayer->addChild(dragEffect1, 1);
 
 	dragEffect2 = ParticleSystemQuad::create("dragEffect.plist");
+	dragEffect2->setTexture(texture);
 	dragEffect2->setPositionType(ParticleSystem::PositionType::FREE);
 	dragEffect2->pauseEmissions();
 	dragEffect2->setPositionY(2);
@@ -123,6 +130,7 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 	gameLayer->addChild(dragEffect2, 1);
 
 	dragEffect3 = ParticleSystemQuad::create("dragEffect.plist");
+	dragEffect3->setTexture(texture);
 	dragEffect3->setPositionType(ParticleSystem::PositionType::FREE);
 	dragEffect3->pauseEmissions();
 	dragEffect3->setPositionY(2);
@@ -141,18 +149,21 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 
 	// other particles
 	shipDragEffect = ParticleSystemQuad::create("shipDragEffect.plist");
+	shipDragEffect->setTexture(texture);
 	shipDragEffect->setPositionType(ParticleSystem::PositionType::GROUPED);
 	shipDragEffect->pauseEmissions();
 
 	gameLayer->addChild(shipDragEffect, 1);
 
 	landEffect1 = ParticleSystemQuad::create("landEffect.plist");
+	landEffect1->setTexture(texture);
 	landEffect1->setPositionType(ParticleSystem::PositionType::GROUPED);
 	landEffect1->pauseEmissions();
 
 	gameLayer->addChild(landEffect1, 1);
 
 	landEffect2 = ParticleSystemQuad::create("landEffect.plist");
+	landEffect2->setTexture(texture);
 	landEffect2->setPositionType(ParticleSystem::PositionType::GROUPED);
 	landEffect2->pauseEmissions();
 
@@ -218,7 +229,7 @@ void PlayerObject::update(float dt)
 		{
 			if (!_particles1Activated)
 			{
-				//dragEffect1->resumeEmissions();
+				dragEffect1->resumeEmissions();
 				_particles1Activated = true;
 			}
 			if (getActionByTag(2)) stopActionByTag(2);
@@ -229,7 +240,7 @@ void PlayerObject::update(float dt)
 			{
 				Sequence* action = Sequence::create(
 					DelayTime::create(0.06f), CallFunc::create([=]() {
-						//if (_particles1Activated) dragEffect1->pauseEmissions();
+						if (_particles1Activated) dragEffect1->pauseEmissions();
 						_particles1Activated = false;
 					}),
 					nullptr);
@@ -240,12 +251,12 @@ void PlayerObject::update(float dt)
 		// shipDragEffect->pauseEmissions();
 		if (_particles3Activated)
 		{
-			//dragEffect3->pauseEmissions();
+			dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
 		if (_particles2Activated)
 		{
-			//dragEffect2->pauseEmissions();
+			dragEffect2->pauseEmissions();
 			_particles2Activated = false;
 		}
 	}
@@ -253,22 +264,22 @@ void PlayerObject::update(float dt)
 	{
 		if (m_bIsHolding)
 		{
-			//if (!_particles3Activated) dragEffect3->resumeEmissions();
+			if (!_particles3Activated) dragEffect3->resumeEmissions();
 			_particles3Activated = true;
 		}
 		else
 		{
-			//if (_particles3Activated) dragEffect3->pauseEmissions();
+			if (_particles3Activated) dragEffect3->pauseEmissions();
 			_particles3Activated = false;
 		}
 		if (!_particles2Activated)
 		{
-			//dragEffect2->resumeEmissions();
+			dragEffect2->resumeEmissions();
 			_particles2Activated = true;
 		}
 		if (_particles1Activated)
 		{
-			//dragEffect1->pauseEmissions();
+			dragEffect1->pauseEmissions();
 			_particles1Activated = false;
 		}
 		// if (isOnGround() && m_dYVel > -1.f)
@@ -458,6 +469,12 @@ void PlayerObject::ringJump(GameObject* obj)
 			break;
 		case kGameObjectTypeGravityRing:
 			newYVel *= 0.8;
+			break;
+		case kGameObjectTypeGreenRing:
+			if (_currentGamemode == PlayerGamemodeShip) {
+				newYVel *= 0.7;
+			}
+			flipGravity(!isGravityFlipped());
 			break;
 		default:
 			if (_currentGamemode == PlayerGamemodeRobot) newYVel *= 0.9;

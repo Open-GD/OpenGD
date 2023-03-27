@@ -1114,56 +1114,29 @@ void PlayLayer::updateVisibility()
 	this->_nextSection = nextSection;
 }
 
-void PlayLayer::changeGameMode(GameObject* obj, PlayerObject* player, PlayerGamemode gameMode)
-{
+void PlayLayer::changeGameMode(GameObject* obj, PlayerObject* player, PlayerGamemode gameMode) {
 	obj->triggerActivated(player);
-	switch (gameMode)
-	{
-	default:
-		player->setGamemode(gameMode);
-		break;
+	switch (gameMode) {
 	case PlayerGamemodeShip:
-		if (obj->getPositionY() < 270)
-		{
-			m_fCameraYCenter = 240.0f;
-		}
-		else
-		{
-			m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
-		}
-		player->setGamemode(gameMode);
-		player->setRotation(0.f);
-		tweenBottomGround(-68);
-		tweenCeiling(388);
-		break;
 	case PlayerGamemodeUFO:
-		if (obj->getPositionY() < 270)
-		{
-			m_fCameraYCenter = 240.0f;
-		}
-		else
-		{
-			m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
-		}
-		player->setGamemode(gameMode);
-		player->setRotation(0.f);
+	case PlayerGamemodeWave:
+		if (obj->getPositionY() < 270) m_fCameraYCenter = 240.0f;
+		else m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
+		
 		tweenBottomGround(-68);
 		tweenCeiling(388);
 		break;
 	case PlayerGamemodeBall:
-		if (obj->getPositionY() < 240.0f)
-		{
-			m_fCameraYCenter = 210.0f;
-		}
-		else
-		{
-			m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
-		}
-		player->setGamemode(gameMode);
+		if (obj->getPositionY() < 240.0f) m_fCameraYCenter = 210.0f;
+		else m_fCameraYCenter = (floorf(obj->getPositionY() / 30.0f) * 30.0f);
+		
 		tweenBottomGround(-38);
 		tweenCeiling(358);
 		break;
 	}
+
+	player->setRotation(0.f);
+	player->setGamemode(gameMode);
 }
 
 void PlayLayer::moveCameraToPos(Vec2 pos)
@@ -1346,14 +1319,14 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 						case kGameObjectTypeGravityPad:
 						{
 							if (player->_touchedPadObject) break;
-							auto pos = obj->getPosition();
-							pos.y -= 10;
-							player->setPortalP(pos);
-							player->setPortalObject(obj);
-							obj->triggerActivated(player);
-							player->propellPlayer(0.8);
-							player->_touchedPadObject = obj;
-							changeGravity(!player->isGravityFlipped());
+								auto pos = obj->getPosition();
+								pos.y -= 10;
+								player->setPortalP(pos);
+								player->setPortalObject(obj);
+								obj->triggerActivated(player);
+								player->propellPlayer(0.8);
+								player->_touchedPadObject = obj;
+								changeGravity(!player->isGravityFlipped());
 							break;
 						}
 
@@ -1379,6 +1352,7 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 						case kGameObjectTypeRedJumpRing:
 						case kGameObjectTypePinkJumpRing:
 						case kGameObjectTypeDropRing:
+						case kGameObjectTypeGreenRing:
 							player->setPortalP(obj->getPosition());
 							player->setPortalObject(obj);
 
