@@ -32,21 +32,17 @@ bool TextButton::init(std::string_view text, std::string_view font, float width,
 	
 	this->m_pBG->setContentSize({
 		(width == 0) ? this->m_pText->getContentSize().width + 16 : width,
-		(height == 0) ? this->m_pText->getContentSize().height + 16 : height
+		(height == 0) ? this->m_pText->getContentSize().height + 4 : height
 	});
 	this->addChild(this->m_pBG);
 	this->m_pBG->setPosition(this->m_pBG->getContentSize() / 2);
 	this->m_pBG->addChild(this->m_pText);
 
 	this->m_pText->setPosition(this->m_pBG->getContentSize() / 2);
-	this->m_pText->setScale(MIN(
-		(this->m_pBG->getContentSize().width - 16) / this->m_pText->getContentSize().width,
-		(this->m_pBG->getContentSize().height - 16) / this->m_pText->getContentSize().height
-	));
+	this->m_pText->setScale((this->m_pBG->getContentSize().width - 16) / this->m_pText->getContentSize().width);
 
 	this->setContentSize(this->m_pBG->getContentSize());
 
-	this->setScale(0.9);
 	this->setNewScale(1.15f);
 
 	this->m_fCallback = callback;
