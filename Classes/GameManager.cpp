@@ -3,7 +3,7 @@
 #include <axmol.h>
 #include "GameToolbox.h"
 
-static struct GameOptions
+struct GameOptions
 {
 	std::map<std::string, int> intOptions;
 	std::map<std::string, bool> boolOptions;
