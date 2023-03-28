@@ -5,16 +5,16 @@
 #include "GameToolbox.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
-#include "LevelInfoLayer.h"
 #include "LevelSelectLayer.h"
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
-#include "ccRandom.h"
 #include "external/benchmark.h"
 #include "external/constants.h"
-#include "external/json.hpp"
 #include <LevelPage.h>
 #include <fstream>
+#include "external/json.hpp"
+#include "LevelInfoLayer.h"
+#include "ccRandom.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -55,9 +55,9 @@ void PlayLayer::showCompleteText()
 	sprite->setPosition({size.width / 2, size.height / 2 + 35});
 	m_pHudLayer->addChild(sprite);
 
-	sprite->runAction(Sequence::create(EaseElasticOut::create(ScaleTo::create(0.66f, scale), 0.6),
-									   DelayTime::create(0.88f), EaseIn::create(ScaleTo::create(0.22f, 0), 2.0f),
-									   RemoveSelf::create(true), nullptr));
+	sprite->runAction(Sequence::create(
+		EaseElasticOut::create(ScaleTo::create(0.66f, scale), 0.6), DelayTime::create(0.88f),
+		EaseIn::create(ScaleTo::create(0.22f, 0), 2.0f), RemoveSelf::create(true), nullptr));
 
 	auto col1 = _player1->getMainColor();
 	auto col2 = _player1->getSecondaryColor();
@@ -83,11 +83,11 @@ void PlayLayer::showCompleteText()
 	m_pHudLayer->addChild(cir2, -1);
 
 	for (int i = 0; i < 9; i++)
-		m_pHudLayer->runAction(Sequence::createWithTwoActions(DelayTime::create(0.16f * i),
-															  CallFunc::create([&]() { PlayLayer::spawnCircle(); })));
+		m_pHudLayer->runAction(Sequence::createWithTwoActions(
+			DelayTime::create(0.16f * i), CallFunc::create([&]() { PlayLayer::spawnCircle(); })));
 
-	m_pHudLayer->runAction(Sequence::createWithTwoActions(DelayTime::create(1.5f),
-														  CallFunc::create([&]() { PlayLayer::showEndLayer(); })));
+	m_pHudLayer->runAction(
+		Sequence::createWithTwoActions(DelayTime::create(1.5f), CallFunc::create([&]() { PlayLayer::showEndLayer(); })));
 }
 
 void PlayLayer::spawnCircle()
@@ -114,8 +114,7 @@ void PlayLayer::showEndLayer()
 int PlayLayer::sectionForPos(float x)
 {
 	int section = x / 100;
-	if (section < 0)
-		section = 0;
+	if (section < 0) section = 0;
 	return section;
 }
 
@@ -132,662 +131,304 @@ PlayLayer* PlayLayer::create(GJGameLevel* level)
 	return nullptr;
 }
 
-void PlayLayer::fillColorChannel(const char* levelString, int strbeg, int strend, int id, size_t strLen)
+void PlayLayer::fillColorChannel(std::vector<std::string>& colorString, int id)
 {
-	const char* pch;
-	int beg = strbeg, end = strbeg;
-
-	const char* begin;
-
-	SpriteColor col;
-
-	do
+	for (size_t j = 0; j < colorString.size() - 1; j += 2)
 	{
-		beg = end;
-		pch = (char*)memchr(levelString + beg + 1, '_', strLen - beg - 1);
-		end = pch - levelString;
-
-		if (end > strLen)
-			continue;
-
-		begin = levelString + beg + 1;
-
-		int key;
-
-		std::from_chars(begin, begin + (end - beg - 1), key);
-		float res;
-
-		switch (key)
+		switch (std::stoi(colorString[j]))
 		{
-		case 1: {
-			beg = end;
-			pch = (char*)memchr(levelString + beg + 1, '_', strLen - beg - 1);
-			end = pch - levelString;
-
-			begin = levelString + beg + 1;
-
-			std::from_chars(begin, begin + (end - beg - 1), res);
-			col._color.r = res;
+		case 1:
+			m_pColorChannels.insert({id, SpriteColor(ax::Color3B(std::stof(colorString[j + 1]), 0, 0), 255, 0)});
+			break;
+		case 2:
+			m_pColorChannels.at(id)._color.g = std::stof(colorString[j + 1]);
+			break;
+		case 3:
+			m_pColorChannels.at(id)._color.b = std::stof(colorString[j + 1]);
 			break;
 		}
-		case 2: {
-			beg = end;
-			pch = (char*)memchr(levelString + beg + 1, '_', strLen - beg - 1);
-			end = pch - levelString;
-
-			begin = levelString + beg + 1;
-
-			std::from_chars(begin, begin + (end - beg - 1), res);
-			col._color.g = res;
-			break;
-		}
-		case 3: {
-			beg = end;
-			pch = (char*)memchr(levelString + beg + 1, '_', strLen - beg - 1);
-			end = pch - levelString;
-
-			begin = levelString + beg + 1;
-
-			std::from_chars(begin, begin + (end - beg - 1), res);
-			col._color.b = res;
-			break;
-		}
-		case 5: {
-			beg = end;
-			pch = (char*)memchr(levelString + beg + 1, '_', strLen - beg - 1);
-			end = pch - levelString;
-
-			begin = levelString + beg + 1;
-			int resInt;
-			std::from_chars(begin, begin + (end - beg - 1), resInt);
-			col._blending = resInt;
-			break;
-		}
-		case 6: {
-			beg = end;
-			pch = (char*)memchr(levelString + beg + 1, '_', strLen - beg - 1);
-			end = pch - levelString;
-
-			begin = levelString + beg + 1;
-			int resInt;
-			std::from_chars(begin, begin + (end - beg - 1), resInt);
-			id = resInt;
-			break;
-		}
-		case 7: {
-			beg = end;
-			pch = (char*)memchr(levelString + beg + 1, '_', strLen - beg - 1);
-			end = pch - levelString;
-
-			begin = levelString + beg + 1;
-
-			std::from_chars(begin, begin + (end - beg - 1), res);
-			col._opacity = res * 255.f;
-			break;
-		}
-		}
-
-	} while (pch != NULL && beg < strend);
-
-	if (m_pColorChannels.contains(id))
-		m_pColorChannels[id] = col;
-	else
-		m_pColorChannels.insert({id, col});
+	}
 }
 
 void PlayLayer::loadLevel(std::string levelStr)
 {
-	auto levelS = GJGameLevel::decompressLvlStr(levelStr);
-	auto levelString = levelS.c_str();
+	std::string levelString = GJGameLevel::decompressLvlStr(levelStr);
 
-	int beg = 0, end = 0, beg2 = 0, end2 = 0;
+	std::vector<std::string> objData = GameToolbox::splitByDelim(levelString, ';'), levelData;
 
-	char *pch, *pch2;
+	levelData = GameToolbox::splitByDelim(objData[0], ',');
+	objData.erase(objData.begin());
 
-	const char* begin;
-
-	int intRes;
-	float floatRes;
-
-	auto strLen = strlen(levelString);
-	intRes = 0;
-	floatRes = 0;
-
-	do
+	for (size_t i = 0; i < levelData.size() - 1; i += 2)
 	{
-		beg2 = 0;
-		end2 = 0;
-		pch2 = nullptr;
-		beg = end;
-		pch = (char*)memchr(levelString + beg + 1, ';', strLen - beg - 1);
-		end = pch - levelString;
-		end2 = beg - 1;
-		if (beg == 0)
+		if (levelData[i] == "kS1")
 		{
-			do
-			{
-				beg2 = end2;
-				pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-				end2 = pch2 - levelString;
-
-				if (std::memcmp(levelString + beg2 + 1, "kS1", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-
-					m_pColorChannels.insert({1000, SpriteColor(ax::Color3B(floatRes, 0, 0), 255, 0)});
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS2", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-
-					m_pColorChannels.at(1000)._color.g = floatRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS3", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-
-					m_pColorChannels.at(1000)._color.b = floatRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS4", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					m_pColorChannels.insert({1001, SpriteColor(ax::Color3B(floatRes, 0, 0), 255, 0)});
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS5", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					m_pColorChannels.at(1001)._color.g = floatRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS6", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					m_pColorChannels.at(1001)._color.b = floatRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS29", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					fillColorChannel(levelString, beg2, end2, 1000, strLen);
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS30", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-					fillColorChannel(levelString, beg2, end2, 1001, strLen);
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS31", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-					fillColorChannel(levelString, beg2, end2, 1002, strLen);
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS32", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-					fillColorChannel(levelString, beg2, end2, 1004, strLen);
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS37", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-					fillColorChannel(levelString, beg2, end2, 1003, strLen);
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kS38", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					int beg3 = beg2, end3 = beg2;
-					char* pch3;
-
-					do
-					{
-						beg3 = end3;
-						pch3 = (char*)memchr(levelString + beg3 + 1, '|', strLen - beg3 - 1);
-						end3 = pch3 - levelString;
-						if (end3 > end2)
-							continue;
-						fillColorChannel(levelString, beg3, end3, -1, strLen);
-					} while (pch3 != NULL);
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA6", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-
-					_bgID = intRes;
-					if (!_bgID)
-						_bgID = 1;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA7", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					_groundID = intRes;
-					if (!_groundID)
-						_groundID = 1;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA2", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					_levelSettings.gamemode = (PlayerGamemode)intRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA3", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					_levelSettings.mini = intRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA4", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					_levelSettings.speed = intRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA8", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					_levelSettings.dual = intRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA10", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					_levelSettings.twoPlayer = intRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA11", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					_levelSettings.flipGravity = intRes;
-				}
-				else if (std::memcmp(levelString + beg2 + 1, "kA13", end2 - beg2 - 1) == 0)
-				{
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					_levelSettings.songOffset = floatRes;
-				}
-
-			} while (pch2 != NULL);
+			m_pColorChannels.insert({1000, SpriteColor(ax::Color3B(std::stof(levelData[i + 1]), 0, 0), 255, 0)});
 		}
-		else
+		else if (levelData[i] == "kS2")
 		{
-			GameObject* obj = nullptr;
-
-			Hitbox hb = {0, 0, 0, 0};
-
-			end2++;
-
-			do
+			m_pColorChannels.at(1000)._color.g = std::stof(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kS3")
+		{
+			m_pColorChannels.at(1000)._color.b = std::stof(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kS4")
+		{
+			m_pColorChannels.insert({1001, SpriteColor(ax::Color3B(std::stof(levelData[i + 1]), 0, 0), 255, 0)});
+		}
+		else if (levelData[i] == "kS5")
+		{
+			m_pColorChannels.at(1001)._color.g = std::stof(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kS6")
+		{
+			m_pColorChannels.at(1001)._color.b = std::stof(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kS29")
+		{
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
+			fillColorChannel(colorString, 1000);
+		}
+		else if (levelData[i] == "kS30")
+		{
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
+			fillColorChannel(colorString, 1001);
+		}
+		else if (levelData[i] == "kS31")
+		{
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
+			fillColorChannel(colorString, 1002);
+		}
+		else if (levelData[i] == "kS32")
+		{
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
+			fillColorChannel(colorString, 1004);
+		}
+		else if (levelData[i] == "kS37")
+		{
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '_');
+			fillColorChannel(colorString, 1003);
+		}
+		else if (levelData[i] == "kS38")
+		{
+			auto colorString = GameToolbox::splitByDelim(levelData[i + 1], '|');
+			for (std::string colorData : colorString)
 			{
-				beg2 = end2;
-				pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-				end2 = pch2 - levelString;
-
-				if (end2 >= end)
-					continue;
-
-				begin = levelString + beg2 + 1;
-
-				std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-
-				if (intRes != 1 && obj == nullptr)
-					break;
-
-				switch (intRes)
+				auto innerData = GameToolbox::splitByDelim(colorData, '_');
+				int key;
+				SpriteColor col;
+				col._blending = false;
+				for (size_t j = 0; j < innerData.size() - 1; j += 2)
 				{
-				case 1: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-
-					if (!GameObject::_pBlocks.contains(intRes))
-						continue;
-
-					auto block = GameObject::_pBlocks.at(intRes);
-					std::string frame = static_cast<std::string>(block[0]);
-					std::string glowFrame = "";
-					if (block.size() > 1)
-						glowFrame = static_cast<std::string>(block[1]);
-
-					if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), intRes) !=
-						std::end(GameObject::_pTriggers))
+					switch (std::stoi(innerData[j]))
 					{
-						obj = EffectGameObject::create(frame);
-						obj->_isTrigger = true;
-					}
-					else
-						obj = GameObject::create(frame, glowFrame);
-
-					if (obj == nullptr)
+					case 1:
+						col._color.r = std::stof(innerData[j + 1]);
 						break;
-
-					AX_SAFE_RETAIN(obj);
-
-					obj->setStretchEnabled(false);
-					obj->setActive(true);
-					obj->setID(intRes);
-
-					// obj->setupColors();
-
-					obj->customSetup();
-
-					if (GameObject::_pHitboxes.contains(intRes))
-						hb = GameObject::_pHitboxes.at(intRes);
-					if (GameObject::_pHitboxRadius.contains(intRes))
-						obj->_radius = GameObject::_pHitboxRadius.at(intRes);
-
-					obj->_uniqueID = _pObjects.size();
-
-					_pObjects.push_back(obj);
-
-					break;
+					case 2:
+						col._color.g = std::stof(innerData[j + 1]);
+						break;
+					case 3:
+						col._color.b = std::stof(innerData[j + 1]);
+						break;
+					case 5:
+						col._blending = std::stoi(innerData[j + 1]);
+						break;
+					case 6:
+						key = std::stoi(innerData[j + 1]);
+						break;
+					case 7:
+						col._opacity = std::stof(innerData[j + 1]) * 255.f;
+						break;
+					}
 				}
-				case 2: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					obj->setPositionX(floatRes);
-					break;
-				}
-				case 3: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					obj->setPositionY(floatRes + 90.0f);
-					break;
-				}
-				case 4: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					obj->setScaleX(-1.f * floatRes);
-					break;
-				}
-				case 5: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					obj->setScaleY(-1.f * floatRes);
-					break;
-				}
-				case 6: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					obj->setRotation(floatRes);
-					break;
-				}
-				case 7: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					dynamic_cast<EffectGameObject*>(obj)->_color.r = floatRes;
-					break;
-				}
-				case 8: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					dynamic_cast<EffectGameObject*>(obj)->_color.g = floatRes;
-					break;
-				}
-				case 9: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					dynamic_cast<EffectGameObject*>(obj)->_color.b = floatRes;
-					break;
-				}
-				case 10: {
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					dynamic_cast<EffectGameObject*>(obj)->_duration = floatRes;
-					break;
-				}
-				case 21:
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					obj->_mainColorChannel = intRes;
-					break;
-				case 22:
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					obj->_secColorChannel = intRes;
-					break;
-				case 23:
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					dynamic_cast<EffectGameObject*>(obj)->_targetColorId = floatRes;
-					break;
-				case 24:
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					obj->_zLayer = intRes;
-					break;
-				case 25:
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), intRes);
-					obj->setGlobalZOrder(intRes);
-					break;
-				case 32:
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-
-					begin = levelString + beg2 + 1;
-
-					std::from_chars(begin, begin + (end2 - beg2 - 1), floatRes);
-					obj->setScaleX(obj->getScaleX() * floatRes);
-					obj->setScaleY(obj->getScaleY() * floatRes);
-					break;
-				case 67: // dont enter
-				case 64: // dont exit
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-					obj->setDontTransform(true);
-					break;
-				default:
-					beg2 = end2;
-					pch2 = (char*)memchr(levelString + beg2 + 1, ',', strLen - beg2 - 1);
-					end2 = pch2 - levelString;
-					break;
-				}
-
-			} while (pch2 != NULL && beg2 < end);
-
-			if (obj)
-			{
-				ax::Mat4 tr;
-				ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
-				switch (obj->getGameObjectType())
-				{
-				default:
-
-					tr.rotate(obj->getRotationQuat());
-
-					tr.scale(obj->getScaleX() * (obj->isFlippedX() ? -1.f : 1.f),
-							 obj->getScaleY() * (obj->isFlippedY() ? -1.f : 1.f), 1);
-
-					rec = RectApplyTransform(rec, tr);
-
-					obj->setOuterBounds(Rect(obj->getPosition() + Vec2(rec.origin.x, rec.origin.y) + Vec2(15, 15),
-											 {rec.size.width, rec.size.height}));
-					break;
-				case kGameObjectTypeDecoration:
-				case kGameObjectTypeSpecial:
-					break;
-				}
-				obj->setStartPosition(obj->getPosition());
-				obj->setStartScaleX(obj->getScaleX());
-				obj->setStartScaleY(obj->getScaleY());
+				m_pColorChannels.insert({key, col});
 			}
 		}
-	} while (pch != NULL && beg < strLen);
+		else if (levelData[i] == "kA6")
+		{
+			_bgID = std::stoi(levelData[i + 1]);
+			if (!_bgID) _bgID = 1;
+		}
+		else if (levelData[i] == "kA7")
+		{
+			_groundID = std::stoi(levelData[i + 1]);
+			if (!_groundID) _groundID = 1;
+		}
+		else if (levelData[i] == "kA2")
+		{
+			_levelSettings.gamemode = (PlayerGamemode)std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA3")
+		{
+			_levelSettings.mini = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA4")
+		{
+			_levelSettings.speed = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA8")
+		{
+			_levelSettings.dual = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA10")
+		{
+			_levelSettings.twoPlayer = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA11")
+		{
+			_levelSettings.flipGravity = std::stoi(levelData[i + 1]);
+		}
+		else if (levelData[i] == "kA13")
+		{
+			_levelSettings.songOffset = std::stof(levelData[i + 1]);
+		}
+	}
 
 	m_pColorChannels[1005]._color = _player1->getMainColor();
 	m_pColorChannels[1006]._color = _player1->getSecondaryColor();
 	m_pColorChannels[1010]._color = Color3B::BLACK;
 
 	_originalColors = std::unordered_map<int, SpriteColor>(m_pColorChannels);
+
+	for (std::string data : objData)
+	{
+		auto d = GameToolbox::splitByDelim(data, ',');
+
+		GameObject* obj = nullptr;
+
+		Hitbox hb = {0, 0, 0, 0};
+
+		for (size_t i = 0; i < d.size() - 1; i += 2)
+		{
+			int key = std::stoi(d[i]);
+
+			if (key != 1 && obj == nullptr) break;
+
+			switch (key)
+			{
+			case 1:
+			{
+				int id = std::stoi(d[i + 1]);
+
+				if (!GameObject::_pBlocks.contains(id)) continue;
+
+				auto block = GameObject::_pBlocks.at(id);
+				std::string frame = static_cast<std::string>(block[0]);
+				std::string glowFrame = "";
+				if (block.size() > 1) glowFrame = static_cast<std::string>(block[1]);
+
+				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
+					std::end(GameObject::_pTriggers))
+				{
+					obj = EffectGameObject::create(frame);
+					obj->_isTrigger = true;
+				}
+				else
+					obj = GameObject::create(frame, glowFrame);
+
+				if (obj == nullptr) break;
+
+				AX_SAFE_RETAIN(obj);
+
+				obj->setStretchEnabled(false);
+				obj->setActive(true);
+				obj->setID(id);
+
+				// obj->setupColors();
+
+				obj->customSetup();
+
+				if (GameObject::_pHitboxes.contains(id)) hb = GameObject::_pHitboxes.at(id);
+				if (GameObject::_pHitboxRadius.contains(id)) obj->_radius = GameObject::_pHitboxRadius.at(id);
+
+				obj->_uniqueID = _pObjects.size();
+
+				_pObjects.push_back(obj);
+			}
+			break;
+			case 2:
+				obj->setPositionX(std::stof(d[i + 1]));
+				break;
+			case 3:
+				obj->setPositionY(std::stof(d[i + 1]) + 90.0f);
+				break;
+			case 4:
+				obj->setScaleX(-1.f * std::stoi(d[i + 1]));
+				break;
+			case 5:
+				obj->setScaleY(-1.f * std::stoi(d[i + 1]));
+				break;
+			case 6:
+				obj->setRotation(std::stof(d[i + 1]));
+				break;
+			case 7:
+				dynamic_cast<EffectGameObject*>(obj)->_color.r = std::stof(d[i + 1]);
+				break;
+			case 8:
+				dynamic_cast<EffectGameObject*>(obj)->_color.g = std::stof(d[i + 1]);
+				break;
+			case 9:
+				dynamic_cast<EffectGameObject*>(obj)->_color.b = std::stof(d[i + 1]);
+				break;
+			case 10:
+				dynamic_cast<EffectGameObject*>(obj)->_duration = std::stof(d[i + 1]);
+				break;
+			case 21:
+				obj->_mainColorChannel = std::stoi(d[i + 1]);
+				break;
+			case 22:
+				obj->_secColorChannel = std::stoi(d[i + 1]);
+				break;
+			case 23:
+				dynamic_cast<EffectGameObject*>(obj)->_targetColorId = std::stof(d[i + 1]);
+				break;
+			case 24:
+				obj->_zLayer = std::stoi(d[i + 1]);
+				break;
+			case 25:
+				obj->setGlobalZOrder(std::stoi(d[i + 1]));
+				break;
+			case 32:
+				obj->setScaleX(obj->getScaleX() * std::stof(d[i + 1]));
+				obj->setScaleY(obj->getScaleY() * std::stof(d[i + 1]));
+				break;
+			case 67: // dont enter
+			case 64: // dont exit
+				obj->setDontTransform(true);
+				break;
+			}
+		}
+		if (obj)
+		{
+			ax::Mat4 tr;
+			ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
+			switch (obj->getGameObjectType())
+			{
+			default:
+
+				tr.rotate(obj->getRotationQuat());
+
+				tr.scale(
+					obj->getScaleX() * (obj->isFlippedX() ? -1.f : 1.f), obj->getScaleY() * (obj->isFlippedY() ? -1.f : 1.f),
+					1);
+
+				rec = RectApplyTransform(rec, tr);
+
+				obj->setOuterBounds(Rect(
+					obj->getPosition() + Vec2(rec.origin.x, rec.origin.y) + Vec2(15, 15),
+					{rec.size.width, rec.size.height}));
+				break;
+			case kGameObjectTypeDecoration:
+			case kGameObjectTypeSpecial:
+				break;
+			}
+			obj->setStartPosition(obj->getPosition());
+			obj->setStartScaleX(obj->getScaleX());
+			obj->setStartScaleY(obj->getScaleY());
+		}
+	}
 }
 
 bool PlayLayer::isObjectBlending(GameObject* obj)
@@ -802,8 +443,7 @@ bool PlayLayer::isObjectBlending(GameObject* obj)
 
 bool PlayLayer::init(GJGameLevel* level)
 {
-	if (!Layer::init())
-		return false;
+	if (!Layer::init()) return false;
 	setLevel(level);
 
 	Instance = this;
@@ -921,15 +561,15 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	this->m_pBG = Sprite::create(GameToolbox::getTextureString(fmt::format("game_bg_{:02}_001.png", _bgID)));
 	m_pBG->setStretchEnabled(false);
-	const Texture2D::TexParams texParams = {backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR,
-											backend::SamplerAddressMode::REPEAT, backend::SamplerAddressMode::REPEAT};
+	const Texture2D::TexParams texParams = {
+		backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR, backend::SamplerAddressMode::REPEAT,
+		backend::SamplerAddressMode::REPEAT};
 	this->m_pBG->getTexture()->setTexParameters(texParams);
 	this->m_pBG->setTextureRect(Rect(0, 0, 1024 * 5, 1024));
 	this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
 	this->addChild(this->m_pBG, -100);
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
 	this->_bottomGround->update(0);
 
 	if (_pObjects.size() != 0)
@@ -939,8 +579,7 @@ bool PlayLayer::init(GJGameLevel* level)
 		for (GameObject* object : _pObjects)
 		{
 			// GameToolbox::log("pos: {}", object->getPositionX());
-			if (this->m_lastObjXPos < object->getPositionX())
-				this->m_lastObjXPos = object->getPositionX();
+			if (this->m_lastObjXPos < object->getPositionX()) this->m_lastObjXPos = object->getPositionX();
 		}
 
 		GameToolbox::log("last x: {}", m_lastObjXPos);
@@ -963,8 +602,7 @@ bool PlayLayer::init(GJGameLevel* level)
 				object->setBlendFunc(GameToolbox::getBlending());
 			}
 
-			if (m_pColorChannels.contains(object->_secColorChannel) &&
-				m_pColorChannels[object->_secColorChannel]._blending)
+			if (m_pColorChannels.contains(object->_secColorChannel) && m_pColorChannels[object->_secColorChannel]._blending)
 			{
 				for (auto s : object->_detailSprites)
 					s->setBlendFunc(GameToolbox::getBlending());
@@ -1003,6 +641,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	updateVisibility();
 	updateVisibility();
 
+
 	scheduleOnce(
 		[=](float d) {
 			if (levelValid)
@@ -1019,9 +658,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	return true;
 }
 
-void PlayLayer::createLevelEnd()
-{
-}
+void PlayLayer::createLevelEnd() {}
 
 double lastY = 0;
 
@@ -1049,8 +686,7 @@ void PlayLayer::update(float dt)
 	this->m_pColorChannels.at(1005)._color = this->_player1->getMainColor();
 	this->m_pColorChannels.at(1006)._color = this->_player1->getSecondaryColor();
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
 
 	if (!m_freezePlayer && (!this->_player1->isDead() || !this->_player2->isDead()))
 	{
@@ -1065,11 +701,9 @@ void PlayLayer::update(float dt)
 
 			this->checkCollisions(_player1, step);
 
-			if (this->_player1->isDead())
-				break;
+			if (this->_player1->isDead()) break;
 
-			if (!_isDualMode)
-				continue;
+			if (!_isDualMode) continue;
 
 			this->_player2->update(step);
 
@@ -1078,8 +712,7 @@ void PlayLayer::update(float dt)
 
 			this->checkCollisions(_player2, step);
 
-			if (this->_player2->isDead())
-				break;
+			if (this->_player2->isDead()) break;
 		}
 		step *= 4.0f;
 	}
@@ -1088,15 +721,12 @@ void PlayLayer::update(float dt)
 	float val = _player1->getPositionX() * 100 / this->m_lastObjXPos;
 	m_pPercentage->setString(StringUtils::format("%.02f%%", val > 100 ? 100 : val < 0 ? 0 : val));
 
-	if (val >= 100 && !m_bEndAnimation)
-		this->showCompleteText();
+	if (val >= 100 && !m_bEndAnimation) this->showCompleteText();
 
 	this->updateVisibility();
 	this->updateCamera(step);
-	if (_player1->_currentGamemode == PlayerGamemodeShip)
-		_player1->updateShipRotation(step);
-	if (_isDualMode && _player2->_currentGamemode == PlayerGamemodeShip)
-		_player2->updateShipRotation(step);
+	if (_player1->_currentGamemode == PlayerGamemodeShip) _player1->updateShipRotation(step);
+	if (_isDualMode && _player2->_currentGamemode == PlayerGamemodeShip) _player2->updateShipRotation(step);
 
 	m_pColorChannels[1005]._color = _player1->getMainColor();
 	m_pColorChannels[1006]._color = _player1->getSecondaryColor();
@@ -1105,15 +735,18 @@ void PlayLayer::update(float dt)
 void PlayLayer::destroyPlayer(PlayerObject* player)
 {
 
-	if (player->isDead() || player->noclip)
-		return;
+	if (player->isDead() || player->noclip) return;
 
 	player->setIsDead(true);
 	player->playDeathEffect();
 	player->stopRotation();
 	player->setVisible(false);
 
-	scheduleOnce([=](float d) { resetLevel(); }, 1.f, "restart");
+	scheduleOnce(
+		[=](float d) {
+			resetLevel();
+		},
+		1.f, "restart");
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -1127,8 +760,7 @@ void PlayLayer::updateCamera(float dt)
 	if (player->_currentGamemode != PlayerGamemodeCube || _isDualMode)
 	{
 		cam.y = (winSize.height * -0.5f) + m_fCameraYCenter;
-		if (cam.y <= 0.0f)
-			cam.y = 0.0f;
+		if (cam.y <= 0.0f) cam.y = 0.0f;
 	}
 	else
 	{
@@ -1141,8 +773,7 @@ void PlayLayer::updateCamera(float dt)
 		}
 		if (pPos.y <= winSize.height + cam.y - unk2)
 		{
-			if (pPos.y < unk3 + cam.y)
-				cam.y = pPos.y - unk3;
+			if (pPos.y < unk3 + cam.y) cam.y = pPos.y - unk3;
 		}
 		else
 			cam.y = pPos.y - winSize.height + unk2;
@@ -1151,8 +782,7 @@ void PlayLayer::updateCamera(float dt)
 			Vec2 lastGroundPos = player->getLastGroundPos();
 
 			if (lastGroundPos.y == 105.f)
-				if (pPos.y <= cam.y + winSize.height - unk2)
-					cam.y = 0.0f;
+				if (pPos.y <= cam.y + winSize.height - unk2) cam.y = 0.0f;
 		}
 	}
 
@@ -1161,8 +791,8 @@ void PlayLayer::updateCamera(float dt)
 	if (pPos.x >= winSize.width / 2.5f && !_player1->isDead() && !_player2->isDead() &&
 		!player->m_bIsPlatformer) // wrong but works for now
 	{
-		this->m_pBG->setPositionX(this->m_pBG->getPositionX() -
-								  dt * player->getPlayerSpeed() * _bottomGround->getSpeed() * 0.1175f);
+		this->m_pBG->setPositionX(
+			this->m_pBG->getPositionX() - dt * player->getPlayerSpeed() * _bottomGround->getSpeed() * 0.1175f);
 		_bottomGround->update(dt * player->getPlayerSpeed());
 		_ceiling->update(dt * player->getPlayerSpeed());
 		cam.x = pPos.x - (winSize.width / 2.5f);
@@ -1170,15 +800,13 @@ void PlayLayer::updateCamera(float dt)
 	else if (player->m_bIsPlatformer)
 		cam.x = pPos.x - winSize.width / 2.f;
 
-	if (this->m_pBG->getPosition().x <= cam.x - 1024.f)
-		this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024.f);
+	if (this->m_pBG->getPosition().x <= cam.x - 1024.f) this->m_pBG->setPositionX(this->m_pBG->getPositionX() + 1024.f);
 
 	this->m_pBG->setPositionX(this->m_pBG->getPositionX() + (cam.x - m_obCamPos.x));
 
-	if (!this->m_bMoveCameraX)
-		m_obCamPos.x = cam.x;
+	if (!this->m_bMoveCameraX) m_obCamPos.x = cam.x;
 
-	// if camera reset then do not lerp
+	//if camera reset then do not lerp
 	if (!this->m_bMoveCameraY && cam.x != 0)
 	{
 		m_obCamPos.y = GameToolbox::iLerp(m_obCamPos.y, cam.y, 0.1f, dt / 60.f);
@@ -1192,8 +820,7 @@ void PlayLayer::updateCamera(float dt)
 
 	cameraFollow->setPosition(m_obCamPos);
 	_ceiling->setVisible(_player1->_currentGamemode != PlayerGamemodeCube);
-	if (_player1->_currentGamemode == PlayerGamemodeCube)
-		_bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
+	if (_player1->_currentGamemode == PlayerGamemodeCube) _bottomGround->setPositionY(-cameraFollow->getPositionY() + 12);
 
 	m_pHudLayer->setPosition(this->m_obCamPos);
 }
@@ -1222,8 +849,7 @@ float PlayLayer::getRelativeMod(Vec2 pos, float v1, float v2, float v3)
 		vv2 = v1;
 		vv3 = vv1;
 	}
-	if (vv2 < 1.f)
-		vv2 = 1.f;
+	if (vv2 < 1.f) vv2 = 1.f;
 
 	result = (centerX - vv3) / vv2;
 
@@ -1232,8 +858,7 @@ float PlayLayer::getRelativeMod(Vec2 pos, float v1, float v2, float v3)
 
 void PlayLayer::applyEnterEffect(GameObject* obj)
 {
-	if (obj->getEnterEffectID() != _enterEffectID)
-		obj->setEnterEffectID(_enterEffectID);
+	if (obj->getEnterEffectID() != _enterEffectID) obj->setEnterEffectID(_enterEffectID);
 	Vec2 objStartPos = obj->getStartPosition();
 	Vec2 objStartScale = obj->getStartScale();
 	float rModn = getRelativeMod(objStartPos, 60.f, 60.f, 0.f);
@@ -1297,8 +922,7 @@ void PlayLayer::updateVisibility()
 				for (size_t j = 0; j < section.size(); j++)
 				{
 					GameObject* obj = section[j];
-					if (!obj)
-						continue;
+					if (!obj) continue;
 
 					if (obj->getParent() == nullptr)
 					{
@@ -1390,8 +1014,7 @@ void PlayLayer::updateVisibility()
 					if (obj->getGameObjectType() == kGameObjectTypeDecoration)
 						unk2 = obj->getTextureRect().origin.x * obj->getScaleX() * 0.4f;
 
-					unsigned char opacity =
-						clampf(getRelativeMod(obj->getPosition(), 70.f, 70.f, unk2), 0.f, 1.f) * 255.0f;
+					unsigned char opacity = clampf(getRelativeMod(obj->getPosition(), 70.f, 70.f, unk2), 0.f, 1.f) * 255.0f;
 					if (!obj->getDontTransform())
 					{
 						obj->setOpacity(opacity);
@@ -1563,21 +1186,18 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 		if (player->getPositionY() <
 			_bottomGround->getPositionY() + cameraFollow->getPositionY() + (player->_mini ? 87.f : 93.0f))
 		{
-			player->setPositionY(_bottomGround->getPositionY() + cameraFollow->getPositionY() +
-								 (player->_mini ? 87.f : 93.0f));
+			player->setPositionY(
+				_bottomGround->getPositionY() + cameraFollow->getPositionY() + (player->_mini ? 87.f : 93.0f));
 
-			if (!player->isGravityFlipped())
-				player->hitGround(false);
+			if (!player->isGravityFlipped()) player->hitGround(false);
 
 			player->setYVel(0.f);
 		}
-		if (player->getPositionY() >
-			_ceiling->getPositionY() - (player->_mini ? 234.f : 240.f) + m_fCameraYCenter - 12.f)
+		if (player->getPositionY() > _ceiling->getPositionY() - (player->_mini ? 234.f : 240.f) + m_fCameraYCenter - 12.f)
 		{
 			player->setPositionY(_ceiling->getPositionY() - (player->_mini ? 234.f : 240.f) + m_fCameraYCenter - 12.f);
 
-			if (player->isGravityFlipped())
-				player->hitGround(true);
+			if (player->isGravityFlipped()) player->hitGround(true);
 
 			player->setYVel(0.f);
 		}
@@ -1608,8 +1228,7 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 
 				auto objBounds = obj->getOuterBounds();
 
-				if ((objBounds.size.width <= 0 || objBounds.size.height <= 0))
-					continue;
+				if ((objBounds.size.width <= 0 || objBounds.size.height <= 0)) continue;
 
 				if (obj->getGameObjectType() == kGameObjectTypeHazard)
 				{
@@ -1632,11 +1251,10 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 							trigger->triggerActivated(dt);
 						}
 					}
-					if (showDn)
-					{
+					if (showDn) {
 						renderRect(objBounds, ax::Color4B::BLUE);
 					}
-
+					
 					if (playerOuterBounds.intersectsRect(objBounds) && !obj->hasBeenActiavedByPlayer(player))
 					{
 						switch (obj->getGameObjectType())
@@ -1802,15 +1420,13 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 	}
 	m_pHazards.clear();
 
-	if (player->_currentGamemode == PlayerGamemodeShip)
-		player->_queuedHold = false;
+	if (player->_currentGamemode == PlayerGamemodeShip) player->_queuedHold = false;
 }
 
 void PlayLayer::onDrawImGui()
 {
 	extern bool _showDebugImgui;
-	if (!_showDebugImgui)
-		return;
+	if (!_showDebugImgui) return;
 	ImGui::SetNextWindowPos({1000.0f, 200.0f}, ImGuiCond_FirstUseEver);
 
 	ImGui::Begin("PlayLayer Debug");
@@ -1828,12 +1444,14 @@ void PlayLayer::onDrawImGui()
 		auto mode = glfwGetVideoMode(monitor);
 
 		if (fullscreen)
-			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
-								 monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+			glfwSetWindowMonitor(
+				static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), monitor, 0, 0,
+				mode->width, mode->height, mode->refreshRate);
 		else
 		{
-			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
-								 NULL, 0, 0, 1280, 720, 0);
+			glfwSetWindowMonitor(
+				static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(), NULL, 0, 0, 1280, 720,
+				0);
 			glfwWindowHint(GLFW_DECORATED, true);
 		}
 	}
@@ -1841,14 +1459,12 @@ void PlayLayer::onDrawImGui()
 
 	ImGui::SameLine();
 
-	if (ImGui::ArrowButton("full", ImGuiDir_Right))
-		ImGui::OpenPopup("Fullscreen Settings");
+	if (ImGui::ArrowButton("full", ImGuiDir_Right)) ImGui::OpenPopup("Fullscreen Settings");
 
 	if (ImGui::BeginPopupModal("Fullscreen Settings", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::InputInt("Monitor", &monitorN);
-		if (ImGui::Button("Close"))
-			ImGui::CloseCurrentPopup();
+		if (ImGui::Button("Close")) ImGui::CloseCurrentPopup();
 		ImGui::EndPopup();
 	}
 
@@ -1857,26 +1473,24 @@ void PlayLayer::onDrawImGui()
 		this->exit();
 	}
 
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
-				ImGui::GetIO().Framerate);
+	ImGui::Text(
+		"Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 	ImGui::Text("yVel %.3f", _player1->getYVel());
 
 	ImGui::Checkbox("Show Hitboxes", &showDn);
 	ImGui::Checkbox("Gain the power of invincibility", &noclip);
 
-	if (ImGui::InputFloat("Speed", &gameSpeed))
-		Director::getInstance()->getScheduler()->setTimeScale(gameSpeed);
+	if (ImGui::InputFloat("Speed", &gameSpeed)) Director::getInstance()->getScheduler()->setTimeScale(gameSpeed);
 
-	if (ImGui::InputFloat("FPS", &fps))
-		Director::getInstance()->setAnimationInterval(1.0f / fps);
+	if (ImGui::InputFloat("FPS", &fps)) Director::getInstance()->setAnimationInterval(1.0f / fps);
 
 	ImGui::Text("Sections: %i", m_pSectionObjects.size());
 	if (m_pSectionObjects.size() > 0 && sectionForPos(_player1->getPositionX()) - 1 < m_pSectionObjects.size())
-		ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(_player1->getPositionX()) <= 0
-																	  ? 0
-																	  : sectionForPos(_player1->getPositionX()) - 1]
-													.size());
+		ImGui::Text(
+			"Current Section Size: %i",
+			m_pSectionObjects[sectionForPos(_player1->getPositionX()) <= 0 ? 0 : sectionForPos(_player1->getPositionX()) - 1]
+				.size());
 
 	if (ImGui::Button("Reset"))
 	{
@@ -1908,8 +1522,7 @@ void PlayLayer::resetLevel()
 
 	for (auto obj : this->_pObjects)
 	{
-		if (!obj)
-			continue;
+		if (!obj) continue;
 		if (obj->_isTrigger)
 		{
 			auto trigger = dynamic_cast<EffectGameObject*>(obj);
@@ -2003,14 +1616,13 @@ void PlayLayer::resetLevel()
 	_prevSection = -1;
 	_nextSection = -1;
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
+	if (this->m_pColorChannels.contains(1000)) this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
 	this->_bottomGround->update(0);
 	this->_ceiling->update(0);
 
 	AudioEngine::stopAll();
-	AudioEngine::setCurrentTime(AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f),
-								_levelSettings.songOffset);
+	AudioEngine::setCurrentTime(
+		AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f), _levelSettings.songOffset);
 
 	changeGameMode(_player1, _player1, _levelSettings.gamemode);
 	changeGameMode(_player1, _player2, _levelSettings.gamemode);
@@ -2021,7 +1633,7 @@ void PlayLayer::resetLevel()
 	_isDualMode = _levelSettings.dual;
 	if (_isDualMode)
 	{
-		// toggle dual
+		//toggle dual
 	}
 	scheduleUpdate();
 }
@@ -2029,8 +1641,7 @@ void PlayLayer::resetLevel()
 void PlayLayer::renderRect(ax::Rect rect, ax::Color4B col)
 {
 	dn->drawRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, col);
-	dn->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()},
-					  Color4B(col.r, col.g, col.b, 100));
+	dn->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, Color4B(col.r, col.g, col.b, 100));
 }
 
 void PlayLayer::onEnter()
@@ -2103,8 +1714,7 @@ void PlayLayer::exit()
 	if (id <= 0 || id > 22)
 		return Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelInfoLayer::scene(getLevel())));
 
-	Director::getInstance()->replaceScene(
-		TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_LevelID - 1)));
+	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_LevelID - 1)));
 }
 
 void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
@@ -2112,34 +1722,34 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 	GameToolbox::log("Key with keycode {} pressed", static_cast<int>(keyCode));
 	switch (keyCode)
 	{
-	case EventKeyboard::KeyCode::KEY_R: {
+	case EventKeyboard::KeyCode::KEY_R:
+	{
 		resetLevel();
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_F: {
+	case EventKeyboard::KeyCode::KEY_F:
+	{
 		extern bool _showDebugImgui;
 		_showDebugImgui = !_showDebugImgui;
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_SPACE: {
-		if (!_player1->m_bIsHolding)
-			_player1->pushButton();
-		if (_isDualMode && !_player2->m_bIsHolding)
-			_player2->pushButton();
+	case EventKeyboard::KeyCode::KEY_SPACE:
+	{
+		if (!_player1->m_bIsHolding) _player1->pushButton();
+		if (_isDualMode && !_player2->m_bIsHolding) _player2->pushButton();
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_UP_ARROW: {
-		if (!_player1->m_bIsHolding)
-			_player1->pushButton();
-		if (_isDualMode && !_player2->m_bIsHolding)
-			_player2->pushButton();
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+	{
+		if (!_player1->m_bIsHolding) _player1->pushButton();
+		if (_isDualMode && !_player2->m_bIsHolding) _player2->pushButton();
 	}
 	break;
 		break;
-	case EventKeyboard::KeyCode::KEY_BACK: {
+	case EventKeyboard::KeyCode::KEY_BACK:
+	{
 		_player1->releaseButton();
-		if (_isDualMode)
-			_player2->releaseButton();
+		if (_isDualMode) _player2->releaseButton();
 		this->exit();
 	}
 	}
@@ -2157,18 +1767,16 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 		_player1->direction = 0.f;
 	switch (keyCode)
 	{
-	case EventKeyboard::KeyCode::KEY_SPACE: {
-		if (_player1->m_bIsHolding)
-			_player1->releaseButton();
-		if (_isDualMode && _player2->m_bIsHolding)
-			_player2->releaseButton();
+	case EventKeyboard::KeyCode::KEY_SPACE:
+	{
+		if (_player1->m_bIsHolding) _player1->releaseButton();
+		if (_isDualMode && _player2->m_bIsHolding) _player2->releaseButton();
 	}
 	break;
-	case EventKeyboard::KeyCode::KEY_UP_ARROW: {
-		if (_player1->m_bIsHolding)
-			_player1->releaseButton();
-		if (_isDualMode && _player2->m_bIsHolding)
-			_player2->releaseButton();
+	case EventKeyboard::KeyCode::KEY_UP_ARROW:
+	{
+		if (_player1->m_bIsHolding) _player1->releaseButton();
+		if (_isDualMode && _player2->m_bIsHolding) _player2->releaseButton();
 	}
 	}
 }
@@ -2225,11 +1833,7 @@ void PlayLayer::changePlayerSpeed(int speed)
 void PlayLayer::changeGravity(bool gravityFlipped)
 {
 	_player1->flipGravity(gravityFlipped);
-	if (_isDualMode)
-		_player2->flipGravity(!gravityFlipped);
+	if (_isDualMode) _player2->flipGravity(!gravityFlipped);
 }
 
-PlayLayer* PlayLayer::getInstance()
-{
-	return Instance;
-}
+PlayLayer* PlayLayer::getInstance() { return Instance; }
