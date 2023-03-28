@@ -7,8 +7,7 @@ public:
 	AX_SYNTHESIZE(ax::Sprite *, m_pCircle, Circle);
 
 	bool init();
-	CREATE_FUNC(LoadingCircle);
-
+	static LoadingCircle* create();
 	void update(float delta);
 	void removeMeAndCleanup();
 };

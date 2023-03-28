@@ -6,7 +6,7 @@
 bool LevelTools::verifyLevelIntegrity(std::string levelData, int id)
 {
 
-	if(!levelData.starts_with("H4sIAAAAAAAA") && id <= 10) return false || FORCE_LOAD_LEVEL;
+	if(!levelData.starts_with("H4sIAAAAAAAA") && id <= 21) return false || FORCE_LOAD_LEVEL;
 	return true;
 }
 
