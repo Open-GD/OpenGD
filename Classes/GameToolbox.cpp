@@ -641,11 +641,34 @@ std::optional<std::string> GameToolbox::getResponse(ax::network::HttpResponse* r
 	return std::optional<std::string>{ret};
 }
 
+/*
+std::vector<std::string_view> _splitByDelimView(const std::string_view str, char delim)
+{
+    std::vector<std::string_view> tokens;
+    size_t pos = 0;
+    size_t len = str.length();
+
+    while (pos < len) {
+        size_t end = str.find_first_of(delim, pos);
+        if (end == std::string::npos)
+		{
+            tokens.emplace_back(str.substr(pos));
+            break;
+        }
+        tokens.emplace_back(str.substr(pos, end - pos));
+        pos = end + 1;
+    }
+
+    return tokens;
+};
+*/
 std::vector<std::string> GameToolbox::splitByDelim(const std::string& str, char delim)
 {
     std::vector<std::string> tokens;
     size_t pos = 0;
     size_t len = str.length();
+    tokens.reserve(len / 2);  // allocate memory for expected number of tokens
+
 
     while (pos < len) {
         size_t end = str.find_first_of(delim, pos);
