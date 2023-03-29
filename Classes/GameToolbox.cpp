@@ -641,14 +641,24 @@ std::optional<std::string> GameToolbox::getResponse(ax::network::HttpResponse* r
 	return std::optional<std::string>{ret};
 }
 
-std::vector<std::string> GameToolbox::splitByDelim(const std::string& s, char delim) {
-	std::stringstream ss(s);
-	std::string item;
-	std::vector<std::string> elems;
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(std::move(item));
-	}
-	return elems;
+std::vector<std::string> GameToolbox::splitByDelim(const std::string& str, char delim)
+{
+    std::vector<std::string> tokens;
+    size_t pos = 0;
+    size_t len = str.length();
+
+    while (pos < len) {
+        size_t end = str.find_first_of(delim, pos);
+        if (end == std::string::npos)
+		{
+            tokens.emplace_back(str.substr(pos));
+            break;
+        }
+        tokens.emplace_back(str.substr(pos, end - pos));
+        pos = end + 1;
+    }
+
+    return tokens;
 };
 
 void GameToolbox::executeHttpRequest(const std::string& url, const std::string& postData, ax::network::HttpRequest::Type type, const ax::network::ccHttpRequestCallback& callback)
