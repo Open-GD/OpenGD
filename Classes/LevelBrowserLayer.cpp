@@ -148,6 +148,8 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 	GameToolbox::executeHttpRequest(
 		"http://www.boomlings.com/database/getGJLevels21.php", postData, ax::network::HttpRequest::Type::POST,
 		AX_CALLBACK_2(LevelBrowserLayer::onHttpRequestCompleted, this));
+
+	return true;
 }
 
 void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
