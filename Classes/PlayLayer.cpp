@@ -15,6 +15,7 @@
 #include "external/json.hpp"
 #include "LevelInfoLayer.h"
 #include "ccRandom.h"
+#include <charconv>
 
 USING_NS_AX;
 USING_NS_AX_EXT;
