@@ -64,6 +64,7 @@ EffectGameObject* EffectGameObject::create(std::string_view frame)
 	if (pRet && pRet->init(frame))
 	{
 		pRet->_pl = PlayLayer::getInstance();
+		pRet->setVisible(false);
 		pRet->autorelease();
 		return pRet;
 	}

@@ -1,12 +1,14 @@
 
 
-<a name="readme-top"></a>
 
-![issues](https://img.shields.io/github/issues/Open-GD/OpenGD?style=for-the-badge&logo=appveyor)
-![forks](https://img.shields.io/github/forks/Open-GD/OpenGD?style=for-the-badge&logo=appveyor)
-![stars](https://img.shields.io/github/stars/Open-GD/OpenGD?style=for-the-badge&logo=appveyor)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Open-GD/OpenGD?style=for-the-badge&logo=appveyor)
-![LICENSE](https://img.shields.io/github/license/Open-GD/OpenGD?style=for-the-badge)
+<div align="center">
+
+![issues](https://img.shields.io/github/issues/Open-GD/OpenGD?style=for-the-badge&color=blue)
+![forks](https://img.shields.io/github/forks/Open-GD/OpenGD?style=for-the-badge)
+![stars](https://img.shields.io/github/stars/Open-GD/OpenGD?style=for-the-badge&color=blue)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Open-GD/OpenGD?style=for-the-badge&color=blue)
+![LICENSE](https://img.shields.io/github/license/Open-GD/OpenGD?style=for-the-badge&color=blue)
+</div>
 
 <!-- PROJECT LOGO -->
 <br />
@@ -19,11 +21,11 @@
 
   <p align="center">
     Open source implementation of Geometry Dash
-    <br />
-    <!-- <a href="."><strong>Explore the docs »</strong></a>  -->
-    <br />
-    <br />
-    ·
+    <br />   
+  </p>
+  
+![](https://img.shields.io/badge/platforms-windows%20%7C%20linux%20%7C%20mac%20%7C%20android%20%7C%20ios-blue)
+    <p align="center">
     <a href="https://github.com/Open-GD/OpenGD/issues">Report Bug</a>
     ·
     <a href="https://github.com/Open-GD/OpenGD/releases/latest">Latest Release</a>
@@ -48,23 +50,27 @@ OpenGD is powered by [axmol](https://github.com/axmolengine/axmol), which is mai
 ## Build
 
 
-Before building OpenGD, you need to install Python 3.7+ and axmol. To install axmol, clone the **release branch** and run `python.py`. After it has finished, restart the console for environment variables to take effect.
+Before building OpenGD, you need to install Python 3.7+ and axmol. To install axmol, clone the **release branch** and run `setup.py`. After it has finished, restart the console for environment variables to take effect.
 ```
 git clone --branch release https://github.com/axmolengine/axmol
 cd axmol
 python setup.py
 ```
 
-After installing Axmol, you can build OpenGD as a CMake project.
+After installing axmol, you can build OpenGD as a CMake project.
 ```
 git clone https://github.com/Open-GD/OpenGD
 cd OpenGD
 cmake -B build
 cmake --build build --config RelWithDebInfo
 ```
-To actually run it you will need the resources from the 2.1 version of Geometry Dash.
 
-For more details check out the [axmol](https://github.com/axmolengine/axmol)
+> **Warning**
+> VS 2019 might not work on windows, VS 2022 is recommended
+
+To actually run the executable you will need the resources from the 2.1 version of Geometry Dash.
+
+For more details check out the [axmol](https://github.com/axmolengine/axmol) readme
 
 <!-- LICENSE -->
 ## License
