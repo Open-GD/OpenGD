@@ -63,8 +63,9 @@ bool LevelSearchLayer::init()
 
 	auto backBtnMenu = Menu::create();
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) {
-		Director::getInstance()->replaceScene(TransitionFade::create(.5, CreatorLayer::scene()));
-		});
+		// Director::getInstance()->replaceScene(TransitionFade::create(.5, CreatorLayer::scene()));
+		GameToolbox::popSceneWithTransition(0.5f);
+	});
 
 	backBtnMenu->addChild(backBtn);
 	backBtnMenu->setPosition({ 24.0, winSize.height - 23.0f });

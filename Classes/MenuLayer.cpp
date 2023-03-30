@@ -24,6 +24,7 @@
 USING_NS_AX;
 
 bool MenuLayer::music = true;
+bool MenuLayer::quitCalled = false;
 
 Scene* MenuLayer::scene()
 {
@@ -46,7 +47,8 @@ MenuLayer* MenuLayer::create() {
 
 bool MenuLayer::init()
 {
-	 auto gm = GameManager::getInstance();
+	quitCalled = false;
+	auto gm = GameManager::getInstance();
 
 	// gm->set<std::string>("key1", "value");
 	// gm->set<bool>("key2", true);
@@ -66,7 +68,9 @@ bool MenuLayer::init()
 		AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 		music = false;
 	}
-	addChild(MenuGameLayer::create(), -1);
+
+	_mgl = MenuGameLayer::create();
+	addChild(_mgl, -1);
 
 	float offsetScale = 1.13F;
 	auto winSize = Director::getInstance()->getWinSize();
@@ -84,7 +88,7 @@ bool MenuLayer::init()
 	playBtn->setPosition({ 0, 0 });
 
 	auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, GarageLayer::scene()));
+		Director::getInstance()->pushScene(TransitionFade::create(0.5f, GarageLayer::scene()));
 	});
 
 	garageBtn->setPosition({-110, 0});
@@ -219,18 +223,21 @@ bool MenuLayer::init()
 		if (code == EventKeyboard::KeyCode::KEY_SPACE) {
 			auto scene = LevelSelectLayer::scene(0);
 			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
-		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
-			// auto closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to <cr>Quit</c>?", "Cancel", "Yes", NULL, NULL);
+		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE && !quitCalled) {
+			auto closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to Quit?", "Cancel", "Yes", NULL, NULL);
 
-			// closeAlert->setBtn1Callback([=](TextButton*){
-			// 	closeAlert->close();
-			// });
+			closeAlert->setBtn1Callback([=](TextButton*){
+				closeAlert->close();
+				quitCalled = false;
+			});
 
-			// closeAlert->setBtn2Callback([=](TextButton*){
-			// 	Director::getInstance()->end();
-			// });
+			closeAlert->setBtn2Callback([=](TextButton*){
+				Director::getInstance()->end();
+			});
 
-			// closeAlert->show();
+			closeAlert->show();
+			
+			quitCalled = true;
 		} 
 	};
 

@@ -11,6 +11,8 @@
 #include <filesystem>
 #include <string>
 
+#include <vector>
+
 enum IconType {
 	kIconTypeCube		= 0,
 	kIconTypeShip		= 1,
@@ -37,6 +39,8 @@ namespace GameToolbox
 		Medium,
 		High
 	};
+
+	extern std::vector<std::string> _uhdTextureIgnoreList;
 
 
 	static bool _isCtrlPressed;
@@ -99,4 +103,6 @@ namespace GameToolbox
 		void log(fmt::format_string<T...> fmt, T&&... args) {
 		return fmt::print("[{:%H:%M:%S}] {}\n", fmt::gmtime(std::time(NULL)), fmt::format(fmt, std::forward<T>(args)...));
 	}
+
+	bool hasStringInVector(std::vector<std::string> vect, std::string val);
 };

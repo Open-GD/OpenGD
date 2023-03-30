@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axmol.h>
+#include "MenuGameLayer.h"
 
 class MenuItemSpriteExtra;
 
@@ -10,10 +11,12 @@ class MenuLayer : public ax::Layer
 {
 public:
 	static bool music;
+	static bool quitCalled;
 	static ax::Scene* scene();
 	bool init();
 	static MenuLayer* create();
-	
+
+	MenuGameLayer *_mgl;	
 	MenuItemSpriteExtra* _profileBtn;
 	ax::Label* _profileLabel;
 };

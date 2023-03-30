@@ -560,6 +560,10 @@ bool PlayLayer::init(GJGameLevel* level)
 	_ceiling->setPositionY(winSize.height + _ceiling->_sprite->getTextureRect().size.height);
 
 	this->m_pBG = Sprite::create(GameToolbox::getTextureString(fmt::format("game_bg_{:02}_001.png", _bgID)));
+	if(!this->m_pBG)
+	{
+		this->m_pBG = Sprite::create(GameToolbox::getTextureString(fmt::format("game_bg_{:02}_001.png", 1)));
+	}
 	m_pBG->setStretchEnabled(false);
 	const Texture2D::TexParams texParams = {
 		backend::SamplerFilter::LINEAR, backend::SamplerFilter::LINEAR, backend::SamplerAddressMode::REPEAT,
@@ -629,7 +633,7 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	this->addChild(m_pHudLayer, 1000);
 
-	bool levelValid = LevelTools::verifyLevelIntegrity(this->getLevel()->_LevelString, this->getLevel()->_LevelID);
+	bool levelValid = LevelTools::verifyLevelIntegrity(levelStr, this->getLevel()->_LevelID);
 
 	if (!levelValid)
 	{
@@ -718,7 +722,7 @@ void PlayLayer::update(float dt)
 	}
 
 	m_pBar->setPercentage(_player1->getPositionX() / this->m_lastObjXPos * 100.f);
-	float val = _player1->getPositionX() * 100 / this->m_lastObjXPos;
+	float val = m_pBar->getPercentage();
 	m_pPercentage->setString(StringUtils::format("%.02f%%", val > 100 ? 100 : val < 0 ? 0 : val));
 
 	if (val >= 100 && !m_bEndAnimation) this->showCompleteText();
@@ -1712,7 +1716,7 @@ void PlayLayer::exit()
 
 	auto id = getLevel()->_LevelID;
 	if (id <= 0 || id > 22)
-		return Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelInfoLayer::scene(getLevel())));
+		return GameToolbox::popSceneWithTransition(0.5f);
 
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_LevelID - 1)));
 }

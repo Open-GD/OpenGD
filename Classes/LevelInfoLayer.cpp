@@ -122,7 +122,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	playBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_playBtn2_001.png"), [&](Node*) {
 		AudioEngine::stopAll();
 		AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
-		Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(_level)));
+		Director::getInstance()->pushScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(_level)));
 	});
 	playBtn->setPosition({ winSize.width / 2, winSize.height / 2 + 51.0f });
 	playBtn->setEnabled(false);
@@ -257,6 +257,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 			Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
 			break;
 		case EventKeyboard::KeyCode::KEY_ESCAPE:
+			delete _level;
 			GameToolbox::popSceneWithTransition(0.5f);
 			break;
 		}
@@ -285,16 +286,29 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 	loading->setVisible(false);
 	if (auto str = GameToolbox::getResponse(response))
 	{
+		auto level = GJGameLevel::createWithResponse((*str));
+
+		if(!level)
+		{
+			onDownloadFailed();
+			return;
+		}
+
+		_level = level;
+		_level->_MusicID = _level->_OfficialSongID;
+
 		playBtn->setEnabled(true);
 		playBtn->setVisible(true);
-		_level = GJGameLevel::createWithResponse((*str));
-		_level->_MusicID = _level->_OfficialSongID;
+
+		return;
 	}
-	else
-	{
-		auto alert = AlertLayer::create("Error", "Level download failed, please try\nagain later.", "OK", "", NULL, NULL);
-		addChild(alert);
-		alert->show();
-		GameToolbox::log("request failed");
-	}
+
+	onDownloadFailed();
+}
+
+void LevelInfoLayer::onDownloadFailed() {
+	auto alert = AlertLayer::create("Error", "Level download failed, please try\nagain later.", "OK", "", NULL, NULL);
+	addChild(alert);
+	alert->show();
+	GameToolbox::log("request failed");
 }

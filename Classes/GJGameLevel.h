@@ -47,8 +47,8 @@ public:
 	int _SongID = 0;
 	int _OfficialSongID = 0;
 
-	float _normalPercent = 0;
-	float _practicePercent = 0;
+	float _normalPercent = 0.f;
+	float _practicePercent = 0.f;
 	
 	bool _Auto = false;
 	bool _Demon = false;
@@ -70,7 +70,7 @@ public:
 	std::string _SongName{};
 	std::string _LevelCreator{};
 
-	// Expects RobTop like string
+	// Expects RobTop like string. If it not, nullptr gets returned.
 	static GJGameLevel *createWithResponse(std::string backendResponse);
 	GJGameLevel(){}
 	GJGameLevel(std::string levelName, int levelID);

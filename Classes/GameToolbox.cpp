@@ -7,6 +7,10 @@ USING_NS_AX;
 
 bool _showDebugImgui = true;
 
+std::vector<std::string> GameToolbox::_uhdTextureIgnoreList = {
+	"promo_mu.png", "promo_mm.png"
+};
+
 void GameToolbox::popSceneWithTransition(float duration, popTransition type) {
 	auto dir = AltDirector::getInstance();
 
@@ -502,7 +506,10 @@ static inline std::string getTextureString_AppendResources(std::string texture) 
 
 	auto pos = nTexture.find(".");
 	if (pos != std::string::npos) {
-		nTexture.insert(pos, high ? "-uhd" : "-hd");
+		if (GameToolbox::hasStringInVector(GameToolbox::_uhdTextureIgnoreList, texture)) nTexture.insert(pos, "-hd");
+		else {
+			nTexture.insert(pos, high ? "-uhd" : "-hd");	
+		}
 	}
 	// GameToolbox::log("texture: {}", nTexture);
 	return nTexture;
@@ -514,7 +521,10 @@ static inline std::string getTextureString_WithoutResources(std::string texture)
 
 	auto pos = texture.find(".");
 	if (pos != std::string::npos) {
-		texture.insert(pos, high ? "-uhd" : "-hd");
+		if (GameToolbox::hasStringInVector(GameToolbox::_uhdTextureIgnoreList, texture)) texture.insert(pos, "-hd");
+		else {
+			texture.insert(pos, high ? "-uhd" : "-hd");	
+		}
 	}
 	// GameToolbox::log("texture: {}", texture);
 	return texture;
@@ -663,3 +673,14 @@ void GameToolbox::executeHttpRequest(const std::string& url, const std::string& 
 	request->release();
 }
 
+bool GameToolbox::hasStringInVector(std::vector<std::string> vect, std::string val)
+{
+	int i = 0;
+	while (i < vect.size())
+	{
+		if (!vect[i].compare(val)) return true;
+		i++;
+	}
+	
+	return false;
+}

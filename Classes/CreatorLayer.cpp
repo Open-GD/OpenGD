@@ -80,7 +80,7 @@ bool CreatorLayer::init()
 		{
 			case 0:
 			{
-				auto scene = LevelEditorLayer::scene(GJGameLevel::createWithMinimumData("cool level", "partur", 5));
+				auto scene = LevelEditorLayer::scene(GJGameLevel::createWithMinimumData("Unnamed 0", "partur", 5));
 				return Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 			}
 			case 10:

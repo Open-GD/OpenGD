@@ -19,4 +19,6 @@ public:
 	bool init(GJGameLevel* level);
 
 	void onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response);
+
+	void onDownloadFailed();
 };

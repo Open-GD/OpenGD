@@ -12,6 +12,11 @@ bool GroundLayer::init(int groundID)
 
 	auto name = fmt::format("groundSquare_{:02}_001.png", groundID);
 	this->_sprite = Sprite::create(GameToolbox::getTextureString(name));
+	if(!this->_sprite)
+	{
+		auto name2 = fmt::format("groundSquare_{:02}_001.png", 1);
+		this->_sprite = Sprite::create(GameToolbox::getTextureString(name));
+	}
 	_sprite->setStretchEnabled(false);
 	this->m_fOneGroundSize = this->_sprite->getTextureRect().size.width;
 	this->_sprite->getTexture()->setTexParameters(

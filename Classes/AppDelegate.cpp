@@ -105,6 +105,9 @@ void AppDelegate::onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 #endif
 bool AppDelegate::applicationDidFinishLaunching()
 {
+	int dispX;
+	int dispY;
+
 	// initialize director
 	auto director = Director::getInstance();
 	auto glView = director->getOpenGLView();
@@ -117,6 +120,12 @@ bool AppDelegate::applicationDidFinishLaunching()
 #else
 		glView = GLViewImpl::create("OpenGD");
 #endif
+
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+	auto disp = glfwGetPrimaryMonitor();
+	glfwGetMonitorPhysicalSize(disp, &dispX, &dispY);
+#endif
+
 #if FULLSCREEN == true
 		auto full = dynamic_cast<GLViewImpl *>(glView);
 		full->setFullscreen();
@@ -124,8 +133,8 @@ bool AppDelegate::applicationDidFinishLaunching()
 		director->setOpenGLView(glView);
 	}
 
-	// turn off display FPS
-	director->setStatsDisplay(true);
+	// display FPS stats or not.
+	director->setStatsDisplay(SHOW_FPS);
 
 	// set FPS. the default value is 1.0/60 if you don't call this
 	director->setAnimationInterval(1.0f / applicationGetRefreshRate());
@@ -159,6 +168,12 @@ bool AppDelegate::applicationDidFinishLaunching()
 #endif
 
 	director->setContentScaleFactor(4.0f);
+
+#if FULLSCREEN == true && AX_TARGET_PLATFORM == AX_PLATFORM_LINUX
+	std::cout << "X " << dispX << " Y " << dispY << std::endl;
+	glView->setFrameSize((float)dispX, (float)dispY);
+	// director->setAnimationInterval(1.0f / applicationGetRefreshRate());
+#endif
 
 	register_all_packages();
 

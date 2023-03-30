@@ -168,6 +168,7 @@ bool LevelSelectLayer::init(int page)
 		if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
 			auto scene = MenuLayer::scene();
 			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene));
+			// GameToolbox::popSceneWithTransition(0.5f);
 		} else if (code == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
 			_bsl->changePageLeft();
 		} else if (code == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
@@ -175,7 +176,8 @@ bool LevelSelectLayer::init(int page)
 		} else if (code == EventKeyboard::KeyCode::KEY_SPACE) {
 			// ax::AudioEngine::stopAll();
 			// ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
-			// auto currentLevelPage = dynamic_cast<LevelPage*>(bsl->_layers.at(bsl->_currentPage));
+			
+			// auto currentLevelPage = dynamic_cast<LevelPage*>(_bsl->_layers.at(_bsl->_currentPage));
 			// if (currentLevelPage) {
 			// 	auto level = currentLevelPage->_level;
 			// 	ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));

@@ -22,10 +22,11 @@ bool MenuGameLayer::init(){
 	addChild(groundLayer, 2);
 	
 	//should work but doesnt?
-	auto playerTest = PlayerObject::create(GameToolbox::randomInt(1,13), this);
+	auto playerTest = PlayerObject::create(GameToolbox::randomInt(1,14), this);
 	playerTest->setMainColor(GameToolbox::randomColor3B());
 	playerTest->setSecondaryColor(GameToolbox::randomColor3B());
-	addChild(playerTest);
+	playerTest->setPosition({-100, 93.f});
+	addChild(playerTest, 16);
 	this->player = playerTest;
 
 	const Texture2D::TexParams texParams = {
@@ -63,23 +64,23 @@ bool MenuGameLayer::init(){
 	bgSprites->setPositionY(0);
 
 	//this is not how it works lol
-	//this->bgSpr->setColor(GameToolbox::randomColor3B());
+	// bgSprites->setColor(GameToolbox::randomColor3B());
 
-	//this->addChild(this->bgSpr, -1);
+	// // this->addChild(this->bgSpr, -1);
 	
-	// bg->runAction(
-	//	 RepeatForever::create(
-	//		 Sequence::create(
-	//			 TintTo::create(4.0f, {255, 0, 0}),
-	//			 TintTo::create(4.0f, {255, 255, 0}),
-	//			 TintTo::create(4.0f, {0, 255, 0}),
-	//			 TintTo::create(4.0f, {0, 255, 255}),
-	//			 TintTo::create(4.0f, {0, 0, 255}),
-	//			 TintTo::create(4.0f, {255, 0, 255}),
-	//			 TintTo::create(4.0f, {255, 0, 0}),
-	//			 nullptr
-	//		 )
-	//	 )
+	// bgSprites->runAction(
+	// 	 RepeatForever::create(
+	// 		 Sequence::create(
+	// 			 TintTo::create(4.0f, {255, 0, 0}),
+	// 			 TintTo::create(4.0f, {255, 255, 0}),
+	// 			 TintTo::create(4.0f, {0, 255, 0}),
+	// 			 TintTo::create(4.0f, {0, 255, 255}),
+	// 			 TintTo::create(4.0f, {0, 0, 255}),
+	// 			 TintTo::create(4.0f, {255, 0, 255}),
+	// 			 TintTo::create(4.0f, {255, 0, 0}),
+	// 			 nullptr
+	// 		 )
+	// 	 )
 	// );
 	
 	scheduleUpdate();
@@ -91,8 +92,10 @@ void MenuGameLayer::processPlayerMovement(float delta) {
 	auto winSize = Director::getInstance()->getWinSize();
 	step /= 4.0f;
 
-	if(this->player->getPositionX() >= 1300.f) {
-		player->setPosition({-300, 232});
+	this->player->setPositionX(this->player->getPositionX() + (step * 18.f));
+
+	if(this->player->getPositionX() >= winSize.width + player->getContentSize().width) {
+		player->setPosition({-300, 93.f});
 		auto mainColor = GameToolbox::randomColor3B();
 		auto secondaryColor = GameToolbox::randomColor3B();
 		player->setMainColor(mainColor);
