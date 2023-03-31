@@ -14,6 +14,7 @@
 #include "DropDownLayer.h"
 #include "MoreGamesLayer.h"
 #include "GameManager.h"
+#include "OptionsLayer.h"
 
 /*
 #include "ColoursPalette.h"
@@ -155,8 +156,7 @@ bool MenuLayer::init()
 	//static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
 
 	auto optionsBtn = MenuItemSpriteExtra::create("GJ_optionsBtn_001.png", [&](Node* btn) {
-		auto dropdownlayer = DropDownLayer::create(nullptr, "Options");
-		dropdownlayer->showLayer();
+		addChild(OptionsLayer::create());
 	});
 	
 	auto statsBtn = MenuItemSpriteExtra::create("GJ_statsBtn_001.png", [&](Node* btn) {
@@ -184,8 +184,7 @@ bool MenuLayer::init()
 	this->addChild(bottomMenu);
 
 	auto moreGamesBtn = MenuItemSpriteExtra::create("GJ_moreGamesBtn_001.png", [&](Node* btn) {
-		auto moregames = MoreGamesLayer::create();
-		this->addChild(moregames);
+		this->addChild(MoreGamesLayer::create());
 	});
 	moreGamesBtn->setScale(.9f); //no setScale in 2.1 but oversized for some reason in opengd
 	
