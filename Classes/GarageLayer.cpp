@@ -3,7 +3,6 @@
 #include "MenuItemSpriteExtra.h"
 #include "MenuLayer.h"
 #include "SimplePlayer.h"
-#include "GameManager.h"
 
 USING_NS_AX;
 
@@ -33,8 +32,6 @@ bool GarageLayer::init()
 {
 	if (!Scene::init())
 		return false;
-
-	GameManager::getInstance()->_openedGarage = true;
 	
 	auto director = Director::getInstance();
 	auto size  = director->getWinSize();
@@ -71,8 +68,10 @@ bool GarageLayer::init()
 	menu->setPosition({0, 0});
 
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [=](Node*) {
-		if (_popSceneWithTransition) GameToolbox::popSceneWithTransition(0.5f, kTransitionShop);
-		else director->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+		if (_popSceneWithTransition) 
+			GameToolbox::popSceneWithTransition(0.5f, kTransitionShop);
+		else
+			director->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
 	backBtn->setPosition({24, size.height - 23});
 	//backBtn->setSizeMult(1.6f);

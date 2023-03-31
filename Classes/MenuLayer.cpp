@@ -88,14 +88,16 @@ bool MenuLayer::init()
 	playBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
 	playBtn->setPosition({ 0, 0 });
 
-	auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [&](Node* btn) {
+	auto garageBtn = MenuItemSpriteExtra::create("GJ_garageBtn_001.png", [=](Node* btn) {
+		gm->_openedGarage = true;
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, GarageLayer::scene()));
 	});
 
 	garageBtn->setPosition({-110, 0});
 	garageBtn->getChildren().at(0)->setAnchorPoint({0.5, 0.5});
 
-	auto creatorBtn = MenuItemSpriteExtra::create("GJ_creatorBtn_001.png", [&](Node* btn) {
+	auto creatorBtn = MenuItemSpriteExtra::create("GJ_creatorBtn_001.png", [=](Node* btn) {
+		gm->_openedCreator = true;
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
 	});
 
@@ -114,7 +116,7 @@ bool MenuLayer::init()
 		spr->setPosition({-150.0f, -50.0f});
 		mainButtonMenu->addChild(spr);
 	}
-	
+	GameToolbox::log("gm->_openedCreator) {}", gm->_openedCreator);
 	if(!gm->_openedCreator)
 	{
 		auto spr = Sprite::createWithSpriteFrameName("GJ_lvlEdit_001.png");
