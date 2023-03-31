@@ -4,6 +4,27 @@
 
 USING_NS_AX;
 
+
+
+ResourcesLoadingLayer* ResourcesLoadingLayer::create() {
+	ResourcesLoadingLayer* pRet = new ResourcesLoadingLayer();
+	if (pRet->init()) {
+		pRet->autorelease();
+		return pRet;
+	} else {
+		delete pRet;
+		pRet = nullptr;
+		return nullptr;
+	}
+}
+
+Scene* ResourcesLoadingLayer::scene()
+{
+	auto scene = ax::Scene::create();
+	scene->addChild(ResourcesLoadingLayer::create());
+	return scene;
+}
+
 bool ResourcesLoadingLayer::checkPath(std::string path)
 {
 	if (path.empty())

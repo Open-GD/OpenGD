@@ -9,7 +9,19 @@
 
 USING_NS_AX;
 
-using GameToolbox::getTextureString, GameToolbox::log;
+
+LoadingLayer* LoadingLayer::create() {
+	LoadingLayer* pRet = new LoadingLayer();
+	if (pRet->init()) {
+		pRet->autorelease();
+		return pRet;
+	} else {
+		delete pRet;
+		pRet = nullptr;
+		return nullptr;
+	}
+}
+
 
 constexpr static auto splashes = std::to_array <const char*>({
 	"Use practice mode to learn the layout of a level",
@@ -105,15 +117,26 @@ bool LoadingLayer::init() {
 	if (!Layer::init()) return false;
 	
 	
+	auto dir = Director::getInstance();
+
+	_sprFrameCache = SpriteFrameCache::getInstance();
+	_textureCache = dir->getTextureCache();
+	
+	dir->setContentScaleFactor(GameManager::getInstance()->isHigh() ? 4.0f : 2.0f);
+	
+	dir->purgeCachedData();
+	_sprFrameCache->removeSpriteFrames();
+	_textureCache->removeAllTextures();
+
 	size_t totalAssets = fonts.size() + plists.size() + pngs.size();
 	this->m_nTotalAssets = static_cast<int>(totalAssets);
 	
-	Director::getInstance()->getTextureCache()->addImage(getTextureString("GJ_LaunchSheet.png"));
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(getTextureString("GJ_LaunchSheet.plist"));
+	_textureCache->addImage(GameToolbox::getTextureString("GJ_LaunchSheet.png"));
+	_sprFrameCache->addSpriteFramesWithFile(GameToolbox::getTextureString("GJ_LaunchSheet.plist"));
 
-	auto winSize = Director::getInstance()->getWinSize();
+	auto winSize = dir->getWinSize();
 
-	auto bgSpr = Sprite::create(getTextureString("game_bg_01_001.png"));
+	auto bgSpr = Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
 	bgSpr->setStretchEnabled(false);
 	bgSpr->setPosition(winSize / 2);
 	bgSpr->setScale(winSize.width / bgSpr->getContentSize().width);
@@ -131,7 +154,7 @@ bool LoadingLayer::init() {
 	this->addChild(robLogoSpr);
 
 	auto splash = this->getSplash();
-	auto splashText = Label::createWithBMFont(getTextureString("goldFont.fnt"), splash);
+	auto splashText = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), splash);
 	splashText->setPosition({ winSize.width / 2, 60.0f});
 	splashText->setScale(0.7f);
 
@@ -147,6 +170,9 @@ bool LoadingLayer::init() {
 	CocosExplorer::openForever();
 #endif
 	
+	
+	GameToolbox::log("quality medium: {}, scale factor {}", GameManager::getInstance()->isMedium(), dir->getContentScaleFactor());
+	
 	return true;
 }
 
@@ -154,27 +180,26 @@ bool LoadingLayer::init() {
 
 void LoadingLayer::loadAssets() {
 	
-	auto textureCache = Director::getInstance()->getTextureCache();
 	for(auto image : pngs) {
 		GameToolbox::log("image {}", image);
-		textureCache->addImageAsync(getTextureString(image), AX_CALLBACK_1(LoadingLayer::assetLoaded, this));
+		_textureCache->addImageAsync(GameToolbox::getTextureString(image), AX_CALLBACK_1(LoadingLayer::assetLoaded, this));
 	}
 	
-	auto frameCache = SpriteFrameCache::getInstance();
 	for(auto plist : plists) {
 		GameToolbox::log("plist {}", plist);
-		frameCache->addSpriteFramesWithFile(getTextureString(plist));
+		_sprFrameCache->addSpriteFramesWithFile(GameToolbox::getTextureString(plist));
 		this->assetLoaded(nullptr);
 	}
 	
 	for(auto fnt : fonts) {
 		GameToolbox::log("font {}", fnt);
-		auto label = Label::createWithBMFont(getTextureString(fnt), "someText");
+		Label::createWithBMFont(GameToolbox::getTextureString(fnt), "someText");
 		this->assetLoaded(nullptr);
 	}
 }
 
-void LoadingLayer::assetLoaded(ax::Ref*) {
+void LoadingLayer::assetLoaded(ax::Ref*)
+{
 	
 	this->m_nAssetsLoaded++;
 	GameToolbox::log("loading asset {} out of {}", (int)m_nAssetsLoaded, (int)m_nTotalAssets);
@@ -183,5 +208,4 @@ void LoadingLayer::assetLoaded(ax::Ref*) {
 	if(m_nAssetsLoaded == m_nTotalAssets) {
 		Director::getInstance()->replaceScene(MenuLayer::scene());
 	}
-	auto gm = GameManager::getInstance();
 }

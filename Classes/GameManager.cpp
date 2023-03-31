@@ -2,6 +2,9 @@
 #include "external/hps/hps.h"
 #include <axmol.h>
 #include "GameToolbox.h"
+#include "ResourcesLoadingLayer.h"
+#include "AppDelegate.h"
+
 
 struct GameOptions
 {
@@ -135,6 +138,7 @@ void GameManager::setMembersToMap()
 	set<bool>("_openedGarage", _openedGarage);
 	set<bool>("_openedCreator", _openedCreator);
 	set<bool>("_openedPracticeMode", _openedPracticeMode);
+	set<bool>("_mediumQuality", _mediumQuality);
 }
 
 void GameManager::loadMembersFromMap()
@@ -142,4 +146,19 @@ void GameManager::loadMembersFromMap()
 	_openedGarage = get<bool>("_openedGarage");
 	_openedCreator = get<bool>("_openedCreator");
 	_openedPracticeMode = get<bool>("_openedPracticeMode");
+	_mediumQuality = get<bool>("_mediumQuality");
 }
+
+bool GameManager::isMedium() { return _mediumQuality; }
+bool GameManager::isHigh() { return !_mediumQuality; }
+
+
+void GameManager::setQuality(bool medium)
+{
+	_mediumQuality = medium;
+	this->save();
+	ax::Director::getInstance()->replaceScene(ResourcesLoadingLayer::scene());
+}
+
+void GameManager::setQualityMedium() { setQuality(true); }
+void GameManager::setQualityHigh() { setQuality(false); }

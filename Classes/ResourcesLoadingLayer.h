@@ -8,5 +8,6 @@ public:
 	bool checkPath(std::string path);
 	void loadLoadingLayer();
 	bool init();
-	CREATE_FUNC(ResourcesLoadingLayer);
+	static ResourcesLoadingLayer* create();
+	static ax::Scene* scene();
 };

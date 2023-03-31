@@ -2,14 +2,11 @@
 #include <fmt/format.h>
 #include <fstream>
 #include "AltDirector.h"
+#include "GameManager.h"
 
 USING_NS_AX;
 
 bool _showDebugImgui = true;
-
-std::vector<std::string> GameToolbox::_uhdTextureIgnoreList = {
-	"promo_mu.png", "promo_mm.png"
-};
 
 void GameToolbox::popSceneWithTransition(float duration, popTransition type) {
 	auto dir = AltDirector::getInstance();
@@ -498,35 +495,25 @@ std::string GameToolbox::getSteamGamePathByAppID(int appID, std::string exeName)
 // if high, add -uhd otherwise add -hd (medium default)
 // take string by copy, reference or string_view is not possible because we actually modify the string
 
-static inline std::string getTextureString_AppendResources(std::string texture) {
+static inline std::string getTextureString_AppendResources(std::string texture)
+{
 	std::string nTexture = "Resources/";
 	nTexture += texture;
-	bool medium = false;
-	bool high   = true;
 
 	auto pos = nTexture.find(".");
 	if (pos != std::string::npos) {
-		if (GameToolbox::hasStringInVector(GameToolbox::_uhdTextureIgnoreList, texture)) nTexture.insert(pos, "-hd");
-		else {
-			nTexture.insert(pos, high ? "-uhd" : "-hd");	
-		}
+		nTexture.insert(pos, GameManager::getInstance()->isHigh() ? "-uhd" : "-hd");	
 	}
 	// GameToolbox::log("texture: {}", nTexture);
 	return nTexture;
 }
 
-static inline std::string getTextureString_WithoutResources(std::string texture) {
-	bool medium = false;
-	bool high   = true;
-
+static inline std::string getTextureString_WithoutResources(std::string texture)
+{
 	auto pos = texture.find(".");
 	if (pos != std::string::npos) {
-		if (GameToolbox::hasStringInVector(GameToolbox::_uhdTextureIgnoreList, texture)) texture.insert(pos, "-hd");
-		else {
-			texture.insert(pos, high ? "-uhd" : "-hd");	
-		}
+		texture.insert(pos, GameManager::getInstance()->isHigh() ? "-uhd" : "-hd");	
 	}
-	// GameToolbox::log("texture: {}", texture);
 	return texture;
 }
 std::string GameToolbox::getTextureString(std::string texture) {
@@ -704,16 +691,4 @@ void GameToolbox::executeHttpRequest(const std::string& url, const std::string& 
 	request->setResponseCallback(callback);
 	ax::network::HttpClient::getInstance()->send(request);
 	request->release();
-}
-
-bool GameToolbox::hasStringInVector(std::vector<std::string> vect, std::string val)
-{
-	int i = 0;
-	while (i < vect.size())
-	{
-		if (!vect[i].compare(val)) return true;
-		i++;
-	}
-	
-	return false;
 }

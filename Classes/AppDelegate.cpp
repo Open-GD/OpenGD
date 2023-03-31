@@ -25,6 +25,7 @@
 
 #include "AppDelegate.h"
 #include "LoadingLayer.h"
+#include "GameManager.h"
 #include "ResourcesLoadingLayer.h"
 #include "GameToolbox.h"
 #include "external/constants.h"
@@ -105,8 +106,7 @@ void AppDelegate::onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 #endif
 bool AppDelegate::applicationDidFinishLaunching()
 {
-	int dispX;
-	int dispY;
+
 
 	// initialize director
 	auto director = Director::getInstance();
@@ -122,6 +122,8 @@ bool AppDelegate::applicationDidFinishLaunching()
 #endif
 
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+	int dispX;
+	int dispY;
 	auto disp = glfwGetPrimaryMonitor();
 	glfwGetMonitorPhysicalSize(disp, &dispX, &dispY);
 #endif
@@ -167,7 +169,8 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 #endif
 
-	director->setContentScaleFactor(4.0f);
+	GameToolbox::log("APLICATION INIT");
+	director->setContentScaleFactor(GameManager::getInstance()->isHigh() ? 4.0f : 2.0f);
 
 #if FULLSCREEN == true && AX_TARGET_PLATFORM == AX_PLATFORM_LINUX
 	std::cout << "X " << dispX << " Y " << dispY << std::endl;
@@ -178,9 +181,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	register_all_packages();
 
 	// create a scene. it's an autorelease object
-	auto scene = ax::Scene::create();
-	scene->addChild(ResourcesLoadingLayer::create());
-	director->runWithScene(scene);
+	director->runWithScene(ResourcesLoadingLayer::scene());
 
 	return true;
 }

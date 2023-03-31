@@ -2,10 +2,12 @@
 #include <fstream>
 #include <map>
 
-class GameManager final
+class GameManager
 {
 private:
 	std::string _filepath;
+	
+	bool _mediumQuality;
 	
 public:
 	bool _openedGarage;
@@ -29,6 +31,13 @@ public:
 	
 	void setMembersToMap();
 	void loadMembersFromMap();
+	
+	bool isMedium();
+	bool isHigh();
+	
+	void setQuality(bool medium);
+	void setQualityMedium();
+	void setQualityHigh();
 	
 	void print();
 };

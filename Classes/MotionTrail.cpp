@@ -1,6 +1,6 @@
 #include "MotionTrail.h"
 
-using namespace ax;
+USING_NS_AX;
 
 MotionTrail::MotionTrail()
 {
