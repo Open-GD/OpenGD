@@ -1,9 +1,19 @@
 #include "PromoItemSprite.h"
-
+#include "GameManager.h"
 USING_NS_AX;
 
+
+static std::string getTextureString_PromoSprite(std::string texture) {
+
+	auto pos = texture.find(".");
+	if (pos != std::string::npos && GameManager::getInstance()->isHigh()) {
+		texture.insert(pos, "-hd");	
+	}
+	return texture;
+}
+
 PromoItemSprite::PromoItemSprite(const char* spriteStr, std::function<void(Node*)> callback) {
-	m_pSprite = ax::Sprite::create(spriteStr);
+	m_pSprite = ax::Sprite::create(getTextureString_PromoSprite(spriteStr));
 	m_fCallback = callback;
 }
 

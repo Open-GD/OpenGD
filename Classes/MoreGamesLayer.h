@@ -1,9 +1,8 @@
 #pragma once
 #include <axmol.h>
-#include "DropDownLayer.h"
 #include "PromoItemSprite.h"
 
-class MoreGamesLayer : public DropDownLayer {
+class MoreGamesLayer : public ax::Layer {
 private:
 	bool init();
 public:
