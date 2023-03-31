@@ -29,15 +29,18 @@ bool LevelPage::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
 
+	std::string barTexture = GameToolbox::getTextureString("GJ_progressBar_001.png");
+	std::string bigFontTexture = GameToolbox::getTextureString("bigFont.fnt");
+
 	auto winSize = ax::Director::getInstance()->getWinSize();
 
-	auto normalBar = ax::Sprite::create("GJ_progressBar_001-uhd.png");
+	auto normalBar = ax::Sprite::create(barTexture);
 	normalBar->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
 	normalBar->setColor({0, 0, 0});
 	normalBar->setOpacity(125);
 	addChild(normalBar, 3);
 
-	auto normalProgress = ax::Sprite::create("GJ_progressBar_001-uhd.png");
+	auto normalProgress = ax::Sprite::create(barTexture);
 	normalProgress->setPosition({1.36f, 10});
 	normalProgress->setColor({0, 255, 0});
 	normalProgress->setOpacity(255);
@@ -48,13 +51,14 @@ bool LevelPage::init(GJGameLevel* level)
 	normalProgress->setScaleY(0.86f);
 	normalBar->addChild(normalProgress);
 
-	auto practiceBar = ax::Sprite::create("GJ_progressBar_001-uhd.png");
+
+	auto practiceBar = ax::Sprite::create(barTexture);
 	practiceBar->setPosition({ winSize.width / 2, winSize.height / 2.f - 80 });
 	practiceBar->setColor({0, 0, 0});
 	practiceBar->setOpacity(125);
 	addChild(practiceBar, 3);
 
-	auto practiceProgress = ax::Sprite::create("GJ_progressBar_001-uhd.png");
+	auto practiceProgress = ax::Sprite::create(barTexture);
 	practiceProgress->setPosition({1.36f, 10});
 	practiceProgress->setColor({0, 255, 0});
 	practiceProgress->setOpacity(255);
@@ -65,26 +69,26 @@ bool LevelPage::init(GJGameLevel* level)
 	practiceProgress->setScaleY(0.86f);
 	practiceBar->addChild(practiceProgress);
 
-	auto normalText = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Normal Mode");
+	auto normalText = ax::Label::createWithBMFont(bigFontTexture, "Normal Mode");
 	normalText->setPosition({ winSize.width / 2, winSize.height / 2.f - 10 });
 	// normalText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	normalText->setScale(0.55f);
 	addChild(normalText, 4);
 
-	auto practiceText = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Practice Mode");
+	auto practiceText = ax::Label::createWithBMFont(bigFontTexture, "Practice Mode");
 	practiceText->setPosition({ winSize.width / 2, winSize.height / 2.f - 60 });
 	// practiceText->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	practiceText->setScale(0.55f);
 	addChild(practiceText, 4);
 
-	auto normalPerc = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "");
+	auto normalPerc = ax::Label::createWithBMFont(bigFontTexture, "");
 	normalPerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
 	normalPerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	normalPerc->setString(std::to_string((int)level->_normalPercent) + "%");
 	normalPerc->setScale(0.55f);
 	addChild(normalPerc, 4);
 
-	auto practicePerc = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "");
+	auto practicePerc = ax::Label::createWithBMFont(bigFontTexture, "");
 	practicePerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 80 });
 	practicePerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
 	practicePerc->setString(std::to_string((int)level->_practicePercent) + "%");
@@ -98,7 +102,7 @@ bool LevelPage::init(GJGameLevel* level)
 	scale9->setContentSize({340, 95});
 	scale9->setOpacity(125);
 	
-	auto levelName = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_LevelName);
+	auto levelName = ax::Label::createWithBMFont(bigFontTexture, level->_LevelName);
 	levelName->setPosition(190, 50.5);
 	levelName->setScale(0.904);
 	scale9->addChild(levelName, 0);
