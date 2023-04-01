@@ -580,12 +580,12 @@ bool PlayLayer::init(GJGameLevel* level)
 	_player2->setSecondaryColor({0, 255, 255});
 
 	// std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
-	std::string levelStr = level->_LevelString;
+	std::string levelStr = level->_levelString;
 
 	if (levelStr.empty())
 	{
 		nlohmann::json file = nlohmann::json::parse(GameToolbox::getFileContentsResources("Custom/mainLevels.json"));
-		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_LevelID)]);
+		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)]);
 	}
 
 	// scope based timer
@@ -680,7 +680,7 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	this->addChild(m_pHudLayer, 1000);
 
-	bool levelValid = LevelTools::verifyLevelIntegrity(levelStr, this->getLevel()->_LevelID);
+	bool levelValid = LevelTools::verifyLevelIntegrity(levelStr, this->getLevel()->_levelID);
 
 	if (!levelValid)
 	{
@@ -1673,7 +1673,7 @@ void PlayLayer::resetLevel()
 
 	AudioEngine::stopAll();
 	AudioEngine::setCurrentTime(
-		AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_MusicID), false, 0.1f), _levelSettings.songOffset);
+		AudioEngine::play2d(LevelTools::getAudioFilename(getLevel()->_musicID), false, 0.1f), _levelSettings.songOffset);
 
 	changeGameMode(_player1, _player1, _levelSettings.gamemode);
 	changeGameMode(_player1, _player2, _levelSettings.gamemode);
@@ -1761,11 +1761,11 @@ void PlayLayer::exit()
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 
-	auto id = getLevel()->_LevelID;
+	auto id = getLevel()->_levelID;
 	if (id <= 0 || id > 22)
 		return GameToolbox::popSceneWithTransition(0.5f);
 
-	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_LevelID - 1)));
+	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_levelID - 1)));
 }
 
 void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)

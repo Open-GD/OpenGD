@@ -27,49 +27,49 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string backendResponse)
 		if (!stuff[i + 1].empty()) levelResponse.insert({stuff[i], stuff[i + 1]});
 	}
 	
-	if (levelResponse.contains("1")) level->_LevelID = std::stoi(levelResponse["1"]);
-	if (levelResponse.contains("2")) level->_LevelName = levelResponse["2"];
-	if (levelResponse.contains("3")) level->_Description = levelResponse["3"];
-	if (levelResponse.contains("4")) level->_LevelString = levelResponse["4"];
-	if (levelResponse.contains("5")) level->_Version = std::stoi(levelResponse["5"]);
-	if (levelResponse.contains("6")) level->_PlayerID = std::stoi(levelResponse["6"]);
-	if (levelResponse.contains("8")) level->_DifficultyDenominator = std::stoi(levelResponse["8"]);
-	if (levelResponse.contains("9")) level->_DifficultyNumerator = std::stoi(levelResponse["9"]);
-	if (levelResponse.contains("10")) level->_Downloads = std::stoi(levelResponse["10"]);
-	if (levelResponse.contains("11")) level->_SetCompletes = std::stoi(levelResponse["11"]);
-	if (levelResponse.contains("12")) level->_OfficialSongID = std::stoi(levelResponse["12"]);
-	if (levelResponse.contains("13")) level->_GameVersion = std::stoi(levelResponse["13"]);
-	if (levelResponse.contains("14")) level->_Likes = std::stoi(levelResponse["14"]);
-	if (levelResponse.contains("15")) level->_Length = std::stoi(levelResponse["15"]);
-	if (levelResponse.contains("16")) level->_Dislikes = std::stoi(levelResponse["16"]);
-	if (levelResponse.contains("17")) level->_Demon = std::stoi(levelResponse["17"]);
-	if (levelResponse.contains("18")) level->_Stars = std::stoi(levelResponse["18"]);
-	if (levelResponse.contains("19")) level->_FeatureScore = std::stoi(levelResponse["19"]);
-	if (levelResponse.contains("25")) level->_Auto = std::stoi(levelResponse["25"]);
-	if (levelResponse.contains("26")) level->_RecordString = levelResponse["26"];
-	if (levelResponse.contains("28")) level->_UploadDate = levelResponse["28"];
-	if (levelResponse.contains("29")) level->_UpdateDate = levelResponse["29"];
-	if (levelResponse.contains("30")) level->_CopiedID = std::stoi(levelResponse["30"]);
-	if (levelResponse.contains("35")) level->_SongID = std::stoi(levelResponse["35"]);
-	if (levelResponse.contains("37")) level->_Coins = std::stoi(levelResponse["37"]);
-	if (levelResponse.contains("39")) level->_StarsRequested = std::stoi(levelResponse["39"]);
+	if (levelResponse.contains("1")) level->_levelID = std::stoi(levelResponse["1"]);
+	if (levelResponse.contains("2")) level->_levelName = levelResponse["2"];
+	if (levelResponse.contains("3")) level->_description = levelResponse["3"];
+	if (levelResponse.contains("4")) level->_levelString = levelResponse["4"];
+	if (levelResponse.contains("5")) level->_version = std::stoi(levelResponse["5"]);
+	if (levelResponse.contains("6")) level->_playerID = std::stoi(levelResponse["6"]);
+	if (levelResponse.contains("8")) level->_difficultyDenominator = std::stoi(levelResponse["8"]);
+	if (levelResponse.contains("9")) level->_difficultyNumerator = std::stoi(levelResponse["9"]);
+	if (levelResponse.contains("10")) level->_downloads = std::stoi(levelResponse["10"]);
+	if (levelResponse.contains("11")) level->_setCompletes = std::stoi(levelResponse["11"]);
+	if (levelResponse.contains("12")) level->_officialSongID = std::stoi(levelResponse["12"]);
+	if (levelResponse.contains("13")) level->_gameVersion = std::stoi(levelResponse["13"]);
+	if (levelResponse.contains("14")) level->_likes = std::stoi(levelResponse["14"]);
+	if (levelResponse.contains("15")) level->_length = std::stoi(levelResponse["15"]);
+	if (levelResponse.contains("16")) level->_dislikes = std::stoi(levelResponse["16"]);
+	if (levelResponse.contains("17")) level->_demon = std::stoi(levelResponse["17"]);
+	if (levelResponse.contains("18")) level->_stars = std::stoi(levelResponse["18"]);
+	if (levelResponse.contains("19")) level->_featureScore = std::stoi(levelResponse["19"]);
+	if (levelResponse.contains("25")) level->_auto = std::stoi(levelResponse["25"]);
+	if (levelResponse.contains("26")) level->_recordString = levelResponse["26"];
+	if (levelResponse.contains("28")) level->_uploadDate = levelResponse["28"];
+	if (levelResponse.contains("29")) level->_updateDate = levelResponse["29"];
+	if (levelResponse.contains("30")) level->_copiedID = std::stoi(levelResponse["30"]);
+	if (levelResponse.contains("35")) level->_songID = std::stoi(levelResponse["35"]);
+	if (levelResponse.contains("37")) level->_coins = std::stoi(levelResponse["37"]);
+	if (levelResponse.contains("39")) level->_starsRequested = std::stoi(levelResponse["39"]);
 	if (levelResponse.contains("40")) level->_LDM = std::stoi(levelResponse["40"]);
-	if (levelResponse.contains("41")) level->_DailyNumber = std::stoi(levelResponse["41"]);
-	if (levelResponse.contains("42")) level->_Epic = std::stoi(levelResponse["42"]);
-	if (levelResponse.contains("43")) level->_DemonDifficulty = std::stoi(levelResponse["43"]);
-	if (levelResponse.contains("44")) level->_Gauntlet = std::stoi(levelResponse["44"]);
-	if (levelResponse.contains("45")) level->_Objects = std::stoi(levelResponse["45"]);
-	if (levelResponse.contains("46")) level->_EditorTime = std::stoi(levelResponse["46"]);
-	if (levelResponse.contains("47")) level->_EditorTimeTotal = std::stoi(levelResponse["47"]);
+	if (levelResponse.contains("41")) level->_dailyNumber = std::stoi(levelResponse["41"]);
+	if (levelResponse.contains("42")) level->_epic = std::stoi(levelResponse["42"]);
+	if (levelResponse.contains("43")) level->_demonDifficulty = std::stoi(levelResponse["43"]);
+	if (levelResponse.contains("44")) level->_gauntlet = std::stoi(levelResponse["44"]);
+	if (levelResponse.contains("45")) level->_objects = std::stoi(levelResponse["45"]);
+	if (levelResponse.contains("46")) level->_editorTime = std::stoi(levelResponse["46"]);
+	if (levelResponse.contains("47")) level->_editorTimeTotal = std::stoi(levelResponse["47"]);
 	
 	return level;
 }
 
 GJGameLevel::GJGameLevel(std::string levelName, int levelID)
 {
-	this->_LevelName = levelName;
-	this->_LevelID = levelID;
-	this->_MusicID = levelID - 1;
+	this->_levelName = levelName;
+	this->_levelID = levelID;
+	this->_musicID = levelID - 1;
 }
 
 GJGameLevel* GJGameLevel::create() { return createWithMinimumData("", "", 0); }
@@ -80,7 +80,7 @@ GJGameLevel* GJGameLevel::createWithMinimumData(std::string levelName, std::stri
 
 	if (!level) return nullptr;
 
-	level->_LevelCreator = levelCreator;
+	level->_levelCreator = levelCreator;
 
 	return level;
 }
@@ -103,18 +103,18 @@ std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 
 std::string GJGameLevel::getDifficultySprite(GJGameLevel* level, DifficultyType type)
 {
-	if (level->_Auto)
+	if (level->_auto)
 	{
 		return "difficulty_auto_btn_001.png";
 	}
 
 	int diff = 0;
 
-	if (level->_DifficultyNumerator != 0) diff = level->_DifficultyNumerator / 10;
+	if (level->_difficultyNumerator != 0) diff = level->_difficultyNumerator / 10;
 
-	if (level->_Demon)
+	if (level->_demon)
 	{
-		switch (level->_DemonDifficulty) {
+		switch (level->_demonDifficulty) {
 		case 3:
 			return type == kLevelInfoLayer ? "difficulty_07_btn2_001.png" : "difficulty_07_btn_001.png";
 		case 4:

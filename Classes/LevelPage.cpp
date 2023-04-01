@@ -102,7 +102,7 @@ bool LevelPage::init(GJGameLevel* level)
 	scale9->setContentSize({340, 95});
 	scale9->setOpacity(125);
 	
-	auto levelName = ax::Label::createWithBMFont(bigFontTexture, level->_LevelName);
+	auto levelName = ax::Label::createWithBMFont(bigFontTexture, level->_levelName);
 	levelName->setPosition(190, 50.5);
 	levelName->setScale(0.904);
 	scale9->addChild(levelName, 0);

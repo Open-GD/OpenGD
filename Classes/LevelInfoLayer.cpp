@@ -47,13 +47,13 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	backBtnMenu->setPosition({24.0, winSize.height - 23.0f});
 	this->addChild(backBtnMenu);
 
-	auto levelName = GameToolbox::createBMFont(level->_LevelName, "bigFont.fnt");
+	auto levelName = GameToolbox::createBMFont(level->_levelName, "bigFont.fnt");
 	levelName->setPosition({winSize.width / 2, winSize.height - 17.0f});
 	GameToolbox::limitLabelWidth(levelName, 300, 0.8f);
 	this->addChild(levelName);
 
-	auto levelCreator = GameToolbox::createBMFont(fmt::format("By {}", level->_LevelCreator), "goldFont.fnt");
-	 if (level->_LevelCreator == "-") levelCreator->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
+	auto levelCreator = GameToolbox::createBMFont(fmt::format("By {}", level->_levelCreator), "goldFont.fnt");
+	 if (level->_levelCreator == "-") levelCreator->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
 	levelCreator->setPosition({winSize.width / 2, levelName->getPositionY() - 30.f});
 	GameToolbox::limitLabelWidth(levelCreator, 300, 0.8f);
 	this->addChild(levelCreator);
@@ -63,8 +63,8 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	rate->setVisible(false);
 	this->addChild(rate);
 
-	if (level->_FeatureScore > 0) rate->setVisible(true);
-	if (level->_Epic) {
+	if (level->_featureScore > 0) rate->setVisible(true);
+	if (level->_epic) {
 		rate->createWithSpriteFrameName("GJ_epicCoin_001.png");
 		rate->initWithSpriteFrameName("GJ_epicCoin_001.png");
 		rate->setVisible(true);
@@ -74,12 +74,12 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	diff->setPosition(rate->getPosition());
 	this->addChild(diff);
 
-	if(level->_Stars > 0) {
+	if(level->_stars > 0) {
 		auto star = Sprite::createWithSpriteFrameName("star_small01_001.png");
 		star->setPosition({ diff->getPositionX() + 8, diff->getPositionY() - 38 });
 		this->addChild(star);
 
-		auto starCount = GameToolbox::createBMFont(std::to_string(level->_Stars), "bigFont.fnt");
+		auto starCount = GameToolbox::createBMFont(std::to_string(level->_stars), "bigFont.fnt");
 		if (level->_normalPercent >= 100) starCount->setColor({ 255, 255, 0 });
 		starCount->setScale(.38);
 		starCount->setPosition({ diff->getPositionX() - 6, star->getPositionY() });
@@ -89,17 +89,17 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	downIcon->setPosition({ winSize.width / 2 + 90.5f, winSize.height / 2 + 90 });
 	this->addChild(downIcon);
 
-	auto downCount = GameToolbox::createBMFont(std::to_string(level->_Downloads), "bigFont.fnt");
+	auto downCount = GameToolbox::createBMFont(std::to_string(level->_downloads), "bigFont.fnt");
 	GameToolbox::limitLabelWidth(downCount, 60, 0.5f);
 	downCount->setAnchorPoint({ 0, 0.5f });
 	downCount->setPosition({ downIcon->getPositionX() + 20, downIcon->getPositionY()});
 	this->addChild(downCount);
 
-	auto likeIcon = Sprite::createWithSpriteFrameName(level->_Dislikes > 0 ? "GJ_dislikesIcon_001.png" : "GJ_likesIcon_001.png");
+	auto likeIcon = Sprite::createWithSpriteFrameName(level->_dislikes > 0 ? "GJ_dislikesIcon_001.png" : "GJ_likesIcon_001.png");
 	likeIcon->setPosition({ downIcon->getPositionX(), downIcon->getPositionY() - 28});
 	this->addChild(likeIcon);
 
-	auto likeCount = GameToolbox::createBMFont(level->_Dislikes > 0 ? std::to_string(level->_Dislikes) : std::to_string(level->_Likes), "bigFont.fnt");
+	auto likeCount = GameToolbox::createBMFont(level->_dislikes > 0 ? std::to_string(level->_dislikes) : std::to_string(level->_likes), "bigFont.fnt");
 	GameToolbox::limitLabelWidth(likeCount, 60, 0.5f);
 	likeCount->setAnchorPoint(downCount->getAnchorPoint());
 	likeCount->setPosition({ downCount->getPositionX(), likeIcon->getPositionY()});
@@ -109,7 +109,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	timeIcon->setPosition({ downIcon->getPositionX(), likeIcon->getPositionY() - 28});
 	this->addChild(timeIcon);
 
-	auto lenght = GameToolbox::createBMFont(GameToolbox::lengthString(level->_Length), "bigFont.fnt");
+	auto lenght = GameToolbox::createBMFont(GameToolbox::lengthString(level->_length), "bigFont.fnt");
 	GameToolbox::limitLabelWidth(lenght, 60, 0.5f);
 	lenght->setAnchorPoint(downCount->getAnchorPoint());
 	lenght->setPosition({ downCount->getPositionX(), timeIcon->getPositionY()});
@@ -235,7 +235,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	buttonsMenu->addChild(infoBtn);
 
 	auto rateDiffSprite = Sprite::createWithSpriteFrameName("GJ_rateDiffBtn_001.png");
-	auto rateDiffBtn = MenuItemSpriteExtra::create(rateDiffSprite, [level](Node*) { RateLevelLayer::create(level->_LevelID)->show(); });
+	auto rateDiffBtn = MenuItemSpriteExtra::create(rateDiffSprite, [level](Node*) { RateLevelLayer::create(level->_levelID)->show(); });
 	rateDiffBtn->setDisabledImage(Sprite::createWithSpriteFrameName("GJ_rateDiffBtn2_001.png"));
 	rateDiffBtn->setPosition(infoBtn->getPositionX(), infoBtn->getPositionY() - 50.f);
 	buttonsMenu->addChild(rateDiffBtn);
@@ -251,7 +251,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	listener->onKeyPressed = [=](EventKeyboard::KeyCode key, Event*) {
 		switch (key) {
 		case EventKeyboard::KeyCode::KEY_SPACE:
-			if (level->_LevelString.empty()) break;
+			if (level->_levelString.empty()) break;
 			AudioEngine::stopAll();
 			AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
 			Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
@@ -265,7 +265,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
-	if(!level->_LevelString.empty()) 
+	if(!level->_levelString.empty()) 
 	{
 		loading->setVisible(false);
 		playBtn->setEnabled(true);
@@ -273,7 +273,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 		return true;
 	}
 
-	std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", level->_LevelID);
+	std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", level->_levelID);
 	GameToolbox::executeHttpRequest(
 		"http://www.boomlings.com/database/downloadGJLevel22.php", postData, ax::network::HttpRequest::Type::POST,
 		AX_CALLBACK_2(LevelInfoLayer::onHttpRequestCompleted, this));
@@ -295,7 +295,7 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 		}
 
 		_level = level;
-		_level->_MusicID = _level->_OfficialSongID;
+		_level->_musicID = _level->_officialSongID;
 
 		playBtn->setEnabled(true);
 		playBtn->setVisible(true);

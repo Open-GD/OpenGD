@@ -177,7 +177,7 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 		{
 			for(const auto& author : authors)
 			{
-				if(std::stoi(author[0]) == gjlevel->_PlayerID)
+				if(std::stoi(author[0]) == gjlevel->_playerID)
 					return author[1];
 			}
 			return std::string("-");
@@ -189,8 +189,8 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 		for (size_t i = 0; i < levels.size(); i++)
 		{
 			auto gjlevel = GJGameLevel::createWithResponse(levels[i]);
-			gjlevel->_LevelCreator = getAuthor(gjlevel);
-			gjlevel->_SongName = "Cool catchy song";
+			gjlevel->_levelCreator = getAuthor(gjlevel);
+			gjlevel->_songName = "Cool catchy song";
 			toInsert.push_back(gjlevel);
 		}
 

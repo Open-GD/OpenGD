@@ -32,19 +32,19 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	auto bigFontStr = GameToolbox::getTextureString("bigFont.fnt");
 	
-	if (level->_Stars > 0) {
+	if (level->_stars > 0) {
 		auto starSprite = ax::Sprite::createWithSpriteFrameName("star_small01_001.png");
 		starSprite->setPosition({34, 29});
 		layer->addChild(starSprite);
 
-		auto starText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_Stars));
+		auto starText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_stars));
 		starText->setScale(0.4f);
 		starText->setPosition({26, 29});
 		starText->setAnchorPoint({1, 0.5});
 		layer->addChild(starText);
 	}
 
-	auto nameText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_LevelName));
+	auto nameText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_levelName));
 	nameText->setScale(0.8f);
 	if(nameText->getContentSize().width > 180) nameText->setScale(nameText->getScale() * (180 / nameText->getContentSize().width));
 	nameText->setPosition({50, 75});
@@ -53,14 +53,14 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	ax::Label* songText = nullptr;
 
-	if (level->_SongID == 0)
+	if (level->_songID == 0)
 	{
-		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", LevelTools::getAudioTitle(level->_OfficialSongID)));
+		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", LevelTools::getAudioTitle(level->_officialSongID)));
 		songText->setColor(ax::Color3B(39, 206, 250));
 	}
 	else
 	{
-		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_SongName));
+		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_songName));
 		songText->setColor(ax::Color3B(255, 132, 211));
 	}
 
@@ -71,13 +71,13 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	ax::Vec2 diffPos = {26, 59};
 
-	if (level->_Epic == 1)
+	if (level->_epic == 1)
 	{
 		auto epicSprite = ax::Sprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
 		epicSprite->setPosition(diffPos);
 		layer->addChild(epicSprite, 2);
 	}
-	else if (level->_FeatureScore > 0)
+	else if (level->_featureScore > 0)
 	{
 		auto featureScore = ax::Sprite::createWithSpriteFrameName("GJ_featuredCoin_001.png");
 		featureScore->setPosition(diffPos);
@@ -93,7 +93,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	lenSprite->setScale(0.6f);
 	layer->addChild(lenSprite, 2);
 
-	auto lenText = ax::Label::createWithBMFont(bigFontStr, GameToolbox::lengthString(level->_Length));
+	auto lenText = ax::Label::createWithBMFont(bigFontStr, GameToolbox::lengthString(level->_length));
 	lenText->setScale(0.4f);
 	if (lenText->getContentSize().width > 120) lenText->setScale(lenText->getScale() * (120 / lenText->getContentSize().width));
 	lenText->setPosition({ 69, 14 });
@@ -105,7 +105,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	dwnSprite->setScale(0.6f);
 	layer->addChild(dwnSprite, 2);
 
-	auto dwnText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_Downloads));
+	auto dwnText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_downloads));
 	dwnText->setScale(0.4f);
 	if (dwnText->getContentSize().width > 120) dwnText->setScale(dwnText->getScale() * (120 / dwnText->getContentSize().width));
 	dwnText->setPosition({145.4, 14});
@@ -117,7 +117,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	likeSprite->setScale(0.6f);
 	layer->addChild(likeSprite, 2);
 
-	auto likeText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_Likes));
+	auto likeText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_likes));
 	likeText->setScale(0.4f);
 	if (likeText->getContentSize().width > 120) likeText->setScale(likeText->getScale() * (120 / likeText->getContentSize().width));
 	likeText->setPosition({222.8, 14});
@@ -128,9 +128,9 @@ bool LevelCell::init(GJGameLevel* level) {
 	menu->setPosition({315.45, 45});
 	layer->addChild(menu);
 
-	auto creatorText = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
+	auto creatorText = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_levelCreator));
 	creatorText->setScale(0.6f);
-	if (level->_LevelCreator == "-") creatorText->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
+	if (level->_levelCreator == "-") creatorText->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
 	if (creatorText->getContentSize().width > 200) creatorText->setScale(creatorText->getScale() * (200 / creatorText->getContentSize().width));
 	creatorText->setPosition({-263.525, 8});
 	creatorText->setAnchorPoint({0, 0.5});
@@ -138,16 +138,16 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	auto levelBadgePosition = creatorText->getContentSize().width * creatorText->getScale() + 65;
 	
-	if (level->_CopiedID > 0)
+	if (level->_copiedID > 0)
 	{
 		auto collabSprite = ax::Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
 		collabSprite->setPosition(levelBadgePosition, 52);
 		layer->addChild(collabSprite);
 	}
-	if (level->_Objects > 40000)
+	if (level->_objects > 40000)
 	{
 		auto highObjectSprite = ax::Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
-		highObjectSprite->setPosition(levelBadgePosition + (level->_CopiedID > 0 ? 18 : 0), 52);
+		highObjectSprite->setPosition(levelBadgePosition + (level->_copiedID > 0 ? 18 : 0), 52);
 		layer->addChild(highObjectSprite);
 	}
 

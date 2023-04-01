@@ -45,7 +45,7 @@ bool InfoLayer::init(GJGameLevel* level)
 	this->_mainLayer->addChild(closeBtnMenu);
 
 
-	auto levelName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_LevelName);
+	auto levelName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), level->_levelName);
 	levelName->setPosition({ winSize.width / 2, (winSize.height / 2) + 105.f });
 
 	if (levelName->getContentSize().width > 300.0f)
@@ -55,7 +55,7 @@ bool InfoLayer::init(GJGameLevel* level)
 
 	this->_mainLayer->addChild(levelName);
 
-	auto levelCreator = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_LevelCreator));
+	auto levelCreator = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_levelCreator));
 	levelCreator->setPosition({ winSize.width / 2, levelName->getPositionY() - 30.f });
 
 	if (levelCreator->getContentSize().width > 300.0f)
@@ -70,7 +70,7 @@ bool InfoLayer::init(GJGameLevel* level)
 	this->_mainLayer->addChild(levelCreator);
 
 
-	auto desc = level->_Description.empty() ? "(No description provided)" : base64_decode(level->_Description);
+	auto desc = level->_description.empty() ? "(No description provided)" : base64_decode(level->_description);
 	
 	auto descField = ax::ui::UICCTextField::createWithBMFont(GameToolbox::getTextureString("chatFont.fnt"), desc, TextHAlignment::CENTER, 380.f);
 	descField->setPosition({ winSize.width / 2, (winSize.height / 2) + 10.f /*+ 20.f */});
@@ -85,12 +85,12 @@ bool InfoLayer::init(GJGameLevel* level)
 	this->_mainLayer->addChild(moreBtnMenu);
 	
 	// Level Info (ID, Version)
-	auto versionLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("Version: %i", level->_Version));
+	auto versionLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("Version: %i", level->_version));
 	versionLabel->setPosition({ (winSize.width / 2) - 50.f, (winSize.height / 2) - 110.0f });
 	versionLabel->setScale(0.6);
 	this->_mainLayer->addChild(versionLabel);
 
-	auto idLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("ID: %i", level->_LevelID));
+	auto idLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), StringUtils::format("ID: %i", level->_levelID));
 	idLabel->setPosition({ (winSize.width / 2) + 50.f, (winSize.height / 2) - 110.0f });
 	idLabel->setScale(0.6);
 	this->_mainLayer->addChild(idLabel);
