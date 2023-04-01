@@ -80,6 +80,14 @@ bool ResourcesLoadingLayer::init()
 	return true;
 }
 
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
+
+#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
+#include <psapi.h>
+
+
 void ResourcesLoadingLayer::handleWindows()
 {
 	auto label = Label::create();
@@ -117,14 +125,6 @@ void ResourcesLoadingLayer::handleWindows()
 
 	this->runAction(_gdProcessAction);
 }
-
-
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
-
-#include <windows.h>
-#include <stdio.h>
-#include <tchar.h>
-#include <psapi.h>
 
 bool ResourcesLoadingLayer::isWindowsGDPathValid(std::string exepath)
 {
@@ -189,5 +189,15 @@ std::string ResourcesLoadingLayer::getRunningGDPathWindows()
 }
 
 #endif //#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
+
+
+//#if (AX_TARGET_PLATFORM == AX_PLATFORM_MAC)
+void ResourcesLoadingLayer::handleMac() {}
+//#endif
+
+//#if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+void ResourcesLoadingLayer::handleLinux() {}
+//#endif
+
 
 #endif //#ifdef AX_PLATFORM_PC
