@@ -979,7 +979,7 @@ void PlayLayer::updateVisibility()
 					{
 						if (obj->_particle)
 						{
-							_particleBatchNode->addChild(obj->_particle);
+							addChild(obj->_particle);
 							AX_SAFE_RELEASE(obj->_particle);
 						}
 						if (obj->_glowSprite)
@@ -1088,7 +1088,7 @@ void PlayLayer::updateVisibility()
 				if (section[j]->_particle)
 				{
 					AX_SAFE_RETAIN(section[j]->_particle);
-					_particleBatchNode->removeChild(section[j]->_particle, true);
+					removeChild(section[j]->_particle, true);
 				}
 				if (section[j]->_glowSprite)
 				{
@@ -1587,7 +1587,7 @@ void PlayLayer::resetLevel()
 			if (obj->_particle)
 			{
 				AX_SAFE_RETAIN(obj->_particle);
-				_particleBatchNode->removeChild(obj->_particle, true);
+				removeChild(obj->_particle, true);
 			}
 			if (obj->_glowSprite)
 			{
