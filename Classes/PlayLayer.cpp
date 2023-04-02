@@ -557,8 +557,8 @@ bool PlayLayer::init(GJGameLevel* level)
 	_main2BatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_main2BatchNodeTexture), 150);
 	this->addChild(_main2BatchNode);
 
-	_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
-	addChild(_particleBatchNode);
+	//_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
+	//addChild(_particleBatchNode);
 
 	_mainBatchNodeTexture = _mainBatchNodeT3->getTexture()->getPath();
 	_main2BatchNodeTexture = _main2BatchNode->getTexture()->getPath();
