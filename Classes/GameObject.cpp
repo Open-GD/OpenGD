@@ -203,8 +203,8 @@ void GameObject::update()
 			_particle->setPosition(pos);
 		
 		_particle->setRotation(getRotation());
-		_particle->setScaleX(getScaleX() * isFlippedX() ? -1.f : 1.f);
-		_particle->setScaleY(getScaleY() * isFlippedY() ? -1.f : 1.f);
+		_particle->setScaleX(getScaleX() * (isFlippedX() ? -1.f : 1.f));
+		_particle->setScaleY(getScaleY() * (isFlippedY() ? -1.f : 1.f));
 		float op = getOpacity();
 		
 		if (_particle->getOpacity() != op)
