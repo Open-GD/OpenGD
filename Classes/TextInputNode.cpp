@@ -129,16 +129,22 @@ bool TextInputNode::init(float width, float height, const char* placeholder, con
 
 void TextInputNode::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	if (keyCode == EventKeyboard::KeyCode::KEY_CTRL) GameToolbox::_isCtrlPressed = true;
+	// if (keyCode == EventKeyboard::KeyCode::KEY_CTRL) GameToolbox::_isCtrlPressed = true;
+	// i don't think that ctrl flag should be placed in gametoolbox
 
 	switch (keyCode)
 	{
 #ifdef AX_PLATFORM_PC
+	case EventKeyboard::KeyCode::KEY_CTRL:
+		_pCommandMode = true;
+		break;
 	case EventKeyboard::KeyCode::KEY_C:
-		glfwSetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow(), _pTextField->getString().data());
+		if (_pCommandMode) glfwSetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow(), _pTextField->getString().data());
+		_pCommandMode = false;
 		break;
 	case EventKeyboard::KeyCode::KEY_V:
-		_pTextField->setString(fmt::format("{}{}", _pTextField->getString(), glfwGetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow())));
+		if (_pCommandMode) _pTextField->setString(fmt::format("{}{}", _pTextField->getString(), glfwGetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow())));
+		_pCommandMode = false;
 		break;
 #endif
 	default:
@@ -147,5 +153,5 @@ void TextInputNode::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 }
 void TextInputNode::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	if (keyCode == EventKeyboard::KeyCode::KEY_CTRL) GameToolbox::_isCtrlPressed = false;
+	if (keyCode == EventKeyboard::KeyCode::KEY_CTRL) _pCommandMode = false;
 }

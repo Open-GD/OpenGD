@@ -10,6 +10,8 @@ public:
 	ax::ui::TextField* _pTextField;
 	ax::Label* _pPlaceholder;
 
+	bool _pCommandMode;
+
 	static TextInputNode* create(float width, float height, const char* font, const char* placeholder, int scale)
 	{
 		TextInputNode* pRet = new TextInputNode();
