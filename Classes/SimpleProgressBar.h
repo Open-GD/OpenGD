@@ -11,7 +11,7 @@ protected:
 	float _pBarWidth;
 public:
 	CREATE_FUNC(SimpleProgressBar);
-	bool init();
+	virtual bool init();
 
 	void update(float delta);
 

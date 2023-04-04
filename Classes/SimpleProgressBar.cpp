@@ -1,7 +1,8 @@
 #include "SimpleProgressBar.h"
 #include "GameToolbox.h"
 
-bool SimpleProgressBar::init() {
+bool SimpleProgressBar::init() 
+{
 	_pGroove = ax::Sprite::create(GameToolbox::getTextureString("slidergroove_02.png"));
 	_pBar = ax::Sprite::create(GameToolbox::getTextureString("sliderBar.png"));
 
@@ -20,7 +21,8 @@ bool SimpleProgressBar::init() {
 	scheduleUpdate();
 	return true;
 }
-void SimpleProgressBar::update(float delta) {
+void SimpleProgressBar::update(float delta)
+{
 	if(_pPercentage > 100.f) {
 		_pPercentage = 100.f;
 	}
