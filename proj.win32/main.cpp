@@ -27,6 +27,7 @@
 #include "axmol.h"
 
 USING_NS_AX;
+#define USE_WIN32_CONSOLE
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {

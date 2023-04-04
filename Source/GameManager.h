@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include "GameToolbox.h"
 
 class GameManager
 {
@@ -13,7 +14,18 @@ public:
 	bool _openedGarage;
 	bool _openedCreator;
 	bool _openedPracticeMode;
-	
+
+	int _selectedCube;
+	int _selectedShip;
+	int _selectedBall;
+	int _selectedUfo;
+	int _selectedWave;
+	int _selectedRobot;
+	int _selectedSpider;
+	int _selectedSpecial;
+	int _selectedDeathEffect;
+	IconType _mainSelectedMode;
+
 private:
 	bool init();
 	void load();
@@ -40,4 +52,7 @@ public:
 	void setQualityHigh();
 	
 	void print();
+
+	int getSelectedIcon(IconType);
+	void setSelectedIcon(IconType, int);
 };

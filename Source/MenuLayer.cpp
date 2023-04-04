@@ -244,7 +244,8 @@ bool MenuLayer::init()
 				closeAndNull();
 			});
 
-			closeAlert->setBtn2Callback([=](TextButton*){
+			closeAlert->setBtn2Callback([](TextButton*){
+				GameManager::getInstance()->save();
 				Director::getInstance()->end();
 			});
 
