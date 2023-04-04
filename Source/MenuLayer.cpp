@@ -25,7 +25,6 @@
 USING_NS_AX;
 
 bool MenuLayer::music = true;
-bool MenuLayer::quitCalled = false;
 
 Scene* MenuLayer::scene()
 {
@@ -48,7 +47,6 @@ MenuLayer* MenuLayer::create() {
 
 bool MenuLayer::init()
 {
-	quitCalled = false;
 	auto gm = GameManager::getInstance();
 
 	// gm->set<std::string>("key1", "value");
@@ -224,12 +222,26 @@ bool MenuLayer::init()
 		if (code == EventKeyboard::KeyCode::KEY_SPACE) {
 			auto scene = LevelSelectLayer::scene(0);
 			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
-		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE && !quitCalled) {
-			auto closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to Quit?", "Cancel", "Yes", NULL, NULL);
-
-			closeAlert->setBtn1Callback([=](TextButton*){
+		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
+			static AlertLayer* closeAlert;
+			
+			auto closeAndNull = [&]() -> void
+			{
 				closeAlert->close();
-				quitCalled = false;
+				closeAlert = nullptr;
+			};
+			
+			//allows to spam esc and works as expected
+			if(closeAlert)
+			{
+				closeAndNull();
+				return;
+			}
+			
+			closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to Quit?", "Cancel", "Yes", NULL, NULL);
+			
+			closeAlert->setBtn1Callback([=](TextButton*){
+				closeAndNull();
 			});
 
 			closeAlert->setBtn2Callback([=](TextButton*){
@@ -237,9 +249,7 @@ bool MenuLayer::init()
 			});
 
 			closeAlert->show();
-			
-			quitCalled = true;
-		} 
+		}
 	};
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);

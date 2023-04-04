@@ -11,7 +11,6 @@ class MenuLayer : public ax::Layer
 {
 public:
 	static bool music;
-	static bool quitCalled;
 	static ax::Scene* scene();
 	bool init();
 	static MenuLayer* create();
