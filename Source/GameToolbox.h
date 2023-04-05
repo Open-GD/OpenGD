@@ -40,10 +40,7 @@ namespace GameToolbox
 		High
 	};
 
-	extern std::vector<std::string> _uhdTextureIgnoreList;
-
-
-	static bool _isCtrlPressed;
+	inline bool _isCtrlPressed;
 
 	void popSceneWithTransition(float time, popTransition type = kTransitionFade);
 	void limitLabelWidth(ax::Label* label, float width, float normalScale, float minScale = 0);
