@@ -125,7 +125,8 @@ bool GarageLayer::init()
 	return true;
 }
 
-int GarageLayer::selectedGameModeInt() {
+int GarageLayer::selectedGameModeInt()
+{
 	if (_selectedMode == kIconTypeSpecial)
 		return 7;
 	if (_selectedMode == kIconTypeDeathEffect)
@@ -327,7 +328,7 @@ void GarageLayer::setupPage(IconType type, int page)
 			icono->setScale(0.9f);
 			browserItem->addChild(icono);
 		} 
-		else 
+		else
 		{
 			auto icono = SimplePlayer::create(0);
 			icono->updateGamemode(i, type);
