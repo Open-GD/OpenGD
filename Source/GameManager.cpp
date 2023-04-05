@@ -135,18 +135,49 @@ void GameManager::set<std::string>(const std::string& key, const std::string& va
 
 void GameManager::setMembersToMap()
 {
-	set<bool>("_openedGarage", _openedGarage);
-	set<bool>("_openedCreator", _openedCreator);
-	set<bool>("_openedPracticeMode", _openedPracticeMode);
-	set<bool>("_mediumQuality", _mediumQuality);
+	#define SAVE_BOOL(member) set<bool>(#member, member)
+	SAVE_BOOL(_openedGarage);
+	SAVE_BOOL(_openedCreator);
+	SAVE_BOOL(_openedPracticeMode);
+	SAVE_BOOL(_mediumQuality);
+	#undef SAVE_BOOL
+
+	#define SAVE_INT(member) set<int>(#member, member)
+	SAVE_INT(_selectedCube);
+	SAVE_INT(_selectedShip);
+	SAVE_INT(_selectedBall);
+	SAVE_INT(_selectedUfo);
+	SAVE_INT(_selectedWave);
+	SAVE_INT(_selectedRobot);
+	SAVE_INT(_selectedSpider);
+	SAVE_INT(_selectedSpecial);
+	SAVE_INT(_selectedDeathEffect);
+	#undef SAVE_INT
+	
+	set<int>("_mainSelectedMode", static_cast<int>(_mainSelectedMode));
 }
 
 void GameManager::loadMembersFromMap()
 {
-	_openedGarage = get<bool>("_openedGarage");
-	_openedCreator = get<bool>("_openedCreator");
-	_openedPracticeMode = get<bool>("_openedPracticeMode");
-	_mediumQuality = get<bool>("_mediumQuality");
+	#define LOAD_BOOL(member) member = get<bool>(#member)
+	LOAD_BOOL(_openedGarage);
+	LOAD_BOOL(_openedCreator);
+	LOAD_BOOL(_openedPracticeMode);
+	LOAD_BOOL(_mediumQuality);
+	#undef LOAD_BOOL
+	
+	#define LOAD_INT(member) member = get<int>(#member)
+	LOAD_INT(_selectedCube);
+	LOAD_INT(_selectedShip);
+	LOAD_INT(_selectedBall);
+	LOAD_INT(_selectedUfo);
+	LOAD_INT(_selectedRobot);
+	LOAD_INT(_selectedSpider);
+	LOAD_INT(_selectedSpecial);
+	LOAD_INT(_selectedDeathEffect);
+	#undef LOAD_INT
+	
+	_mainSelectedMode = static_cast<IconType>(get<int>("_mainSelectedMode"));
 }
 
 bool GameManager::isMedium() { return _mediumQuality; }
