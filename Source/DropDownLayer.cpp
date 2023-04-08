@@ -31,12 +31,12 @@ bool DropDownLayer::init(Node* scrollLayer, const char* label)
 	auto menu = Menu::create();
 
 	auto backSpr = Sprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
-	auto backBtn = MenuItemSpriteExtra::create(backSpr, [&](Node* btn){
+	_backBtn = MenuItemSpriteExtra::create(backSpr, [&](Node* btn){
 		this->hideLayer();
 	});
 
-	backBtn->setPosition(menu->convertToNodeSpace({24, winSize.height - 23}));
-	menu->addChild(backBtn);
+	_backBtn->setPosition(menu->convertToNodeSpace({24, winSize.height - 23}));
+	menu->addChild(_backBtn);
 	_dropLayer->addChild(menu);
 
 	auto chain1 = Sprite::createWithSpriteFrameName("chain_01_001.png");
@@ -100,4 +100,9 @@ void DropDownLayer::hideLayer(){
 			nullptr
 		)
 	);
+}
+
+void DropDownLayer::hideBackButton() {
+	_backBtn->setEnabled(false);
+	_backBtn->setVisible(false);
 }

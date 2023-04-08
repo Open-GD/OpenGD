@@ -727,6 +727,7 @@ void PlayLayer::createLevelEnd()
 {
 	_jumps = _player1->_jumpedTimes;
 	auto levelend = LevelEndStatsLayer::create(this);
+	addChild(levelend);
 }
 
 double lastY = 0;
@@ -825,7 +826,7 @@ void PlayLayer::destroyPlayer(PlayerObject* player)
 		[=](float d) {
 			resetLevel();
 		},
-		1.f, "restart");
+	1.f, "playlayer_restart");
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -1599,6 +1600,7 @@ void PlayLayer::resetLevel()
 	_enterEffectID = 0;
 	m_bEndAnimation = false;
 	_isDualMode = false;
+	_secondsSinceStart = 0;
 
 	for (auto obj : this->_pObjects)
 	{

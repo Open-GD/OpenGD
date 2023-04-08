@@ -12,6 +12,8 @@
 #include "SpriteColor.h"
 #include "UILayer.h"
 
+#include <vector>
+
 struct LevelSettings
 {
 	PlayerGamemode gamemode;
@@ -81,6 +83,9 @@ public:
 	int _secondsSinceStart;
 	int _attempts;
 	int _jumps;
+	bool _everyplay_recorded;
+
+	std::vector<bool> _coinsCollected;
 
 	PlayerObject* _player1;
 	PlayerObject* _player2;

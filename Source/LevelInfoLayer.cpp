@@ -290,7 +290,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 
 void LevelInfoLayer::onExit()
 {
-	_request->setTag("-1");
+	// _request->setTag("-1");
 	Layer::onExit();
 }
 
@@ -303,7 +303,10 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 	GameToolbox::log("tag: {}", tag);
 	
 	if(tag != "valid")
+	{
+		onDownloadFailed();
 		return;
+	}
 	
 	GameToolbox::log("ON PASSSS");
 	
