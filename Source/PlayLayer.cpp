@@ -3,20 +3,23 @@
 #include "CreatorLayer.h"
 #include "EffectGameObject.h"
 #include "GameToolbox.h"
-#include "ImGui/ImGuiPresenter.h"
-#include "ImGui/imgui/imgui.h"
 #include "LevelSelectLayer.h"
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
+#include "LevelPage.h"
+#include "LevelInfoLayer.h"
+#include "EndLevelLayer.h"
+
+#include "ImGui/ImGuiPresenter.h"
+#include "ImGui/imgui/imgui.h"
+
 #include "external/benchmark.h"
 #include "external/constants.h"
-#include <LevelPage.h>
-#include <fstream>
 #include "external/json.hpp"
-#include "LevelInfoLayer.h"
-#include "ccRandom.h"
+#include "external/fast_float.h"
+
+#include <fstream>
 #include <charconv>
-#include "EndLevelLayer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -167,23 +170,24 @@ std::vector<std::string_view> _splitString_playlayer(std::string_view str, char 
     return tokens;
 }
 
-inline int _custom_stoi(const std::string& s) {
-	return std::stoi(s);
-}
 
-inline float _custom_stof(const std::string& s) {
-	return std::stof(s);
-}
 
-inline int _custom_stoi(const std::string_view s) {
+//auto arg works kind of like a template, will compile if .data() and .size() is available
+inline int _custom_stoi(const auto s) {
 	int ret = 0;
 	std::from_chars(s.data(),s.data() + s.size(), ret);
 	return ret;
 }
 
-inline float _custom_stof(const std::string_view s) {
+#define USE_FAST_FLOAT 1
+
+inline float _custom_stof(const auto s) {
 	float ret = 0.0f;
-	std::from_chars(s.data(),s.data() + s.size(), ret);
+	#if USE_FAST_FLOAT == 1
+		fast_float::from_chars(s.data(),s.data() + s.size(), ret);
+	#else
+		std::from_chars(s.data(),s.data() + s.size(), ret);
+	#endif
 	return ret;
 }
 
