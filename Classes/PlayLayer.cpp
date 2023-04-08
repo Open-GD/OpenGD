@@ -16,6 +16,7 @@
 #include "LevelInfoLayer.h"
 #include "ccRandom.h"
 #include <charconv>
+#include "LevelEndStatsLayer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -83,12 +84,25 @@ void PlayLayer::showCompleteText()
 	cir2->setPosition(sprite->getPosition());
 	m_pHudLayer->addChild(cir2, -1);
 
-	for (int i = 0; i < 9; i++)
-		m_pHudLayer->runAction(Sequence::createWithTwoActions(
-			DelayTime::create(0.16f * i), CallFunc::create([&]() { PlayLayer::spawnCircle(); })));
+	// for (int i = 0; i < 9; i++)
+	// 	m_pHudLayer->runAction(Sequence::createWithTwoActions(
+	// 		DelayTime::create(0.16f * i), CallFunc::create([&]() { PlayLayer::spawnCircle(); })));
 
-	m_pHudLayer->runAction(
-		Sequence::createWithTwoActions(DelayTime::create(1.5f), CallFunc::create([&]() { PlayLayer::showEndLayer(); })));
+	// m_pHudLayer->runAction(
+	// 	Sequence::createWithTwoActions(DelayTime::create(1.5f), CallFunc::create([&]() { PlayLayer::showEndLayer(); })));
+	for (int i = 0; i < 9; i++)
+	{
+		scheduleOnce(
+			[=](float d) {
+				spawnCircle();
+			},
+		0.16f * i, "playlayer_circles");
+	}
+	scheduleOnce(
+		[=](float d) {
+			showEndLayer();
+		},
+	1.5f, "playlayer_levelend");
 }
 
 void PlayLayer::spawnCircle()
@@ -109,7 +123,7 @@ void PlayLayer::spawnCircle()
 
 void PlayLayer::showEndLayer()
 {
-	// DropDown layer
+	createLevelEnd();
 }
 
 int PlayLayer::sectionForPos(float x)
@@ -692,11 +706,11 @@ bool PlayLayer::init(GJGameLevel* level)
 	updateVisibility();
 	updateVisibility();
 
-
 	scheduleOnce(
 		[=](float d) {
 			if (levelValid)
 			{
+				incrementTime();
 				resetLevel();
 			}
 			else
@@ -704,14 +718,28 @@ bool PlayLayer::init(GJGameLevel* level)
 				exit();
 			}
 		},
-		1.f, "k");
+	1.f, "playlayer_levelstartdelay");
 
 	return true;
 }
 
-void PlayLayer::createLevelEnd() {}
+void PlayLayer::createLevelEnd()
+{
+	_jumps = _player1->_jumpedTimes;
+	auto levelend = LevelEndStatsLayer::create(this);
+}
 
 double lastY = 0;
+
+void PlayLayer::incrementTime()
+{
+	scheduleOnce(
+		[=](float d) {
+			_secondsSinceStart++;
+			incrementTime();
+		},
+	1.f, "playlayer_stopwatch");
+}
 
 void PlayLayer::update(float dt)
 {
@@ -1552,6 +1580,7 @@ void PlayLayer::onDrawImGui()
 
 void PlayLayer::resetLevel()
 {
+	_attempts++;
 	auto dir = Director::getInstance();
 	_player1->setPosition({2, 105});
 	_player1->setRotation(0);

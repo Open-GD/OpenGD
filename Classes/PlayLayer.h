@@ -62,7 +62,6 @@ class PlayLayer : public ax::Layer
 	SimpleProgressBar* m_pBar;
 	ax::Label* m_pPercentage;
 
-	UILayer* m_pHudLayer;
 	LevelSettings _levelSettings;
 
 	//----IMGUI DEBUG MEMBERS----
@@ -76,6 +75,12 @@ public:
 
 	int _groundID = 1;
 	int _bgID = 1;
+
+	UILayer* m_pHudLayer;
+
+	int _secondsSinceStart;
+	int _attempts;
+	int _jumps;
 
 	PlayerObject* _player1;
 	PlayerObject* _player2;
@@ -129,6 +134,8 @@ public:
 
 	void changePlayerSpeed(int speed);
 	void changeGravity(bool gravityFlipped);
+
+	void incrementTime();
 
 	static ax::Scene* scene(GJGameLevel* level);
 	static PlayLayer* create(GJGameLevel* level);

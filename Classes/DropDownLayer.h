@@ -12,6 +12,6 @@ public:
 	ax::Layer* _dropLayer;
 
 	static DropDownLayer* create(Node* scrollLayer, const char* label);
-	void showLayer();
+	void showLayer(bool attachToScene, bool bounce);
 	void hideLayer();
 };

@@ -81,6 +81,8 @@ class PlayerObject : public GameObject
 	bool m_bIsHolding;
 	bool _hasJustHeld;
 
+	int _jumpedTimes;
+
 	static ax::Texture2D* motionStreakTex;
 	MotionTrail* motionStreak;
 

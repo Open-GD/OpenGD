@@ -38,7 +38,7 @@ bool MoreGamesLayer::init()
 
 	scrollLayer->addChild(menu);
 	auto dropdownlayer = DropDownLayer::create(scrollLayer, "RobTop Games");
-	dropdownlayer->showLayer();
+	dropdownlayer->showLayer(true, false);
 
 	return true;
 }

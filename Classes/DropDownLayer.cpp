@@ -70,15 +70,19 @@ bool DropDownLayer::init(Node* scrollLayer, const char* label)
 	return true;
 }
 
-void DropDownLayer::showLayer()
+void DropDownLayer::showLayer(bool attachToScene, bool bounce)
 {
 	auto winSize = Director::getInstance()->getWinSize();
 
 	this->runAction(FadeTo::create(0.5, 125));
-	this->_dropLayer->runAction(EaseInOut::create(MoveTo::create(0.5f, {this->getPositionX(), 0}), 2));
+	if (!bounce) this->_dropLayer->runAction(EaseInOut::create(MoveTo::create(0.5f, {this->getPositionX(), 0}), 2));
+	else this->_dropLayer->runAction(EaseBounceOut::create(MoveTo::create(1.f, {this->getPositionX(), 0})));
 
-	auto scene = Director::getInstance()->getRunningScene();
-	scene->addChild(this);
+	if (attachToScene)
+	{
+		auto scene = Director::getInstance()->getRunningScene();
+		scene->addChild(this, 1024);
+	}
 }
 
 void DropDownLayer::hideLayer(){

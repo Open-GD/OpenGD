@@ -151,7 +151,7 @@ bool LevelSelectLayer::init(int page)
 	dlLabel->setScale(0.5);
 
 	auto dlMenuItem = MenuItemSpriteExtra::create(dlLabel, [](Node*) {
-		SongsLayer::create()->showLayer();
+		SongsLayer::create()->showLayer(true, false);
 	});
 
 	auto dlLabelMenu = Menu::create();

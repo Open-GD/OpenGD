@@ -34,8 +34,8 @@ bool OptionsLayer::init()
 	auto menu = Menu::create(mediumBtn, highBtn, nullptr);
 	menu->setPosition(0, 0);
 	scrollLayer->addChild(menu);
-	auto dropdownlayer = DropDownLayer::create(scrollLayer, "RobTop Games");
-	dropdownlayer->showLayer();
+	auto dropdownlayer = DropDownLayer::create(scrollLayer, "Settings");
+	dropdownlayer->showLayer(true, false);
 	
 	return true;
 }

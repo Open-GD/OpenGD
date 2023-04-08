@@ -15,6 +15,7 @@
 #include "MoreGamesLayer.h"
 #include "GameManager.h"
 #include "OptionsLayer.h"
+#include "LevelBrowserLayer.h"
 
 /*
 #include "ColoursPalette.h"
@@ -98,7 +99,7 @@ bool MenuLayer::init()
 
 	auto creatorBtn = MenuItemSpriteExtra::create("GJ_creatorBtn_001.png", [=](Node* btn) {
 		gm->_openedCreator = true;
-		Director::getInstance()->pushScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
+		Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(GJSearchObject::create("empty level"))));
 	});
 
 	creatorBtn->setPosition({110, 0});

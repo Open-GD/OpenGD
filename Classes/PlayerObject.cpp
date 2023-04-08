@@ -984,7 +984,10 @@ void PlayerObject::stopRotation()
 	}
 }
 
-void PlayerObject::jump() { this->m_dYVel = this->m_dJumpHeight; }
+void PlayerObject::jump()
+{
+	this->m_dYVel = this->m_dJumpHeight;
+}
 
 void PlayerObject::toggleMini(bool active)
 {
@@ -1003,6 +1006,7 @@ void PlayerObject::pushButton()
 		_hasJustHeld = true;
 		_queuedHold = true;
 	}
+	if((_currentGamemode == PlayerGamemode::PlayerGamemodeCube || _currentGamemode == PlayerGamemode::PlayerGamemodeRobot) && m_bOnGround) _jumpedTimes++;
 }
 
 void PlayerObject::releaseButton()

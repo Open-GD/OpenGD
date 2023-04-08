@@ -23,10 +23,12 @@ bool SimpleProgressBar::init()
 }
 void SimpleProgressBar::update(float delta)
 {
-	if(_pPercentage > 100.f) {
+	if(_pPercentage > 100.f)
+	{
 		_pPercentage = 100.f;
 	}
-	if(_pPercentage < 0.f) {
+	if(_pPercentage < 0.f)
+	{
 		_pPercentage = 0.f;
 	}
 	_pBar->setTextureRect({0, 0, _pBarWidth * (this->_pPercentage / 100), _pBar->getContentSize().height});
