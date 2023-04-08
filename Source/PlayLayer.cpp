@@ -16,7 +16,7 @@
 #include "LevelInfoLayer.h"
 #include "ccRandom.h"
 #include <charconv>
-#include "LevelEndStatsLayer.h"
+#include "EndLevelLayer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -726,7 +726,7 @@ bool PlayLayer::init(GJGameLevel* level)
 void PlayLayer::createLevelEnd()
 {
 	_jumps = _player1->_jumpedTimes;
-	auto levelend = LevelEndStatsLayer::create(this);
+	auto levelend = EndLevelLayer::create(this);
 	addChild(levelend);
 }
 

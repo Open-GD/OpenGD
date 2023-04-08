@@ -1,11 +1,31 @@
-#include "LevelEndStatsLayer.h"
+#include "EndLevelLayer.h"
 #include "GameToolbox.h"
 #include "AudioEngine.h"
-#include "LevelEndStrings.h"
+#include <fmt/chrono.h>
+#include <array>
 
-LevelEndStatsLayer *LevelEndStatsLayer::create(PlayLayer *pl)
+//same as LoadingLayer
+constexpr static auto _endingStrings = std::to_array <const char*>({
+	"Awesome!", "Good Job!", "Well Done!", "Impressive!",
+	"Amazing!", "Incredible!", "Skillful!", "Brilliant!",
+	"You are... The One!", "How this is possible?",
+	"You beat me...", "Challenge Breaker!", "I am speechless...",
+	"Not bad!", "Warp Speed", "Y u do dis?", "lol is lol backwards",
+	"DROP THE BEAT", "Took you long enough...", "Teach me oh great one",
+	"Haxxor?", "Tripple spikes?", "RubRubRubRubRubRub", "SO FAST",
+	"Hmmmmmmmmmmm", "Ship part was cool!", "Timing could be better",
+	"I cant hear the music.", "Pump. It. Up.", "I am Batman",
+	"Take a break.", "AFK", "he protec"
+});
+
+std::string_view EndLevelLayer::getRandomEndingString()
 {
-	auto pRet = new (std::nothrow) LevelEndStatsLayer();
+	return _endingStrings[GameToolbox::randomInt(0, _endingStrings.size() - 1)];
+}
+
+EndLevelLayer *EndLevelLayer::create(PlayLayer *pl)
+{
+	auto pRet = new (std::nothrow) EndLevelLayer();
 
 	if (pRet)
 	{
@@ -28,9 +48,9 @@ LevelEndStatsLayer *LevelEndStatsLayer::create(PlayLayer *pl)
 		return nullptr;
 	}
 }
-LevelEndStatsLayer *LevelEndStatsLayer::create()
+EndLevelLayer *EndLevelLayer::create()
 {
-	auto pRet = new (std::nothrow) LevelEndStatsLayer();
+	auto pRet = new (std::nothrow) EndLevelLayer();
 
 	if (pRet)
 	{
@@ -51,7 +71,7 @@ LevelEndStatsLayer *LevelEndStatsLayer::create()
 	}
 }
 
-bool LevelEndStatsLayer::init(PlayLayer *pl)
+bool EndLevelLayer::init(PlayLayer *pl)
 {
 	auto nd = ax::Layer::create();
 	_statsLayer = DropDownLayer::create(nd, "");
@@ -68,51 +88,36 @@ bool LevelEndStatsLayer::init(PlayLayer *pl)
 	sprite->setScale(0.8f);
 	sprite->setPositionY(wsize.height / 5);
 	nd->addChild(sprite);
+	
+	//just call once and use
+	std::string goldFontStr = GameToolbox::getTextureString("goldFont.fnt");
 
 	// attempts
-
-	std::string attemptsText = "Attempts: ";
-	attemptsText += std::to_string(_attempts);
-	auto attempts = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), attemptsText);
+	std::string attemptsText = fmt::format("Attempts: {}", _attempts);
+	auto attempts = ax::Label::createWithBMFont(goldFontStr, attemptsText);
 	attempts->setPositionY(wsize.height / 5 - 25 - 15);
 	attempts->setScale(0.8f);
 	nd->addChild(attempts);
 
 	// jumps
-
-	std::string jumpsText = "Jumps: ";
-	jumpsText += std::to_string(_jumps);
-	auto jumps = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), jumpsText);
+	std::string jumpsText = fmt::format("Jumps: {}", _jumps);
+	auto jumps = ax::Label::createWithBMFont(goldFontStr, jumpsText);
 	jumps->setPositionY(wsize.height / 5 - 50 - 15);
 	jumps->setScale(0.8f);
 	nd->addChild(jumps);
 
 	// time
-
-	float div = (float)_time / 60.f;
-	int minutes = (int)div;
-	int seconds = (div - (float)minutes) * 60;
-
-	std::string minutes_string = "";
-	if (minutes < 10)
-		minutes_string += "0";
-	minutes_string += std::to_string(minutes);
-
-	std::string seconds_string = "";
-	if (seconds < 10)
-		seconds_string += "0";
-	seconds_string += std::to_string(seconds);
-
-	std::string timeText = "Time: " + minutes_string + ":" + seconds_string;
-	auto time = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), timeText);
+	std::chrono::seconds duration{_time};
+	std::string timeText = fmt::format("Time: {:%H:%M:%S}", duration);
+	auto time = ax::Label::createWithBMFont(goldFontStr, timeText);
 	time->setPositionY(wsize.height / 5 - 75 - 15);
 	time->setScale(0.8f);
 	nd->addChild(time);
 
 	// random string
 
-	auto randomText = LevelEndStrings::getRandomString();
-	auto randomt = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), randomText);
+	std::string_view randomText = EndLevelLayer::getRandomEndingString();
+	auto randomt = ax::Label::createWithBMFont(goldFontStr, randomText);
 	randomt->setPositionY(wsize.height / 5 - 120 - 15);
 	if (randomText.length() > 13)
 	{
@@ -137,27 +142,27 @@ bool LevelEndStatsLayer::init(PlayLayer *pl)
 	auto replaybtn = MenuItemSpriteExtra::create(replayspr, [&](Node *nd)
 												 {
 		this->_statsLayer->hideLayer();
-		if(!this->_createdWithoutPlaylayer) {
+		if (!this->_createdWithoutPlaylayer) {
 			ax::AudioEngine::stopAll();
 			ax::AudioEngine::play2d("playSound_01.ogg", false, 0.5f);
 		}
 		this->scheduleOnce([=](float d) {
 			if(!this->_createdWithoutPlaylayer) _playlayer->resetLevel();
 			this->removeFromParentAndCleanup(true);
-		}, 0.5f, "levelendstatslayer_resetlevel"); });
+		}, 0.5f, "EndLevelLayer_resetlevel"); });
 
 	btnmenu->addChild(replaybtn);
 
 	// exit
-
 	auto exitspr = ax::Sprite::createWithSpriteFrameName("GJ_menuBtn_001.png");
 
 	auto exitbtn = MenuItemSpriteExtra::create(exitspr, [&](Node *nd)
-											   {
+	{
 		this->_statsLayer->hideLayer();
-		if(!this->_createdWithoutPlaylayer) {
+		if (!this->_createdWithoutPlaylayer) {
 			this->_playlayer->exit();
-		} });
+		}
+	});
 
 	exitbtn->setPositionX(wsize.width / 3);
 
@@ -170,7 +175,7 @@ bool LevelEndStatsLayer::init(PlayLayer *pl)
 	if (_everyplay_included)
 	{
 		auto emenu = ax::Menu::create();
-		emenu->setPosition({wsize.width / 4.1, wsize.height / 2.2});
+		emenu->setPosition({wsize.width / 4.1f, wsize.height / 2.2f});
 		_statsLayer->_dropLayer->addChild(emenu);
 
 		auto everyplayspr = ax::Sprite::createWithSpriteFrameName("GJ_watchReplay_001.png");

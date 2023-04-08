@@ -3,7 +3,7 @@
 #include "DropDownLayer.h"
 #include "PlayLayer.h"
 
-class LevelEndStatsLayer : public ax::Layer {
+class EndLevelLayer : public ax::Layer {
 private:
     DropDownLayer *_statsLayer;
     PlayLayer *_playlayer;
@@ -15,8 +15,9 @@ private:
     bool _everyplay_included;
 public:
 
-	static LevelEndStatsLayer* create(PlayLayer *pl);
-    static LevelEndStatsLayer* create();
+	static EndLevelLayer* create(PlayLayer *pl);
+    static EndLevelLayer* create();
+	static std::string_view getRandomEndingString();
 
     bool init(PlayLayer *pl);
 };

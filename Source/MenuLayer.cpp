@@ -16,7 +16,7 @@
 #include "MoreGamesLayer.h"
 #include "GameManager.h"
 #include "OptionsLayer.h"
-#include "LevelEndStatsLayer.h"
+#include "EndLevelLayer.h"
 
 /*
 #include "ColoursPalette.h"
