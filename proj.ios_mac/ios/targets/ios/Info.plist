@@ -36,8 +36,8 @@
     <true/>
     <key>UISupportedInterfaceOrientations</key>
     <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
     </array>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2019. All rights reserved.</string>

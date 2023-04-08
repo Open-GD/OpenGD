@@ -272,18 +272,44 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 		playBtn->setVisible(true);
 		return true;
 	}
-
+	
 	std::string postData = fmt::format("levelID={}&secret=Wmfd2893gb7", level->_levelID);
-	GameToolbox::executeHttpRequest(
-		"http://www.boomlings.com/database/downloadGJLevel22.php", postData, ax::network::HttpRequest::Type::POST,
-		AX_CALLBACK_2(LevelInfoLayer::onHttpRequestCompleted, this));
+	
+	_request = new ax::network::HttpRequest();
+	_request->setUrl("http://www.boomlings.com/database/downloadGJLevel22.php");
+	_request->setRequestType(ax::network::HttpRequest::Type::POST);
+	_request->setHeaders(std::vector<std::string>{"User-Agent: "});
+	_request->setRequestData(postData.c_str(), postData.length());
+	_request->setResponseCallback(AX_CALLBACK_2(LevelInfoLayer::onHttpRequestCompleted, this));
+	_request->setTag("valid");
+	ax::network::HttpClient::getInstance()->send(_request);
+	_request->release();
 
 	return true;
 }
 
+void LevelInfoLayer::onExit()
+{
+	_request->setTag("-1");
+	Layer::onExit();
+}
+
 void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
+	GameToolbox::log("ON COMPLETEDDDDDDDDD");
+	
+	std::string_view tag = response->getHttpRequest()->getTag();
+	
+	GameToolbox::log("tag: {}", tag);
+	
+	if(tag != "valid")
+		return;
+	
+	GameToolbox::log("ON PASSSS");
+	
+	if(loading)
 	loading->setVisible(false);
+
 	if (auto str = GameToolbox::getResponse(response))
 	{
 		auto level = GJGameLevel::createWithResponse((*str));
