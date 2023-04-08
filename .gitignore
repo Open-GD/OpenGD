@@ -49,5 +49,7 @@ out
 
 Resources/*
 !Resources/Custom/
+Content*
+!Content/Custom
 
 CMakeCache.txt
