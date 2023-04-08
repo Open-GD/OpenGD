@@ -67,29 +67,29 @@ std::string LevelTools::getAudioTitle(int lid) {
 int LevelTools::getArtistForAudio(int lid)
 {
 	switch(lid) {
-		case -1: return 2;
-		case 0: return 3;
-		case 1: return 0;
-		case 2: return 4;
-		case 3: return 0;
-		case 4: return 0;
-		case 5: return 0;
-		case 6: return 1;
-		case 7: return 1;
-		case 8: return 0;
-		case 9: return 0;
-		case 10: return 1;
-		case 11: return 5;
-		case 12: return 1;
-		case 13: return 5;
-		case 14: return 5;
-		case 15: return 1;
-		case 16: return 1;
-		case 17: return 5;
-		case 18: return 1;
-		case 19: return 6;
-		case 20: return 7;
-		default: return 3;
+		case -1: return ARTIST_OCULAR;
+		case 0: return ARTIST_FBOUND;
+		case 1: return ARTIST_DJVI;
+		case 2: return ARTIST_STEP;
+		case 3: return ARTIST_FBOUND;
+		case 4: return ARTIST_FBOUND;
+		case 5: return ARTIST_FBOUND;
+		case 6: return ARTIST_DJVI;
+		case 7: return ARTIST_WATERFLAME;
+		case 8: return ARTIST_DJVI;
+		case 9: return ARTIST_DJVI;
+		case 10: return ARTIST_WATERFLAME;
+		case 11: return ARTIST_DJNATE;
+		case 12: return ARTIST_WATERFLAME;
+		case 13: return ARTIST_DJNATE;
+		case 14: return ARTIST_DJNATE;
+		case 15: return ARTIST_WATERFLAME;
+		case 16: return ARTIST_WATERFLAME;
+		case 17: return ARTIST_DJNATE;
+		case 18: return ARTIST_WATERFLAME;
+		case 19: return ARTIST_F777;
+		case 20: return ARTIST_MDK;
+		default: return ARTIST_FBOUND;
 	}
 }
 

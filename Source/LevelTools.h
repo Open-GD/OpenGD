@@ -3,6 +3,15 @@
 #include <string>
 #include "SongObject.h"
 
+#define ARTIST_DJVI 0
+#define ARTIST_WATERFLAME 1
+#define ARTIST_OCULAR 2
+#define ARTIST_FBOUND 3
+#define ARTIST_STEP 4
+#define ARTIST_DJNATE 5
+#define ARTIST_F777 6
+#define ARTIST_MDK 7
+
 namespace LevelTools {
 	bool verifyLevelIntegrity(std::string levelData, int id);
 	

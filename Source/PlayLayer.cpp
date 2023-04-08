@@ -21,6 +21,8 @@
 #include <fstream>
 #include <charconv>
 
+#include "external/constants.h"
+
 USING_NS_AX;
 USING_NS_AX_EXT;
 
@@ -179,11 +181,9 @@ inline int _custom_stoi(const auto s) {
 	return ret;
 }
 
-#define USE_FAST_FLOAT 1
-
 inline float _custom_stof(const auto s) {
 	float ret = 0.0f;
-	#if USE_FAST_FLOAT == 1
+	#if USE_FAST_FLOAT == true
 		fast_float::from_chars(s.data(),s.data() + s.size(), ret);
 	#else
 		std::from_chars(s.data(),s.data() + s.size(), ret);

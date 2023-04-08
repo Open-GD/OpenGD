@@ -6,3 +6,5 @@
 #define SHOW_FPS true
 
 #define FULLSCREEN false
+
+#define USE_FAST_FLOAT true
