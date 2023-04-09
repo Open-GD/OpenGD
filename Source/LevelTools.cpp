@@ -3,6 +3,15 @@
 #include "external/constants.h"
 #include <cstring>
 
+constexpr int ARTIST_DJVI = 0;
+constexpr int ARTIST_WATERFLAME = 1;
+constexpr int ARTIST_OCULAR = 2;
+constexpr int ARTIST_FBOUND = 3;
+constexpr int ARTIST_STEP = 4;
+constexpr int ARTIST_DJNATE = 5;
+constexpr int ARTIST_F777 = 6;
+constexpr int ARTIST_MDK = 7;
+
 bool LevelTools::verifyLevelIntegrity(std::string levelData, int id)
 {
 

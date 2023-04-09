@@ -16,7 +16,6 @@ private:
 public:
 
 	static EndLevelLayer* create(PlayLayer *pl);
-    static EndLevelLayer* create();
 	static std::string_view getRandomEndingString();
 
     bool init(PlayLayer *pl);

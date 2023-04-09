@@ -27,38 +27,18 @@ EndLevelLayer *EndLevelLayer::create(PlayLayer *pl)
 {
 	auto pRet = new (std::nothrow) EndLevelLayer();
 
-	if (pRet)
+	if (pRet && pl != nullptr)
 	{
 		pRet->_attempts = pl->_attempts;
 		pRet->_jumps = pl->_jumps;
 		pRet->_time = pl->_secondsSinceStart;
 		pRet->_createdWithoutPlaylayer = false;
 		pRet->_everyplay_included = pl->_everyplay_recorded;
+	} else {
+		pRet->_createdWithoutPlaylayer = true;
 	}
 
 	if (pRet && pRet->init(pl))
-	{
-		pRet->autorelease();
-
-		return pRet;
-	}
-	else
-	{
-		AX_SAFE_DELETE(pRet);
-		return nullptr;
-	}
-}
-EndLevelLayer *EndLevelLayer::create()
-{
-	auto pRet = new (std::nothrow) EndLevelLayer();
-
-	if (pRet)
-	{
-		pRet->_createdWithoutPlaylayer = true;
-		pRet->_everyplay_included = true;
-	}
-
-	if (pRet && pRet->init(nullptr))
 	{
 		pRet->autorelease();
 
@@ -91,6 +71,7 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	
 	//just call once and use
 	std::string goldFontStr = GameToolbox::getTextureString("goldFont.fnt");
+	std::string bigFontStr = GameToolbox::getTextureString("bigFont.fnt");
 
 	// attempts
 	std::string attemptsText = fmt::format("Attempts: {}", _attempts);
@@ -117,7 +98,7 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	// random string
 
 	std::string_view randomText = EndLevelLayer::getRandomEndingString();
-	auto randomt = ax::Label::createWithBMFont(goldFontStr, randomText);
+	auto randomt = ax::Label::createWithBMFont(bigFontStr, randomText);
 	randomt->setPositionY(wsize.height / 5 - 120 - 15);
 	if (randomText.length() > 13)
 	{
