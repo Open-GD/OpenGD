@@ -14,14 +14,12 @@
 #include "ImGui/imgui/imgui.h"
 
 #include "external/benchmark.h"
-#include "external/constants.h"
 #include "external/json.hpp"
-#include "external/fast_float.h"
+#include "external/constants.h"
 
 #include <fstream>
 #include <charconv>
 
-#include "external/constants.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -153,61 +151,20 @@ PlayLayer* PlayLayer::create(GJGameLevel* level)
 
 
 
-std::vector<std::string_view> _splitString_playlayer(std::string_view str, char delim)
-{
-    std::vector<std::string_view> tokens;
-    size_t pos = 0;
-    size_t len = str.length();
-
-    while (pos < len) {
-        size_t end = str.find(delim, pos);
-        if (end == std::string_view::npos) {
-            tokens.emplace_back(str.substr(pos));
-            break;
-        }
-        tokens.emplace_back(str.substr(pos, end - pos));
-        pos = end + 1;
-    }
-
-    return tokens;
-}
-
-
-
-//auto arg works kind of like a template, will compile if .data() and .size() is available
-inline int _custom_stoi(const auto s) {
-	int ret = 0;
-	std::from_chars(s.data(),s.data() + s.size(), ret);
-	return ret;
-}
-
-inline float _custom_stof(const auto s) {
-	float ret = 0.0f;
-	#if USE_FAST_FLOAT == true
-		fast_float::from_chars(s.data(),s.data() + s.size(), ret);
-	#else
-		std::from_chars(s.data(),s.data() + s.size(), ret);
-	#endif
-	return ret;
-}
-
-
-
-
-void PlayLayer::fillColorChannel(std::vector<std::string_view>& colorString, int id)
+void PlayLayer::fillColorChannel(std::span<std::string_view> colorString, int id)
 {
 	for (size_t j = 0; j < colorString.size() - 1; j += 2)
 	{
-		switch (_custom_stoi(colorString[j]))
+		switch (GameToolbox::stoi(colorString[j]))
 		{
 		case 1:
-			m_pColorChannels.insert({id, SpriteColor(ax::Color3B(_custom_stof(colorString[j + 1]), 0, 0), 255, 0)});
+			m_pColorChannels.insert({id, SpriteColor(ax::Color3B(GameToolbox::stof(colorString[j + 1]), 0, 0), 255, 0)});
 			break;
 		case 2:
-			m_pColorChannels.at(id)._color.g = _custom_stof(colorString[j + 1]);
+			m_pColorChannels.at(id)._color.g = GameToolbox::stof(colorString[j + 1]);
 			break;
 		case 3:
-			m_pColorChannels.at(id)._color.b = _custom_stof(colorString[j + 1]);
+			m_pColorChannels.at(id)._color.b = GameToolbox::stof(colorString[j + 1]);
 			break;
 		}
 	}
@@ -217,140 +174,151 @@ void PlayLayer::fillColorChannel(std::vector<std::string_view>& colorString, int
 
 void PlayLayer::loadLevel(std::string levelStr)
 {
-	std::string levelString = GJGameLevel::decompressLvlStr(levelStr);
+	levelStr = GJGameLevel::decompressLvlStr(levelStr);
 
-	std::vector<std::string_view> objData = _splitString_playlayer(levelString, ';');
-	std::vector<std::string_view> levelData = _splitString_playlayer(objData[0], ',');
+	std::vector<std::string_view> objData = GameToolbox::splitByDelimStringView(levelStr, ';');
+	std::vector<std::string_view> levelData = GameToolbox::splitByDelimStringView(objData[0], ',');
 	
 	objData.erase(objData.begin());
-
-	for (size_t i = 0; i < levelData.size() - 1; i += 2)
+	
+	std::thread t_colorChannels([&]()
 	{
-		if (levelData[i] == "kS1")
+		for (size_t i = 0; i < levelData.size() - 1; i += 2)
 		{
-			m_pColorChannels.insert({1000, SpriteColor(ax::Color3B(_custom_stof(levelData[i + 1]), 0, 0), 255, 0)});
-		}
-		else if (levelData[i] == "kS2")
-		{
-			m_pColorChannels.at(1000)._color.g = _custom_stof(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kS3")
-		{
-			m_pColorChannels.at(1000)._color.b = _custom_stof(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kS4")
-		{
-			m_pColorChannels.insert({1001, SpriteColor(ax::Color3B(_custom_stof(levelData[i + 1]), 0, 0), 255, 0)});
-		}
-		else if (levelData[i] == "kS5")
-		{
-			m_pColorChannels.at(1001)._color.g = _custom_stof(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kS6")
-		{
-			m_pColorChannels.at(1001)._color.b = _custom_stof(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kS29")
-		{
-			auto colorString = _splitString_playlayer(levelData[i + 1], '_');
-			fillColorChannel(colorString, 1000);
-		}
-		else if (levelData[i] == "kS30")
-		{
-			auto colorString = _splitString_playlayer(levelData[i + 1], '_');
-			fillColorChannel(colorString, 1001);
-		}
-		else if (levelData[i] == "kS31")
-		{
-			auto colorString = _splitString_playlayer(levelData[i + 1], '_');
-			fillColorChannel(colorString, 1002);
-		}
-		else if (levelData[i] == "kS32")
-		{
-			auto colorString = _splitString_playlayer(levelData[i + 1], '_');
-			fillColorChannel(colorString, 1004);
-		}
-		else if (levelData[i] == "kS37")
-		{
-			auto colorString = _splitString_playlayer(levelData[i + 1], '_');
-			fillColorChannel(colorString, 1003);
-		}
-		else if (levelData[i] == "kS38")
-		{
-			auto colorString = _splitString_playlayer(levelData[i + 1], '|');
-			for (std::string_view colorData : colorString)
+			if (levelData[i] == "kS1")
 			{
-				auto innerData = _splitString_playlayer(colorData, '_');
-				int key;
-				SpriteColor col;
-				col._blending = false;
-				for (size_t j = 0; j < innerData.size() - 1; j += 2)
-				{
-					switch (_custom_stoi(innerData[j]))
-					{
-					case 1:
-						col._color.r = _custom_stof(innerData[j + 1]);
-						break;
-					case 2:
-						col._color.g = _custom_stof(innerData[j + 1]);
-						break;
-					case 3:
-						col._color.b = _custom_stof(innerData[j + 1]);
-						break;
-					case 5:
-						col._blending = _custom_stoi(innerData[j + 1]);
-						break;
-					case 6:
-						key = _custom_stoi(innerData[j + 1]);
-						break;
-					case 7:
-						col._opacity = _custom_stof(innerData[j + 1]) * 255.f;
-						break;
-					}
-				}
-				m_pColorChannels.insert({key, col});
+				m_pColorChannels.insert({1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
 			}
-		}
-		else if (levelData[i] == "kA6")
-		{
-			_bgID = _custom_stoi(levelData[i + 1]);
-			if (!_bgID) _bgID = 1;
-		}
-		else if (levelData[i] == "kA7")
-		{
-			_groundID = _custom_stoi(levelData[i + 1]);
-			if (!_groundID) _groundID = 1;
-		}
-		else if (levelData[i] == "kA2")
-		{
-			_levelSettings.gamemode = (PlayerGamemode)_custom_stoi(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kA3")
-		{
-			_levelSettings.mini = _custom_stoi(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kA4")
-		{
-			_levelSettings.speed = _custom_stoi(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kA8")
-		{
-			_levelSettings.dual = _custom_stoi(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kA10")
-		{
-			_levelSettings.twoPlayer = _custom_stoi(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kA11")
-		{
-			_levelSettings.flipGravity = _custom_stoi(levelData[i + 1]);
-		}
-		else if (levelData[i] == "kA13")
-		{
-			_levelSettings.songOffset = _custom_stof(levelData[i + 1]);
-		}
-	}
-
+			else if (levelData[i] == "kS2")
+			{
+				m_pColorChannels.at(1000)._color.g = GameToolbox::stof(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kS3")
+			{
+				m_pColorChannels.at(1000)._color.b = GameToolbox::stof(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kS4")
+			{
+				m_pColorChannels.insert({1001, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
+			}
+			else if (levelData[i] == "kS5")
+			{
+				m_pColorChannels.at(1001)._color.g = GameToolbox::stof(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kS6")
+			{
+				m_pColorChannels.at(1001)._color.b = GameToolbox::stof(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kS29")
+			{
+				auto colorString = GameToolbox::splitByDelimStringView(levelData[i + 1], '_');
+				fillColorChannel(colorString, 1000);
+			}
+			else if (levelData[i] == "kS30")
+			{
+				auto colorString = GameToolbox::splitByDelimStringView(levelData[i + 1], '_');
+				fillColorChannel(colorString, 1001);
+			}
+			else if (levelData[i] == "kS31")
+			{
+				auto colorString = GameToolbox::splitByDelimStringView(levelData[i + 1], '_');
+				fillColorChannel(colorString, 1002);
+			}
+			else if (levelData[i] == "kS32")
+			{
+				auto colorString = GameToolbox::splitByDelimStringView(levelData[i + 1], '_');
+				fillColorChannel(colorString, 1004);
+			}
+			else if (levelData[i] == "kS37")
+			{
+				auto colorString = GameToolbox::splitByDelimStringView(levelData[i + 1], '_');
+				fillColorChannel(colorString, 1003);
+			}
+			else if (levelData[i] == "kS38")
+			{
+				auto colorString = GameToolbox::splitByDelimStringView(levelData[i + 1], '|');
+				for (std::string_view colorData : colorString)
+				{
+					auto innerData = GameToolbox::splitByDelimStringView(colorData, '_');
+					int key;
+					SpriteColor col;
+					col._blending = false;
+					for (size_t j = 0; j < innerData.size() - 1; j += 2)
+					{
+						switch (GameToolbox::stoi(innerData[j]))
+						{
+						case 1:
+							col._color.r = GameToolbox::stof(innerData[j + 1]);
+							break;
+						case 2:
+							col._color.g = GameToolbox::stof(innerData[j + 1]);
+							break;
+						case 3:
+							col._color.b = GameToolbox::stof(innerData[j + 1]);
+							break;
+						case 5:
+							col._blending = GameToolbox::stoi(innerData[j + 1]);
+							break;
+						case 6:
+							key = GameToolbox::stoi(innerData[j + 1]);
+							break;
+						case 7:
+							col._opacity = GameToolbox::stof(innerData[j + 1]) * 255.f;
+							break;
+						}
+					}
+					m_pColorChannels.insert({key, col});
+				}
+			}
+			else if (levelData[i] == "kA6")
+			{
+				_bgID = GameToolbox::stoi(levelData[i + 1]);
+				if (!_bgID) _bgID = 1;
+			}
+			else if (levelData[i] == "kA7")
+			{
+				_groundID = GameToolbox::stoi(levelData[i + 1]);
+				if (!_groundID) _groundID = 1;
+			}
+			else if (levelData[i] == "kA2")
+			{
+				_levelSettings.gamemode = (PlayerGamemode)GameToolbox::stoi(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kA3")
+			{
+				_levelSettings.mini = GameToolbox::stoi(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kA4")
+			{
+				_levelSettings.speed = GameToolbox::stoi(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kA8")
+			{
+				_levelSettings.dual = GameToolbox::stoi(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kA10")
+			{
+				_levelSettings.twoPlayer = GameToolbox::stoi(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kA11")
+			{
+				_levelSettings.flipGravity = GameToolbox::stoi(levelData[i + 1]);
+			}
+			else if (levelData[i] == "kA13")
+			{
+				_levelSettings.songOffset = GameToolbox::stof(levelData[i + 1]);
+			}
+			
+		} //for (size_t i = 0; i < levelData.size() - 1; i += 2)
+		
+	}); //thread
+	
+	t_colorChannels.join();
+	
+	//STOP
+	std::thread t_gameObjects([&]() {
+		
+		
 	m_pColorChannels[1005]._color = _player1->getMainColor();
 	m_pColorChannels[1006]._color = _player1->getSecondaryColor();
 	m_pColorChannels[1010]._color = Color3B::BLACK;
@@ -359,7 +327,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 	for (std::string_view data : objData)
 	{
-		auto d = _splitString_playlayer(data, ',');
+		auto d = GameToolbox::splitByDelimStringView(data, ',');
 
 		GameObject* obj = nullptr;
 
@@ -367,7 +335,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 
 		for (size_t i = 0; i < d.size() - 1; i += 2)
 		{
-			int key = _custom_stoi(d[i]);
+			int key = GameToolbox::stoi(d[i]);
 
 			if (key != 1 && obj == nullptr) break;
 
@@ -375,14 +343,11 @@ void PlayLayer::loadLevel(std::string levelStr)
 			{
 			case 1:
 			{
-				int id = _custom_stoi(d[i + 1]);
+				int id = GameToolbox::stoi(d[i + 1]);
 
 				if (!GameObject::_pBlocks.contains(id)) continue;
 
-				auto block = GameObject::_pBlocks.at(id);
-				std::string frame = static_cast<std::string>(block[0]);
-				std::string glowFrame = "";
-				if (block.size() > 1) glowFrame = static_cast<std::string>(block[1]);
+				std::string_view frame = GameObject::_pBlocks.at(id);
 
 				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
 					std::end(GameObject::_pTriggers))
@@ -391,7 +356,7 @@ void PlayLayer::loadLevel(std::string levelStr)
 					obj->_isTrigger = true;
 				}
 				else
-					obj = GameObject::create(frame, glowFrame);
+					obj = GameObject::create(frame, GameObject::getGlowFrame(id));
 
 				if (obj == nullptr) break;
 
@@ -414,50 +379,50 @@ void PlayLayer::loadLevel(std::string levelStr)
 			}
 			break;
 			case 2:
-				obj->setPositionX(_custom_stof(d[i + 1]));
+				obj->setPositionX(GameToolbox::stof(d[i + 1]));
 				break;
 			case 3:
-				obj->setPositionY(_custom_stof(d[i + 1]) + 90.0f);
+				obj->setPositionY(GameToolbox::stof(d[i + 1]) + 90.0f);
 				break;
 			case 4:
-				obj->setScaleX(-1.f * _custom_stoi(d[i + 1]));
+				obj->setScaleX(-1.f * GameToolbox::stoi(d[i + 1]));
 				break;
 			case 5:
-				obj->setScaleY(-1.f * _custom_stoi(d[i + 1]));
+				obj->setScaleY(-1.f * GameToolbox::stoi(d[i + 1]));
 				break;
 			case 6:
-				obj->setRotation(_custom_stof(d[i + 1]));
+				obj->setRotation(GameToolbox::stof(d[i + 1]));
 				break;
 			case 7:
-				dynamic_cast<EffectGameObject*>(obj)->_color.r = _custom_stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_color.r = GameToolbox::stof(d[i + 1]);
 				break;
 			case 8:
-				dynamic_cast<EffectGameObject*>(obj)->_color.g = _custom_stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_color.g = GameToolbox::stof(d[i + 1]);
 				break;
 			case 9:
-				dynamic_cast<EffectGameObject*>(obj)->_color.b = _custom_stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_color.b = GameToolbox::stof(d[i + 1]);
 				break;
 			case 10:
-				dynamic_cast<EffectGameObject*>(obj)->_duration = _custom_stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_duration = GameToolbox::stof(d[i + 1]);
 				break;
 			case 21:
-				obj->_mainColorChannel = _custom_stoi(d[i + 1]);
+				obj->_mainColorChannel = GameToolbox::stoi(d[i + 1]);
 				break;
 			case 22:
-				obj->_secColorChannel = _custom_stoi(d[i + 1]);
+				obj->_secColorChannel = GameToolbox::stoi(d[i + 1]);
 				break;
 			case 23:
-				dynamic_cast<EffectGameObject*>(obj)->_targetColorId = _custom_stof(d[i + 1]);
+				dynamic_cast<EffectGameObject*>(obj)->_targetColorId = GameToolbox::stof(d[i + 1]);
 				break;
 			case 24:
-				obj->_zLayer = _custom_stoi(d[i + 1]);
+				obj->_zLayer = GameToolbox::stoi(d[i + 1]);
 				break;
 			case 25:
-				obj->setGlobalZOrder(_custom_stoi(d[i + 1]));
+				obj->setGlobalZOrder(GameToolbox::stoi(d[i + 1]));
 				break;
 			case 32:
-				obj->setScaleX(obj->getScaleX() * _custom_stof(d[i + 1]));
-				obj->setScaleY(obj->getScaleY() * _custom_stof(d[i + 1]));
+				obj->setScaleX(obj->getScaleX() * GameToolbox::stof(d[i + 1]));
+				obj->setScaleY(obj->getScaleY() * GameToolbox::stof(d[i + 1]));
 				break;
 			case 67: // dont enter
 			case 64: // dont exit
@@ -494,6 +459,8 @@ void PlayLayer::loadLevel(std::string levelStr)
 			obj->setStartScaleY(obj->getScaleY());
 		}
 	}
+	});
+	t_gameObjects.join();
 }
 
 bool PlayLayer::isObjectBlending(GameObject* obj)

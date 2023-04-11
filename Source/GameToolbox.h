@@ -39,9 +39,7 @@ namespace GameToolbox
 		Medium,
 		High
 	};
-
-	extern std::vector<std::string> _uhdTextureIgnoreList;
-
+	
 	void popSceneWithTransition(float time, popTransition type = kTransitionFade);
 	void limitLabelWidth(ax::Label* label, float width, float normalScale, float minScale = 0);
 	ax::Label* createBMFont(std::string text, std::string font);
@@ -81,13 +79,15 @@ namespace GameToolbox
 	std::string getSteamGamePathByAppID(int appID, std::string exeName);
 
 	std::optional<std::string> getResponse(ax::network::HttpResponse* response);
+	
 	std::vector<std::string> splitByDelim(const std::string& s, char delim);
-
+	std::vector<std::string_view> splitByDelimStringView(std::string_view str, char delim);
+	
+	float stof(const std::string_view str);
+	int stoi(const std::string_view str);
+	
 	void executeHttpRequest(const std::string& url, const std::string& postData, ax::network::HttpRequest::Type type, const ax::network::ccHttpRequestCallback& callback);
 	
-	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int *outLength, unsigned int outLenghtHint);
-	int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int outLengthHint);
-	int ccInflateMemory(unsigned char *in, unsigned int inLength, unsigned char **out);
 	
 	ax::BlendFunc getBlending();
 
@@ -100,6 +100,5 @@ namespace GameToolbox
 		void log(fmt::format_string<T...> fmt, T&&... args) {
 		return fmt::print("[{:%H:%M:%S}] {}\n", fmt::gmtime(std::time(NULL)), fmt::format(fmt, std::forward<T>(args)...));
 	}
-
-	bool hasStringInVector(std::vector<std::string> vect, std::string val);
+	
 };

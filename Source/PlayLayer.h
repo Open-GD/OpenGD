@@ -13,6 +13,7 @@
 #include "UILayer.h"
 
 #include <vector>
+#include <span>
 
 struct LevelSettings
 {
@@ -33,7 +34,7 @@ class PlayLayer : public ax::Layer
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void createLevelEnd();
 
-	void fillColorChannel(std::vector<std::string_view>& colorString, int id);
+	void fillColorChannel(std::span<std::string_view> colorString, int id);
 
 	ax::Sprite* m_pBG;
 	GroundLayer *_bottomGround, *_ceiling;

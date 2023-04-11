@@ -3,6 +3,7 @@
 #include <fstream>
 #include "AltDirector.h"
 #include "GameManager.h"
+#include "external/fast_float.h"
 
 USING_NS_AX;
 
@@ -665,9 +666,9 @@ std::vector<std::string> GameToolbox::splitByDelim(const std::string& str, char 
     size_t pos = 0;
     size_t len = str.length();
     tokens.reserve(len / 2);  // allocate memory for expected number of tokens
-
-
-    while (pos < len) {
+	
+    while (pos < len)
+	{
         size_t end = str.find_first_of(delim, pos);
         if (end == std::string::npos)
 		{
@@ -679,7 +680,7 @@ std::vector<std::string> GameToolbox::splitByDelim(const std::string& str, char 
     }
 
     return tokens;
-};
+}
 
 void GameToolbox::executeHttpRequest(const std::string& url, const std::string& postData, ax::network::HttpRequest::Type type, const ax::network::ccHttpRequestCallback& callback)
 {
@@ -691,4 +692,36 @@ void GameToolbox::executeHttpRequest(const std::string& url, const std::string& 
 	request->setResponseCallback(callback);
 	ax::network::HttpClient::getInstance()->send(request);
 	request->release();
+}
+
+std::vector<std::string_view> GameToolbox::splitByDelimStringView(std::string_view str, char delim)
+{
+    std::vector<std::string_view> tokens;
+    size_t pos = 0;
+    size_t len = str.length();
+
+    while (pos < len) {
+        size_t end = str.find(delim, pos);
+        if (end == std::string_view::npos) {
+            tokens.emplace_back(str.substr(pos));
+            break;
+        }
+        tokens.emplace_back(str.substr(pos, end - pos));
+        pos = end + 1;
+    }
+
+    return tokens;
+}
+
+//auto arg works kind of like a template, will compile if .data() and .size() is available
+int GameToolbox::stoi(const std::string_view s) {
+	int ret = 0;
+	std::from_chars(s.data(),s.data() + s.size(), ret);
+	return ret;
+}
+
+float GameToolbox::stof(const std::string_view s) {
+	float ret = 0.0f;
+	fast_float::from_chars(s.data(),s.data() + s.size(), ret);
+	return ret;
 }

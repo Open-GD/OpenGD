@@ -130,7 +130,7 @@ class GameObject : public ax::Sprite
 	static const std::unordered_map<int, Hitbox> _pHitboxes;
 	static const std::unordered_map<int, float> _pHitboxRadius;
 	// from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35
-	static const std::unordered_map<int, std::vector<const char*>> _pBlocks;
+	static const std::unordered_map<int, const char*> _pBlocks;
 
 	static const std::vector<int> _pSolids;
 	static const std::vector<int> _pTriggers;
@@ -194,6 +194,8 @@ class GameObject : public ax::Sprite
 	bool getDontTransform() { return _dontTransform; }
 
 	void setDontTransform(bool v) { _dontTransform = v; }
+	
+	static std::string_view getGlowFrame(int objectID);
 
 	// AX_SYNTESIZE(int, _pColorRed, ColorRed); // does not work
 	// AX_SYNTESIZE(int, _pColorGreen, ColorGreen);

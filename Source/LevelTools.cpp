@@ -12,10 +12,11 @@ constexpr int ARTIST_DJNATE = 5;
 constexpr int ARTIST_F777 = 6;
 constexpr int ARTIST_MDK = 7;
 
-bool LevelTools::verifyLevelIntegrity(std::string levelData, int id)
+bool LevelTools::verifyLevelIntegrity(std::string_view levelData, int id)
 {
-
-	if(!levelData.starts_with("H4sIAAAAAAAA") && id <= 21) return false || FORCE_LOAD_LEVEL;
+	if(!levelData.starts_with("H4sIAAAAAAAA") && id <= 21)
+		return false;
+	
 	return true;
 }
 

@@ -5,10 +5,6 @@
 #include <axmol.h>
 #include "GameToolbox.h"
 
-#define PKSTRING 0
-#define PKINT 1
-#define PKBOOL 2
-#define PKBASE64 3
 
 enum DifficultyType {
 	kMainLevels = 0,
@@ -71,7 +67,7 @@ public:
 	std::string _levelCreator{};
 
 	// Expects RobTop like string. If it not, nullptr gets returned.
-	static GJGameLevel *createWithResponse(std::string backendResponse);
+	static GJGameLevel *createWithResponse(std::string_view backendResponse);
 	GJGameLevel(){}
 	GJGameLevel(std::string levelName, int levelID);
 	static GJGameLevel *createWithMinimumData(

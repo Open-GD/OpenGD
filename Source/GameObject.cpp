@@ -336,3 +336,26 @@ ax::Rect GameObject::getOuterBounds(float a, float b)
 	r.origin.y -= r.size.height / 2;
 	return r;
 }
+
+std::string_view GameObject::getGlowFrame(int objectID)
+{
+	return "";
+	
+	// switch(objectID)
+	// {
+		// [[likely]] default: return "";
+		// case 44: return "checkpoint_01_glow_001";
+		// [[likely]] case 1: return "square_01_glow_001";
+		// [[likely]] case 2: return "square_02_glow_001";
+		// [[likely]] case 3: return "square_03_glow_001";
+		// [[likely]] case 4: return "square_04_glow_001";
+		// [[likely]] case 6: return "square_06_glow_001";
+		// [[likely]] case 7: return "square_07_glow_001";
+		// [[likely]] case 8: return "spike_01_glow_001";
+		// case 35: return "bump_01_glow_001";
+		// case 39: return "spike_02_glow_001";
+		// case 40: return "plank_01_glow_001";
+		// [[unlikely]] case 1903: return "plank_01_glow_001";
+	// }
+	
+}

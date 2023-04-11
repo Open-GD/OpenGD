@@ -163,21 +163,21 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 			return;
 		
 		GameToolbox::log("response: {}", *str);
-		auto splits = GameToolbox::splitByDelim((*str), '#');
-		auto levels = GameToolbox::splitByDelim(splits[0], '|');
-		auto authorsStrings = GameToolbox::splitByDelim(splits[1], '|');
+		auto splits = GameToolbox::splitByDelimStringView((*str), '#');
+		auto levels = GameToolbox::splitByDelimStringView(splits[0], '|');
+		auto authorsStrings = GameToolbox::splitByDelimStringView(splits[1], '|');
 		
-		std::vector<std::vector<std::string>> authors;
+		std::vector<std::vector<std::string_view>> authors;
 		authors.reserve(authorsStrings.size()); //pre-allocate enough memory
-		for(const std::string& aStr : authorsStrings) {
-			authors.push_back(std::move(GameToolbox::splitByDelim(aStr, ':')));
+		for(const std::string_view aStr : authorsStrings) {
+			authors.push_back(std::move(GameToolbox::splitByDelimStringView(aStr, ':')));
 		}
 		
-		auto getAuthor = [&](GJGameLevel* gjlevel) -> std::string
+		auto getAuthor = [&](GJGameLevel* gjlevel) -> std::string_view
 		{
 			for(const auto& author : authors)
 			{
-				if(std::stoi(author[0]) == gjlevel->_playerID)
+				if(GameToolbox::stoi(author[0]) == gjlevel->_playerID)
 					return author[1];
 			}
 			return std::string("-");

@@ -4,7 +4,7 @@
 #include "SongObject.h"
 
 namespace LevelTools {
-	bool verifyLevelIntegrity(std::string levelData, int id);
+	bool verifyLevelIntegrity(std::string_view levelData, int id);
 	
 	std::string getAudioFilename(int lid);
 	std::string getAudioTitle(int lid);
