@@ -50,5 +50,6 @@ enum SearchType {
 			bool _songFilter;
 
 		static GJSearchObject* create();
-		static GJSearchObject* create(std::string query);
+		static GJSearchObject* create(std::string_view query);
+		static GJSearchObject* create(SearchType type);
 	};

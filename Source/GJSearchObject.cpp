@@ -14,15 +14,21 @@ GJSearchObject* GJSearchObject::create()
 	}
 }
 
-GJSearchObject* GJSearchObject::create(std::string query)
+GJSearchObject* GJSearchObject::create(SearchType type)
 {
-	auto ret = GJSearchObject::create();
-	if(!ret)
-	{
-		return nullptr;
+	GJSearchObject* ret = GJSearchObject::create(); 
+	if (ret) {
+		ret->_screenID = type;
 	}
+	return ret;
+}
 
-	ret->_searchQuery = query;
-
+GJSearchObject* GJSearchObject::create(std::string_view query)
+{
+	GJSearchObject* ret = GJSearchObject::create();
+	if (ret) {
+		ret->_searchQuery = {query.begin(), query.end()};
+	}
+	
 	return ret;
 }

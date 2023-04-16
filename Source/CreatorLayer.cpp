@@ -1,15 +1,15 @@
 #include "CreatorLayer.h"
 #include <AudioEngine.h>
-#include <LevelPage.h>
+#include "LevelPage.h"
 #include "GJGameLevel.h"
 #include "GameToolbox.h"
+#include "LevelBrowserLayer.h"
 #include "LevelEditorLayer.h"
 #include "LevelInfoLayer.h"
 #include "LevelSearchLayer.h"
 #include "MenuItemSpriteExtra.h"
 #include "MenuLayer.h"
 #include "PlayLayer.h"
-#include "base64.h"
 
 
 USING_NS_AX;
@@ -74,15 +74,17 @@ bool CreatorLayer::init()
 	
 	auto onButtonsCallback = [this](Node* btn) -> void
 	{
+		GameToolbox::log("tag: {}", btn->getTag());
 		switch (btn->getTag())
 		{
-			case 0:
-			{
-				auto scene = LevelEditorLayer::scene(GJGameLevel::createWithMinimumData("Unnamed 0", "partur", 5));
-				return Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
-			}
-			case 10:
-				return Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelSearchLayer::scene()));
+			// case 0:
+			// {
+				// auto scene = LevelEditorLayer::scene(GJGameLevel::createWithMinimumData("Unnamed 0", "partur", 5));
+				// return Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
+			// }
+			case 7: return  Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(GJSearchObject::create(kGJSearchTypeFeatured))));
+			case 8: return  Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(GJSearchObject::create(kGJSearchTypeHallOfFame))));
+			case 10: return Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelSearchLayer::scene()));
 		}
 	};
 	
@@ -113,13 +115,11 @@ bool CreatorLayer::init()
 	
 	addChild(menu);
 	
-#ifdef AX_PLATFORM_PC
 	auto listener = EventListenerKeyboard::create();
 
     listener->onKeyPressed  = AX_CALLBACK_2(CreatorLayer::onKeyPressed, this);
 
     director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-#endif
 
 	return true;
 }
