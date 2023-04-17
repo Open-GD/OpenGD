@@ -562,6 +562,31 @@ void GameToolbox::alignItemsInColumnsWithPadding(ax::Menu* menu,
 	}
 }
 
+void GameToolbox::alignItemsHorizontally(ax::Vector<Node*> children, float padding, Point location)
+{
+	auto totalWidth = -padding;
+
+	if (children.size())
+	{
+		for (Node* child : children)
+		{
+			totalWidth += padding + (child->getContentSize().width * child->getScaleX());
+		}
+
+		float xPos = -(float)(totalWidth * 0.5);
+		for (Node* child : children)
+		{
+			auto width = child->getContentSize().width;
+			auto scale = child->getScaleX();
+
+			child->setPosition({ xPos + (width * scale) * 0.5f, 0 });
+			child->setPosition(child->getPosition() + location);
+
+			xPos = xPos + (float)(padding + (float)(width * child->getScaleX()));
+		}
+	}
+}
+
 void GameToolbox::alignItemsHorizontallyWithPadding(ax::Vector<ax::Node*> _children, float padding) {
 	float width = -padding;
 	for (const auto& child : _children)
