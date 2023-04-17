@@ -98,9 +98,7 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 	moreByLabel->setScale(0.5);
 	this->_mainLayer->addChild(moreByLabel);
 
-
-	auto socialsMenu = Menu::create();
-	socialsMenu->setPosition(closeBtnMenu->convertToNodeSpace(artistLabel->getPosition()) + Vec2(0, -150));
+	ax::Vector<Node*> socials;
 
 	if (!ngArtistLink.empty())
 	{
@@ -108,7 +106,8 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 		{
 			Application::getInstance()->openURL(_ngArtistLink);
 		});
-		socialsMenu->addChild(ngButton);
+		socials.pushBack(ngButton);
+		closeBtnMenu->addChild(ngButton);
 	}
 
 	if (!ytArtistLink.empty())
@@ -117,7 +116,8 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 		{
 			Application::getInstance()->openURL(_ytArtistLink);
 		});
-		socialsMenu->addChild(ytButton);
+		socials.pushBack(ytButton);
+		closeBtnMenu->addChild(ytButton);
 	}
 
 	if (!fbArtistLink.empty())
@@ -126,12 +126,11 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 		{
 			Application::getInstance()->openURL(_fbArtistLink);
 		});
-		socialsMenu->addChild(ytButton);
+		socials.pushBack(ytButton);
+		closeBtnMenu->addChild(ytButton);
 	}
 
-	closeBtnMenu->addChild(socialsMenu);
-
-	GameToolbox::alignItemsHorizontallyWithPadding(socialsMenu->getChildren(), 20);
+	GameToolbox::alignItemsHorizontally(socials, 20, closeBtnMenu->convertToNodeSpace({ winSize.width / 2, ((winSize.height / 2) - 130.0f) + 40.0f }));
 
 	return true;
 }

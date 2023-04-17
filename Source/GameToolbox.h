@@ -59,6 +59,7 @@ namespace GameToolbox
 	std::string getTextureString(std::string texture);
 	void alignItemsInColumnsWithPadding(ax::Menu* menu, const int rows, const int x_padding, const int y_padding);
 	void alignItemsVerticallyWithPadding(ax::Vector<ax::Node*> children, float padding);
+	void alignItemsHorizontally(ax::Vector<ax::Node*> children, float padding, ax::Point location);
 	void alignItemsHorizontallyWithPadding(ax::Vector<ax::Node*> children, float padding);
 		void createBG(ax::Node* layer, ax::Color3B color);
 		void createBG(ax::Node* layer);
