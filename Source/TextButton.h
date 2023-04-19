@@ -26,7 +26,7 @@ public:
 	/// @param bgTexture The texture of the bg
 	/// @param callback The callback function, called on button release. Can be a lambda. The Node* is the button itself
 	/// @return A new button
-	static TextButton* create(std::string text, std::string font, float width, float height, std::string bgTexture, std::function<void(TextButton*)> callback);
+	static TextButton* create(std::string_view text, std::string_view font, float width, float height, std::string_view bgTexture, std::function<void(TextButton*)> callback);
 
 	/// @brief Basically a ButtonSprite implementation.
 	/// @param text The button text
@@ -35,22 +35,22 @@ public:
 	/// @param height The height of the bg. Leave 0 for auto-adjusting
 	/// @param callback The callback function, called on button release. Can be a lambda. The Node* is the button itself
 	/// @return A new button
-	static TextButton* create(std::string text, std::string font, float width, float height, std::function<void(TextButton*)> callback);
+	static TextButton* create(std::string_view text, std::string_view font, float width, float height, std::function<void(TextButton*)> callback);
 
 	/// @brief Basically a ButtonSprite implementation.
 	/// @param text The button text
 	/// @param font The font of the text
 	/// @param callback The callback function, called on button release. Can be a lambda. The Node* is the button itself
 	/// @return A new button
-	static TextButton* create(std::string text, std::string font, std::function<void(TextButton*)> callback);
+	static TextButton* create(std::string_view text, std::string_view font, std::function<void(TextButton*)> callback);
 
 	/// @brief Basically a ButtonSprite implementation.
 	/// @param text The button text
 	/// @param callback The callback function, called on button release. Can be a lambda. The Node* is the button itself
 	/// @return A new button
-	static TextButton* create(std::string text, std::function<void(TextButton*)> callback);
+	static TextButton* create(std::string_view text, std::function<void(TextButton*)> callback);
 
-	void setText(std::string text);
+	void setText(std::string_view text);
 	void setCallback(std::function<void(TextButton*)> callback);
 	
 	ax::Label* getLabel();

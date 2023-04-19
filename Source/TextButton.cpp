@@ -55,7 +55,7 @@ bool TextButton::init(std::string_view text, std::string_view font, float width,
 
 
 // Getters and Setters
-void TextButton::setText(std::string text) {
+void TextButton::setText(std::string_view text) {
 	this->m_pText->setString(text);
 
 	this->m_pBG->setContentSize({
@@ -82,7 +82,7 @@ void TextButton::setCallback(std::function<void(TextButton*)> callback) {
 
 // Create funcs
 #pragma region
-TextButton* TextButton::create(std::string text, std::string font, float width, float height, std::string bgTexture, std::function<void(TextButton*)> callback) {
+TextButton* TextButton::create(std::string_view text, std::string_view font, float width, float height, std::string_view bgTexture, std::function<void(TextButton*)> callback) {
 	auto pRet = new(std::nothrow) TextButton();
 
 	if (pRet && pRet->init(text, font, width, height, bgTexture, callback)) {
@@ -94,14 +94,14 @@ TextButton* TextButton::create(std::string text, std::string font, float width, 
 	}
 }
 
-TextButton* TextButton::create(std::string text, std::function<void(TextButton*)> callback) {
+TextButton* TextButton::create(std::string_view text, std::function<void(TextButton*)> callback) {
 	return TextButton::create(text, GameToolbox::getTextureString("goldFont.fnt"), 0, 0, GameToolbox::getTextureString("GJ_button_01.png"), callback);
 }
 
-TextButton* TextButton::create(std::string text, std::string font, std::function<void(TextButton*)> callback) {
+TextButton* TextButton::create(std::string_view text, std::string_view font, std::function<void(TextButton*)> callback) {
 	return TextButton::create(text, font, 0, 0, GameToolbox::getTextureString("GJ_button_01.png"), callback);
 }
 
-TextButton* TextButton::create(std::string text, std::string font, float width, float height, std::function<void(TextButton*)> callback) {
+TextButton* TextButton::create(std::string_view text, std::string_view font, float width, float height, std::function<void(TextButton*)> callback) {
 	return TextButton::create(text, font, width, height, GameToolbox::getTextureString("GJ_button_01.png"), callback);
 }

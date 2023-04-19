@@ -37,7 +37,10 @@
 
 # Ignore build folders
 **/build
-build
+build*
+run.bat
+run.bat.in
+run.bat.txt
 *build
 build-docs/
 bin

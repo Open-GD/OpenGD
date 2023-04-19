@@ -75,9 +75,6 @@ namespace GameToolbox
 	float slerp(float a, float b, float ratio);
 	float iSlerp(float a, float b, float ratio, float dt);
 	float repeat(float a, float length);
-	
-	// windows only lmaoooo
-	std::string getSteamGamePathByAppID(int appID, std::string exeName);
 
 	std::optional<std::string> getResponse(ax::network::HttpResponse* response);
 	
