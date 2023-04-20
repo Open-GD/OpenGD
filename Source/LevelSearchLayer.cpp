@@ -105,23 +105,20 @@ bool LevelSearchLayer::init()
 	menuSearch->addChild(searchProfileBtn);
 	this->addChild(menuSearch);
 
-	_searchField = TextInputNode::create(194.0f, 50.0f, GameToolbox::getTextureString("bigFont.fnt").c_str(), "Enter a level, user or id", 18);
-	_searchField->_pTextField->setAnchorPoint({ 0.0, 0.5 });
-	_searchField->_pTextField->setMaxLength(20);
-	_searchField->_pTextField->setMaxLengthEnabled(true);
-	_searchField->_pPlaceholder->setColor({ 120, 170, 240 });
-	_searchField->setPosition({ searchPos.x - 174.0f, searchPos.y - 25.0f });
+	_searchField = TextInputNode::create(194.0f, 50.0f, GameToolbox::getTextureString("bigFont.fnt").c_str(), "Enter a level, user or id", 0x18);
+	_searchField->setPosition({ searchPos.x - 174.0f, searchPos.y });
+	_searchField->setAnchorPoint({ 0.0, 0.5 });
+
+	auto sfTextField = _searchField->getTextField();
+	sfTextField->setMaxLength(20);
+	sfTextField->setMaxLengthEnabled(true);
+
+	auto sfDisplayLabel = _searchField->getDisplayedLabel();
+	sfDisplayLabel->setPositionX(0);
+	sfDisplayLabel->setAnchorPoint({ 0, 0.5 });
+
 	this->addChild(_searchField);
 
-
-	// _searchField = ui::TextField::create("Enter a level, user or id", GameToolbox::getTextureString("bigFont.fnt"), 15);
-	// _searchField->setPlaceHolderColor({ 120, 170, 240 });
-	// _searchField->setMaxLength(20);
-	// _searchField->setTextHorizontalAlignment(ax::TextHAlignment::LEFT); //not working? lol
-	// _searchField->setMaxLengthEnabled(true);
-	// _searchField->setCursorEnabled(true);
-	// _searchField->setPosition({ searchPos.x - 75.0f, searchPos.y });
-	// this->addChild(_searchField);
 
 	// Quick Search
 	Vec2 quickSearchPos{ winSize.width / 2, winSize.height / 2 + 28.0f };
@@ -312,7 +309,7 @@ bool LevelSearchLayer::init()
 
 void LevelSearchLayer::onSearch(Node* btn)
 {
-	_searchObject->_searchQuery = _searchField->_pTextField->getString();
+	_searchObject->_searchQuery = _searchField->getTextField()->getString();
 	_searchObject->_difficulty = "";
 	_searchObject->_length = "";
 	_searchObject->_screenID = SearchType::kGJSearchTypeSearch;
