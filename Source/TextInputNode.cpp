@@ -1,115 +1,88 @@
 #include "TextInputNode.h"
+
 #include <ui/CocosGUI.h>
-#include <iostream>
-#include <GameToolbox.h>
+#include <fmt/format.h>
 
 USING_NS_AX;
 
-bool TextInputNode::onTouchBegan(Touch* touch, Event* event)
+TextInputNode::TextInputNode()
+	: _allowedChars(" abcdefghijkmlnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+	, _placeholderString("")
+	, _previousString("")
+	, _placeholderColor({ 120, 170, 240 })
+	, _textColor(Color3B::WHITE)
+	, _maxDisplayLabelScale(1.f)
+	, _placeholderScale(NULL)
+	, _delegate(nullptr)
+	, _textField(nullptr)
+	, _displayedLabel(nullptr)
+	, _cursor(nullptr)
+	, _onCommandMode(false)
 {
-	Director* director = Director::getInstance();
-	auto glTouchPoint = touch->getLocation();
+}
 
-	auto nodeTouchPoint = this->convertTouchToNodeSpace(touch);
+TextInputNode* TextInputNode::create(float width, float height, std::string_view font, std::string_view placeholder, int scale)
+{
+	TextInputNode* pRet = new TextInputNode();
 
-	auto anchorPoint = Point(0, 0);
-	auto contentSize = this->getContentSize();
-	auto boundingBox = Rect(
-		-anchorPoint.x * contentSize.width,
-		-anchorPoint.y * contentSize.height,
-		contentSize.width,
-		contentSize.height
-	);
-
-	bool touchInside = boundingBox.containsPoint(nodeTouchPoint);
-
-	if (touchInside)
+	if (pRet && pRet->init(width, height, placeholder, font, scale))
 	{
-		_pTextField->attachWithIME();
-
-		return true;
+		pRet->autorelease();
+		return pRet;
 	}
-	else
-	{
-		if (_pTextField->getDetachWithIME())
-			_pTextField->detachWithIME();
 
+	AX_SAFE_DELETE(pRet);
+	return nullptr;
+}
+
+bool TextInputNode::init(float width, float height, std::string_view placeholder, std::string_view font, int scale)
+{
+	if (!Layer::init())
 		return false;
-	}
-};
 
-bool TextInputNode::init(float width, float height, const char* placeholder, const char* font, int scale)
-{
-	if (!Layer::init()) return false;
-	_pAllowedChars = " abcdefghijkmlnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	_placeholderString = placeholder;
 
 	this->setContentSize({ width, height });
-	
-	_pTextField = ui::TextField::create("", font, std::round(scale * 1.2));
-	_pTextField->setContentSize({ width, height });
-	_pTextField->setPositionY(height / 2);
-	
-	_pPlaceholder = Label::createWithBMFont(font, placeholder);
-	_pPlaceholder->setPositionX(width / 2);
-	_pPlaceholder->setPositionY(height / 2);
-	
-	float newFontSize = _pPlaceholder->getBMFontSize() * width / _pPlaceholder->getContentSize().width;
-	_pPlaceholder->setBMFontSize(newFontSize);
 
-	this->addChild(_pTextField);
-	this->addChild(_pPlaceholder);
+	_textField = ui::TextField::create(placeholder, "Thonburi", scale);
+	_textField->setVisible(false);
+	this->addChild(_textField);
+
+	if (!font.empty())
+	{
+		_cursor = Label::createWithBMFont(font, "|");
+		_cursor->setBMFontSize(scale);
+		_cursor->setOpacity(150);
+		_cursor->setPositionY(height / 2);
+		_cursor->setAnchorPoint({ -0.5, 0.5 });
+		_cursor->setVisible(false);
+		this->addChild(_cursor);
+
+		_displayedLabel = Label::createWithBMFont(font, placeholder, TextHAlignment::CENTER, 0);
+		_displayedLabel->setBMFontSize(scale);
+		_displayedLabel->setPositionY(height / 2);
+		_displayedLabel->setPositionX(width / 2);
+		_displayedLabel->setAnchorPoint({ 0.5, 0.5 });
+		this->addChild(_displayedLabel);
+
+		updateDisplayedLabel();
+	}
 
 	auto touchListener = EventListenerTouchOneByOne::create();
-	_pTextField->addEventListener([&](Ref* re, ui::TextField::EventType event) {
-		switch (event) {
-		case ui::TextField::EventType::DETACH_WITH_IME:
-			ax::log("DETACH_WITH_IME");
-
-			if (_pTextField->getString().empty())
-				_pPlaceholder->setVisible(true);
-
-			return;
-		case ui::TextField::EventType::ATTACH_WITH_IME:
-			ax::log("ATTACH_WITH_IME");
-
-			_pPlaceholder->setVisible(false);
-
-			return;
-		default: // INSERT_TEXT / DELETE_BACKWARD
-
-			if (_pTextField->getString().empty())
+	_textField->addEventListener([&](Ref* re, ui::TextField::EventType event)
+		{
+			switch (event)
 			{
-				_pPlaceholder->setVisible(true);
-				return;
+			case ui::TextField::EventType::DETACH_WITH_IME:
+				onTextFieldDetachWithIME();
+				break;
+			case ui::TextField::EventType::ATTACH_WITH_IME:
+				onTextFieldAttachWithIME();
+				break;
+			default: // INSERT_TEXT / DELETE_BACKWARD
+				onTextFieldChanged();
 			}
-			else {
-				_pPlaceholder->setVisible(false);
-			}
-
-			// Filter (todo: find a better way to do this)
-			std::string new_str("");
-
-			for (char character : this->_pTextField->getString())
-			{
-				bool is_allowed = false;
-
-				for (char allowed_char : this->_pAllowedChars)
-					if (character == allowed_char)
-						is_allowed = true;
-
-				if (is_allowed)
-					new_str += character;
-			}
-
-			_pTextField->setString(new_str);
-
-			// Scale down text
-			float newScale = this->getContentSize().width / _pTextField->getContentSize().width;
-
-			if (newScale < 1.f)
-				_pTextField->setScale(newScale);
-		}
-	});
+		});
 
 	touchListener->onTouchBegan = AX_CALLBACK_2(TextInputNode::onTouchBegan, this);
 
@@ -127,6 +100,83 @@ bool TextInputNode::init(float width, float height, const char* placeholder, con
 	return true;
 }
 
+bool TextInputNode::onTouchBegan(Touch* touch, Event* event)
+{
+	Director* director = Director::getInstance();
+
+	auto nodeTouchPoint = this->convertTouchToNodeSpace(touch);
+
+	auto contentSize = this->getContentSize();
+	auto boundingBox = Rect(0, 0, contentSize.width, contentSize.height);
+
+	bool touchInside = boundingBox.containsPoint(nodeTouchPoint);
+
+	if (touchInside)
+	{
+		_textField->attachWithIME();
+		return true;
+	}
+	else
+	{
+		_textField->detachWithIME();
+		return false;
+	}
+};
+
+void TextInputNode::onTextFieldAttachWithIME()
+{
+	if (_displayedLabel && _cursor)
+	{
+		if (_textField->getString().empty())
+		{
+			_displayedLabel->setString("");
+			updateDisplayedLabelScale();
+		}
+		else
+		{
+			_textField->setString(sanitizeString(_textField->getString()));
+			updateDisplayedLabel();
+		}
+
+		_cursor->setVisible(true);
+	}
+
+	if (_delegate)
+		_delegate->textInputOpened(this);
+}
+
+void TextInputNode::onTextFieldDetachWithIME()
+{
+	if (_displayedLabel && _cursor)
+	{
+		_textField->setString(sanitizeString(_textField->getString()));
+
+		_cursor->setVisible(false);
+
+		updateDisplayedLabel();
+	}
+
+	if (_delegate)
+		_delegate->textInputClosed(this);
+}
+
+void TextInputNode::onTextFieldChanged()
+{
+	std::string str = sanitizeString(_textField->getString());
+	bool didTextChange = (str != _previousString);
+
+	if (didTextChange)
+	{
+		_previousString = str;
+		_textField->setString(str);
+
+		updateDisplayedLabel();
+
+		if (_delegate)
+			_delegate->textChanged(this);
+	}
+}
+
 void TextInputNode::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
 	// if (keyCode == EventKeyboard::KeyCode::KEY_CTRL) GameToolbox::_isCtrlPressed = true;
@@ -136,22 +186,173 @@ void TextInputNode::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 	{
 #ifdef AX_PLATFORM_PC
 	case EventKeyboard::KeyCode::KEY_CTRL:
-		_pCommandMode = true;
+		_onCommandMode = true;
 		break;
 	case EventKeyboard::KeyCode::KEY_C:
-		if (_pCommandMode) glfwSetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow(), _pTextField->getString().data());
-		_pCommandMode = false;
+		if (_onCommandMode)
+			glfwSetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow(), _textField->getString().data());
+		_onCommandMode = false;
 		break;
 	case EventKeyboard::KeyCode::KEY_V:
-		if (_pCommandMode) _pTextField->setString(fmt::format("{}{}", _pTextField->getString(), glfwGetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow())));
-		_pCommandMode = false;
+		if (_onCommandMode)
+		{
+			_textField->setString(sanitizeString(fmt::format("{}{}", _textField->getString(), glfwGetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow()))));
+			updateDisplayedLabel();
+		}
+		_onCommandMode = false;
 		break;
 #endif
 	default:
 		break;
 	}
 }
+
 void TextInputNode::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	if (keyCode == EventKeyboard::KeyCode::KEY_CTRL) _pCommandMode = false;
+	if (keyCode == EventKeyboard::KeyCode::KEY_CTRL)
+		_onCommandMode = false;
+}
+
+// Updates the displayed label
+void TextInputNode::updateDisplayedLabel()
+{
+	if (!_displayedLabel || !_cursor)
+		return;
+
+	if (_textField->getString().empty())
+	{
+		_displayedLabel->setString(_placeholderString);
+		_displayedLabel->setColor(_placeholderColor);
+	}
+	else
+	{
+		_displayedLabel->setString(_textField->getString());
+		_displayedLabel->setColor(_textColor);
+	}
+
+	updateDisplayedLabelScale();
+}
+
+// Updates the displayed label's scale
+void TextInputNode::updateDisplayedLabelScale()
+{
+	if (!_displayedLabel || !_cursor)
+		return;
+
+	if (_placeholderScale != NULL && _textField->getString().empty())
+	{
+		_displayedLabel->setScale(_placeholderScale);
+	}
+	else
+	{
+		float newScale = this->getContentSize().width / _displayedLabel->getContentSize().width;
+
+		if (newScale < _maxDisplayLabelScale)
+			_displayedLabel->setScale(newScale);
+		else
+			_displayedLabel->setScale(_maxDisplayLabelScale);
+	}
+
+	updateCursor();
+}
+
+// Updates the x-position and scale of the cursor
+void TextInputNode::updateCursor()
+{
+	if (!_displayedLabel || !_cursor)
+		return;
+
+	float scale = (_placeholderScale != NULL && _textField->getString().empty()) ? _placeholderScale : _displayedLabel->getScale();
+
+	_cursor->setScale(scale);
+
+	if (_displayedLabel->getAnchorPoint().x)
+		_cursor->setPositionX((_displayedLabel->getPositionX() + ((_displayedLabel->getContentSize().width * scale) * _displayedLabel->getAnchorPoint().x)));
+	else
+		_cursor->setPositionX((_displayedLabel->getPositionX() + (_displayedLabel->getContentSize().width * scale)));
+}
+
+std::string TextInputNode::sanitizeString(std::string_view str)
+{
+	std::string filteredStr("");
+
+	for (char character : str)
+	{
+		bool isAllowed = false;
+
+		for (char allowed_char : _allowedChars)
+			if (character == allowed_char)
+				isAllowed = true;
+
+		if (isAllowed)
+			filteredStr += character;
+	}
+
+	return filteredStr;
+}
+
+Label* TextInputNode::getDisplayedLabel()
+{
+	return _displayedLabel;
+}
+
+ax::ui::TextField* TextInputNode::getTextField()
+{
+	return _textField;
+}
+
+float TextInputNode::getMaxDisplayLabelScale()
+{
+	return _maxDisplayLabelScale;
+}
+
+float TextInputNode::getPlaceholderScale()
+{
+	return _placeholderScale;
+}
+
+std::string_view TextInputNode::getAllowedChars()
+{
+	return _allowedChars;
+}
+
+std::string_view TextInputNode::getString()
+{
+	return _textField->getString();
+}
+
+void TextInputNode::setMaxDisplayLabelScale(float scale)
+{
+	_maxDisplayLabelScale = scale;
+}
+
+void TextInputNode::setPlaceholderScale(float scale)
+{
+	_placeholderScale = scale;
+	updateDisplayedLabel();
+}
+
+void TextInputNode::setPlaceholderColor(ax::Color3B color)
+{
+	_placeholderColor = color;
+	updateDisplayedLabel();
+}
+
+void TextInputNode::setDisplayedLabelColor(ax::Color3B color)
+{
+	_textColor = color;
+	updateDisplayedLabel();
+}
+
+void TextInputNode::setAllowedChars(std::string_view allowedChars)
+{
+	_allowedChars = allowedChars;
+	_textField->setString(sanitizeString(_textField->getString()));
+	updateDisplayedLabel();
+}
+
+void TextInputNode::setString(std::string_view str)
+{
+	_textField->setString(str);
+	updateDisplayedLabel();
 }
