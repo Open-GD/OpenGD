@@ -321,6 +321,11 @@ std::string_view TextInputNode::getString()
 	return _textField->getString();
 }
 
+TextInputDelegate* TextInputNode::getDelegate()
+{
+	return _delegate;
+}
+
 void TextInputNode::setMaxDisplayLabelScale(float scale)
 {
 	_maxDisplayLabelScale = scale;
@@ -355,4 +360,9 @@ void TextInputNode::setString(std::string_view str)
 {
 	_textField->setString(str);
 	updateDisplayedLabel();
+}
+
+void TextInputNode::setDelegate(TextInputDelegate* delegate)
+{
+	_delegate = delegate;
 }

@@ -30,6 +30,7 @@ public:
 	float getPlaceholderScale();
 	std::string_view getAllowedChars();
 	std::string_view getString();
+	TextInputDelegate* getDelegate();
 
 	void setMaxDisplayLabelScale(float scale);
 	void setPlaceholderScale(float scale);
@@ -37,6 +38,7 @@ public:
 	void setDisplayedLabelColor(ax::Color3B color);
 	void setAllowedChars(std::string_view allowedChars);
 	void setString(std::string_view str);
+	void setDelegate(TextInputDelegate*);
 
 	bool onTouchBegan(ax::Touch* touch, ax::Event* event);
 
