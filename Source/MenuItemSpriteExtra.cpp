@@ -5,9 +5,14 @@ USING_NS_AX;
 static constexpr float BUTTON_MULTIPLIER = 1.26f;
 
 MenuItemSpriteExtra::MenuItemSpriteExtra(std::string_view spriteStr, Node* sprNode, std::function<void(Node*)> callback) {
-	m_pSprite = spriteStr.empty() ? sprNode : Sprite::createWithSpriteFrameName(spriteStr);
+	if (spriteStr.empty() && !sprNode) {
+		m_pSprite = Sprite::createWithSpriteFrameName("GJ_newBtn_001.png");
+	}
+	else {
+		m_pSprite = spriteStr.empty() ? sprNode : Sprite::createWithSpriteFrameName(spriteStr);
+	}
 	//m_pSprite->setStretchEnabled(false);
-	float nodescale = m_pSprite->getScale();
+	float nodescale = m_pSprite ? m_pSprite->getScale() : 1.0f;
 	m_fScaleMult = BUTTON_MULTIPLIER;
 	m_fSelectedScale = nodescale * m_fScaleMult;
 	m_fUnselectedScale = nodescale;
