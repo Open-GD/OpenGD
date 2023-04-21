@@ -10,7 +10,7 @@
 #include "MenuItemSpriteExtra.h"
 #include "MenuLayer.h"
 #include "PlayLayer.h"
-
+#include <network/HttpClient.h>
 
 USING_NS_AX;
 using namespace ax::network;

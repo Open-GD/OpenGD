@@ -5,12 +5,13 @@
 
 class LevelPage : public ax::Layer
 {
-private:
 	
 public:
 	GJGameLevel* _level;
+	bool _openBGL = false;
 	static bool replacingScene;
-	static ax::Scene *scene(GJGameLevel *level);
 	bool init(GJGameLevel* level);
 	static LevelPage* create(GJGameLevel* level);
+
+	void onPlay(ax::Node*);
 };

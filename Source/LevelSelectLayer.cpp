@@ -7,6 +7,7 @@
 #include "MenuLayer.h"
 #include "LevelPage.h"
 #include "SongsLayer.h"
+#include "Checkbox.h"
 
 USING_NS_AX;
 
@@ -82,7 +83,7 @@ bool LevelSelectLayer::init(int page)
 	std::vector<Layer*> layers;
 	layers.reserve(levelData.size());
 	
-	for (const auto [name, creator, id] : levelData)
+	for (const auto& [name, creator, id] : levelData)
 	{
 		auto level = GJGameLevel::createWithMinimumData(name, creator, id);
 		layers.push_back(LevelPage::create(level));
@@ -100,47 +101,50 @@ bool LevelSelectLayer::init(int page)
 		Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Left_001.png" : "navArrowBtn_001.png");
 	if (!controller) left->setFlippedX(true);
 
-	MenuItemSpriteExtra* leftBtn = MenuItemSpriteExtra::create(left, [this](Node* btn) {
+	MenuItemSpriteExtra* leftBtn = MenuItemSpriteExtra::create(left, [this](Node*) {
 		_bsl->changePageLeft();
 	});
 	btnMenu->addChild(leftBtn);
 
-	//leftBtn->setScale(2.0f);
 	leftBtn->setPosition(btnMenu->convertToNodeSpace({ 25.0f, winSize.height / 2 }));
 
 	auto right = Sprite::createWithSpriteFrameName(controller ? "controllerBtn_DPad_Right_001.png" : "navArrowBtn_001.png");
 
-	MenuItemSpriteExtra* rightBtn = MenuItemSpriteExtra::create(right, [this](Node* btn) {
+	MenuItemSpriteExtra* rightBtn = MenuItemSpriteExtra::create(right, [this](Node*) {
 		_bsl->changePageRight();
 	});
 	btnMenu->addChild(rightBtn);
 
-	//right->setScale(2.0f);
 	rightBtn->setPosition(btnMenu->convertToNodeSpace({ winSize.width - 25.0f, winSize.height / 2 }));
 
 	auto back = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
 		MenuItemSpriteExtra* backBtn =
-			MenuItemSpriteExtra::create(back, [](Node* btn) { 
+			MenuItemSpriteExtra::create(back, []( Node const* btn) { 
 			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
-	//backBtn->setScale(1.6f);
-
+	
+	auto bglCheckbox = Checkbox::create("BaseGameLayer", [this](Node* btn, bool on)
+	{
+		GameToolbox::log("on: {}", on);
+		if (auto currentLevelPage = dynamic_cast<LevelPage*>(_bsl->_layers.at(_bsl->_currentPage)))
+		{
+			currentLevelPage->_openBGL = on;
+		}
+	});
 	Menu* backMenu = Menu::create();
+
 	addChild(backMenu, 1);
-
 	backMenu->addChild(backBtn);
-
-	backMenu->setPosition({ 0 + 25.0f, winSize.height - 22.0f });
-
-	// //GM->0x298 = 0;
+	backMenu->addChild(bglCheckbox);
+	backMenu->setPosition({25.0f, winSize.height - 22.0f });
+	bglCheckbox->setPosition({backMenu->convertToNodeSpace({winSize.width / 2 + 15.0f, winSize.height - 40.0f})});
 
 	auto infoMenu = Menu::create();
 	addChild(infoMenu);
 
 	Sprite* info = Sprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-	MenuItemSpriteExtra* infoBtn = MenuItemSpriteExtra::create(info, [&](Node* btn) {
-		//auto a = GJMoreGamesLayer::create();
-		//addChild(a);
+	MenuItemSpriteExtra* infoBtn = MenuItemSpriteExtra::create(info, [](Node* btn) {
+
 	});
 	infoMenu->addChild(infoBtn, 1);
 
@@ -164,26 +168,25 @@ bool LevelSelectLayer::init(int page)
 
 	// int currentlevel = 0;
 
-	listener->onKeyPressed = [this](EventKeyboard::KeyCode code, Event*) {
-		if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
+	listener->onKeyPressed = [this](EventKeyboard::KeyCode code, Event const*)
+	{
+		using enum ax::EventKeyboard::KeyCode;
+		if (code == KEY_ESCAPE)
+		{
 			auto scene = MenuLayer::scene();
 			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene));
 			// GameToolbox::popSceneWithTransition(0.5f);
-		} else if (code == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
+		}
+		else if (code == KEY_LEFT_ARROW) {
 			_bsl->changePageLeft();
-		} else if (code == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
+		} else if (code == KEY_RIGHT_ARROW) {
 			_bsl->changePageRight();
-		} else if (code == EventKeyboard::KeyCode::KEY_SPACE) {
-			// ax::AudioEngine::stopAll();
-			// ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
-			
-			// auto currentLevelPage = dynamic_cast<LevelPage*>(_bsl->_layers.at(_bsl->_currentPage));
-			// if (currentLevelPage) {
-			// 	auto level = currentLevelPage->_level;
-			// 	ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
-			// 	LevelPage::replacingScene = true;
-			// 	MenuLayer::music = false;
-			// }
+		} else if (code == KEY_SPACE)
+		{
+			if (auto currentLevelPage = dynamic_cast<LevelPage*>(_bsl->_layers.at(_bsl->_currentPage)))
+			{
+				currentLevelPage->onPlay(nullptr);
+			}
 		}
 	};
 

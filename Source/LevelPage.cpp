@@ -2,38 +2,30 @@
 #include "MenuItemSpriteExtra.h"
 #include "core/ui/UIScale9Sprite.h"
 #include "PlayLayer.h"
+#include "LevelDebugLayer.h"
 #include <AudioEngine.h>
+
 bool LevelPage::replacingScene = false;
-
-ax::Scene* LevelPage::scene(GJGameLevel* level)
-{
-	auto scene = ax::Scene::create();
-	auto winSize = ax::Director::getInstance()->getWinSize();
-	ax::Sprite* background;
-
-	background = ax::Sprite::create("GJ_gradientBG.png");
-	background->setAnchorPoint({0.0f, 0.0f});
-	scene->addChild(background, -2);
-
-	background->setScaleX((winSize.width + 10.0f) / background->getTextureRect().size.width);
-	background->setScaleY((winSize.height + 10.0f) / background->getTextureRect().size.height);
-	background->setPosition({-5.0f, -5.0f});
-	background->setColor({0x28, 0x7D, 0xFF});
-
-	scene->addChild(LevelPage::create(level));
-	return scene;
-}
-
 
 bool LevelPage::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
+	
+	LevelPage::replacingScene = false;
 
+	//testing
+	//level->_normalPercent = static_cast<float>(GameToolbox::randomInt(0, 100));
+	//level->_practicePercent = static_cast<float>(GameToolbox::randomInt(0, 100));
+	
+	GameToolbox::log("normal: {}, practice: {}", level->_normalPercent, level->_practicePercent);
+	
+	_level = level;
 	std::string barTexture = GameToolbox::getTextureString("GJ_progressBar_001.png");
 	std::string bigFontTexture = GameToolbox::getTextureString("bigFont.fnt");
 
 	auto winSize = ax::Director::getInstance()->getWinSize();
 
+	//TODO: fix bars lol
 	auto normalBar = ax::Sprite::create(barTexture);
 	normalBar->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
 	normalBar->setColor({0, 0, 0});
@@ -83,15 +75,16 @@ bool LevelPage::init(GJGameLevel* level)
 
 	auto normalPerc = ax::Label::createWithBMFont(bigFontTexture, "");
 	normalPerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 30 });
-	normalPerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
-	normalPerc->setString(std::to_string((int)level->_normalPercent) + "%");
+	normalPerc->enableShadow(ax::Color4B::BLACK, {0.2f, -0.2f});
+	normalPerc->setString(fmt::format("{:.3}%", level->_normalPercent));
+	//normalPerc->setString(std::to_string((int)level->_normalPercent) + "%");
 	normalPerc->setScale(0.55f);
 	addChild(normalPerc, 4);
 
 	auto practicePerc = ax::Label::createWithBMFont(bigFontTexture, "");
 	practicePerc->setPosition({ winSize.width / 2, winSize.height / 2.f - 80 });
-	practicePerc->enableShadow(ax::Color4B::BLACK, {0.2, -0.2});
-	practicePerc->setString(std::to_string((int)level->_practicePercent) + "%");
+	practicePerc->enableShadow(ax::Color4B::BLACK, {0.2f, -0.2f});
+	practicePerc->setString(fmt::format("{:.3}", level->_practicePercent));
 	practicePerc->setScale(0.55f);
 	addChild(practicePerc, 4);
 
@@ -104,11 +97,11 @@ bool LevelPage::init(GJGameLevel* level)
 	
 	auto levelName = ax::Label::createWithBMFont(bigFontTexture, level->_levelName);
 	levelName->setPosition(190, 50.5);
-	levelName->setScale(0.904);
+	levelName->setScale(0.904f);
 	scale9->addChild(levelName, 0);
 
 	auto diffIcon = ax::Sprite::createWithSpriteFrameName("diffIcon_01_btn_001.png");
-	diffIcon->setScale(1.1);
+	diffIcon->setScale(1.1f);
 	diffIcon->setPosition(35.75, 50.5);
 	scale9->addChild(diffIcon, 0);
 
@@ -123,17 +116,7 @@ bool LevelPage::init(GJGameLevel* level)
 	// starAmt->setScale(0.5);
 	// starAmt->setAnchorPoint({1, 0.5});
 	// mainNode->addChild(starAmt, 0);
-	auto mainBtn = MenuItemSpriteExtra::create(scale9, [&, level](Node* btn) 
-		{
-			if (!LevelPage::replacingScene)
-			{
-				ax::AudioEngine::stopAll();
-				ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
-				ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
-				LevelPage::replacingScene = true;
-				MenuLayer::music = false;
-			}
-		});
+	auto mainBtn = MenuItemSpriteExtra::create(scale9, AX_CALLBACK_1(LevelPage::onPlay, this));
 	mainBtn->setScaleMultiplier(1.1f);
 	auto levelMenu = ax::Menu::create();
 	levelMenu->addChild(mainBtn);
@@ -143,6 +126,18 @@ bool LevelPage::init(GJGameLevel* level)
 	return true;
 }
 
+void LevelPage::onPlay(Node* btn)
+{
+	if (LevelPage::replacingScene)
+		return;
+
+	ax::Scene* scene = _openBGL ? LevelDebugLayer::scene(_level) : PlayLayer::scene(_level);
+	ax::AudioEngine::stopAll();
+	ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
+	ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, scene));
+	LevelPage::replacingScene = true;
+	MenuLayer::music = false;
+}
 LevelPage* LevelPage::create(GJGameLevel* level)
 {
 	LevelPage* pRet = new LevelPage();

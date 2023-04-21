@@ -1,11 +1,6 @@
 #pragma once
 #include <axmol.h>
-#include <network/HttpClient.h>
 #include <ui/CocosGUI.h>
-
-#ifdef AX_PLATFORM_PC
-#include <glfw3.h>
-#endif
 
 class CreatorLayer : public ax::Scene {
 public:
