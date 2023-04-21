@@ -117,7 +117,7 @@ public:
 
 	void destroyPlayer(PlayerObject* player);
 
-	void loadLevel(std::string levelStr);
+	void loadLevel(std::string_view levelStr);
 
 	void spawnCircle();
 	void showEndLayer();

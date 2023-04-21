@@ -164,9 +164,8 @@ void PlayLayer::fillColorChannel(std::span<std::string_view> colorString, int id
 	}
 }
 
-void PlayLayer::loadLevel(std::string levelStr)
+void PlayLayer::loadLevel(std::string_view levelStr)
 {
-	levelStr = GJGameLevel::decompressLvlStr(levelStr);
 
 	std::vector<std::string_view> objData = GameToolbox::splitByDelimStringView(levelStr, ';');
 	std::vector<std::string_view> levelData = GameToolbox::splitByDelimStringView(objData[0], ',');
@@ -620,6 +619,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	// scope based timer
 	{
 		auto s = BenchmarkTimer("load level");
+		levelStr = GJGameLevel::decompressLvlStr(levelStr);
 		loadLevel(levelStr);
 	}
 
@@ -711,7 +711,8 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	this->addChild(m_pHudLayer, 1000);
 
-	bool levelValid = LevelTools::verifyLevelIntegrity(levelStr, this->getLevel()->_levelID);
+	//bool levelValid = LevelTools::verifyLevelIntegrity(levelStr, this->getLevel()->_levelID);
+	constexpr bool levelValid = true;
 
 	if (!levelValid)
 	{
@@ -719,7 +720,7 @@ bool PlayLayer::init(GJGameLevel* level)
 		loadfailedstr->setPosition({winSize.width / 2, winSize.height / 2});
 		addChild(loadfailedstr, 128);
 	}
-
+	
 	updateVisibility();
 	updateVisibility();
 

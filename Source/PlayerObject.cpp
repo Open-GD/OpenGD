@@ -52,9 +52,6 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 	auto sprStr2 = StringUtils::format("player_%02d_2_001.png", frame);
 	GameToolbox::log("1: {}, 2: {}", sprStr1, sprStr2);
 
-	// initialize
-	if (!GameObject::init(sprStr1)) return false;
-
 	gameLayer = gameLayer_;
 
 	// Check if layer is playlayer
