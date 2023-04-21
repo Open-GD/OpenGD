@@ -20,8 +20,8 @@ public:
 	void selectPage(int current);
 	void changePageRight();
 	void changePageLeft();
-	bool onTouchBegan(ax::Touch *touch, ax::Event *event);
-	void onTouchEnded(ax::Touch *touch, ax::Event *event);
-	void onTouchMoved(ax::Touch *touch, ax::Event *event);
+	// bool onTouchBegan(ax::Touch *touch, ax::Event *event);
+	// void onTouchEnded(ax::Touch *touch, ax::Event *event);
+	// void onTouchMoved(ax::Touch *touch, ax::Event *event);
 	void onExit() override;
 };

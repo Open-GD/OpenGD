@@ -129,21 +129,23 @@ bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 
 	addChild(_internalLayer);
 
-	auto listener = EventListenerTouchOneByOne::create();
+	// auto listener = EventListenerTouchOneByOne::create();
 
-	listener->setEnabled(true);
-	listener->setSwallowTouches(true);
+	// listener->setEnabled(true);
+	// listener->setSwallowTouches(true);
 
-	// trigger when you start touch
-	listener->onTouchBegan = AX_CALLBACK_2(BoomScrollLayer::onTouchBegan, this);
-	listener->onTouchEnded = AX_CALLBACK_2(BoomScrollLayer::onTouchEnded, this);
-	listener->onTouchMoved = AX_CALLBACK_2(BoomScrollLayer::onTouchMoved, this);
+	//trigger when you start touch
+	
+	// listener->onTouchBegan = AX_CALLBACK_2(BoomScrollLayer::onTouchBegan, this);
+	// listener->onTouchEnded = AX_CALLBACK_2(BoomScrollLayer::onTouchEnded, this);
+	// listener->onTouchMoved = AX_CALLBACK_2(BoomScrollLayer::onTouchMoved, this);
 
-	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+	// dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
 	return true;
 }
 
+/*
 bool BoomScrollLayer::onTouchBegan(ax::Touch* touch, ax::Event* event)
 {
 	//GameToolbox::log("began");
@@ -172,12 +174,14 @@ void BoomScrollLayer::onTouchMoved(ax::Touch* touch, ax::Event* event)
 
 	GameToolbox::log("{}", _dragMovement);
 }
+*/
 
 void BoomScrollLayer::onExit()
 {
 	for (auto layer : _layers)
 	{
-		if (layer->getParent() == nullptr) layer->autorelease();
+		if (layer->getParent() == nullptr) 
+			layer->autorelease();
 	}
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	Layer::onExit();
