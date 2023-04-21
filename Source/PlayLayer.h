@@ -23,6 +23,12 @@ struct LevelSettings
 	float songOffset;
 };
 
+struct GroupProperties
+{
+	std::vector<GameObject*> _objects;
+	float _alpha = 1.f;
+};
+
 class PlayLayer : public ax::Layer
 {
   private:
@@ -105,6 +111,7 @@ public:
 	ax::ParticleBatchNode* _particleBatchNode;
 
 	std::unordered_map<int, SpriteColor> m_pColorChannels, _originalColors;
+	std::unordered_map<int, GroupProperties> _groups;
 
 	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 
@@ -142,6 +149,8 @@ public:
 	void changeGravity(bool gravityFlipped);
 
 	void incrementTime();
+
+	ax::Color3B getLightBG();
 
 	static ax::Scene* scene(GJGameLevel* level);
 	static PlayLayer* create(GJGameLevel* level);

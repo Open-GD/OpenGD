@@ -7,6 +7,7 @@
 #include <queue>
 #include <mutex>
 #include <fmt/format.h>
+#include "GameObject.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -163,6 +164,15 @@ static void drawProperties()
 								 { labelNode->setString(text); });
 			threadFunctionsMutex.unlock();
 		}
+	}
+
+	if (dynamic_cast<GameObject *>(selected_node) != nullptr)
+	{
+		auto gm = dynamic_cast<GameObject *>(selected_node);
+		ImGui::Text(fmt::format("Color channel 1: {}", gm->_mainColorChannel).c_str());
+		ImGui::Text(fmt::format("Color channel 2: {}", gm->_secColorChannel).c_str());
+		ImGui::Text(fmt::format("ID: {}", gm->getID()).c_str());
+		ImGui::Text(fmt::format("Z Layer: {}", gm->_zLayer).c_str());
 	}
 }
 

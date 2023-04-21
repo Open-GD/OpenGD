@@ -4,7 +4,7 @@
 
 class PlayLayer;
 
-class EffectGameObject : public GameObject, public ax::ActionTweenDelegate
+class EffectGameObject : public GameObject
 {
 private:
 	PlayLayer* _pl;
@@ -12,9 +12,16 @@ private:
 public:
 	float _duration;
 	ax::Color3B _color;
+	ax::HSV _hsv;
 	float _opacity;
-	int _targetColorId = 1;
+	int _targetColorId = 1, _targetGroupId = -1;
 	bool _wasTriggerActivated;
+	int _copiedColorId = -1;
+	bool _saturationTicked, _brightnessTicked;
+
+	float _fadeIn, _hold, _fadeOut;
+	int _pulseMode, _pulseType;
+	bool _mainOnly, _detailOnly;
 
 private:
 	virtual void updateTweenAction(float value, std::string_view key) override;

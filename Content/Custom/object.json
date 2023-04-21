@@ -2142,6 +2142,7 @@
         "texture_name": "block003_part01_001.png"
     },
     "1078": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -2170,6 +2171,7 @@
         "texture_name": "block007_01_small_001.png"
     },
     "1079": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -2198,6 +2200,7 @@
         "texture_name": "plank007_01_001.png"
     },
     "1080": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -2226,6 +2229,7 @@
         "texture_name": "plank007_02_001.png"
     },
     "1081": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -5943,6 +5947,7 @@
                 "anchor_x": 0.5,
                 "anchor_y": 0.5,
                 "b": 255,
+                "childrens": [],
                 "content_x": 30.0,
                 "content_y": 21.0,
                 "flip_x": false,
@@ -6020,6 +6025,7 @@
         "texture_name": "block005b_05_001.png"
     },
     "1278": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -6120,6 +6126,7 @@
         "texture_name": "d_thorn_06_001.png"
     },
     "1280": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -7682,12 +7689,13 @@
         "texture_name": "block011_02_001.png"
     },
     "135": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
         "default_z_order": 2,
         "object_type": 2,
-        "texture_name": "pit_b_04_001.png"
+        "texture_name": "pit_b_03_001.png"
     },
     "1350": {
         "default_primary_channel": 1004,
@@ -9933,6 +9941,7 @@
                 "anchor_x": 0.5,
                 "anchor_y": 0.5,
                 "b": 255,
+                "childrens": [],
                 "content_x": 23.5,
                 "content_y": 23.5,
                 "flip_x": false,
@@ -9987,6 +9996,7 @@
                 "anchor_x": 0.5,
                 "anchor_y": 0.5,
                 "b": 255,
+                "childrens": [],
                 "content_x": 23.5,
                 "content_y": 24.0,
                 "flip_x": false,
@@ -10105,6 +10115,7 @@
                 "anchor_x": 0.5,
                 "anchor_y": 0.5,
                 "b": 255,
+                "childrens": [],
                 "content_x": 26.0,
                 "content_y": 27.0,
                 "flip_x": false,
@@ -12981,6 +12992,7 @@
         "texture_name": "triangle_c_04_001.png"
     },
     "1747": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -13009,6 +13021,7 @@
         "texture_name": "lighttriangle_01_02_color_001.png"
     },
     "1748": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -16315,6 +16328,7 @@
         "texture_name": "plank_01_square_02_001.png"
     },
     "191": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -16355,6 +16369,7 @@
         "texture_name": "square_h_09_001.png"
     },
     "195": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -16383,6 +16398,7 @@
         "texture_name": "blockOutline_10_001.png"
     },
     "196": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -16419,6 +16435,7 @@
         "texture_name": "square_h_10_001.png"
     },
     "198": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -16427,6 +16444,7 @@
         "texture_name": "fakeSpike_02_001.png"
     },
     "199": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -16867,6 +16885,7 @@
         "texture_name": "d_bar_07_001.png"
     },
     "243": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -16875,6 +16894,7 @@
         "texture_name": "pit_04_02_001.png"
     },
     "244": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -17441,6 +17461,7 @@
         "texture_name": "blockOutline_15_001.png"
     },
     "294": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -17469,6 +17490,7 @@
         "texture_name": "blockOutline_14_001.png"
     },
     "295": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -17497,6 +17519,7 @@
         "texture_name": "blockOutline_15_001.png"
     },
     "296": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -17525,6 +17548,7 @@
         "texture_name": "triangle_b_square_01_001.png"
     },
     "297": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -17681,6 +17705,7 @@
         "texture_name": "blockOutline_17_001.png"
     },
     "309": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -17709,6 +17734,7 @@
         "texture_name": "blockOutline_14_001.png"
     },
     "311": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18025,6 +18051,8 @@
         "texture_name": "ring_01_001.png"
     },
     "363": {
+        "black": 1,
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18053,6 +18081,8 @@
         "texture_name": "pit_01_slope_01_001.png"
     },
     "364": {
+        "black": 1,
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18081,6 +18111,7 @@
         "texture_name": "pit_01_slope_02_001.png"
     },
     "365": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -18089,6 +18120,8 @@
         "texture_name": "pit_01_low_001.png"
     },
     "366": {
+        "black": 1,
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18117,6 +18150,8 @@
         "texture_name": "pit_04_slope_01_001.png"
     },
     "367": {
+        "black": 1,
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18145,6 +18180,7 @@
         "texture_name": "pit_04_slope_02_001.png"
     },
     "368": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -18153,6 +18189,7 @@
         "texture_name": "pit_04_low_001.png"
     },
     "369": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18189,6 +18226,7 @@
         "texture_name": "rod_ball_02_001.png"
     },
     "370": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18217,6 +18255,7 @@
         "texture_name": "plank_01_03_001.png"
     },
     "371": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18263,6 +18302,7 @@
         "texture_name": "blockOutline_14_001.png"
     },
     "372": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18309,6 +18349,7 @@
         "texture_name": "blockOutline_15_001.png"
     },
     "373": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18337,6 +18378,7 @@
         "texture_name": "plank_01_square_01_001.png"
     },
     "374": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18421,6 +18463,7 @@
         "texture_name": "spike_04_001.png"
     },
     "393": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -18509,6 +18552,7 @@
         "texture_name": "d_geometric_03_001.png"
     },
     "397": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18573,6 +18617,7 @@
         "texture_name": "darkblade_01_001.png"
     },
     "398": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": 1,
         "default_z_layer": 5,
@@ -18581,6 +18626,7 @@
         "texture_name": "darkblade_02_001.png"
     },
     "399": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": 1,
         "default_z_layer": 5,
@@ -18597,6 +18643,7 @@
         "texture_name": "square_04_001.png"
     },
     "40": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -18729,6 +18776,7 @@
         "texture_name": "d_spikeWave_02_001.png"
     },
     "421": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -18737,6 +18785,7 @@
         "texture_name": "pit_05_001.png"
     },
     "422": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -18745,6 +18794,7 @@
         "texture_name": "pit_05_02_001.png"
     },
     "446": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -18753,6 +18803,7 @@
         "texture_name": "pit_06_001.png"
     },
     "447": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -23893,6 +23944,7 @@
         "texture_name": "persp_outline_05_001.png"
     },
     "61": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -24343,6 +24395,7 @@
         "texture_name": "persp_outline_06_001.png"
     },
     "62": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -24813,6 +24866,7 @@
         "texture_name": "persp_outline_07_001.png"
     },
     "63": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -25337,6 +25391,7 @@
         "texture_name": "persp_outline_08_001.png"
     },
     "64": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -25803,6 +25858,7 @@
         "texture_name": "block003_part01_001.png"
     },
     "65": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -25831,6 +25887,7 @@
         "texture_name": "square_b_04_001.png"
     },
     "650": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -25971,6 +26028,7 @@
         "texture_name": "d_block04_piece07_001.png"
     },
     "66": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -26055,6 +26113,7 @@
         "texture_name": "blockOutline_15_001.png"
     },
     "667": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -26063,6 +26122,7 @@
         "texture_name": "pit_07_001.png"
     },
     "668": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -26071,6 +26131,7 @@
         "texture_name": "d_pixelArt01_001_001.png"
     },
     "669": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -26087,6 +26148,7 @@
         "texture_name": "gravbump_01_001.png"
     },
     "670": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -26095,6 +26157,7 @@
         "texture_name": "d_pixelArt01_003_001.png"
     },
     "671": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -26103,6 +26166,7 @@
         "texture_name": "d_pixelArt01_004_001.png"
     },
     "672": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -26127,6 +26191,7 @@
         "texture_name": "invis_triangle_04_001.png"
     },
     "675": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -26263,6 +26328,7 @@
         "texture_name": "blackCogwheel_01_001.png"
     },
     "676": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -26291,6 +26357,7 @@
         "texture_name": "blackCogwheel_02_001.png"
     },
     "677": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -26391,6 +26458,7 @@
         "texture_name": "lightBlade_02_001.png"
     },
     "68": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -26475,6 +26543,7 @@
         "texture_name": "triangle_d_04_001.png"
     },
     "687": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 3,
@@ -26483,6 +26552,7 @@
         "texture_name": "lighttriangle_01_02_color_001.png"
     },
     "688": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 3,
@@ -26923,6 +26993,7 @@
         "texture_name": "blockOutline_06_001.png"
     },
     "720": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -27155,6 +27226,7 @@
         "texture_name": "square_g_12_001.png"
     },
     "738": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 1,
@@ -27571,6 +27643,7 @@
         "texture_name": "d_spikeWave_03_001.png"
     },
     "768": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -27725,6 +27798,7 @@
         "texture_name": "square_d_05_001.png"
     },
     "807": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -27753,6 +27827,7 @@
         "texture_name": "block007_01_001.png"
     },
     "808": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -27781,6 +27856,7 @@
         "texture_name": "block007_01_001.png"
     },
     "809": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -27873,6 +27949,7 @@
         "texture_name": "lightsquare_04_02_001.png"
     },
     "810": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -27901,6 +27978,7 @@
         "texture_name": "block007_02_001.png"
     },
     "811": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -27929,6 +28007,7 @@
         "texture_name": "block007_03_001.png"
     },
     "812": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -27957,6 +28036,7 @@
         "texture_name": "block007_03_001.png"
     },
     "813": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -27985,6 +28065,7 @@
         "texture_name": "block007_04_001.png"
     },
     "814": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28013,6 +28094,7 @@
         "texture_name": "block007_04_001.png"
     },
     "815": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28041,6 +28123,7 @@
         "texture_name": "block007_05_001.png"
     },
     "816": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28069,6 +28152,7 @@
         "texture_name": "block007_05_001.png"
     },
     "817": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28097,6 +28181,7 @@
         "texture_name": "block007_06_001.png"
     },
     "818": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28125,6 +28210,7 @@
         "texture_name": "block007_06_001.png"
     },
     "819": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28199,6 +28285,7 @@
         "texture_name": "lightsquare_04_sideLine_001.png"
     },
     "820": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28227,6 +28314,7 @@
         "texture_name": "block007_07_001.png"
     },
     "821": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28273,6 +28361,7 @@
         "texture_name": "block007_08_001.png"
     },
     "822": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28319,6 +28408,8 @@
         "texture_name": "block007_08_001.png"
     },
     "823": {
+        "black": 1,
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28347,6 +28438,8 @@
         "texture_name": "block007_09_001.png"
     },
     "824": {
+        "black": 1,
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28375,6 +28468,7 @@
         "texture_name": "block007_09_001.png"
     },
     "825": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": 1,
         "default_z_layer": 1,
@@ -28383,6 +28477,7 @@
         "texture_name": "block007_09_001.png"
     },
     "826": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28411,6 +28506,7 @@
         "texture_name": "block007_slope_01_001.png"
     },
     "827": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28439,6 +28535,7 @@
         "texture_name": "block007_slope_01_001.png"
     },
     "828": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28485,6 +28582,7 @@
         "texture_name": "block007_slope_02_001.png"
     },
     "829": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28539,6 +28637,7 @@
         "texture_name": "square_08_001.png"
     },
     "830": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28567,6 +28666,7 @@
         "texture_name": "block007_slope_square_01_001.png"
     },
     "831": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28595,6 +28695,7 @@
         "texture_name": "block007_slope_square_01_001.png"
     },
     "832": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -28623,6 +28724,7 @@
         "texture_name": "block007_slope_square_02_001.png"
     },
     "833": {
+        "black": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -29097,6 +29199,8 @@
         "texture_name": "block009_slope_02_001.png"
     },
     "88": {
+        "black": 1,
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -29245,6 +29349,7 @@
         "texture_name": "block009b_slope_02_001.png"
     },
     "89": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -29309,14 +29414,16 @@
         "texture_name": "edit_eTintCol01Btn_001.png"
     },
     "9": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
         "default_z_order": 2,
         "object_type": 2,
-        "texture_name": "pit_03_001.png"
+        "texture_name": "pit_01_001.png"
     },
     "90": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -29499,6 +29606,7 @@
         "texture_name": "d_grassArt_03_001.png"
     },
     "91": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -29582,6 +29690,7 @@
                 "anchor_x": 0.5,
                 "anchor_y": 0.5,
                 "b": 255,
+                "childrens": [],
                 "content_x": 67.0,
                 "content_y": 39.0,
                 "flip_x": false,
@@ -29713,6 +29822,7 @@
         "texture_name": "d_whiteBlock_02_001.png"
     },
     "92": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -29945,6 +30055,7 @@
         "texture_name": "block010_03_001.png"
     },
     "93": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -30185,6 +30296,7 @@
         "texture_name": "d_flower01_01_001.png"
     },
     "94": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -30485,6 +30597,7 @@
         "texture_name": "persp_outline_07_001.png"
     },
     "95": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -30723,6 +30836,7 @@
         "texture_name": "block005b_09_001.png"
     },
     "96": {
+        "black_detail": 1,
         "childrens": [
             {
                 "anchor_x": 0.5,
@@ -30905,6 +31019,7 @@
         "texture_name": "block005b_13_001.png"
     },
     "98": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -31327,6 +31442,7 @@
         "texture_name": "persp_outline_09_001.png"
     },
     "989": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,
@@ -31351,6 +31467,7 @@
         "texture_name": "pit_07_3_shine_001.png"
     },
     "991": {
+        "black": 1,
         "default_primary_channel": 1004,
         "default_secondary_channel": -1,
         "default_z_layer": 5,

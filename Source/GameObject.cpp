@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "EffectGameObject.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
 #include "PlayerObject.h"
@@ -51,6 +52,8 @@ void GameObject::customSetup()
 
 	if (childJson[std::to_string(getID())].contains("default_z_order"))
 		setGlobalZOrder((int)childJson[std::to_string(getID())]["default_z_order"]);
+	if (childJson[std::to_string(getID())].contains("default_z_layer"))
+		_zLayer = (int)childJson[std::to_string(getID())]["default_z_layer"];
 	if (childJson[std::to_string(getID())].contains("default_primary_channel"))
 		_mainColorChannel = (int)childJson[std::to_string(getID())]["default_primary_channel"];
 	if (childJson[std::to_string(getID())].contains("default_secondary_channel"))
@@ -78,7 +81,31 @@ void GameObject::customSetup()
 		addChild(s);
 	}
 
-	switch (getID()) {
+	if (childJson[std::to_string(getID())].contains("black"))
+	{
+		_forceBlack = true;
+		setColor(ax::Color3B::BLACK);
+		for (auto sp : _detailSprites)
+		{
+			sp->setColor(ax::Color3B::BLACK);
+		}
+	}
+	else if (childJson[std::to_string(getID())].contains("black_detail"))
+	{
+		_forceBlackDetail = true;
+		for (auto sp : _detailSprites)
+		{
+			sp->setColor(ax::Color3B::BLACK);
+		}
+	}
+
+	_primaryInvisible = false;
+
+	//robtop made 3d parts have lines by default but then decided to make them invisible instead of removing them for whatever reason
+	if(getID() >= 515 && getID() <= 640) _primaryInvisible = true;
+
+	switch (getID())
+	{
 	case 10:
 		createAndAddParticle("portalEffect01.plist", 3);
 		break;
@@ -97,38 +124,46 @@ void GameObject::customSetup()
 		break;
 	case 67: // blue pad
 		createAndAddParticle("bumpEffect.plist", 0);
-		_particle->setStartColor({ 0, 255, 255, 255 });
+		_particle->setStartColor({0, 255, 255, 255});
 		_particle->setPositionY(getPositionY() - 4.f);
 		break;
 	case 140: // pink pad
 		createAndAddParticle("bumpEffect.plist", 0);
-		_particle->setStartColor({ 255, 0, 255, 255 });
+		_particle->setStartColor({255, 0, 255, 255});
 		_particle->setPositionY(getPositionY() - 4.f);
 		break;
 	case 1332: // red pad
 		createAndAddParticle("bumpEffect.plist", 0);
-		_particle->setStartColor({ 255, 0, 0, 255 });
+		_particle->setStartColor({255, 0, 0, 255});
 		_particle->setPositionY(getPositionY() - 4.f);
 		break;
 	case 36: // yellow orb
 		createAndAddParticle("ringEffect.plist", 3);
-		_particle->setStartColor({ 255, 255, 0, 255 });
+		_particle->setStartColor({255, 255, 0, 255});
 		break;
 	case 84: // blue orb
 		createAndAddParticle("ringEffect.plist", 3);
-		_particle->setStartColor({ 0, 255, 255, 255 });
+		_particle->setStartColor({0, 255, 255, 255});
 		break;
 	case 141: // pink orb
 		createAndAddParticle("ringEffect.plist", 3);
-		_particle->setStartColor({ 255, 0, 255, 255 });
+		_particle->setStartColor({255, 0, 255, 255});
 		break;
 	case 1022: // green orb
 		createAndAddParticle("ringEffect.plist", 3);
-		_particle->setStartColor({ 0, 255, 0, 255 });
+		_particle->setStartColor({0, 255, 0, 255});
 		break;
 	case 1333: // red orb
 		createAndAddParticle("ringEffect.plist", 3);
-		_particle->setStartColor({ 255, 0, 0, 255 });
+		_particle->setStartColor({255, 0, 0, 255});
+		break;
+	case 366:
+	case 367:
+	case 1717:
+	case 1718:
+	case 1723:
+	case 1724:
+		_primaryInvisible = true;
 		break;
 	}
 }
@@ -180,10 +215,10 @@ void GameObject::update()
 	if (_hasGlow)
 	{
 		auto pos = getPosition();
-		
+
 		if (_glowSprite->getPosition() != pos)
 			_glowSprite->setPosition(pos);
-		
+
 		_glowSprite->setScaleX(getScaleX());
 		_glowSprite->setScaleY(getScaleY());
 		_glowSprite->setRotation(getRotation());
@@ -191,22 +226,22 @@ void GameObject::update()
 		_glowSprite->setFlippedY(isFlippedY());
 		_glowSprite->setLocalZOrder(-1);
 		float op = getOpacity();
-		
+
 		if (_glowSprite->getOpacity() != op)
 			_glowSprite->setOpacity(op);
 	}
 	if (_hasParticle)
 	{
 		auto pos = getPosition();
-		
+
 		if (_particle->getPosition() != pos)
 			_particle->setPosition(pos);
-		
+
 		_particle->setRotation(getRotation());
 		_particle->setScaleX(getScaleX() * (isFlippedX() ? -1.f : 1.f));
 		_particle->setScaleY(getScaleY() * (isFlippedY() ? -1.f : 1.f));
 		float op = getOpacity();
-		
+
 		if (_particle->getOpacity() != op)
 			_particle->setOpacity(op);
 	}
@@ -219,38 +254,49 @@ void GameObject::update()
 	}
 
 	auto pl = PlayLayer::getInstance();
-	if (!pl) return;
+	if (!pl)
+		return;
+
+	float opacityMultiplier = 1.f;
+
+	for (int i : _groups)
+	{
+		opacityMultiplier *= pl->_groups[i]._alpha;
+	}
 
 	if (pl->m_pColorChannels.contains(_mainColorChannel))
 	{
 		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
-		if (getColor() != sp1._color)
+		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
-		float op = sp1._opacity;
+		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
 		if (getOpacity() != op)
-			setOpacity(op);
-		if (pl->m_pColorChannels.contains(_secColorChannel))
+			setOpacity(_primaryInvisible ? 0 : op);
+		if (!_forceBlackDetail)
 		{
-			auto sp2 = pl->m_pColorChannels[_secColorChannel];
-			for (auto sp : _detailSprites)
+			if (pl->m_pColorChannels.contains(_secColorChannel))
 			{
-				if (sp->getColor() != sp2._color)
-					sp->setColor(sp2._color);
-				op = sp2._opacity;
-				if (sp->getOpacity() != op)
-					sp->setOpacity(op);
+				auto sp2 = pl->m_pColorChannels[_secColorChannel];
+				for (auto sp : _detailSprites)
+				{
+					if (!_forceBlack && sp->getColor() != sp2._color)
+						sp->setColor(sp2._color);
+					op = sp2._opacity * opacityMultiplier * _effectOpacityMultipler;
+					if (sp->getOpacity() != op)
+						sp->setOpacity(op);
+				}
 			}
-		}
-		else
-		{
-			auto sp1 = pl->m_pColorChannels[_mainColorChannel];
-			for (auto sp : _detailSprites)
+			else
 			{
-				if (sp->getColor() != sp1._color)
-					sp->setColor(sp1._color);
-				float op = sp1._opacity;
-				if (sp->getOpacity() != op)
-					sp->setOpacity(op);
+				auto sp1 = pl->m_pColorChannels[_mainColorChannel];
+				for (auto sp : _detailSprites)
+				{
+					if (!_forceBlack && sp->getColor() != sp1._color)
+						sp->setColor(sp1._color);
+					float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
+					if (sp->getOpacity() != op)
+						sp->setOpacity(op);
+				}
 			}
 		}
 	}
@@ -258,20 +304,27 @@ void GameObject::update()
 	{
 		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
 		auto sp2 = pl->m_pColorChannels[_secColorChannel];
-		if (getColor() != sp1._color)
+		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
-		float op = sp1._opacity;
+		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
 		if (getOpacity() != op)
-			setOpacity(op);
+			setOpacity(_primaryInvisible ? 0 : op);
+
+		if (_forceBlackDetail)
+			return;
 		for (auto sp : _detailSprites)
 		{
 			if (sp->getColor() != sp2._color)
 				sp->setColor(sp2._color);
-			op = sp2._opacity;
+			op = sp2._opacity * opacityMultiplier * _effectOpacityMultipler;
 			if (sp->getOpacity() != op)
 				sp->setOpacity(op);
 		}
 	}
+}
+
+void GameObject::updateTweenAction(float value, std::string_view key)
+{
 }
 
 std::string GameObject::keyToFrame(int key)
