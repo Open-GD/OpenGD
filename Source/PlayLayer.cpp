@@ -21,6 +21,8 @@
 #include <charconv>
 #include <fstream>
 
+#include "LevelDebugLayer.h"
+
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -38,6 +40,7 @@ ax::Node* cameraFollow;
 
 Scene* PlayLayer::scene(GJGameLevel* level)
 {
+	return LevelDebugLayer::scene(level);
 	auto scene = Scene::create();
 	scene->addChild(PlayLayer::create(level));
 	return scene;
