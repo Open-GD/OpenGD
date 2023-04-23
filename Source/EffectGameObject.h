@@ -2,12 +2,12 @@
 #include "GameObject.h"
 #include <axmol.h>
 
-class PlayLayer;
+class BaseGameLayer;
 
 class EffectGameObject : public GameObject
 {
 private:
-	PlayLayer* _pl;
+	BaseGameLayer* _bgl;
 
 public:
 	float _duration;

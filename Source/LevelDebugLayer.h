@@ -10,13 +10,12 @@
 //3. private functions
 //4. public functions
 
-class LevelDebugLayer : public ax::Layer {
+class LevelDebugLayer : public BaseGameLayer {
 private:
     ax::Vec2 _camInput;
-    float _camSpeed = 30.f;
+    float _camSpeed = 420.f;
 
-public:
-	BaseGameLayer* _bgl;
+    ax::Sprite* _BG;
 
 public:
     static LevelDebugLayer* create(GJGameLevel*);
@@ -27,4 +26,6 @@ public:
     void update(float delta);
     void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+    void updateVisibility();
+    void updateTriggers(float dt);
 };

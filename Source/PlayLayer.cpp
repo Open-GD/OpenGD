@@ -787,9 +787,6 @@ void PlayLayer::update(float dt)
 	this->m_pColorChannels.at(1005)._color = this->_player1->getMainColor();
 	this->m_pColorChannels.at(1006)._color = this->_player1->getSecondaryColor();
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
-
 	m_pColorChannels[1007]._color = getLightBG();
 
 	if (!m_freezePlayer && (!this->_player1->isDead() || !this->_player2->isDead()))

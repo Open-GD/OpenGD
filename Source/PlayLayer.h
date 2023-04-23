@@ -11,23 +11,10 @@
 #include "GJGameLevel.h"
 #include "SpriteColor.h"
 #include "UILayer.h"
+#include "BaseGameLayer.h"
 
 #include <vector>
 #include <span>
-
-struct LevelSettings
-{
-	PlayerGamemode gamemode;
-	bool mini, dual, twoPlayer, flipGravity;
-	int speed;
-	float songOffset;
-};
-
-struct GroupProperties
-{
-	std::vector<GameObject*> _objects;
-	float _alpha = 1.f;
-};
 
 class PlayLayer : public ax::Layer
 {

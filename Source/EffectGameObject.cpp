@@ -1,4 +1,5 @@
 #include "EffectGameObject.h"
+#include "BaseGameLayer.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
 
@@ -6,17 +7,19 @@ USING_NS_AX;
 
 void EffectGameObject::triggerActivated(float idk)
 {
-	if (!_pl)
+	if (!_bgl)
 		return;
+
+	auto pl = PlayLayer::getInstance();
 
 	this->_wasTriggerActivated = true;
 
 	auto id = getID();
 
-	if (!_pl->m_pColorChannels.contains(_targetColorId))
+	if (!_bgl->_colorChannels.contains(_targetColorId))
 	{
-		_pl->m_pColorChannels.insert({_targetColorId, SpriteColor(Color3B::WHITE, 255, 0)});
-		_pl->_originalColors.insert({_targetColorId, SpriteColor(Color3B::WHITE, 255, 0)});
+		_bgl->_colorChannels.insert({_targetColorId, SpriteColor(Color3B::WHITE, 255, 0)});
+		_bgl->_originalColors.insert({_targetColorId, SpriteColor(Color3B::WHITE, 255, 0)});
 	}
 
 	if (id == 29)
@@ -30,51 +33,60 @@ void EffectGameObject::triggerActivated(float idk)
 	case 29:
 	case 899: {
 		this->runAction(
-			ActionTween::create(this->_duration, "col1", _pl->m_pColorChannels.at(_targetColorId)._color.r, _color.r));
+			ActionTween::create(this->_duration, "col1", _bgl->_colorChannels.at(_targetColorId)._color.r, _color.r));
 		this->runAction(
-			ActionTween::create(this->_duration, "col2", _pl->m_pColorChannels.at(_targetColorId)._color.g, _color.g));
+			ActionTween::create(this->_duration, "col2", _bgl->_colorChannels.at(_targetColorId)._color.g, _color.g));
 		this->runAction(
-			ActionTween::create(this->_duration, "col3", _pl->m_pColorChannels.at(_targetColorId)._color.b, _color.b));
+			ActionTween::create(this->_duration, "col3", _bgl->_colorChannels.at(_targetColorId)._color.b, _color.b));
 		break;
 	}
 	case 22:
-		_pl->_enterEffectID = 1;
+		if (pl)
+			pl->_enterEffectID = 1;
 		break;
 	case 23:
-		_pl->_enterEffectID = 5;
+		if (pl)
+			pl->_enterEffectID = 5;
 		break;
 	case 24:
-		_pl->_enterEffectID = 4;
+		if (pl)
+			pl->_enterEffectID = 4;
 		break;
 	case 25:
-		_pl->_enterEffectID = 6;
+		if (pl)
+			pl->_enterEffectID = 6;
 		break;
 	case 26:
-		_pl->_enterEffectID = 7;
+		if (pl)
+			pl->_enterEffectID = 7;
 		break;
 	case 27:
-		_pl->_enterEffectID = 2;
+		if (pl)
+			pl->_enterEffectID = 2;
 		break;
 	case 28:
-		_pl->_enterEffectID = 3;
+		if (pl)
+			pl->_enterEffectID = 3;
 		break;
 	case 1007:
-		runAction(ActionTween::create(_duration, "fade", _pl->_groups[_targetGroupId]._alpha, _opacity));
+		runAction(ActionTween::create(_duration, "fade", _bgl->_groups[_targetGroupId]._alpha, _opacity));
 		break;
 	case 1006:
-		if (!_pl->m_pColorChannels.contains(_targetGroupId))
+		if (!_bgl->_colorChannels.contains(_targetGroupId))
 		{
-			_pl->m_pColorChannels.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
-			_pl->_originalColors.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
+			_bgl->_colorChannels.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
+			_bgl->_originalColors.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
 		}
-		Color3B original = _pl->m_pColorChannels.at(_targetGroupId)._color;
+		Color3B original = _bgl->_colorChannels.at(_targetGroupId)._color;
 
 		Color3B target = _color;
 
-		if(_pulseMode)
+		if (_pulseMode)
 		{
-			if(_copiedColorId == -1) target = original;
-			else target = _pl->m_pColorChannels.at(_copiedColorId)._color;
+			if (_copiedColorId == -1)
+				target = original;
+			else
+				target = _bgl->_colorChannels.at(_copiedColorId)._color;
 			auto hsv = ax::HSV(original);
 			// if(_hsv.h != 0) hsv.h += _hsv.h + 180;
 			// if(_saturationTicked) hsv.s *= _hsv.s;
@@ -83,20 +95,17 @@ void EffectGameObject::triggerActivated(float idk)
 			// else hsv.v += _hsv.v;
 			target = hsv.toColor3B();
 		}
-		auto seq1 = ax::Sequence::create(
-			{ActionTween::create(_fadeIn, "pul1", original.r, target.r),
-			 ActionTween::create(_hold, "pul1", target.r, target.r),
-			 ActionTween::create(_fadeOut, "pul1", target.r, original.r)});
+		auto seq1 = ax::Sequence::create({ActionTween::create(_fadeIn, "pul1", original.r, target.r),
+										  ActionTween::create(_hold, "pul1", target.r, target.r),
+										  ActionTween::create(_fadeOut, "pul1", target.r, original.r)});
 
-		auto seq2 = ax::Sequence::create(
-			{ActionTween::create(_fadeIn, "pul2", original.g, target.g),
-			 ActionTween::create(_hold, "pul2", target.g, target.g),
-			 ActionTween::create(_fadeOut, "pul2", target.g, original.g)});
+		auto seq2 = ax::Sequence::create({ActionTween::create(_fadeIn, "pul2", original.g, target.g),
+										  ActionTween::create(_hold, "pul2", target.g, target.g),
+										  ActionTween::create(_fadeOut, "pul2", target.g, original.g)});
 
-		auto seq3 = ax::Sequence::create(
-			{ActionTween::create(_fadeIn, "pul3", original.b, target.b),
-			 ActionTween::create(_hold, "pul3", target.b, target.b),
-			 ActionTween::create(_fadeOut, "pul3", target.b, original.b)});
+		auto seq3 = ax::Sequence::create({ActionTween::create(_fadeIn, "pul3", original.b, target.b),
+										  ActionTween::create(_hold, "pul3", target.b, target.b),
+										  ActionTween::create(_fadeOut, "pul3", target.b, original.b)});
 
 		this->runAction(seq1);
 		this->runAction(seq2);
@@ -107,36 +116,36 @@ void EffectGameObject::triggerActivated(float idk)
 
 void EffectGameObject::updateTweenAction(float value, std::string_view key)
 {
-	if (!_pl)
+	if (!_bgl)
 		return;
 
 	if (key == "col1")
 	{
-		_pl->m_pColorChannels.at(_targetColorId)._color.r = value;
+		_bgl->_colorChannels.at(_targetColorId)._color.r = value;
 	}
 	else if (key == "col2")
 	{
-		_pl->m_pColorChannels.at(_targetColorId)._color.g = value;
+		_bgl->_colorChannels.at(_targetColorId)._color.g = value;
 	}
 	else if (key == "col3")
 	{
-		_pl->m_pColorChannels.at(_targetColorId)._color.b = value;
+		_bgl->_colorChannels.at(_targetColorId)._color.b = value;
 	}
 	else if (key == "pul1")
 	{
-		_pl->m_pColorChannels.at(_targetGroupId)._color.r = value;
+		_bgl->_colorChannels.at(_targetGroupId)._color.r = value;
 	}
 	else if (key == "pul2")
 	{
-		_pl->m_pColorChannels.at(_targetGroupId)._color.g = value;
+		_bgl->_colorChannels.at(_targetGroupId)._color.g = value;
 	}
 	else if (key == "pul3")
 	{
-		_pl->m_pColorChannels.at(_targetGroupId)._color.b = value;
+		_bgl->_colorChannels.at(_targetGroupId)._color.b = value;
 	}
-	else if(key == "fade")
+	else if (key == "fade")
 	{
-		_pl->_groups[_targetGroupId]._alpha = value;
+		_bgl->_groups[_targetGroupId]._alpha = value;
 	}
 }
 
@@ -146,7 +155,7 @@ EffectGameObject* EffectGameObject::create(std::string_view frame)
 
 	if (pRet && pRet->init(frame))
 	{
-		pRet->_pl = PlayLayer::getInstance();
+		pRet->_bgl = BaseGameLayer::getInstance();
 		pRet->setVisible(false);
 		pRet->autorelease();
 		return pRet;

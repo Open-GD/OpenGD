@@ -2,6 +2,7 @@
 #include "EffectGameObject.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
+#include "BaseGameLayer.h"
 #include "PlayerObject.h"
 #include "external/json.hpp"
 #include <fmt/format.h>
@@ -253,20 +254,20 @@ void GameObject::update()
 		setScaleY(_startScale.y);
 	}
 
-	auto pl = PlayLayer::getInstance();
-	if (!pl)
+	auto bgl = BaseGameLayer::getInstance();
+	if (!bgl)
 		return;
 
 	float opacityMultiplier = 1.f;
 
 	for (int i : _groups)
 	{
-		opacityMultiplier *= pl->_groups[i]._alpha;
+		opacityMultiplier *= bgl->_groups[i]._alpha;
 	}
 
-	if (pl->m_pColorChannels.contains(_mainColorChannel))
+	if (bgl->_colorChannels.contains(_mainColorChannel))
 	{
-		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
+		auto sp1 = bgl->_colorChannels[_mainColorChannel];
 		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
 		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
@@ -274,9 +275,9 @@ void GameObject::update()
 			setOpacity(_primaryInvisible ? 0 : op);
 		if (!_forceBlackDetail)
 		{
-			if (pl->m_pColorChannels.contains(_secColorChannel))
+			if (bgl->_colorChannels.contains(_secColorChannel))
 			{
-				auto sp2 = pl->m_pColorChannels[_secColorChannel];
+				auto sp2 = bgl->_colorChannels[_secColorChannel];
 				for (auto sp : _detailSprites)
 				{
 					if (!_forceBlack && sp->getColor() != sp2._color)
@@ -288,7 +289,7 @@ void GameObject::update()
 			}
 			else
 			{
-				auto sp1 = pl->m_pColorChannels[_mainColorChannel];
+				auto sp1 = bgl->_colorChannels[_mainColorChannel];
 				for (auto sp : _detailSprites)
 				{
 					if (!_forceBlack && sp->getColor() != sp1._color)
@@ -300,10 +301,10 @@ void GameObject::update()
 			}
 		}
 	}
-	else if (pl->m_pColorChannels.contains(_secColorChannel))
+	else if (bgl->_colorChannels.contains(_secColorChannel))
 	{
-		auto sp1 = pl->m_pColorChannels[_mainColorChannel];
-		auto sp2 = pl->m_pColorChannels[_secColorChannel];
+		auto sp1 = bgl->_colorChannels[_mainColorChannel];
+		auto sp2 = bgl->_colorChannels[_secColorChannel];
 		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
 		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
@@ -368,14 +369,14 @@ std::map<std::string, std::string> GameObject::stringSetupToDict(std::string str
 }
 void GameObject::triggerActivated(PlayerObject* player)
 {
-	auto pl = PlayLayer::getInstance();
-	player == pl->_player1 ? _hasBeenActivatedP1 = true : _hasBeenActivatedP2 = true;
+	auto bgl = BaseGameLayer::getInstance();
+	player == bgl->_player1 ? _hasBeenActivatedP1 = true : _hasBeenActivatedP2 = true;
 }
 
 bool GameObject::hasBeenActiavedByPlayer(PlayerObject* player)
 {
-	auto pl = PlayLayer::getInstance();
-	return player == pl->_player1 ? _hasBeenActivatedP1 : _hasBeenActivatedP2;
+	auto bgl = BaseGameLayer::getInstance();
+	return player == bgl->_player1 ? _hasBeenActivatedP1 : _hasBeenActivatedP2;
 }
 
 ax::Rect GameObject::getOuterBounds(float a, float b)
