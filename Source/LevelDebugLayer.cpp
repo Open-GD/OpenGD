@@ -62,9 +62,6 @@ bool LevelDebugLayer::init(GJGameLevel* level)
 	if (_colorChannels.contains(1000))
 		_BG->setColor(_colorChannels.at(1000)._color);
 
-	Camera::getDefaultCamera()->setZoom(0.3f);
-	Camera::getDefaultCamera()->applyZoom();
-
 	scheduleUpdate();
 
 	return true;

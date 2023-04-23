@@ -106,16 +106,20 @@ GameObject* GameObject_createFromString(std::string_view data)
 			obj->setRotation(GameToolbox::stof(properties[i + 1]));
 			break;
 		case 7:
-			dynamic_cast<EffectGameObject*>(obj)->_color.r = GameToolbox::stoi(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_color.r = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 8:
-			dynamic_cast<EffectGameObject*>(obj)->_color.g = GameToolbox::stoi(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_color.g = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 9:
-			dynamic_cast<EffectGameObject*>(obj)->_color.b = GameToolbox::stoi(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_color.b = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 10:
-			dynamic_cast<EffectGameObject*>(obj)->_duration = GameToolbox::stof(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_duration = GameToolbox::stof(properties[i + 1]);
 			break;
 		case 21:
 			obj->_mainColorChannel = GameToolbox::stoi(properties[i + 1]);
@@ -124,7 +128,8 @@ GameObject* GameObject_createFromString(std::string_view data)
 			obj->_secColorChannel = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 23:
-			dynamic_cast<EffectGameObject*>(obj)->_targetColorId = GameToolbox::stoi(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_targetColorId = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 24:
 			obj->_zLayer = GameToolbox::stoi(properties[i + 1]);
@@ -137,37 +142,47 @@ GameObject* GameObject_createFromString(std::string_view data)
 			obj->setScaleY(obj->getScaleY() * GameToolbox::stof(properties[i + 1]));
 			break;
 		case 35:
-			dynamic_cast<EffectGameObject*>(obj)->_opacity = GameToolbox::stof(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_opacity = GameToolbox::stof(properties[i + 1]);
 			break;
 		case 45:
-			dynamic_cast<EffectGameObject*>(obj)->_fadeIn = GameToolbox::stof(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_fadeIn = GameToolbox::stof(properties[i + 1]);
 			break;
 		case 46:
-			dynamic_cast<EffectGameObject*>(obj)->_hold = GameToolbox::stof(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_hold = GameToolbox::stof(properties[i + 1]);
 			break;
 		case 47:
-			dynamic_cast<EffectGameObject*>(obj)->_fadeOut = GameToolbox::stof(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_fadeOut = GameToolbox::stof(properties[i + 1]);
 			break;
 		case 48:
-			dynamic_cast<EffectGameObject*>(obj)->_pulseMode = GameToolbox::stoi(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_pulseMode = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 49: {
-			auto hsv = GameToolbox::splitByDelimStringView(properties[i + 1], 'a');
-			auto trigger = dynamic_cast<EffectGameObject*>(obj);
-			trigger->_hsv.h = GameToolbox::stof(hsv[0]);
-			trigger->_hsv.s = GameToolbox::stof(hsv[1]);
-			trigger->_hsv.v = GameToolbox::stof(hsv[2]);
-			// TODO: fix this
-			// trigger->_saturationTicked = GameToolbox::stof(hsv[3]);
-			// trigger->_brightnessTicked = GameToolbox::stof(hsv[4]);
+			if (obj->_isTrigger)
+			{
+				auto hsv = GameToolbox::splitByDelimStringView(properties[i + 1], 'a');
+				auto trigger = dynamic_cast<EffectGameObject*>(obj);
+				trigger->_hsv.h = GameToolbox::stof(hsv[0]);
+				trigger->_hsv.s = GameToolbox::stof(hsv[1]);
+				trigger->_hsv.v = GameToolbox::stof(hsv[2]);
+				// TODO: fix this
+				// trigger->_saturationTicked = GameToolbox::stof(hsv[3]);
+				// trigger->_brightnessTicked = GameToolbox::stof(hsv[4]);
+			}
 			break;
 		}
 
 		case 50:
-			dynamic_cast<EffectGameObject*>(obj)->_copiedColorId = GameToolbox::stoi(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_copiedColorId = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 52:
-			dynamic_cast<EffectGameObject*>(obj)->_pulseType = GameToolbox::stoi(properties[i + 1]);
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_pulseType = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 51:
 			if (obj->_isTrigger)
@@ -276,8 +291,7 @@ void BaseGameLayer::loadLevel()
 				object->setBlendFunc(GameToolbox::getBlending());
 			}
 
-			if (_colorChannels.contains(object->_secColorChannel) &&
-				_colorChannels[object->_secColorChannel]._blending)
+			if (_colorChannels.contains(object->_secColorChannel) && _colorChannels[object->_secColorChannel]._blending)
 			{
 				for (auto s : object->_detailSprites)
 					s->setBlendFunc(GameToolbox::getBlending());
@@ -413,8 +427,7 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 	{
 		if (levelData[i] == "kS1")
 		{
-			_colorChannels.insert(
-				{1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
+			_colorChannels.insert({1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
 			GameToolbox::log("わかってた");
 		}
 		else if (levelData[i] == "kS2")
@@ -427,8 +440,7 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 		}
 		else if (levelData[i] == "kS4")
 		{
-			_colorChannels.insert(
-				{1001, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
+			_colorChannels.insert({1001, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
 		}
 		else if (levelData[i] == "kS5")
 		{
