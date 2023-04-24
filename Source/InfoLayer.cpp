@@ -2,10 +2,10 @@
 
 #include <core/ui/UIScale9Sprite.h>
 #include "MenuItemSpriteExtra.h"
-#include "TextButton.h"
 #include <ui/CocosGUI.h>
 #include <ui/UITextField.h>
 #include "external/base64.h"
+#include "ButtonSprite.h"
 
 USING_NS_AX;
 
@@ -78,7 +78,7 @@ bool InfoLayer::init(GJGameLevel* level)
 
 	auto moreBtnMenu = Menu::create();
 
-	auto moreBtn = TextButton::create("More by this user", GameToolbox::getTextureString("bigFont.fnt"), 220.f, 30.f, [](TextButton*) {});
+	auto moreBtn = MenuItemSpriteExtra::create(ButtonSprite::create("More by this user", 0xDC, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30), [](Node*) {});
 	moreBtnMenu->addChild(moreBtn);
 	moreBtnMenu->setPosition({ winSize.width / 2, (winSize.height / 2) - 70.f });
 

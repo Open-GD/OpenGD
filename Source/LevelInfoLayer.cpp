@@ -213,12 +213,13 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	auto buttonsMenu = Menu::create();
 
 	auto deleteBtn = MenuItemSpriteExtra::create(Sprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"), [](Node*) {
-		auto alert =
-			AlertLayer::create("Delete Level", "Are you sure you want to delete this level?", "NO", "YES", NULL, NULL);
-			alert->setBtn2Callback([=](TextButton*) {
-				alert->close();
-				Director::getInstance()->popScene();
-			});
+		auto alert = AlertLayer::create("Delete Level", "Are you sure you want to delete this level?", "NO", "YES", NULL, NULL);
+		
+		alert->setBtn2Callback([=](Node* btn) {
+			alert->close();
+			Director::getInstance()->popScene();
+		});
+
 		alert->show();
 	});
 	buttonsMenu->addChild(deleteBtn);

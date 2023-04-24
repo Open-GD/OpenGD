@@ -163,11 +163,11 @@ bool MenuLayer::init()
 	
 	auto statsBtn = MenuItemSpriteExtra::create("GJ_statsBtn_001.png", [&](Node* btn) {
 		auto alert = AlertLayer::create("WIP!", "This feature is not yet supported!", "Close", "Click me!", NULL, NULL);
-		alert->setBtn2Callback([=](TextButton*) {
+		alert->setBtn2Callback([=](Node*) {
 			alert->close();
 			AlertLayer::create(
 				"Woah hello ;)", "apparently you can do this now. its pretty cool!", "Close", "My mood rn", NULL,
-				[=](TextButton*) { Application::getInstance()->openURL("https://www.youtube.com/watch?v=XSsRrlM3tNg"); })
+				[=](Node*) { Application::getInstance()->openURL("https://www.youtube.com/watch?v=XSsRrlM3tNg"); })
 				->show();
 		});
 		alert->show();
@@ -242,11 +242,11 @@ bool MenuLayer::init()
 			
 			closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to Quit?", "Cancel", "Yes", NULL, NULL);
 			
-			closeAlert->setBtn1Callback([=](TextButton*){
+			closeAlert->setBtn1Callback([=](Node*){
 				closeAndNull();
 			});
 
-			closeAlert->setBtn2Callback([](TextButton*){
+			closeAlert->setBtn2Callback([](Node*){
 				GameManager::getInstance()->save();
 				Director::getInstance()->end();
 			});

@@ -3,6 +3,7 @@
 #include "MenuItemSpriteExtra.h"
 #include "ui/UIScale9Sprite.h"
 #include "LevelInfoLayer.h"
+#include "ButtonSprite.h"
 
 LevelCell* LevelCell::create(GJGameLevel* level) {
 	LevelCell* ret = new LevelCell();
@@ -151,21 +152,10 @@ bool LevelCell::init(GJGameLevel* level) {
 		layer->addChild(highObjectSprite);
 	}
 
-	auto scale9 = ax::ui::Scale9Sprite::create("GJ_button_01-uhd.png");
-	scale9->setPosition({31.55, 15});
-	scale9->setContentSize({63.1, 30});
-
-	auto view = ax::Label::createWithBMFont(bigFontStr, "View");
-	view->setPosition({ scale9->getContentSize().width / 2 - 2, scale9->getContentSize().height / 2 + 2 });
-	view->setScale(0.6f);
-	scale9->addChild(view);
-
-	auto button = MenuItemSpriteExtra::create(scale9, [&, level](Node* btn) 
+	auto button = MenuItemSpriteExtra::create(ButtonSprite::create("View", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30), [&, level](Node* btn)
 		{
 			ax::Director::getInstance()->pushScene((ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(level))));
 		});
-	button->setContentSize({88.340, 42});
-	button->setPosition({10, 11});
 	menu->addChild(button);
 
 	return true;

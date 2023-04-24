@@ -1,6 +1,6 @@
 #include "SongCell.h"
 #include "GameToolbox.h"
-#include "TextButton.h"
+#include "ButtonSprite.h"
 #include "LevelTools.h"
 #include "ui/UIScale9Sprite.h"
 #include "MenuItemSpriteExtra.h"
@@ -72,23 +72,15 @@ bool SongCell::init(SongObject* songInfo)
 
 
 	// View button
-	auto scale9 = ax::ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_button_01.png"));
-	scale9->setPosition({ 31.55, 15 });
-	scale9->setContentSize({ 63.1, 30 });
+	auto buttonSprite = ButtonSprite::create("View", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30);
 
-	auto view = ax::Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "View");
-	view->setPosition({ scale9->getContentSize().width / 2 - 2, scale9->getContentSize().height / 2 + 2 });
-	view->setScale(0.6f);
-	scale9->addChild(view);
-
-	auto button = MenuItemSpriteExtra::create(scale9, [sID](Node* btn)
+	auto button = MenuItemSpriteExtra::create(buttonSprite, [sID](Node* btn)
 	{
 			SongInfoLayer::create(sID)->show();
 	});
-	button->setContentSize({88.340, 42});
-	button->setPosition({10, 30});
+
 	auto viewBtnMenu = Menu::create();
-	viewBtnMenu->setPosition({315.675, 5});
+	viewBtnMenu->setPosition({ (this->getContentSize().width - ((buttonSprite->getContentSize().width) / 2.f) - 9.f), this->getContentSize().height / 2 });
 	viewBtnMenu->addChild(button);
 	_layer->addChild(viewBtnMenu);
 

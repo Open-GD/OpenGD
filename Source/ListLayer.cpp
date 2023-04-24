@@ -13,11 +13,11 @@ ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color
 }
 
 ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color4B color){
-	return ListLayer::create(scrollLayer, label, color, {356, 240});
+	return ListLayer::create(scrollLayer, label, color, {356, 220});
 }
 
 ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label){
-	return ListLayer::create(scrollLayer, label, {0, 0, 0, 125}, {356, 240});
+	return ListLayer::create(scrollLayer, label, {0, 0, 0, 180}, {356, 220});
 }
 
 bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
@@ -25,7 +25,6 @@ bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color
 	
 	auto winSize = ax::Director::getInstance()->getWinSize();
 
-	//this->listlayer = ax::Layer::create();
 	this->setContentSize(size);
 	
 	//menu start
@@ -40,19 +39,19 @@ bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color
 	
 
 	auto top = ax::Sprite::createWithSpriteFrameName("GJ_table_top_001.png");
-	top->setPosition({size.x / 2, size.y - 5});
+	top->setPosition({size.x / 2, size.y + 15});
 	
 
 	auto left = ax::Sprite::createWithSpriteFrameName("GJ_table_side_001.png");
 	left->setPosition(this->convertToNodeSpace({-20, 0}));
 	left->setAnchorPoint({0, 0});
-	left->setScaleY(size.y / left->getContentSize().height);
+	left->setScaleY(size.height / left->getContentSize().height);
 	
 
 	auto right = ax::Sprite::createWithSpriteFrameName("GJ_table_side_001.png");
 	right->setPosition(this->convertToNodeSpace({size.x + 20, 0}));
 	right->setAnchorPoint({1, 0});
-	right->setScaleY(size.y / left->getContentSize().height);
+	right->setScaleY(left->getScaleY());
 	right->setFlippedX(true);
 	
 	this->addChild(left);
@@ -66,9 +65,6 @@ bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color
 	text->setPositionY(top->getPositionY() * 1.01);
 	text->setScale(0.8f);
 	this->addChild(text);
-	//menu end
 	
-	//this->addChild(listlayer);
-
 	return true;
 }

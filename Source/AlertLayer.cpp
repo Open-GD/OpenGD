@@ -1,10 +1,11 @@
 #include "AlertLayer.h"
 #include <ui/CocosGUI.h>
 #include "GameToolbox.h"
+#include "ButtonSprite.h"
 
 USING_NS_AX;
 
-bool AlertLayer::init(std::string_view title, std::string_view desc, std::string_view btn1Str, std::string_view btn2Str, float width, std::function<void(TextButton*)> btn1Callback, std::function<void(TextButton*)> btn2Callback)
+bool AlertLayer::init(std::string_view title, std::string_view desc, std::string_view btn1Str, std::string_view btn2Str, float width, std::function<void(Node*)> btn1Callback, std::function<void(Node*)> btn2Callback)
 {
 	if (!PopupLayer::init()) 
 		return false;
@@ -37,15 +38,15 @@ bool AlertLayer::init(std::string_view title, std::string_view desc, std::string
 	this->_mainLayer->addChild(menu);
 	menu->setPositionY((winSize.height - descHeight) / 2 + 60);
 	
-	auto _btnCallback = btn1Callback ? btn1Callback : [this](TextButton*) {this->close(); };
+	auto _btnCallback = btn1Callback ? btn1Callback : [this](Node*) {this->close(); };
 	
-	_btn1 = TextButton::create(btn1Str, goldFontStr, 0, 0, _btnCallback);
+	_btn1 = MenuItemSpriteExtra::create(ButtonSprite::create(btn1Str, 0x60, 0, 1), _btnCallback);
 	menu->addChild(_btn1);
 
 	if (!btn2Str.empty())
 	{
-		auto _btn2Callback = btn2Callback ? btn2Callback : [this](TextButton*) {this->close(); };
-		_btn2 = TextButton::create(btn2Str, goldFontStr, 0, 0, _btn2Callback);
+		auto _btn2Callback = btn2Callback ? btn2Callback : [this](Node*) {this->close(); };
+		_btn2 = MenuItemSpriteExtra::create(ButtonSprite::create(btn2Str, 0x60, 0, 1), _btn2Callback);
 		menu->addChild(_btn2);
 
 		menu->alignItemsHorizontallyWithPadding(MIN((width - (_btn1->getContentSize().width + _btn2->getContentSize().width)) / 2, 30));
@@ -55,7 +56,7 @@ bool AlertLayer::init(std::string_view title, std::string_view desc, std::string
 	return true;
 }
 
-AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, std::string_view btn2, float width, std::function<void(TextButton*)> btn1Callback, std::function<void(TextButton*)> btn2Callback)
+AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, std::string_view btn2, float width, std::function<void(Node*)> btn1Callback, std::function<void(Node*)> btn2Callback)
 {
 	auto pRet = new(std::nothrow) AlertLayer();
 
@@ -71,15 +72,15 @@ AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, st
 	}
 }
 
-AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, std::string_view btn2, std::function<void(TextButton*)> btn1Callback, std::function<void(TextButton*)> btn2Callback) {
+AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, std::string_view btn2, std::function<void(Node*)> btn1Callback, std::function<void(Node*)> btn2Callback) {
 	return AlertLayer::create(title, desc, btn1, btn2, 500, btn1Callback, btn2Callback);
 }
 
-AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, float width, std::function<void(TextButton*)> btn1Callback) {
+AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, float width, std::function<void(Node*)> btn1Callback) {
 	return AlertLayer::create(title, desc, btn1, "", width, btn1Callback, nullptr);
 }
 
-AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, std::function<void(TextButton*)> btn1Callback) {
+AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc, std::string_view btn1, std::function<void(Node*)> btn1Callback) {
 	return AlertLayer::create(title, desc, btn1, "", 500, btn1Callback, nullptr);
 }
 
@@ -91,10 +92,12 @@ AlertLayer* AlertLayer::create(std::string_view title, std::string_view desc) {
 	return AlertLayer::create(title, desc, "OK", "", 500, nullptr, nullptr);
 }
 
-void AlertLayer::setBtn1Callback(std::function<void(TextButton*)> callback) {
-	this->_btn1->setCallback(callback);
+void AlertLayer::setBtn1Callback(std::function<void(Node*)> btn1Callback)
+{
+	_btn1->setCallback(btn1Callback);
 }
 
-void AlertLayer::setBtn2Callback(std::function<void(TextButton*)> callback) {
-	this->_btn2->setCallback(callback);
+void AlertLayer::setBtn2Callback(std::function<void(Node*)> btn2Callback)
+{
+	_btn2->setCallback(btn2Callback);
 }
