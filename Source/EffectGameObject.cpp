@@ -87,13 +87,22 @@ void EffectGameObject::triggerActivated(float idk)
 				target = original;
 			else
 				target = _bgl->_colorChannels.at(_copiedColorId)._color;
-			auto hsv = ax::HSV(original);
-			// if(_hsv.h != 0) hsv.h += _hsv.h + 180;
-			// if(_saturationTicked) hsv.s *= _hsv.s;
-			// else hsv.s += _hsv.s;
-			// if(_brightnessTicked) hsv.v *= _hsv.v;
-			// else hsv.v += _hsv.v;
-			target = hsv.toColor3B();
+
+			auto hsv = ax::HSV(target);
+			hsv.h += _hsv.h;
+			GameToolbox::log("test {} {} {}", target.r, target.g, target.b);
+			if(_saturationTicked) hsv.s += _hsv.s;
+			else hsv.s *= _hsv.s;
+			if(_brightnessTicked) hsv.v += _hsv.v;
+			else hsv.v *= _hsv.v;
+
+			if(hsv.s > 1) hsv.s = 1;
+			if(hsv.v > 1) hsv.v = 1;
+			if(hsv.s < 0) hsv.s = 0;
+			if(hsv.v < 0) hsv.v = 0;
+			
+			target = GameToolbox::hsvToRgb(hsv);
+			GameToolbox::log("test {} {} {}", target.r, target.g, target.b);
 		}
 		auto seq1 = ax::Sequence::create({ActionTween::create(_fadeIn, "pul1", original.r, target.r),
 										  ActionTween::create(_hold, "pul1", target.r, target.r),

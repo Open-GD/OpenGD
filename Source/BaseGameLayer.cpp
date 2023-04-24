@@ -170,8 +170,8 @@ GameObject* GameObject_createFromString(std::string_view data)
 				trigger->_hsv.s = GameToolbox::stof(hsv[1]);
 				trigger->_hsv.v = GameToolbox::stof(hsv[2]);
 				// TODO: fix this
-				// trigger->_saturationTicked = GameToolbox::stof(hsv[3]);
-				// trigger->_brightnessTicked = GameToolbox::stof(hsv[4]);
+				trigger->_saturationTicked = GameToolbox::stoi(hsv[3]);
+				trigger->_brightnessTicked = GameToolbox::stoi(hsv[4]);
 			}
 			break;
 		}

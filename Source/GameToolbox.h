@@ -86,7 +86,8 @@ namespace GameToolbox
 	
 	void executeHttpRequest(const std::string& url, const std::string& postData, ax::network::HttpRequest::Type type, const ax::network::ccHttpRequestCallback& callback);
 	
-	
+	ax::Color3B hsvToRgb(const ax::HSV& hsv);
+
 	ax::BlendFunc getBlending();
 
 	template <typename T>

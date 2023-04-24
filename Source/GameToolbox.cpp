@@ -605,6 +605,48 @@ std::vector<std::string_view> _splitByDelimView(const std::string_view str, char
     return tokens;
 };
 */
+
+ax::Color3B GameToolbox::hsvToRgb(const ax::HSV& hsv) {
+    float c = hsv.v * hsv.s;
+    float h_dash = hsv.h / 60.0f;
+    float x = c * (1.0f - std::fabs(std::fmod(h_dash, 2.0f) - 1.0f));
+    float m = hsv.v - c;
+
+    float r1, g1, b1;
+
+    if (h_dash >= 0.0f && h_dash < 1.0f) {
+        r1 = c;
+        g1 = x;
+        b1 = 0.0f;
+    } else if (h_dash >= 1.0f && h_dash < 2.0f) {
+        r1 = x;
+        g1 = c;
+        b1 = 0.0f;
+    } else if (h_dash >= 2.0f && h_dash < 3.0f) {
+        r1 = 0.0f;
+        g1 = c;
+        b1 = x;
+    } else if (h_dash >= 3.0f && h_dash < 4.0f) {
+        r1 = 0.0f;
+        g1 = x;
+        b1 = c;
+    } else if (h_dash >= 4.0f && h_dash < 5.0f) {
+        r1 = x;
+        g1 = 0.0f;
+        b1 = c;
+    } else {
+        r1 = c;
+        g1 = 0.0f;
+        b1 = x;
+    }
+
+    uint8_t r = static_cast<uint8_t>((r1 + m) * 255.0f);
+    uint8_t g = static_cast<uint8_t>((g1 + m) * 255.0f);
+    uint8_t b = static_cast<uint8_t>((b1 + m) * 255.0f);
+
+    return Color3B(r, g, b);
+}
+
 std::vector<std::string> GameToolbox::splitByDelim(const std::string& str, char delim)
 {
     std::vector<std::string> tokens;

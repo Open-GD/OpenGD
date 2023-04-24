@@ -377,7 +377,7 @@ void LevelDebugLayer::updateVisibility()
 		}
 	}
 
-	if (_nextSection >= 0 && _sectionObjects.size() != 0 && _nextSection <= _sectionObjects.size())
+	if (_nextSection >= 0 && _sectionObjects.size() != 0 && _nextSection < _sectionObjects.size())
 	{
 		auto section = _sectionObjects[_nextSection];
 		for (size_t j = 0; j < section.size(); j++)
