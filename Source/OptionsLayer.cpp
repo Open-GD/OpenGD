@@ -1,5 +1,5 @@
 #include "OptionsLayer.h"
-#include "TextButton.h"
+#include "ButtonSprite.h"
 #include "GameManager.h"
 
 USING_NS_AX;
@@ -21,12 +21,12 @@ bool OptionsLayer::init()
 {
 	auto scrollLayer = Layer::create();
 	
-	auto mediumBtn = TextButton::create("Medium", [this](TextButton* btn){
+	auto mediumBtn = MenuItemSpriteExtra::create(ButtonSprite::create("Medium"), [](Node*) {
 		GameManager::getInstance()->setQualityMedium();
 	});
 	mediumBtn->setPositionX(-75);
 	
-	auto highBtn = TextButton::create("High", [this](TextButton* btn){
+	auto highBtn = MenuItemSpriteExtra::create(ButtonSprite::create("High"), [](Node*) {
 		GameManager::getInstance()->setQualityHigh();
 	});
 	highBtn->setPositionX(75);

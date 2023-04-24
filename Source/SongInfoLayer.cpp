@@ -3,7 +3,7 @@
 #include "GameToolbox.h"
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
-#include "TextButton.h"
+#include "ButtonSprite.h"
 
 USING_NS_AX;
 
@@ -46,7 +46,6 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 	_ytArtistLink = ytArtistLink;
 	_fbArtistLink = fbArtistLink;
 
-
 	auto bg = ax::ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_square01.png"), {0, 0, 80, 80});
 	bg->setContentSize({ 420.0, 260.0 });
 	bg->setPosition(winSize / 2);
@@ -85,8 +84,7 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 	
 	this->_mainLayer->addChild(closeBtnMenu);
 
-	
-	auto dls = TextButton::create("Download Soundtrack", GameToolbox::getTextureString("bigFont.fnt"), 236.000, 30, [&](TextButton*)
+	auto dls = MenuItemSpriteExtra::create(ButtonSprite::create("Download Soundtrack", 0xDC, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30), [&](Node*)
 	{
 		Application::getInstance()->openURL(_downloadLink);
 	});
@@ -98,39 +96,39 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 	moreByLabel->setScale(0.5);
 	this->_mainLayer->addChild(moreByLabel);
 
-	ax::Vector<Node*> socials;
+	ax::Vector<Node*> socialButtons;
 
 	if (!ngArtistLink.empty())
 	{
-		auto ngButton = TextButton::create("Newgrounds", GameToolbox::getTextureString("bigFont.fnt"), 96.000, 30, [&](TextButton*)
+		auto ngButton = MenuItemSpriteExtra::create(ButtonSprite::create("Newgrounds", 0x50, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30), [&](Node*)// TextButton::create("Newgrounds", GameToolbox::getTextureString("bigFont.fnt"), 96.000, 30, [&](TextButton*)
 		{
 			Application::getInstance()->openURL(_ngArtistLink);
 		});
-		socials.pushBack(ngButton);
+		socialButtons.pushBack(ngButton);
 		closeBtnMenu->addChild(ngButton);
 	}
 
 	if (!ytArtistLink.empty())
 	{
-		auto ytButton = TextButton::create("Youtube", GameToolbox::getTextureString("bigFont.fnt"), 96.000, 30, [&](TextButton*)
+		auto ytButton = MenuItemSpriteExtra::create(ButtonSprite::create("YouTube", 0x50, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30), [&](Node*)
 		{
 			Application::getInstance()->openURL(_ytArtistLink);
 		});
-		socials.pushBack(ytButton);
+		socialButtons.pushBack(ytButton);
 		closeBtnMenu->addChild(ytButton);
 	}
 
 	if (!fbArtistLink.empty())
 	{
-		auto ytButton = TextButton::create("Facebook", GameToolbox::getTextureString("bigFont.fnt"), 96.000, 30, [&](TextButton*)
+		auto fbButton = MenuItemSpriteExtra::create(ButtonSprite::create("Facebook", 0x50, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30), [&](Node*)
 		{
 			Application::getInstance()->openURL(_fbArtistLink);
 		});
-		socials.pushBack(ytButton);
-		closeBtnMenu->addChild(ytButton);
+		socialButtons.pushBack(fbButton);
+		closeBtnMenu->addChild(fbButton);
 	}
 
-	GameToolbox::alignItemsHorizontally(socials, 20, closeBtnMenu->convertToNodeSpace({ winSize.width / 2, ((winSize.height / 2) - 130.0f) + 40.0f }));
+	GameToolbox::alignItemsHorizontally(socialButtons, 20, closeBtnMenu->convertToNodeSpace({ winSize.width / 2, ((winSize.height / 2) - 130.0f) + 40.0f }));
 
 	return true;
 }

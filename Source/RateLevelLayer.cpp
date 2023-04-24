@@ -3,6 +3,7 @@
 #include <MenuItemSpriteExtra.h>
 #include "GameToolbox.h"
 #include <ui/CocosGUI.h>
+#include "ButtonSprite.h"
 
 USING_NS_AX;
 
@@ -10,7 +11,7 @@ const Color3B SELECTED_COLOR = { 255, 255, 255 };
 const Color3B UNSELECTED_COLOR = { 125, 125, 125 };
 
 unsigned int RateLevelLayer::m_dSelectedDiff = 0;
-TextButton* RateLevelLayer::m_pSubmitButton = nullptr;
+MenuItemSpriteExtra* RateLevelLayer::m_pSubmitButton = nullptr;
 
 RateLevelLayer* RateLevelLayer::create(int levelID)
 {
@@ -39,8 +40,7 @@ void RateLevelLayer::selectRating(Node* btn)
 		oldSelected->setColor(UNSELECTED_COLOR);
 	else
 	{
-		m_pSubmitButton->setColor(SELECTED_COLOR);
-		m_pSubmitButton->getLabel()->setColor(SELECTED_COLOR);
+		static_cast<ButtonSprite*>(m_pSubmitButton->getSprite())->setColor(SELECTED_COLOR);
 	}
 
 	m_dSelectedDiff = tag;
@@ -87,17 +87,17 @@ bool RateLevelLayer::init(int)
 	btnMenu->setPosition({ (winSize.width / 2), (winSize.height / 2) - 65 });
 	this->_mainLayer->addChild(btnMenu);
 
-	auto cancelBtn = TextButton::create("Cancel", [&](TextButton*){
+	auto cancelBtn = MenuItemSpriteExtra::create(ButtonSprite::create("Cancel"), [&](Node*) {
 		this->close();
 	});
 	btnMenu->addChild(cancelBtn);
 
-	auto submitBtn = TextButton::create("Submit", [](TextButton*) {});
 
-	submitBtn->setColor(UNSELECTED_COLOR);
-	submitBtn->getLabel()->setColor(UNSELECTED_COLOR);
+	auto submitBtn = MenuItemSpriteExtra::create(ButtonSprite::create("Submit"), [&](Node*) {});
+	static_cast<ButtonSprite*>(submitBtn->getSprite())->setColor(UNSELECTED_COLOR);
 
 	btnMenu->addChild(submitBtn);
+
 	m_pSubmitButton = submitBtn;
 
 	btnMenu->alignItemsHorizontallyWithPadding(15);

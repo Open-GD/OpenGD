@@ -118,14 +118,12 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 	this->addChild(pageTxt, 5);
 
 	listView = ax::ui::ListView::create();
-	listView->setAnchorPoint({0.5, 0.5});
-	listView->setBackGroundColorType(ax::ui::Layout::BackGroundColorType::SOLID);
-	listView->setBackGroundColor({ 191, 114, 62 });
+	listView->setBounceEnabled(true);
+	listView->setAnchorPoint({ 0.5, 0.5 });
+	listView->setScrollBarEnabled(false);
 
-	auto list = ListLayer::create(listView, "Online Levels");
-	listView->setPosition({180, 120});
-	list->setPosition({106.5, 45});
-	listView->setTopPadding(25);
+	auto list = ListLayer::create(listView, "Online Levels", { 191, 114, 62, 255 });
+	list->setPosition({ (winSize.width - 356) / 2, ((winSize.height - 220) / 2) - 5 });
 
 	auto listener = ax::EventListenerKeyboard::create();
 	listener->onKeyPressed = [=](ax::EventKeyboard::KeyCode key, ax::Event*) {

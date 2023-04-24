@@ -48,6 +48,12 @@ void MenuItemSpriteExtra::setScale(float s) {
 	m_fSelectedScale = s * m_fScaleMult;
 	m_pSprite->setScale(s);
 }
+
+void MenuItemSpriteExtra::setCallback(std::function<void(Node*)> callback)
+{
+	m_fCallback = callback;
+}
+
 void MenuItemSpriteExtra::activate() {
 	m_pSprite->stopAllActions();
 	if (_altAnim) m_pSprite->setPosition(_startPos);

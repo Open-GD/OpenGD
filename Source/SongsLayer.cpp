@@ -18,7 +18,6 @@ SongsLayer* SongsLayer::create()
 
 void SongsLayer::customSetup()
 {
-	_listView->setTopPadding(11);
 	_listView->setAnchorPoint({ 0.5, 0.5 });
 	_listView->setBounceEnabled(true);
 	_listView->setScrollBarEnabled(false);

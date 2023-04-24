@@ -31,4 +31,5 @@ public:
 	
 	ax::Node* getSprite();
 	void setScale(float) override;
+	void setCallback(std::function<void(Node*)> callback);
 };
