@@ -23,6 +23,7 @@ public:
 	int _pulseMode, _pulseType;
 	bool _mainOnly, _detailOnly;
 	bool _blending;
+	bool _activateGroup = false;
 
 private:
 	virtual void updateTweenAction(float value, std::string_view key) override;

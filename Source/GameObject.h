@@ -124,7 +124,9 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
 	bool _hasGlow, _hasParticle;
 	bool _isTrigger;
-	bool _forceBlack, _forceBlackDetail;
+	bool _forceBlack, _forceBlackDetail, _hadBlending, _hadBlending2;
+
+	bool _toggledOn = true;
 
 	int _zLayer = 0;
 
@@ -144,6 +146,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
 	static GameObject* create(std::string_view frame, std::string_view glowFrame = "");
 	static GameObject* createObject(std::string_view frame, std::string_view glowFrame = "");
+	static GameObject* createFromString(std::string_view data);
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
 	void customSetup();
@@ -201,6 +204,8 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	bool getDontTransform() { return _dontTransform; }
 
 	void setDontTransform(bool v) { _dontTransform = v; }
+
+	void removeFromGameLayer();
 	
 	static std::string_view getGlowFrame(int objectID);
 

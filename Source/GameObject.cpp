@@ -270,6 +270,9 @@ void GameObject::update()
 	if (bgl->_colorChannels.contains(_mainColorChannel))
 	{
 		auto sp1 = bgl->_colorChannels[_mainColorChannel];
+		if (_hadBlending != sp1._blending)
+			removeFromGameLayer();
+		_hadBlending = sp1._blending;
 		if (sp1._copyingColorID != -1)
 			sp1 = bgl->_colorChannels[sp1._copyingColorID];
 		if (!_forceBlack && getColor() != sp1._color)
@@ -282,6 +285,9 @@ void GameObject::update()
 			if (bgl->_colorChannels.contains(_secColorChannel))
 			{
 				auto sp2 = bgl->_colorChannels[_secColorChannel];
+				if (_hadBlending2 != sp2._blending)
+					removeFromGameLayer();
+				_hadBlending = sp1._blending;
 				if (sp2._copyingColorID != -1)
 					sp2 = bgl->_colorChannels[sp2._copyingColorID];
 				for (auto sp : _detailSprites)
@@ -312,8 +318,12 @@ void GameObject::update()
 		if (sp1._copyingColorID != -1)
 			sp1 = bgl->_colorChannels[sp1._copyingColorID];
 		auto sp2 = bgl->_colorChannels[_secColorChannel];
-				if (sp2._copyingColorID != -1)
-					sp2 = bgl->_colorChannels[sp2._copyingColorID];
+		if (sp2._copyingColorID != -1)
+			sp2 = bgl->_colorChannels[sp2._copyingColorID];
+		if (_hadBlending != sp1._blending)
+			removeFromGameLayer();
+		if (_hadBlending2 != sp2._blending)
+			removeFromGameLayer();
 		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
 		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
@@ -331,6 +341,237 @@ void GameObject::update()
 				sp->setOpacity(op);
 		}
 	}
+}
+
+GameObject* GameObject::createFromString(std::string_view data)
+{
+	// data = 1,2,3,4,5,6,7 where [key,value,key,value]
+	auto properties = GameToolbox::splitByDelimStringView(data, ',');
+
+	GameObject* obj = nullptr;
+
+	// index 1 is object id
+	// GameToolbox::log("loading: {}", data);
+	int objectID = GameToolbox::stoi(properties[1]);
+
+	if (!GameObject::_pBlocks.contains(objectID))
+		objectID = 1;
+
+	std::string_view frame = GameObject::_pBlocks.at(objectID);
+
+	// actually create the object, use std::ranges
+	if (objectID != 1 && std::ranges::find(GameObject::_pTriggers, objectID) != GameObject::_pTriggers.end())
+	{
+		// mylock.lock();
+		obj = EffectGameObject::create(frame);
+		// mylock.unlock();
+		obj->_isTrigger = true;
+	}
+	else
+	{
+		// mylock.lock();
+		obj = GameObject::create(frame, GameObject::getGlowFrame(objectID));
+		// mylock.unlock();
+	}
+
+	if (!obj)
+	{
+		return nullptr;
+	}
+
+	AX_SAFE_RETAIN(obj);
+
+	obj->setStretchEnabled(false);
+	obj->setActive(true);
+	obj->setID(objectID);
+	obj->customSetup();
+	// TODO: set uniqueID in base layer
+
+	// iterate over every key
+	for (size_t i = 0; i < properties.size() - 1; i += 2)
+	{
+		int key = GameToolbox::stoi(properties[i]);
+		switch (key)
+		{
+		case 2:
+			obj->setPositionX(GameToolbox::stof(properties[i + 1]));
+			break;
+		case 3:
+			obj->setPositionY(GameToolbox::stof(properties[i + 1]) + 90.0f);
+			break;
+		case 4:
+			obj->setScaleX(-1.f * GameToolbox::stof(properties[i + 1]));
+			break;
+		case 5:
+			obj->setScaleY(-1.f * GameToolbox::stof(properties[i + 1]));
+			break;
+		case 6:
+			obj->setRotation(GameToolbox::stof(properties[i + 1]));
+			break;
+		case 7:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_color.r = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 8:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_color.g = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 9:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_color.b = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 10:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_duration = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 17:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_blending = GameToolbox::stoi(properties[i + 1]);
+		case 21:
+			obj->_mainColorChannel = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 22:
+			obj->_secColorChannel = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 23:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_targetColorId = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 24:
+			obj->_zLayer = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 25:
+			obj->setGlobalZOrder(static_cast<float>(GameToolbox::stoi(properties[i + 1])));
+			break;
+		case 32:
+			obj->setScaleX(obj->getScaleX() * GameToolbox::stof(properties[i + 1]));
+			obj->setScaleY(obj->getScaleY() * GameToolbox::stof(properties[i + 1]));
+			break;
+		case 35:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_opacity = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 45:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_fadeIn = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 46:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_hold = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 47:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_fadeOut = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 48:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_pulseMode = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 49: {
+			if (obj->_isTrigger)
+			{
+				auto hsv = GameToolbox::splitByDelimStringView(properties[i + 1], 'a');
+				auto trigger = dynamic_cast<EffectGameObject*>(obj);
+				trigger->_hsv.h = GameToolbox::stof(hsv[0]);
+				trigger->_hsv.s = GameToolbox::stof(hsv[1]);
+				trigger->_hsv.v = GameToolbox::stof(hsv[2]);
+				// TODO: fix this
+				trigger->_saturationTicked = GameToolbox::stoi(hsv[3]);
+				trigger->_brightnessTicked = GameToolbox::stoi(hsv[4]);
+			}
+			break;
+		}
+
+		case 50:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_copiedColorId = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 52:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_pulseType = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 51:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_targetGroupId = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 56:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_activateGroup = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 57: {
+			auto groups = GameToolbox::splitByDelimStringView(properties[i + 1], '.');
+			// pre-allocate
+			obj->_groups.reserve(groups.size());
+			for (std::string_view groupStr : groups)
+			{
+				int group = GameToolbox::stoi(groupStr);
+				// TODO add groups in derived class
+				BaseGameLayer::getInstance()->_groups[group]._objects.push_back(obj);
+				obj->_groups.push_back(group);
+			}
+			break;
+		}
+		case 67: // dont enter
+		case 64: // dont exit
+			obj->setDontTransform(true);
+			break;
+		} // switch end
+	}	  // for end
+
+	if (obj)
+	{
+		Hitbox hb = {0, 0, 0, 0};
+
+		if (GameObject::_pHitboxes.contains(objectID))
+			hb = GameObject::_pHitboxes.at(objectID);
+		if (GameObject::_pHitboxRadius.contains(objectID))
+			obj->_radius = GameObject::_pHitboxRadius.at(objectID);
+
+		ax::Mat4 tr;
+		ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
+		switch (obj->getGameObjectType())
+		{
+		default:
+
+			tr.rotate(obj->getRotationQuat());
+
+			tr.scale(obj->getScaleX() * (obj->isFlippedX() ? -1.f : 1.f),
+					 obj->getScaleY() * (obj->isFlippedY() ? -1.f : 1.f), 1);
+
+			rec = RectApplyTransform(rec, tr);
+
+			obj->setOuterBounds(Rect(obj->getPosition() + Vec2(rec.origin.x, rec.origin.y) + Vec2(15, 15),
+									 {rec.size.width, rec.size.height}));
+			break;
+		case kGameObjectTypeDecoration:
+		case kGameObjectTypeSpecial:
+			break;
+		}
+		obj->setStartPosition(obj->getPosition());
+		obj->setStartScaleX(obj->getScaleX());
+		obj->setStartScaleY(obj->getScaleY());
+		return obj;
+	}
+
+	return nullptr;
+}
+
+void GameObject::removeFromGameLayer()
+{
+	setActive(false);
+	AX_SAFE_RETAIN(this);
+	if (_particle)
+	{
+		AX_SAFE_RETAIN(_particle);
+		_particle->removeFromParentAndCleanup(true);
+	}
+	if (_glowSprite)
+	{
+		AX_SAFE_RETAIN(_glowSprite);
+		_glowSprite->removeFromParentAndCleanup(true);
+	}
+	//_mainBatchNode->removeChild(section[j], true);
+	removeFromParentAndCleanup(true);
 }
 
 void GameObject::updateTweenAction(float value, std::string_view key)

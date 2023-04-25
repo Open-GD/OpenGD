@@ -1,29 +1,33 @@
 #include "CocosExplorer.h"
 #include <axmol.h>
 
+#include "GameObject.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
-#include <sstream>
-#include <queue>
-#include <mutex>
 #include <fmt/format.h>
-#include "GameObject.h"
+#include <mutex>
+#include <queue>
+#include <sstream>
+#include "BaseGameLayer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
 
-static bool operator!=(const Size& a, const Size& b) { return a.width != b.width || a.height != b.height; }
- 
-static Node *selected_node = nullptr;
+static bool operator!=(const Size& a, const Size& b)
+{
+	return a.width != b.width || a.height != b.height;
+}
+
+static Node* selected_node = nullptr;
 static bool reached_selected_node = false;
-static Node *hovered_node = nullptr;
+static Node* hovered_node = nullptr;
 
 static std::queue<std::function<void()>> threadFunctions;
 static std::mutex threadFunctionsMutex;
 
-static const char *getNodeName(Node *node)
+static const char* getNodeName(Node* node)
 {
-	const char *name = typeid(*node).name() + 6;
+	const char* name = typeid(*node).name() + 6;
 	return name;
 }
 
@@ -117,14 +121,15 @@ static void drawProperties()
 	float _anch[2] = {anchor.x, anchor.y};
 	ImGui::DragFloat2("Anchor Point", _anch);
 	selected_node->setAnchorPoint({_anch[0], _anch[1]});
-	
-	float rotation[3] = { selected_node->getRotation(), selected_node->getRotationSkewX(), selected_node->getRotationSkewY()};
+
+	float rotation[3] = {selected_node->getRotation(), selected_node->getRotationSkewX(),
+						 selected_node->getRotationSkewY()};
 	if (ImGui::DragFloat3("Rotation", rotation, 1.0f))
 	{
-		if (selected_node->getRotation() != rotation[0]) 
-			selected_node->setRotation(rotation[0]); 
+		if (selected_node->getRotation() != rotation[0])
+			selected_node->setRotation(rotation[0]);
 		else
-		{ 
+		{
 			selected_node->setRotationSkewX(rotation[1]);
 			selected_node->setRotationSkewY(rotation[2]);
 		}
@@ -144,14 +149,13 @@ static void drawProperties()
 	auto color = rgbaNode->getColor();
 	float _color[4] = {color.r / 255.f, color.g / 255.f, color.b / 255.f, rgbaNode->getOpacity() / 255.f};
 	ImGui::ColorEdit4("Color", _color);
-	rgbaNode->setColor({static_cast<GLubyte>(_color[0] * 255),
-						static_cast<GLubyte>(_color[1] * 255),
+	rgbaNode->setColor({static_cast<GLubyte>(_color[0] * 255), static_cast<GLubyte>(_color[1] * 255),
 						static_cast<GLubyte>(_color[2] * 255)});
 	rgbaNode->setOpacity(static_cast<int>(_color[3]) * 255);
 
-	if (dynamic_cast<LabelProtocol *>(selected_node) != nullptr)
+	if (dynamic_cast<LabelProtocol*>(selected_node) != nullptr)
 	{
-		auto labelNode = dynamic_cast<LabelProtocol *>(selected_node);
+		auto labelNode = dynamic_cast<LabelProtocol*>(selected_node);
 		auto labelStr = labelNode->getString();
 		char text[256];
 		auto clabel = std::string(labelStr).c_str();
@@ -160,23 +164,32 @@ static void drawProperties()
 		if (strcmp(text, clabel))
 		{
 			threadFunctionsMutex.lock();
-			threadFunctions.push([labelNode, text]()
-								 { labelNode->setString(text); });
+			threadFunctions.push([labelNode, text]() { labelNode->setString(text); });
 			threadFunctionsMutex.unlock();
 		}
 	}
 
-	if (dynamic_cast<GameObject *>(selected_node) != nullptr)
+	if (dynamic_cast<GameObject*>(selected_node) != nullptr)
 	{
-		auto gm = dynamic_cast<GameObject *>(selected_node);
+		auto gm = dynamic_cast<GameObject*>(selected_node);
 		ImGui::Text(fmt::format("Color channel 1: {}", gm->_mainColorChannel).c_str());
 		ImGui::Text(fmt::format("Color channel 2: {}", gm->_secColorChannel).c_str());
 		ImGui::Text(fmt::format("ID: {}", gm->getID()).c_str());
 		ImGui::Text(fmt::format("Z Layer: {}", gm->_zLayer).c_str());
+		std::string groupText = "";
+		float opacityMultiplier = 1.f;
+
+		for (int i : gm->_groups)
+		{
+			groupText = fmt::format("{}{} ", groupText, i);
+			opacityMultiplier *= BaseGameLayer::getInstance()->_groups[i]._alpha;
+		}
+		ImGui::Text(fmt::format("Groups: {}", groupText).c_str());
+		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
 	}
 }
 
-static void generateTree(Node *node, unsigned int i = 0)
+static void generateTree(Node* node, unsigned int i = 0)
 {
 
 	std::string str = fmt::format("[{}] {}", i, getNodeName(node));
@@ -185,7 +198,6 @@ static void generateTree(Node *node, unsigned int i = 0)
 	const auto childrenCount = node->getChildrenCount();
 	if (childrenCount)
 		str += fmt::format(" {{{}}}", childrenCount);
-
 
 	auto flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_SpanFullWidth;
 	if (selected_node == node)
@@ -220,7 +232,7 @@ static void generateTree(Node *node, unsigned int i = 0)
 		for (unsigned int i = 0; i < children_count; ++i)
 		{
 			auto child = children.at(i);
-			generateTree(static_cast<ax::Node *>(child), i);
+			generateTree(static_cast<ax::Node*>(child), i);
 		}
 		ImGui::TreePop();
 	}
@@ -229,8 +241,9 @@ static void generateTree(Node *node, unsigned int i = 0)
 static void draw()
 {
 	extern bool _showDebugImgui;
-	if(!_showDebugImgui) return;
-	
+	if (!_showDebugImgui)
+		return;
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 300));
 
 	auto current = Director::getInstance()->getRunningScene();
@@ -265,7 +278,7 @@ void CocosExplorer::openForever()
 
 	openForever = true;
 	auto e = Director::getInstance()->getEventDispatcher();
-	e->addCustomEventListener(Director::EVENT_AFTER_SET_NEXT_SCENE, [&](EventCustom *) { CocosExplorer::open(); });
+	e->addCustomEventListener(Director::EVENT_AFTER_SET_NEXT_SCENE, [&](EventCustom*) { CocosExplorer::open(); });
 }
 
 void CocosExplorer::open()
@@ -274,6 +287,7 @@ void CocosExplorer::open()
 	ImGuiPresenter::getInstance()->addRenderLoop("#cocosExplorer", draw, current);
 }
 
-void CocosExplorer::close() {
+void CocosExplorer::close()
+{
 	ImGuiPresenter::getInstance()->removeRenderLoop("#cocosExplorer");
 }

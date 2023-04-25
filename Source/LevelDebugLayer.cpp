@@ -149,6 +149,34 @@ void LevelDebugLayer::onDrawImgui()
 	if (ImGui::InputFloat("FPS", &fps))
 		Director::getInstance()->setAnimationInterval(1.0f / fps);
 
+	ImGui::InputFloat("Camera Speed", &_camSpeed);
+
+	static int channelID = -1;
+
+	ImGui::InputInt("Color Channel", &channelID);
+
+	if(_colorChannels.contains(channelID))
+	{
+		auto channel = _colorChannels[channelID];
+		int color[3] = {channel._color.r, channel._color.g, channel._color.b};
+		ImGui::InputInt3("Color", color);
+		ImGui::Checkbox("Blending", &channel._blending);
+		ImGui::InputFloat("Opacity", &channel._opacity);
+		ImGui::InputInt("Copied Color ID", &channel._copyingColorID);
+	}
+
+	static int groupID = -1;
+
+	ImGui::InputInt("Group", &groupID);
+
+	if(_colorChannels.contains(groupID))
+	{
+		auto group = _groups[groupID];
+		ImGui::InputFloat("Alpha", &group._alpha);
+		int size = group._objects.size();
+		ImGui::InputInt("Obj Count", &size);
+	}
+
 	ImGui::End();
 }
 
@@ -288,7 +316,7 @@ void LevelDebugLayer::updateVisibility()
 					if (!obj)
 						continue;
 
-					if (obj->getParent() == nullptr)
+					if (obj->getParent() == nullptr && obj->_toggledOn)
 					{
 						if (obj->_particle)
 						{
@@ -377,22 +405,9 @@ void LevelDebugLayer::updateVisibility()
 		auto section = _sectionObjects[_prevSection - 1];
 		for (size_t j = 0; j < section.size(); j++)
 		{
-			section[j]->setActive(false);
 			if (section[j]->getParent() != nullptr)
 			{
-				AX_SAFE_RETAIN(section[j]);
-				if (section[j]->_particle)
-				{
-					AX_SAFE_RETAIN(section[j]->_particle);
-					removeChild(section[j]->_particle, true);
-				}
-				if (section[j]->_glowSprite)
-				{
-					AX_SAFE_RETAIN(section[j]->_glowSprite);
-					_glowBatchNode->removeChild(section[j]->_glowSprite, true);
-				}
-				//_mainBatchNode->removeChild(section[j], true);
-				section[j]->removeFromParentAndCleanup(true);
+				section[j]->removeFromGameLayer();
 			}
 		}
 	}
@@ -402,22 +417,9 @@ void LevelDebugLayer::updateVisibility()
 		auto section = _sectionObjects[_nextSection];
 		for (size_t j = 0; j < section.size(); j++)
 		{
-			section[j]->setActive(false);
 			if (section[j]->getParent() != nullptr)
 			{
-				AX_SAFE_RETAIN(section[j]);
-				if (section[j]->_particle)
-				{
-					AX_SAFE_RETAIN(section[j]->_particle);
-					removeChild(section[j]->_particle, true);
-				}
-				if (section[j]->_glowSprite)
-				{
-					AX_SAFE_RETAIN(section[j]->_glowSprite);
-					_glowBatchNode->removeChild(section[j]->_glowSprite, true);
-				}
-				//_mainBatchNode->removeChild(section[j], true);
-				section[j]->removeFromParentAndCleanup(true);
+				section[j]->removeFromGameLayer();
 			}
 		}
 	}

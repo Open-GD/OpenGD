@@ -35,6 +35,11 @@ void EffectGameObject::triggerActivated(float idk)
 		_bgl->_colorChannels.at(_targetColorId)._copyingColorID = -1;
 		if (_copiedColorId > -1)
 		{
+			if (!_bgl->_colorChannels.contains(_copiedColorId))
+			{
+				_bgl->_colorChannels.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
+				_bgl->_originalColors.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
+			}
 			_bgl->_colorChannels.at(_targetColorId)._copyingColorID = _copiedColorId;
 			_color = _bgl->_colorChannels.at(_copiedColorId)._color;
 
@@ -104,7 +109,7 @@ void EffectGameObject::triggerActivated(float idk)
 	case 1007:
 		runAction(ActionTween::create(_duration, "fade", _bgl->_groups[_targetGroupId]._alpha, _opacity));
 		break;
-	case 1006:
+	case 1006: {
 		if (!_bgl->_colorChannels.contains(_targetGroupId))
 		{
 			_bgl->_colorChannels.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
@@ -119,7 +124,14 @@ void EffectGameObject::triggerActivated(float idk)
 			if (_copiedColorId == -1)
 				target = original;
 			else
+			{
+				if (!_bgl->_colorChannels.contains(_copiedColorId))
+				{
+					_bgl->_colorChannels.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
+					_bgl->_originalColors.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
+				}
 				target = _bgl->_colorChannels.at(_copiedColorId)._color;
+			}
 
 			auto hsv = ax::HSV(target);
 			hsv.h += _hsv.h;
@@ -158,6 +170,25 @@ void EffectGameObject::triggerActivated(float idk)
 		this->runAction(seq1);
 		this->runAction(seq2);
 		this->runAction(seq3);
+		break;
+	}
+	case 1049:
+		if (_activateGroup)
+		{
+			for (size_t i = 0; i < _bgl->_groups[_targetGroupId]._objects.size(); i++)
+			{
+				_bgl->_groups[_targetGroupId]._objects[i]->_toggledOn = true;
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < _bgl->_groups[_targetGroupId]._objects.size(); i++)
+			{
+				_bgl->_groups[_targetGroupId]._objects[i]->_toggledOn = false;
+				_bgl->_groups[_targetGroupId]._objects[i]->removeFromGameLayer();
+			}
+		}
+
 		break;
 	}
 }
