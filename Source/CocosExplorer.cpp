@@ -186,6 +186,7 @@ static void drawProperties()
 		}
 		ImGui::Text(fmt::format("Groups: {}", groupText).c_str());
 		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
+		ImGui::Text(fmt::format("Blending: {}", BaseGameLayer::getInstance()->isObjectBlending(gm)).c_str());
 	}
 }
 

@@ -81,17 +81,6 @@ void BaseGameLayer::loadLevel()
 			int section = sectionForPos(object->getPositionX());
 			_sectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
-			if (_colorChannels.contains(object->_mainColorChannel) &&
-				_colorChannels[object->_mainColorChannel]._blending)
-			{
-				object->setBlendFunc(GameToolbox::getBlending());
-			}
-
-			if (_colorChannels.contains(object->_secColorChannel) && _colorChannels[object->_secColorChannel]._blending)
-			{
-				for (auto s : object->_detailSprites)
-					s->setBlendFunc(GameToolbox::getBlending());
-			}
 			object->setCascadeOpacityEnabled(false);
 			object->update();
 		}

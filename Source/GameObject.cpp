@@ -270,21 +270,34 @@ void GameObject::update()
 	if (bgl->_colorChannels.contains(_mainColorChannel))
 	{
 		auto sp1 = bgl->_colorChannels[_mainColorChannel];
+
+		if (sp1._blending)
+			setBlendFunc(GameToolbox::getBlending());
+		else
+			setBlendFunc(BlendFunc::DISABLE);
+
 		if (_hadBlending != sp1._blending)
 			removeFromGameLayer();
+
 		_hadBlending = sp1._blending;
+
 		if (sp1._copyingColorID != -1)
 			sp1 = bgl->_colorChannels[sp1._copyingColorID];
+
 		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
+
 		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
+
 		if (getOpacity() != op)
 			setOpacity(_primaryInvisible ? 0 : op);
+
 		if (!_forceBlackDetail)
 		{
 			if (bgl->_colorChannels.contains(_secColorChannel))
 			{
 				auto sp2 = bgl->_colorChannels[_secColorChannel];
+
 				if (_hadBlending2 != sp2._blending)
 					removeFromGameLayer();
 				_hadBlending = sp1._blending;
@@ -292,6 +305,10 @@ void GameObject::update()
 					sp2 = bgl->_colorChannels[sp2._copyingColorID];
 				for (auto sp : _detailSprites)
 				{
+					if (sp2._blending)
+						sp->setBlendFunc(GameToolbox::getBlending());
+					else
+						sp->setBlendFunc(BlendFunc::DISABLE);
 					if (!_forceBlack && sp->getColor() != sp2._color)
 						sp->setColor(sp2._color);
 					op = sp2._opacity * opacityMultiplier * _effectOpacityMultipler;
@@ -303,6 +320,10 @@ void GameObject::update()
 			{
 				for (auto sp : _detailSprites)
 				{
+					if (sp1._blending)
+						sp->setBlendFunc(GameToolbox::getBlending());
+					else
+						sp->setBlendFunc(BlendFunc::DISABLE);
 					if (!_forceBlack && sp->getColor() != sp1._color)
 						sp->setColor(sp1._color);
 					float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
@@ -315,6 +336,12 @@ void GameObject::update()
 	else if (bgl->_colorChannels.contains(_secColorChannel))
 	{
 		auto sp1 = bgl->_colorChannels[_mainColorChannel];
+
+		if (sp1._blending)
+			setBlendFunc(GameToolbox::getBlending());
+		else
+			setBlendFunc(BlendFunc::DISABLE);
+
 		if (sp1._copyingColorID != -1)
 			sp1 = bgl->_colorChannels[sp1._copyingColorID];
 		auto sp2 = bgl->_colorChannels[_secColorChannel];
@@ -334,6 +361,10 @@ void GameObject::update()
 			return;
 		for (auto sp : _detailSprites)
 		{
+			if (sp2._blending)
+				sp->setBlendFunc(GameToolbox::getBlending());
+			else
+				sp->setBlendFunc(BlendFunc::DISABLE);
 			if (sp->getColor() != sp2._color)
 				sp->setColor(sp2._color);
 			op = sp2._opacity * opacityMultiplier * _effectOpacityMultipler;

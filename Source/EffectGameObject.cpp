@@ -110,6 +110,8 @@ void EffectGameObject::triggerActivated(float idk)
 		runAction(ActionTween::create(_duration, "fade", _bgl->_groups[_targetGroupId]._alpha, _opacity));
 		break;
 	case 1006: {
+		//TODO: somehow handle pulse for groups
+		if(_pulseType == 1) break;
 		if (!_bgl->_colorChannels.contains(_targetGroupId))
 		{
 			_bgl->_colorChannels.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
