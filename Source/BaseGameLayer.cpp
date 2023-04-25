@@ -121,6 +121,9 @@ GameObject* GameObject_createFromString(std::string_view data)
 			if (obj->_isTrigger)
 				dynamic_cast<EffectGameObject*>(obj)->_duration = GameToolbox::stof(properties[i + 1]);
 			break;
+		case 17:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_blending = GameToolbox::stoi(properties[i + 1]);
 		case 21:
 			obj->_mainColorChannel = GameToolbox::stoi(properties[i + 1]);
 			break;
@@ -428,7 +431,6 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 		if (levelData[i] == "kS1")
 		{
 			_colorChannels.insert({1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
-			GameToolbox::log("わかってた");
 		}
 		else if (levelData[i] == "kS2")
 		{
@@ -552,6 +554,16 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 			_levelSettings.songOffset = GameToolbox::stof(levelData[i + 1]);
 		}
 	}
+
+	//change to get the player color not from player
+	//_colorChannels[1005]._color = _player1->getMainColor();
+	_colorChannels[1005]._blending = true;
+	//_colorChannels[1006]._color = _player1->getSecondaryColor();
+	_colorChannels[1006]._blending = true;
+	_colorChannels[1010]._color = Color3B::BLACK;
+	_colorChannels[1007]._color = _colorChannels[1000]._color;
+
+	_originalColors = std::unordered_map<int, SpriteColor>(_colorChannels);
 }
 
 void BaseGameLayer::fillColorChannel(std::span<std::string_view> colorString, int id)

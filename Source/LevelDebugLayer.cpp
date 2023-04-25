@@ -7,8 +7,12 @@
 #include <AudioEngine.h>
 #include <ccMacros.h>
 #include "EffectGameObject.h"
+#include "ImGui/imgui/imgui.h"
+#include "ImGui/ImGuiPresenter.h"
+#include "CocosExplorer.h"
 
 USING_NS_AX;
+USING_NS_AX_EXT;
 using namespace ax::network;
 
 LevelDebugLayer* LevelDebugLayer::create(GJGameLevel* level)
@@ -76,6 +80,76 @@ void LevelDebugLayer::onEnter()
 	listener->onKeyReleased = AX_CALLBACK_2(LevelDebugLayer::onKeyReleased, this);
 
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+
+	ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(LevelDebugLayer::onDrawImgui, this), dir->getRunningScene());
+}
+
+void LevelDebugLayer::onExit()
+{
+	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
+	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
+	Layer::onExit();
+}
+
+void LevelDebugLayer::onDrawImgui()
+{
+	if (_showDebugMenu)
+		return;
+
+	static int monitorN = 0;
+	static bool fullscreen;
+	static float gameSpeed, fps;
+	ImGui::SetNextWindowPos({1000.0f, 200.0f}, ImGuiCond_FirstUseEver);
+
+	ImGui::Begin("LeveDebugLayer Debug");
+
+#ifdef AX_PLATFORM_PC
+	if (ImGui::Checkbox("Fullscreen", &fullscreen))
+	{
+		int a;
+		auto monitor = glfwGetMonitors(&a)[monitorN];
+		auto mode = glfwGetVideoMode(monitor);
+
+		if (fullscreen)
+			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
+								 monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		else
+		{
+			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
+								 NULL, 0, 0, 1280, 720, 0);
+			glfwWindowHint(GLFW_DECORATED, true);
+		}
+	}
+#endif
+
+	ImGui::SameLine();
+
+	if (ImGui::ArrowButton("full", ImGuiDir_Right))
+		ImGui::OpenPopup("Fullscreen Settings");
+
+	if (ImGui::BeginPopupModal("Fullscreen Settings", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::InputInt("Monitor", &monitorN);
+		if (ImGui::Button("Close"))
+			ImGui::CloseCurrentPopup();
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::Button("Exit"))
+	{
+		this->exit();
+	}
+
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
+				ImGui::GetIO().Framerate);
+
+	if (ImGui::InputFloat("Speed", &gameSpeed))
+		Director::getInstance()->getScheduler()->setTimeScale(gameSpeed);
+
+	if (ImGui::InputFloat("FPS", &fps))
+		Director::getInstance()->setAnimationInterval(1.0f / fps);
+
+	ImGui::End();
 }
 
 void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
@@ -105,6 +179,12 @@ void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 	break;
 	case EventKeyboard::KeyCode::KEY_ESCAPE: {
 		exit();
+	}
+	case EventKeyboard::KeyCode::KEY_F: {
+		_showDebugMenu = !_showDebugMenu;
+		if(_showDebugMenu)
+			CocosExplorer::close();
+		else CocosExplorer::open();
 	}
 	break;
 	}
@@ -312,67 +392,7 @@ void LevelDebugLayer::updateVisibility()
 					_glowBatchNode->removeChild(section[j]->_glowSprite, true);
 				}
 				//_mainBatchNode->removeChild(section[j], true);
-				if (isObjectBlending(section[j]))
-				{
-					switch (section[j]->_zLayer)
-					{
-					case -3:
-						_blendingBatchNodeB4->removeChild(section[j], true);
-						break;
-					case -1:
-						_blendingBatchNodeB3->removeChild(section[j], true);
-						break;
-					case 1:
-						_blendingBatchNodeB2->removeChild(section[j], true);
-						break;
-					case 3:
-						_blendingBatchNodeB1->removeChild(section[j], true);
-						break;
-					default:
-					case 5:
-						_blendingBatchNodeT1->removeChild(section[j], true);
-						break;
-					case 7:
-						_blendingBatchNodeT2->removeChild(section[j], true);
-						break;
-					case 9:
-						_blendingBatchNodeT3->removeChild(section[j], true);
-						break;
-					}
-				}
-				else
-				{
-					if (section[j]->_texturePath == _mainBatchNodeTexture)
-					{
-						switch (section[j]->_zLayer)
-						{
-						case -3:
-							_mainBatchNodeB4->removeChild(section[j], true);
-							break;
-						case -1:
-							_mainBatchNodeB3->removeChild(section[j], true);
-							break;
-						case 1:
-							_mainBatchNodeB2->removeChild(section[j], true);
-							break;
-						case 3:
-							_mainBatchNodeB1->removeChild(section[j], true);
-							break;
-						default:
-						case 5:
-							_mainBatchNodeT1->removeChild(section[j], true);
-							break;
-						case 7:
-							_mainBatchNodeT2->removeChild(section[j], true);
-							break;
-						case 9:
-							_mainBatchNodeT3->removeChild(section[j], true);
-							break;
-						}
-					}
-					else if (section[j]->_texturePath == _main2BatchNodeTexture)
-						_main2BatchNode->removeChild(section[j], true);
-				}
+				section[j]->removeFromParentAndCleanup(true);
 			}
 		}
 	}
@@ -397,67 +417,7 @@ void LevelDebugLayer::updateVisibility()
 					_glowBatchNode->removeChild(section[j]->_glowSprite, true);
 				}
 				//_mainBatchNode->removeChild(section[j], true);
-				if (isObjectBlending(section[j]))
-				{
-					switch (section[j]->_zLayer)
-					{
-					case -3:
-						_blendingBatchNodeB4->removeChild(section[j], true);
-						break;
-					case -1:
-						_blendingBatchNodeB3->removeChild(section[j], true);
-						break;
-					case 1:
-						_blendingBatchNodeB2->removeChild(section[j], true);
-						break;
-					case 3:
-						_blendingBatchNodeB1->removeChild(section[j], true);
-						break;
-					default:
-					case 5:
-						_blendingBatchNodeT1->removeChild(section[j], true);
-						break;
-					case 7:
-						_blendingBatchNodeT2->removeChild(section[j], true);
-						break;
-					case 9:
-						_blendingBatchNodeT3->removeChild(section[j], true);
-						break;
-					}
-				}
-				else
-				{
-					if (section[j]->_texturePath == _mainBatchNodeTexture)
-					{
-						switch (section[j]->_zLayer)
-						{
-						case -3:
-							_mainBatchNodeB4->removeChild(section[j], true);
-							break;
-						case -1:
-							_mainBatchNodeB3->removeChild(section[j], true);
-							break;
-						case 1:
-							_mainBatchNodeB2->removeChild(section[j], true);
-							break;
-						case 3:
-							_mainBatchNodeB1->removeChild(section[j], true);
-							break;
-						default:
-						case 5:
-							_mainBatchNodeT1->removeChild(section[j], true);
-							break;
-						case 7:
-							_mainBatchNodeT2->removeChild(section[j], true);
-							break;
-						case 9:
-							_mainBatchNodeT3->removeChild(section[j], true);
-							break;
-						}
-					}
-					else if (section[j]->_texturePath == _main2BatchNodeTexture)
-						_main2BatchNode->removeChild(section[j], true);
-				}
+				section[j]->removeFromParentAndCleanup(true);
 			}
 		}
 	}

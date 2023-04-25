@@ -1,8 +1,8 @@
 #include "GameObject.h"
+#include "BaseGameLayer.h"
 #include "EffectGameObject.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
-#include "BaseGameLayer.h"
 #include "PlayerObject.h"
 #include "external/json.hpp"
 #include <fmt/format.h>
@@ -102,8 +102,10 @@ void GameObject::customSetup()
 
 	_primaryInvisible = false;
 
-	//robtop made 3d parts have lines by default but then decided to make them invisible instead of removing them for whatever reason
-	if(getID() >= 515 && getID() <= 640) _primaryInvisible = true;
+	// robtop made 3d parts have lines by default but then decided to make them invisible instead of removing them for
+	// whatever reason
+	if (getID() >= 515 && getID() <= 640)
+		_primaryInvisible = true;
 
 	switch (getID())
 	{
@@ -268,6 +270,8 @@ void GameObject::update()
 	if (bgl->_colorChannels.contains(_mainColorChannel))
 	{
 		auto sp1 = bgl->_colorChannels[_mainColorChannel];
+		if (sp1._copyingColorID != -1)
+			sp1 = bgl->_colorChannels[sp1._copyingColorID];
 		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
 		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
@@ -278,6 +282,8 @@ void GameObject::update()
 			if (bgl->_colorChannels.contains(_secColorChannel))
 			{
 				auto sp2 = bgl->_colorChannels[_secColorChannel];
+				if (sp2._copyingColorID != -1)
+					sp2 = bgl->_colorChannels[sp2._copyingColorID];
 				for (auto sp : _detailSprites)
 				{
 					if (!_forceBlack && sp->getColor() != sp2._color)
@@ -289,7 +295,6 @@ void GameObject::update()
 			}
 			else
 			{
-				auto sp1 = bgl->_colorChannels[_mainColorChannel];
 				for (auto sp : _detailSprites)
 				{
 					if (!_forceBlack && sp->getColor() != sp1._color)
@@ -304,7 +309,11 @@ void GameObject::update()
 	else if (bgl->_colorChannels.contains(_secColorChannel))
 	{
 		auto sp1 = bgl->_colorChannels[_mainColorChannel];
+		if (sp1._copyingColorID != -1)
+			sp1 = bgl->_colorChannels[sp1._copyingColorID];
 		auto sp2 = bgl->_colorChannels[_secColorChannel];
+				if (sp2._copyingColorID != -1)
+					sp2 = bgl->_colorChannels[sp2._copyingColorID];
 		if (!_forceBlack && getColor() != sp1._color)
 			setColor(sp1._color);
 		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
@@ -394,22 +403,21 @@ ax::Rect GameObject::getOuterBounds(float a, float b)
 std::string_view GameObject::getGlowFrame(int objectID)
 {
 	return "";
-	
+
 	// switch(objectID)
 	// {
-		// [[likely]] default: return "";
-		// case 44: return "checkpoint_01_glow_001";
-		// [[likely]] case 1: return "square_01_glow_001";
-		// [[likely]] case 2: return "square_02_glow_001";
-		// [[likely]] case 3: return "square_03_glow_001";
-		// [[likely]] case 4: return "square_04_glow_001";
-		// [[likely]] case 6: return "square_06_glow_001";
-		// [[likely]] case 7: return "square_07_glow_001";
-		// [[likely]] case 8: return "spike_01_glow_001";
-		// case 35: return "bump_01_glow_001";
-		// case 39: return "spike_02_glow_001";
-		// case 40: return "plank_01_glow_001";
-		// [[unlikely]] case 1903: return "plank_01_glow_001";
+	// [[likely]] default: return "";
+	// case 44: return "checkpoint_01_glow_001";
+	// [[likely]] case 1: return "square_01_glow_001";
+	// [[likely]] case 2: return "square_02_glow_001";
+	// [[likely]] case 3: return "square_03_glow_001";
+	// [[likely]] case 4: return "square_04_glow_001";
+	// [[likely]] case 6: return "square_06_glow_001";
+	// [[likely]] case 7: return "square_07_glow_001";
+	// [[likely]] case 8: return "spike_01_glow_001";
+	// case 35: return "bump_01_glow_001";
+	// case 39: return "spike_02_glow_001";
+	// case 40: return "plank_01_glow_001";
+	// [[unlikely]] case 1903: return "plank_01_glow_001";
 	// }
-	
 }

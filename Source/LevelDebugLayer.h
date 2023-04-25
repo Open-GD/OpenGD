@@ -17,10 +17,13 @@ private:
 
     ax::Sprite* _BG;
 
+    bool _showDebugMenu = false;
+
 public:
     static LevelDebugLayer* create(GJGameLevel*);
     static ax::Scene* scene(GJGameLevel*);
     void onEnter() override;
+    void onExit() override;
     bool init(GJGameLevel*);
     void exit();
     void update(float delta);
@@ -28,4 +31,5 @@ public:
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
     void updateVisibility();
     void updateTriggers(float dt);
+    void onDrawImgui();
 };
