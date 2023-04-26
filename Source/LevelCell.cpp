@@ -7,13 +7,6 @@
 
 USING_NS_AX;
 
-#define LIMIT_LABEL_WIDTH(label, maxWidth, maxScale) \
-if (maxWidth / label->getContentSize().width < maxScale) \
-	label->setScale(maxWidth / label->getContentSize().width); \
-else \
-	label->setScale(maxScale); \
-\
-
 LevelCell* LevelCell::create(GJGameLevel* level)
 {
 	LevelCell* ret = new LevelCell();
@@ -188,8 +181,7 @@ bool LevelCell::init(GJGameLevel* level) {
 
 	// Level info: Level name
 	Label* levelNameLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_levelName));
-
-	LIMIT_LABEL_WIDTH(levelNameLabel, 190, 0.8);
+	GameToolbox::limitLabelWidth(levelNameLabel, 190.f, 0.8f, 0);
 
 	levelNameLabel->setPosition({ 50, (size.height / 2) + 30 });
 	levelNameLabel->setAnchorPoint({ 0, 0.5 });
@@ -209,8 +201,7 @@ bool LevelCell::init(GJGameLevel* level) {
 		songNameLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_songName));
 		songNameLabel->setColor(ax::Color3B(255, 132, 211));
 	}
-
-	LIMIT_LABEL_WIDTH(songNameLabel, 200, 0.45);
+	GameToolbox::limitLabelWidth(songNameLabel, 200.f, 0.45f, 0);
 
 	songNameLabel->setPosition({ levelNameLabel->getPositionX() + 2, (size.height / 2) - 12});
 	songNameLabel->setAnchorPoint({ 0, 0.5 });
@@ -230,8 +221,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	_layer->addChild(lenSprite, 2);
 
 	Label* lenLabel = Label::createWithBMFont(bigFontStr, GameToolbox::lengthString(level->_length));
-
-	LIMIT_LABEL_WIDTH(lenLabel, 50, 0.4);
+	GameToolbox::limitLabelWidth(lenLabel, 50.f, 0.4f, 0);
 
 	lenLabel->setPosition({ lenSprite->getPositionX() + 10, 14 });
 	lenLabel->setAnchorPoint({ 0, 0.5 });
@@ -246,8 +236,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	_layer->addChild(dwnSprite, 2);
 
 	Label* dwnLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_downloads));
-
-	LIMIT_LABEL_WIDTH(dwnLabel, 45, 0.4);
+	GameToolbox::limitLabelWidth(dwnLabel, 45.f, 0.4f, 0);
 
 	dwnLabel->setPosition({ dwnSprite->getPositionX() + 10, 14 });
 	dwnLabel->setAnchorPoint({ 0, 0.5 });
@@ -269,8 +258,7 @@ bool LevelCell::init(GJGameLevel* level) {
 
 
 	Label* likeLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_likes));
-	
-	LIMIT_LABEL_WIDTH(likeLabel, 45, 0.4);
+	GameToolbox::limitLabelWidth(likeLabel, 45.f, 0.4f, 0);
 
 	likeLabel->setPosition({ likeSprite->getPositionX() + 10, 14 });
 	likeLabel->setAnchorPoint({ 0, 0.5 });
@@ -301,7 +289,7 @@ bool LevelCell::init(GJGameLevel* level) {
 			manaLabel->setColor({ 100, 255, 255 });
 		}
 
-		LIMIT_LABEL_WIDTH(manaLabel, 45, 0.4);
+		GameToolbox::limitLabelWidth(manaLabel, 45.f, 0.4f, 0);
 
 		manaLabel->setPosition({ manaSprite->getPositionX() + 10, 14 });
 		manaLabel->setAnchorPoint({ 0, 0.5 });
@@ -340,7 +328,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	_layer->addChild(menu);
 
 	Label* creatorNameLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_levelCreator));
-	LIMIT_LABEL_WIDTH(creatorNameLabel, 140, 0.7);
+	GameToolbox::limitLabelWidth(creatorNameLabel, 140.f, 0.7f, 0);
 
 	if (level->_levelCreator == "-")
 		creatorNameLabel->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
