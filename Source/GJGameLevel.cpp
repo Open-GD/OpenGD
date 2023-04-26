@@ -59,6 +59,7 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string_view backendResponse)
 	if (levelResponse.contains("30")) level->_copiedID = GameToolbox::stoi(levelResponse["30"]);
 	if (levelResponse.contains("35")) level->_songID = GameToolbox::stoi(levelResponse["35"]);
 	if (levelResponse.contains("37")) level->_coins = GameToolbox::stoi(levelResponse["37"]);
+	if (levelResponse.contains("38")) level->_verifiedCoins = GameToolbox::stoi(levelResponse["38"]);
 	if (levelResponse.contains("39")) level->_starsRequested = GameToolbox::stoi(levelResponse["39"]);
 	if (levelResponse.contains("40")) level->_LDM = GameToolbox::stoi(levelResponse["40"]);
 	if (levelResponse.contains("41")) level->_dailyNumber = GameToolbox::stoi(levelResponse["41"]);
