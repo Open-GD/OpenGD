@@ -6,8 +6,8 @@
 
 class LevelCell : public ax::ui::Widget {
 public:
-	ax::LayerColor* BGColor;
-	ax::Layer* layer;
+	ax::LayerColor* _bgColor;
+	ax::Layer* _layer;
 
 	void updateBGColor(int num);
 	static LevelCell* create(GJGameLevel* level);

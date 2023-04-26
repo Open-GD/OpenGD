@@ -5,158 +5,393 @@
 #include "LevelInfoLayer.h"
 #include "ButtonSprite.h"
 
-LevelCell* LevelCell::create(GJGameLevel* level) {
+USING_NS_AX;
+
+LevelCell* LevelCell::create(GJGameLevel* level)
+{
 	LevelCell* ret = new LevelCell();
-	if (ret->init(level)) {
+
+	if (ret && ret->init(level))
+	{
 		ret->autorelease();
 		return ret;
-	} else {
+	}
+	else
+	{
 		delete ret;
 		ret = nullptr;
 		return nullptr;
 	}
 }
 
-void LevelCell::updateBGColor(int num) {
-	BGColor = ax::LayerColor::create();
-	if (num % 2 == 0) BGColor->initWithColor({ 161, 88, 44, 255 });
-	else BGColor->initWithColor({ 191, 114, 62, 255 });
-	BGColor->setContentSize(this->getContentSize());
-	BGColor->setPositionY(5);
-	layer->addChild(BGColor, -1);
+void LevelCell::updateBGColor(int num)
+{
+	_bgColor = ax::LayerColor::create();
+
+	if (num % 2 == 0)
+		_bgColor->initWithColor({ 161, 88, 44, 255 });
+	else
+		_bgColor->initWithColor({ 191, 114, 62, 255 });
+
+	_bgColor->setContentSize(this->getContentSize());
+
+	this->addChild(_bgColor, -1);
 }
 
 bool LevelCell::init(GJGameLevel* level) {
-	setContentSize({396, 90});
-	layer = ax::Layer::create();
-	addChild(layer);
+	_layer = Layer::create();
+	addChild(_layer);
 
-	auto bigFontStr = GameToolbox::getTextureString("bigFont.fnt");
-	
-	if (level->_stars > 0) {
-		auto starSprite = ax::Sprite::createWithSpriteFrameName("star_small01_001.png");
-		starSprite->setPosition({34, 29});
-		layer->addChild(starSprite);
+	Vec2 size = { 356, 90 };
+	setContentSize(size);
 
-		auto starText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_stars));
-		starText->setScale(0.4f);
-		starText->setPosition({26, 29});
-		starText->setAnchorPoint({1, 0.5});
-		layer->addChild(starText);
-	}
+	Vec2 difficultySpritePos = { 26, size.height / 2 };
+	std::string bigFontStr = GameToolbox::getTextureString("bigFont.fnt");
+	bool isDailyOrWeekly = false;
 
-	auto nameText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_levelName));
-	nameText->setScale(0.8f);
-	if(nameText->getContentSize().width > 180) nameText->setScale(nameText->getScale() * (180 / nameText->getContentSize().width));
-	nameText->setPosition({50, 75});
-	nameText->setAnchorPoint({0, 0.5});
-	layer->addChild(nameText);
 
-	ax::Label* songText = nullptr;
+	float coinYPos;
 
-	if (level->_songID == 0)
+	if (level->_stars && level->_coins)
 	{
-		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", LevelTools::getAudioTitle(level->_officialSongID)));
-		songText->setColor(ax::Color3B(39, 206, 250));
+		difficultySpritePos += {0, 14};
+		coinYPos = -45.5;
 	}
-	else
+	else if (level->_coins || level->_stars)
 	{
-		songText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_songName));
-		songText->setColor(ax::Color3B(255, 132, 211));
+		difficultySpritePos += {0, 5};
+		coinYPos = -31.5;
 	}
 
-	songText->setScale(0.5f, 0.5f);
-	songText->setPosition({52, 33});
-	songText->setAnchorPoint({0, 0.5});
-	layer->addChild(songText);
+	if (isDailyOrWeekly)
+	{
+		difficultySpritePos += {0, 10};
+		coinYPos = -60;
+	}
 
-	ax::Vec2 diffPos = {26, 59};
 
+	// Difficulty sprite
 	if (level->_epic == 1)
 	{
-		auto epicSprite = ax::Sprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
-		epicSprite->setPosition(diffPos);
-		layer->addChild(epicSprite, 2);
+		Sprite* epicSprite = Sprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
+		epicSprite->setPosition(difficultySpritePos);
+		_layer->addChild(epicSprite, 2);
 	}
 	else if (level->_featureScore > 0)
 	{
-		auto featureScore = ax::Sprite::createWithSpriteFrameName("GJ_featuredCoin_001.png");
-		featureScore->setPosition(diffPos);
-		layer->addChild(featureScore, 2);
+		Sprite* featureScore = Sprite::createWithSpriteFrameName("GJ_featuredCoin_001.png");
+		featureScore->setPosition(difficultySpritePos);
+		_layer->addChild(featureScore, 2);
 	}
 
-	auto diffSprite = ax::Sprite::createWithSpriteFrameName(GJGameLevel::getDifficultySprite(level));
-	diffSprite->setPosition(diffPos);
-	layer->addChild(diffSprite, 2);
+	Sprite* diffSprite = Sprite::createWithSpriteFrameName(GJGameLevel::getDifficultySprite(level));
+	diffSprite->setPosition(difficultySpritePos);
+	_layer->addChild(diffSprite, 2);
 
-	auto lenSprite = ax::Sprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
-	lenSprite->setPosition({59, 14});
+
+	// Stars
+	if (level->_stars > 0) {
+		Sprite* starSprite = Sprite::createWithSpriteFrameName("star_small01_001.png");
+		starSprite->setPosition(difficultySpritePos + ax::Vec2(8, -30));
+		_layer->addChild(starSprite);
+
+		Label* starLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_stars));
+		starLabel->setScale(0.4f);
+		starLabel->setPosition(starSprite->getPosition() + ax::Vec2(-8, 0));
+		starLabel->setAnchorPoint({ 1, 0.5 });
+		_layer->addChild(starLabel);
+	}
+
+
+	// Diamonds (for daily and weekly)
+	if (isDailyOrWeekly)
+	{
+		Sprite* diamondIcon = Sprite::createWithSpriteFrameName("diamond_small01_001.png");
+		_layer->addChild(diamondIcon);
+
+		auto awardedAmount = 12;
+		auto totalAmount = 12;
+
+		auto diamondLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}/{}", awardedAmount, totalAmount));
+		diamondLabel->setAnchorPoint({ 1, 0.5 });
+
+		diamondLabel->setScale(0.35);
+
+		diamondIcon->setPosition(diffSprite->getPosition() + Vec2(((diamondLabel->getContentSize().width * diamondLabel->getScale()) / 2) + 2, -44.5));
+		diamondLabel->setPosition(diamondIcon->getPosition() + Vec2(-8, 0));
+
+		_layer->addChild(diamondLabel);
+
+		if (awardedAmount == totalAmount)
+		{
+			diamondLabel->setColor({ 100, 255, 255 });
+		}
+	}
+
+
+	// Coins
+	float coinXPos;
+
+	for (size_t i = 0; i < level->_coins; i++)
+	{
+		if (i == 1)
+		{
+			if (level->_coins == 2)
+				coinXPos = 5.0;
+			else
+				coinXPos = 0;
+		}
+		else if (i == 2)
+		{
+			coinXPos = 10;
+		}
+		else
+		{
+			if (i == 1)
+				coinXPos = 0;
+			else if (level->_coins == 2)
+			{
+				coinXPos = -5;
+			}
+			else if (level->_coins <= 2)
+				coinXPos = 0;
+			else
+				coinXPos = -10;
+		}
+
+		Sprite* coin = Sprite::createWithSpriteFrameName("usercoin_small01_001.png");
+		coin->setPosition(difficultySpritePos + Vec2(coinXPos, coinYPos));
+		_layer->addChild(coin);
+
+		auto collected = false;
+
+		if (level->_verifiedCoins && !collected)
+		{
+			coin->setColor({ 165, 165, 165 });
+		}
+		else
+		{
+			if (collected)
+				coin->setColor({ 255, 175, 75 });
+			else
+				coin->setColor({ 165, 113, 48 });
+		}
+	}
+
+
+	// Level info: Level name
+	Label* levelNameLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_levelName));
+	GameToolbox::limitLabelWidth(levelNameLabel, 190.f, 0.8f, 0);
+
+	levelNameLabel->setPosition({ 50, (size.height / 2) + 30 });
+	levelNameLabel->setAnchorPoint({ 0, 0.5 });
+
+	_layer->addChild(levelNameLabel);
+
+	// Level info: Level song
+	Label* songNameLabel = nullptr;
+
+	if (level->_songID == 0)
+	{
+		songNameLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", LevelTools::getAudioTitle(level->_officialSongID)));
+		songNameLabel->setColor(ax::Color3B(39, 206, 250));
+	}
+	else
+	{
+		songNameLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_songName));
+		songNameLabel->setColor(ax::Color3B(255, 132, 211));
+	}
+	GameToolbox::limitLabelWidth(songNameLabel, 200.f, 0.45f, 0);
+
+	songNameLabel->setPosition({ levelNameLabel->getPositionX() + 2, (size.height / 2) - 12});
+	songNameLabel->setAnchorPoint({ 0, 0.5 });
+	_layer->addChild(songNameLabel);
+
+
+	// Level stats
+	auto padding = 25;
+
+	if (level->_stars)
+		padding = 18;
+
+	// Level stats: Length
+	Sprite* lenSprite = Sprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
+	lenSprite->setPosition({ levelNameLabel->getPositionX() + 9, 14 });
 	lenSprite->setScale(0.6f);
-	layer->addChild(lenSprite, 2);
+	_layer->addChild(lenSprite, 2);
 
-	auto lenText = ax::Label::createWithBMFont(bigFontStr, GameToolbox::lengthString(level->_length));
-	lenText->setScale(0.4f);
-	if (lenText->getContentSize().width > 120) lenText->setScale(lenText->getScale() * (120 / lenText->getContentSize().width));
-	lenText->setPosition({ 69, 14 });
-	lenText->setAnchorPoint({ 0, 0.5 });
-	layer->addChild(lenText);
+	Label* lenLabel = Label::createWithBMFont(bigFontStr, GameToolbox::lengthString(level->_length));
+	GameToolbox::limitLabelWidth(lenLabel, 50.f, 0.4f, 0);
 
-	auto dwnSprite = ax::Sprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png");
-	dwnSprite->setPosition({136.4, 14});
+	lenLabel->setPosition({ lenSprite->getPositionX() + 10, 14 });
+	lenLabel->setAnchorPoint({ 0, 0.5 });
+	_layer->addChild(lenLabel);
+
+	// Level stats: Downloads
+	Sprite* dwnSprite = Sprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png");
+	dwnSprite->setPosition({
+		(lenLabel->getPosition().x + (lenLabel->getContentSize().width * lenLabel->getScale())) + padding, 14
+	});
 	dwnSprite->setScale(0.6f);
-	layer->addChild(dwnSprite, 2);
+	_layer->addChild(dwnSprite, 2);
 
-	auto dwnText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_downloads));
-	dwnText->setScale(0.4f);
-	if (dwnText->getContentSize().width > 120) dwnText->setScale(dwnText->getScale() * (120 / dwnText->getContentSize().width));
-	dwnText->setPosition({145.4, 14});
-	dwnText->setAnchorPoint({0, 0.5});
-	layer->addChild(dwnText);
+	Label* dwnLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_downloads));
+	GameToolbox::limitLabelWidth(dwnLabel, 45.f, 0.4f, 0);
 
-	auto likeSprite = ax::Sprite::createWithSpriteFrameName("GJ_likesIcon_001.png");
-	likeSprite->setPosition({212.8, 14});
+	dwnLabel->setPosition({ dwnSprite->getPositionX() + 10, 14 });
+	dwnLabel->setAnchorPoint({ 0, 0.5 });
+	_layer->addChild(dwnLabel);
+
+	// Level stats: Likes
+	Sprite* likeSprite;
+
+	if (level->_likes < 0 || level->_likes < level->_dislikes)
+		likeSprite = Sprite::createWithSpriteFrameName("GJ_dislikesIcon_001.png");
+	else
+		likeSprite = Sprite::createWithSpriteFrameName("GJ_likesIcon_001.png");
+
+	likeSprite->setPosition({
+		(dwnLabel->getPosition().x + (dwnLabel->getContentSize().width * dwnLabel->getScale())) + padding, 14
+		});
 	likeSprite->setScale(0.6f);
-	layer->addChild(likeSprite, 2);
+	_layer->addChild(likeSprite, 2);
 
-	auto likeText = ax::Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_likes));
-	likeText->setScale(0.4f);
-	if (likeText->getContentSize().width > 120) likeText->setScale(likeText->getScale() * (120 / likeText->getContentSize().width));
-	likeText->setPosition({222.8, 14});
-	likeText->setAnchorPoint({0, 0.5});
-	layer->addChild(likeText);
 
-	auto menu = ax::Menu::create();
-	menu->setPosition({315.45, 45});
-	layer->addChild(menu);
+	Label* likeLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", level->_likes));
+	GameToolbox::limitLabelWidth(likeLabel, 45.f, 0.4f, 0);
 
-	auto creatorText = ax::Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_levelCreator));
-	creatorText->setScale(0.6f);
-	if (level->_levelCreator == "-") creatorText->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
-	if (creatorText->getContentSize().width > 200) creatorText->setScale(creatorText->getScale() * (200 / creatorText->getContentSize().width));
-	creatorText->setPosition({-263.525, 8});
-	creatorText->setAnchorPoint({0, 0.5});
-	menu->addChild(creatorText);
+	likeLabel->setPosition({ likeSprite->getPositionX() + 10, 14 });
+	likeLabel->setAnchorPoint({ 0, 0.5 });
+	_layer->addChild(likeLabel);
 
-	auto levelBadgePosition = creatorText->getContentSize().width * creatorText->getScale() + 65;
-	
-	if (level->_copiedID > 0)
+	// Level stats: Orbs
+	if (level->_stars > 1)
 	{
-		auto collabSprite = ax::Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
-		collabSprite->setPosition(levelBadgePosition, 52);
-		layer->addChild(collabSprite);
-	}
-	if (level->_objects > 40000)
-	{
-		auto highObjectSprite = ax::Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
-		highObjectSprite->setPosition(levelBadgePosition + (level->_copiedID > 0 ? 18 : 0), 52);
-		layer->addChild(highObjectSprite);
+		Sprite* manaSprite = Sprite::createWithSpriteFrameName("currencyOrbIcon_001.png");
+		manaSprite->setPosition({
+			(likeLabel->getPosition().x + (likeLabel->getContentSize().width * likeLabel->getScale())) + padding, 14
+		});
+		manaSprite->setScale(0.6f);
+		_layer->addChild(manaSprite, 2);
+
+		int awardedAmount = 0;
+		int totalAmount = 0;
+
+		Label* manaLabel;
+
+		if (awardedAmount != totalAmount)
+		{
+			manaLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}/{}", awardedAmount, totalAmount));
+		}
+		else
+		{
+			manaLabel = Label::createWithBMFont(bigFontStr, fmt::format("{}", totalAmount));
+			manaLabel->setColor({ 100, 255, 255 });
+		}
+
+		GameToolbox::limitLabelWidth(manaLabel, 45.f, 0.4f, 0);
+
+		manaLabel->setPosition({ manaSprite->getPositionX() + 10, 14 });
+		manaLabel->setAnchorPoint({ 0, 0.5 });
+
+		_layer->addChild(manaLabel);
 	}
 
-	auto button = MenuItemSpriteExtra::create(ButtonSprite::create("View", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30), [&, level](Node* btn)
+
+	// Menu: Creator Name, View/Play Button
+	Sprite* buttonSprite;
+	Menu* menu = Menu::create();
+
+	if (isDailyOrWeekly)
+	{
+		buttonSprite = Sprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+		buttonSprite->setScale(0.7);
+		MenuItemSpriteExtra* button = MenuItemSpriteExtra::create(buttonSprite, [](Node*) {});
+		menu->addChild(button);
+	}
+	else
+	{
+		buttonSprite = ButtonSprite::create("View", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30);
+		MenuItemSpriteExtra* button = MenuItemSpriteExtra::create(buttonSprite, [&, level](Node* btn)
 		{
 			ax::Director::getInstance()->pushScene((ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(level))));
 		});
-	menu->addChild(button);
+		menu->addChild(button);
+	}
+
+	Vec2 menuPosition = {
+		(this->getContentSize().width - ((buttonSprite->getContentSize().width) / 2.f) - 9.f) + ((isDailyOrWeekly) ? 18 : 0),
+		this->getContentSize().height / 2
+	};
+
+	menu->setPosition(menuPosition);
+	_layer->addChild(menu);
+
+	Label* creatorNameLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("By {}", level->_levelCreator));
+	GameToolbox::limitLabelWidth(creatorNameLabel, 140.f, 0.7f, 0);
+
+	if (level->_levelCreator == "-")
+		creatorNameLabel->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
+
+	auto creatorLabelMenuItem = MenuItemSpriteExtra::create(creatorNameLabel, [](Node*) {});
+	creatorLabelMenuItem->setPosition(
+		menu->convertToNodeSpace(levelNameLabel->getPosition() + Point(((creatorNameLabel->getContentSize().width / 2) * creatorNameLabel->getScale()) + 2, -22))
+	);
+	menu->addChild(creatorLabelMenuItem);
+
+
+	// Collab & High object icons
+	auto levelBadgePosition = creatorNameLabel->getContentSize().width * creatorNameLabel->getScale() + 65;
+
+	if (level->_copiedID > 0)
+	{
+		Sprite* collabSprite = Sprite::createWithSpriteFrameName("collaborationIcon_001.png");
+		collabSprite->setPosition(levelBadgePosition, 52);
+		_layer->addChild(collabSprite);
+	}
+
+	if (level->_objects > 40000)
+	{
+		Sprite* highObjectSprite = Sprite::createWithSpriteFrameName("highObjectIcon_001.png");
+		highObjectSprite->setPosition(levelBadgePosition + (level->_copiedID > 0 ? 18 : 0), 52);
+		_layer->addChild(highObjectSprite);
+	}
+
+
+	// Percentage / Checkmark
+	bool isLevelCompleted = (level->_normalPercent >= 100);
+
+	if (isLevelCompleted)
+	{
+		Sprite* checkIcon = Sprite::createWithSpriteFrameName("GJ_completesIcon_001.png");
+		checkIcon->setAnchorPoint({ 0, 0.5 });
+
+		_layer->addChild(checkIcon);
+		checkIcon->setScale(0.8);
+		checkIcon->setPosition(levelNameLabel->getPosition() + Vec2((levelNameLabel->getContentSize().width * levelNameLabel->getScale()) + 10, -1));
+	}
+	else if (level->_normalPercent != 0)
+	{
+		Label* percentLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), fmt::format("{}%", (int)level->_normalPercent));
+		percentLabel->setScale(0.6);
+		percentLabel->setAnchorPoint({ 0, 0.5 });
+		percentLabel->setPosition(levelNameLabel->getPosition() + Vec2((levelNameLabel->getContentSize().width * levelNameLabel->getScale()) + 10, -1));
+		_layer->addChild(percentLabel);
+	}
+
+
+	// Outlines for the cell
+	Color4B color = Color4B(0, 0, 0, 0x4B);
+
+	DrawNode* topLine = DrawNode::create();
+	topLine->drawLine(Vec2::ZERO, Vec2(size.width, 0), color);
+	_layer->addChild(topLine, _layer->getLocalZOrder() + 1);
+
+	DrawNode* bottomLine = DrawNode::create();
+	bottomLine->drawLine(Vec2::ZERO, Vec2(size.width, 0), color);
+	bottomLine->setPosition(Vec2(0, size.height));
+	_layer->addChild(bottomLine, _layer->getLocalZOrder() + 1);
+
 
 	return true;
 }
