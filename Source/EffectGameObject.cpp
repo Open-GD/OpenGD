@@ -2,6 +2,7 @@
 #include "BaseGameLayer.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
+#include "ColorAction.h"
 
 USING_NS_AX;
 
@@ -65,17 +66,10 @@ void EffectGameObject::triggerActivated(float idk)
 
 			_color = GameToolbox::hsvToRgb(hsv);
 		}
-		this->runAction(
-			ActionTween::create(this->_duration, "col1", _bgl->_colorChannels.at(_targetColorId)._color.r, _color.r));
-		this->runAction(
-			ActionTween::create(this->_duration, "col2", _bgl->_colorChannels.at(_targetColorId)._color.g, _color.g));
-		this->runAction(
-			ActionTween::create(this->_duration, "col3", _bgl->_colorChannels.at(_targetColorId)._color.b, _color.b));
 
-		if (_opacity * 255.f != _bgl->_colorChannels.at(_targetColorId)._opacity)
-			this->runAction(ActionTween::create(this->_duration, "col4",
-												_bgl->_colorChannels.at(_targetColorId)._opacity, _opacity * 255.f));
+		this->runAction(ColorAction::create(_duration, &_bgl->_colorChannels.at(_targetColorId), _bgl->_colorChannels.at(_targetColorId)._color, _color, _bgl->_colorChannels.at(_targetColorId)._opacity, _opacity));
 		_bgl->_colorChannels.at(_targetColorId)._blending = _blending;
+		
 		break;
 	}
 	case 22:
@@ -157,21 +151,14 @@ void EffectGameObject::triggerActivated(float idk)
 
 			target = GameToolbox::hsvToRgb(hsv);
 		}
-		auto seq1 = ax::Sequence::create({ActionTween::create(_fadeIn, "pul1", original.r, target.r),
-										  ActionTween::create(_hold, "pul1", target.r, target.r),
-										  ActionTween::create(_fadeOut, "pul1", target.r, original.r)});
 
-		auto seq2 = ax::Sequence::create({ActionTween::create(_fadeIn, "pul2", original.g, target.g),
-										  ActionTween::create(_hold, "pul2", target.g, target.g),
-										  ActionTween::create(_fadeOut, "pul2", target.g, original.g)});
+		auto colPointer = &_bgl->_colorChannels.at(_targetGroupId);
 
-		auto seq3 = ax::Sequence::create({ActionTween::create(_fadeIn, "pul3", original.b, target.b),
-										  ActionTween::create(_hold, "pul3", target.b, target.b),
-										  ActionTween::create(_fadeOut, "pul3", target.b, original.b)});
+		auto seq = ax::Sequence::create({ColorAction::create(_fadeIn, colPointer, original, target),
+										  ColorAction::create(_hold, colPointer, target, target),
+										  ColorAction::create(_fadeOut, colPointer, target, original)});
 
-		this->runAction(seq1);
-		this->runAction(seq2);
-		this->runAction(seq3);
+		this->runAction(seq);
 		break;
 	}
 	case 1049:
