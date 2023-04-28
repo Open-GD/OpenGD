@@ -1,10 +1,73 @@
 #include "EffectGameObject.h"
 #include "BaseGameLayer.h"
-#include "GameToolbox.h"
-#include "PlayLayer.h"
 #include "ColorAction.h"
+#include "GameToolbox.h"
+#include "MoveAction.h"
+#include "PlayLayer.h"
 
 USING_NS_AX;
+
+Action* EffectGameObject::actionEasing(ActionInterval* ac)
+{
+	switch (_easing)
+	{
+	case 1:
+		return EaseInOut::create(ac, _easeRate);
+		break;
+	case 2:
+		return EaseIn::create(ac, _easeRate);
+		break;
+	case 3:
+		return EaseOut::create(ac, _easeRate);
+		break;
+	case 4:
+		return EaseElasticInOut::create(ac, _easeRate);
+		break;
+	case 5:
+		return EaseElasticIn::create(ac, _easeRate);
+		break;
+	case 6:
+		return EaseElasticOut::create(ac, _easeRate);
+		break;
+	case 7:
+		return EaseBounceInOut::create(ac);
+		break;
+	case 8:
+		return EaseBounceIn::create(ac);
+		break;
+	case 9:
+		return EaseBounceOut::create(ac);
+		break;
+	case 10:
+		return EaseExponentialInOut::create(ac);
+		break;
+	case 11:
+		return EaseExponentialIn::create(ac);
+		break;
+	case 12:
+		return EaseExponentialOut::create(ac);
+		break;
+	case 13:
+		return EaseSineInOut::create(ac);
+		break;
+	case 14:
+		return EaseSineIn::create(ac);
+		break;
+	case 15:
+		return EaseSineOut::create(ac);
+		break;
+	case 16:
+		return EaseBackInOut::create(ac);
+		break;
+	case 17:
+		return EaseBackIn::create(ac);
+		break;
+	case 18:
+		return EaseBackOut::create(ac);
+		break;
+	}
+	return ac;
+}
 
 void EffectGameObject::triggerActivated(float idk)
 {
@@ -67,9 +130,11 @@ void EffectGameObject::triggerActivated(float idk)
 			_color = GameToolbox::hsvToRgb(hsv);
 		}
 
-		this->runAction(ColorAction::create(_duration, &_bgl->_colorChannels.at(_targetColorId), _bgl->_colorChannels.at(_targetColorId)._color, _color, _bgl->_colorChannels.at(_targetColorId)._opacity, _opacity));
+		this->runAction(ColorAction::create(_duration, &_bgl->_colorChannels.at(_targetColorId),
+											_bgl->_colorChannels.at(_targetColorId)._color, _color,
+											_bgl->_colorChannels.at(_targetColorId)._opacity, _opacity));
 		_bgl->_colorChannels.at(_targetColorId)._blending = _blending;
-		
+
 		break;
 	}
 	case 22:
@@ -100,12 +165,17 @@ void EffectGameObject::triggerActivated(float idk)
 		if (pl)
 			pl->_enterEffectID = 3;
 		break;
+	case 901: {
+		runAction(actionEasing(MoveAction::create(_duration, _offset, &_bgl->_groups[_targetGroupId])));
+	}
+	break;
 	case 1007:
 		runAction(ActionTween::create(_duration, "fade", _bgl->_groups[_targetGroupId]._alpha, _opacity));
 		break;
 	case 1006: {
-		//TODO: somehow handle pulse for groups
-		if(_pulseType == 1) break;
+		// TODO: somehow handle pulse for groups
+		if (_pulseType == 1)
+			break;
 		if (!_bgl->_colorChannels.contains(_targetGroupId))
 		{
 			_bgl->_colorChannels.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
@@ -155,8 +225,8 @@ void EffectGameObject::triggerActivated(float idk)
 		auto colPointer = &_bgl->_colorChannels.at(_targetGroupId);
 
 		auto seq = ax::Sequence::create({ColorAction::create(_fadeIn, colPointer, original, target),
-										  ColorAction::create(_hold, colPointer, target, target),
-										  ColorAction::create(_fadeOut, colPointer, target, original)});
+										 ColorAction::create(_hold, colPointer, target, target),
+										 ColorAction::create(_fadeOut, colPointer, target, original)});
 
 		this->runAction(seq);
 		break;

@@ -134,6 +134,9 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
 	float _radius = -1;
 
+	//for move trigger
+	ax::Vec2 _prevPos;
+
 	ax::ParticleSystemQuad* _particle;
 
 	static const std::unordered_map<int, Hitbox> _pHitboxes;

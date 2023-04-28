@@ -251,7 +251,7 @@ void GameObject::update()
 
 	if (getEnterEffectID() == 0)
 	{
-		setPosition(_startPosition);
+		//setPosition(_startPosition);
 		setScaleX(_startScale.x);
 		setScaleY(_startScale.y);
 	}
@@ -473,6 +473,22 @@ GameObject* GameObject::createFromString(std::string_view data)
 			break;
 		case 25:
 			obj->setGlobalZOrder(static_cast<float>(GameToolbox::stoi(properties[i + 1])));
+			break;
+		case 28:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_offset.x = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 29:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_offset.y = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 30:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_easing = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 85:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_easeRate = GameToolbox::stof(properties[i + 1]);
 			break;
 		case 32:
 			obj->setScaleX(obj->getScaleX() * GameToolbox::stof(properties[i + 1]));

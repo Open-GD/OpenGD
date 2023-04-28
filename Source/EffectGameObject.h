@@ -25,8 +25,16 @@ public:
 	bool _blending;
 	bool _activateGroup = false;
 
+	ax::Vec2 _offset;
+
+	int _easing;
+	float _easeRate;
+
+	bool _lockToPlayerX, _lockToPlayerY;
+
 private:
 	virtual void updateTweenAction(float value, std::string_view key) override;
+	ax::Action* actionEasing(ax::ActionInterval* ac);
 
 public:
 	void triggerActivated(float idk);
