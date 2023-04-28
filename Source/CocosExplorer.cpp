@@ -7,8 +7,8 @@
 #include <fmt/format.h>
 #include <mutex>
 #include <queue>
-#include <sstream>
 #include "BaseGameLayer.h"
+#include "NodeSerializer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -39,6 +39,12 @@ static void drawProperties()
 		ImGui::Text("Select a node to edit its properties :-)");
 		return;
 	}
+
+	if (ImGui::Button("Copy JSON"))
+	{
+		NodeSerializer::copyNodeJsonToClipboard(selected_node);
+	}
+	ImGui::SameLine();
 
 	if (ImGui::Button("Delete"))
 	{
