@@ -1,5 +1,8 @@
 #include "MenuGameLayer.h"
 #include "GameToolbox.h"
+#include "GroundLayer.h"
+#include "2d/CCMenu.h"
+#include "PlayerObject.h"
 
 USING_NS_AX;
 
@@ -15,7 +18,7 @@ bool MenuGameLayer::init(){
 	this->startPos = Vec2(0, 105);
 
 	auto dir = Director::getInstance();
-	auto winSize = dir->getWinSize();
+	const auto& winSize = dir->getWinSize();
 
 	groundLayer = GroundLayer::create(1);
 	
@@ -89,7 +92,7 @@ bool MenuGameLayer::init(){
 }
 void MenuGameLayer::processPlayerMovement(float delta) {
 	float step = std::min(2.0f, delta * 60.0f);
-	auto winSize = Director::getInstance()->getWinSize();
+	const auto& winSize = Director::getInstance()->getWinSize();
 	step /= 4.0f;
 
 	this->player->setPositionX(this->player->getPositionX() + (step * 18.f));

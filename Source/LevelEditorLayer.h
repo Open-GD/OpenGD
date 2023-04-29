@@ -1,7 +1,9 @@
 #pragma once
 
-#include <axmol.h>
-#include "GJGameLevel.h"
+#include "2d/CCLayer.h"
+
+class GJGameLevel;
+
 
 class LevelEditorLayer : public ax::Layer {
 private:

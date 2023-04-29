@@ -1,6 +1,10 @@
 #pragma once
 
-#include <axmol.h>
+#include <string>
+#include <vector>
+
+#include "2d/CCLayer.h"
+#include "2d/CCActionTween.h"
 
 class BoomScrollLayer : public ax::Layer, public ax::ActionTweenDelegate {
 private:

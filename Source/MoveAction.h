@@ -1,7 +1,13 @@
 #pragma once
 
-#include "BaseGameLayer.h"
-#include <axmol.h>
+#include "2d/CCActionInterval.h"
+
+struct GroupProperties;
+namespace ax 
+{ 
+	class Node; 
+	class Vec2;
+}
 
 class MoveAction : public ax::MoveBy
 {

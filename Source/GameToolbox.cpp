@@ -4,6 +4,8 @@
 #include "AltDirector.h"
 #include "GameManager.h"
 #include "external/fast_float.h"
+#include "network/HttpResponse.h"
+#include "network/HttpClient.h"
 
 USING_NS_AX;
 

@@ -1,5 +1,7 @@
 #include "SimplePlayer.h"
 #include "GameToolbox.h"
+#include "ccUTF8.h"
+
 USING_NS_AX;
 
 bool SimplePlayer::init(int cubeID) {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <axmol.h>
+#include "2d/CCNode.h"
+
 
 class SongObject : ax::Node
 {

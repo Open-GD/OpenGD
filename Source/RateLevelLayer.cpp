@@ -4,6 +4,8 @@
 #include "GameToolbox.h"
 #include <ui/CocosGUI.h>
 #include "ButtonSprite.h"
+#include "2d/CCMenu.h"
+#include "ccUTF8.h"
 
 USING_NS_AX;
 
@@ -51,7 +53,7 @@ bool RateLevelLayer::init(int)
 	m_dSelectedDiff = 0;
 
 	if (!PopupLayer::init()) return false;
-	auto winSize = Director::getInstance()->getWinSize();
+	const auto& winSize = Director::getInstance()->getWinSize();
 
 	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_square01.png"));
 	bg->setContentSize({ 360, 180 });

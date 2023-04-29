@@ -1,20 +1,32 @@
 #pragma once
 
-#include <axmol.h>
-#include <ui/CocosGUI.h>
+#include <string_view>
 
-USING_NS_AX;
+#include "2d/CCSprite.h"
+#include "math/Vec2.h"
+#include "ccTypes.h"
 
-class ButtonSprite : public Sprite
+namespace ax 
+{ 
+	class Label;
+
+	namespace ui 
+	{ 
+		class Scale9Sprite; 
+	} 
+}
+
+
+class ButtonSprite : public ax::Sprite
 {
-	ui::Scale9Sprite* _buttonTexture;
+	ax::ui::Scale9Sprite* _buttonTexture;
 	Sprite* _subSprite;
 	Sprite* _subBGSprite;
 
 	float _minWidth;
-	Point _spriteOffset;
+	ax::Point _spriteOffset;
 
-	Label* _label;
+	ax::Label* _label;
 
 	float _scale;
 	float _width;
@@ -77,6 +89,6 @@ public:
 
 	void updateBGImage(std::string_view file);
 	void setString(std::string_view str);
-	void setColor(Color3B color);
+	void setColor(ax::Color3B color);
 	void updateSpriteBGSize();
 };

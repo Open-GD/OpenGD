@@ -1,9 +1,14 @@
 #pragma once
+#include "2d/CCLayer.h"
 
-#include <axmol.h>
-#include "GroundLayer.h"
-#include "GJGameLevel.h"
-#include "BoomScrollLayer.h"
+class GroundLayer;
+class BoomScrollLayer;
+
+namespace ax 
+{ 
+	class Sprite;
+	class Scene;
+}
 
 
 class LevelSelectLayer : public ax::Layer {

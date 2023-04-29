@@ -1,9 +1,20 @@
 #pragma once
-#include <axmol.h>
+
+#include <string_view>
+#include <vector>
+#include <unordered_map>
 #include <map>
-#include <string>
+
+#include "2d/CCSprite.h"
+#include "2d/CCActionTween.h"
+#include "math/Rect.h"
+#include "math/Vec2.h"
 
 class PlayerObject;
+namespace ax 
+{ 
+	class ParticleSystemQuad; 
+}
 
 enum GameObjectType
 {

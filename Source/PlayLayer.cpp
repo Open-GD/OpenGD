@@ -22,6 +22,11 @@
 #include <fstream>
 
 #include "LevelDebugLayer.h"
+#include "UILayer.h"
+#include "GJGameLevel.h"
+#include "GroundLayer.h"
+#include "SimpleProgressBar.h"
+#include "CircleWave.h"
 
 
 USING_NS_AX;
@@ -40,7 +45,7 @@ ax::Node* cameraFollow;
 
 Scene* PlayLayer::scene(GJGameLevel* level)
 {
-	return LevelDebugLayer::scene(level);
+	//return LevelDebugLayer::scene(level);
 	auto scene = Scene::create();
 	scene->addChild(PlayLayer::create(level));
 	return scene;

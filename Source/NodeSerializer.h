@@ -1,8 +1,11 @@
 #pragma once
-#include <string>
+#include <string_view>
 #include <external/json.hpp>
-#include <2d/CCNode.h>
-#include <base/ccTypes.h>
+
+namespace ax 
+{ 
+	class Node; 
+}
 
 namespace NodeSerializer
 {

@@ -2,6 +2,8 @@
 #include <ui/CocosGUI.h>
 #include "GameToolbox.h"
 #include "ButtonSprite.h"
+#include "2d/CCMenu.h"
+#include "MenuItemSpriteExtra.h"
 
 USING_NS_AX;
 
@@ -10,7 +12,7 @@ bool AlertLayer::init(std::string_view title, std::string_view desc, std::string
 	if (!PopupLayer::init()) 
 		return false;
 
-	auto winSize = Director::getInstance()->getWinSize();
+	const auto& winSize = Director::getInstance()->getWinSize();
 
 	auto descLabel = Label::createWithBMFont(GameToolbox::getTextureString("chatFont.fnt"), desc, TextHAlignment::CENTER);
 	width = descLabel->getContentSize().width + 32;

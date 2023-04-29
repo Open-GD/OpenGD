@@ -6,6 +6,13 @@
 
 #include "external/constants.h"
 #include <array>
+#include "2d/CCSpriteFrameCache.h"
+#include "CCDirector.h"
+#include "renderer/CCTextureCache.h"
+#include "2d/CCLabel.h"
+#include "SimpleProgressBar.h"
+#include "2d/CCActionInterval.h"
+#include "2d/CCActionInstant.h"
 
 USING_NS_AX;
 

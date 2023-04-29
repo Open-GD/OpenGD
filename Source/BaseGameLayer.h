@@ -1,12 +1,23 @@
 #pragma once
-#include <axmol.h>
-#include "GJGameLevel.h"
-#include "GameObject.h"
-#include "GameToolbox.h"
-#include "external/benchmark.h"
+
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <span>
+
 #include "PlayerObject.h"
 #include "SpriteColor.h"
-#include <span>
+#include "2d/CCLayer.h"
+
+class GameObject;
+class BaseGameLayer;
+class GJGameLevel;
+
+namespace ax 
+{ 
+	class SpriteBatchNode; 
+	class ParticleBatchNode;
+}
 
 //follow structure
 //1. private members

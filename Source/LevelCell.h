@@ -1,8 +1,14 @@
 #pragma once
-#include <axmol.h>
-#include "GJGameLevel.h"
 #include "ui/UIWidget.h"
-#include "LevelTools.h"
+
+class GJGameLevel;
+
+namespace ax 
+{ 
+	class Layer;
+	class LayerColor; 
+}
+
 
 class LevelCell : public ax::ui::Widget {
 public:

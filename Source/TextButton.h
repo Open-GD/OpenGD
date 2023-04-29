@@ -1,6 +1,19 @@
 #pragma once
-#include <axmol.h>
-#include <string>
+
+#include <string_view>
+#include <functional>
+
+#include "2d/CCMenuItem.h"
+#include "CCPlatformMacros.h"
+
+namespace ax 
+{ 
+	class Label;
+	namespace ui 
+	{ 
+		class Scale9Sprite; 
+	} 
+}
 
 class TextButton : public ax::MenuItemSprite {
 private:

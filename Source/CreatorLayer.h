@@ -1,6 +1,15 @@
 #pragma once
-#include <axmol.h>
-#include <ui/CocosGUI.h>
+#include "2d/CCScene.h"
+#include "CCEventKeyboard.h"
+
+namespace ax 
+{ 
+    class Event;
+    namespace ui 
+    { 
+        class TextField; 
+    } 
+}
 
 class CreatorLayer : public ax::Scene {
 public:

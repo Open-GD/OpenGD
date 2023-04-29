@@ -10,6 +10,8 @@
 #include "ImGui/imgui/imgui.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "CocosExplorer.h"
+#include "GJGameLevel.h"
+#include "2d/CCTransition.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;

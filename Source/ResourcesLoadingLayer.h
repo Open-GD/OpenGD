@@ -1,8 +1,18 @@
 #pragma once
 
-#include <axmol.h>
+#include <string>
+
+#include "2d/CCLayer.h"
+#include "math/Vec2.h"
 
 class GameManager;
+namespace ax 
+{ 
+	class RepeatForever; 
+	class Director;
+	class FileUtils;
+	class Scene;
+}
 
 class ResourcesLoadingLayer : public ax::Layer
 {

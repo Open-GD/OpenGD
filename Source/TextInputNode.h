@@ -1,9 +1,24 @@
 #pragma once
 
-#include <axmol.h>
-#include <ui/CocosGUI.h>
+#include <string>
+#include <string_view>
+
+#include "2d/CCLayer.h"
+#include "ccTypes.h"
+
+enum class KeyCode;
 
 class TextInputDelegate;
+
+namespace ax
+{ 
+	class Label;
+	class Event; 
+	namespace ui
+	{
+		class TextField;
+	}
+}
 
 class TextInputNode : public ax::Layer
 {

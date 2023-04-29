@@ -1,5 +1,16 @@
 #pragma once
-#include <axmol.h>
+#include <string_view>
+
+#include "2d/CCDrawNode.h"
+#include "2d/CCActionTween.h"
+#include "CCPlatformMacros.h"
+
+namespace ax 
+{
+	class Renderer;
+	class Mat4;
+	class Node;
+}
 
 class CircleWave : public ax::DrawNode, public ax::ActionTweenDelegate {
 private:

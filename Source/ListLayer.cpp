@@ -1,4 +1,8 @@
 #include "ListLayer.h"
+#include "GameToolbox.h"
+
+#include "CCDirector.h"
+#include "2d/CCLabel.h"
 
 ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
 	auto pRet = new(std::nothrow) ListLayer();
@@ -23,7 +27,7 @@ ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label){
 bool ListLayer::init(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
 	if(!this->initWithColor(color)) return false;
 	
-	auto winSize = ax::Director::getInstance()->getWinSize();
+	const auto& winSize = ax::Director::getInstance()->getWinSize();
 
 	this->setContentSize(size);
 	

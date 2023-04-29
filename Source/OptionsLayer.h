@@ -1,6 +1,7 @@
 #pragma once
-#include <axmol.h>
-#include "DropDownLayer.h"
+
+#include "2d/CCLayer.h"
+
 
 class OptionsLayer : public ax::Layer {
 private:

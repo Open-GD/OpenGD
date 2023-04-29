@@ -4,6 +4,9 @@
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
 #include "ButtonSprite.h"
+#include "2d/CCLabel.h"
+#include "CCApplication.h"
+#include "2d/CCMenu.h"
 
 USING_NS_AX;
 
@@ -39,7 +42,7 @@ bool SongInfoLayer::init(std::string_view songName, std::string_view artistName,
 	if (!PopupLayer::init())
 		return false;
 	
-	auto winSize = Director::getInstance()->getWinSize();
+	const auto& winSize = Director::getInstance()->getWinSize();
 
 	_downloadLink = urlLink;
 	_ngArtistLink = ngArtistLink;

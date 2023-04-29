@@ -1,5 +1,8 @@
 #include "MoreGamesLayer.h"
 #include "DropDownLayer.h"
+#include "2d/CCMenu.h"
+#include "PromoItemSprite.h"
+#include "CCApplication.h"
 
 MoreGamesLayer* MoreGamesLayer::create(){
 	auto pRet = new(std::nothrow) MoreGamesLayer();

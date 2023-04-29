@@ -1,8 +1,15 @@
 #pragma once
 
-#include <axmol.h>
-#include <ui/UIWidget.h>
-#include "SongObject.h"
+#include "ui/UIWidget.h"
+
+class SongObject;
+
+namespace ax 
+{
+	class Layer; 
+	class LayerColor;
+}
+
 
 class SongCell : public ax::ui::Widget
 {

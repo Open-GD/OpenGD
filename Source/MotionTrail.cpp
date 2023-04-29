@@ -1,4 +1,5 @@
 #include "MotionTrail.h"
+#include "math/CCVertex.h"
 
 USING_NS_AX;
 

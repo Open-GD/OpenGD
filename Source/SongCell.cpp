@@ -5,6 +5,9 @@
 #include "ui/UIScale9Sprite.h"
 #include "MenuItemSpriteExtra.h"
 #include "SongInfoLayer.h"
+#include "SongObject.h"
+#include "2d/CCLabel.h"
+#include "2d/CCMenu.h"
 
 USING_NS_AX;
 
@@ -40,7 +43,7 @@ bool SongCell::init(SongObject* songInfo)
 	_layer->setContentSize(this->getContentSize());
 	this->addChild(_layer);
 
-	auto contentSize = this->getContentSize();
+	const auto& contentSize = this->getContentSize();
 	auto sID = songInfo->_songID;
 
 
