@@ -93,7 +93,7 @@ protected:
 public:
     static BaseGameLayer* create(GJGameLevel*);
     bool init(GJGameLevel*);
-	static int sectionForPos(float x);
+	int sectionForPos(float x);
 	static BaseGameLayer* getInstance() {return _instance;}
 	bool isObjectBlending(GameObject* obj);
 };

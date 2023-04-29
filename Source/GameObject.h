@@ -142,9 +142,11 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	int _zLayer = 0;
 
 	int _uniqueID = -1;
-	int _section = -1;
 
 	float _radius = -1;
+
+	//for move trigger
+	ax::Vec2 _prevPos;
 
 	ax::ParticleSystemQuad* _particle;
 
