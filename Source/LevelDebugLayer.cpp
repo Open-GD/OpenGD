@@ -83,7 +83,8 @@ void LevelDebugLayer::onEnter()
 
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
-	ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(LevelDebugLayer::onDrawImgui, this), dir->getRunningScene());
+	ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(LevelDebugLayer::onDrawImgui, this),
+												 dir->getRunningScene());
 }
 
 void LevelDebugLayer::onExit()
@@ -157,7 +158,7 @@ void LevelDebugLayer::onDrawImgui()
 
 	ImGui::InputInt("Color Channel", &channelID);
 
-	if(_colorChannels.contains(channelID))
+	if (_colorChannels.contains(channelID))
 	{
 		auto channel = _colorChannels[channelID];
 		int color[3] = {channel._color.r, channel._color.g, channel._color.b};
@@ -171,7 +172,7 @@ void LevelDebugLayer::onDrawImgui()
 
 	ImGui::InputInt("Group", &groupID);
 
-	if(_colorChannels.contains(groupID))
+	if (_colorChannels.contains(groupID))
 	{
 		auto group = _groups[groupID];
 		ImGui::InputFloat("Alpha", &group._alpha);
@@ -212,9 +213,10 @@ void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 	}
 	case EventKeyboard::KeyCode::KEY_F: {
 		_showDebugMenu = !_showDebugMenu;
-		if(_showDebugMenu)
+		if (_showDebugMenu)
 			CocosExplorer::close();
-		else CocosExplorer::open();
+		else 
+			CocosExplorer::open();
 	}
 	break;
 	}
@@ -284,7 +286,8 @@ void LevelDebugLayer::updateTriggers(float dt)
 					if (obj->_isTrigger)
 					{
 						auto trigger = dynamic_cast<EffectGameObject*>(obj);
-						if (!trigger->_wasTriggerActivated && trigger->getPositionX() <= Camera::getDefaultCamera()->getPositionX())
+						if (!trigger->_wasTriggerActivated &&
+							trigger->getPositionX() <= Camera::getDefaultCamera()->getPositionX())
 						{
 							trigger->triggerActivated(dt);
 						}
@@ -395,6 +398,9 @@ void LevelDebugLayer::updateVisibility()
 						AX_SAFE_RELEASE(obj);
 					}
 
+					if (section[j]->_isTrigger)
+						static_cast<EffectGameObject*>(section[j])->_scheduledRemoval = false;
+
 					obj->setActive(true);
 					obj->update();
 				}
@@ -409,7 +415,10 @@ void LevelDebugLayer::updateVisibility()
 		{
 			if (section[j]->getParent() != nullptr)
 			{
-				section[j]->removeFromGameLayer();
+				if (section[j]->_isTrigger)
+					static_cast<EffectGameObject*>(section[j])->_scheduledRemoval = true;
+				else
+					section[j]->removeFromGameLayer();
 			}
 		}
 	}
@@ -421,7 +430,10 @@ void LevelDebugLayer::updateVisibility()
 		{
 			if (section[j]->getParent() != nullptr)
 			{
-				section[j]->removeFromGameLayer();
+				if (section[j]->_isTrigger)
+					static_cast<EffectGameObject*>(section[j])->_scheduledRemoval = true;
+				else
+					section[j]->removeFromGameLayer();
 			}
 		}
 	}

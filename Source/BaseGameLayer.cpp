@@ -81,6 +81,7 @@ void BaseGameLayer::loadLevel()
 		for (GameObject* object : _allObjects)
 		{
 			int section = sectionForPos(object->getPositionX());
+			object->_section = section - 1 < 0 ? 0 : section - 1;
 			_sectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
 			object->setCascadeOpacityEnabled(false);
