@@ -1,10 +1,8 @@
 #pragma once
-
 #include <string>
-#include <vector>
-#include <axmol.h>
-#include "GameToolbox.h"
+#include <string_view>
 
+class GJGameLevel;
 
 enum DifficultyType {
 	kMainLevels = 0,
@@ -68,7 +66,7 @@ public:
 
 	// Expects RobTop like string. If it not, nullptr gets returned.
 	static GJGameLevel *createWithResponse(std::string_view backendResponse);
-	GJGameLevel(){}
+	GJGameLevel() = default;
 	GJGameLevel(std::string levelName, int levelID);
 	static GJGameLevel *createWithMinimumData(
 		std::string levelName, 

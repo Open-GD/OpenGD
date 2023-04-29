@@ -1,7 +1,13 @@
 #pragma once
-#include <axmol.h>
-#include <map>
-#include <string>
+
+#include "2d/CCMotionStreak.h"
+
+namespace ax 
+{ 
+	class Texture2D;
+	struct Color3B; 
+}
+
 
 class MotionTrail : public ax::MotionStreak
 {

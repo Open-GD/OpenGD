@@ -1,6 +1,6 @@
 #pragma once
-#include <axmol.h>
-#include "PromoItemSprite.h"
+
+#include "2d/CCLayer.h"
 
 class MoreGamesLayer : public ax::Layer {
 private:

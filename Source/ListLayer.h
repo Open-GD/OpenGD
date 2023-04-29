@@ -1,7 +1,13 @@
 #pragma once
-#include <axmol.h>
-#include "GameToolbox.h"
-#include "MenuItemSpriteExtra.h"
+#include "2d/CCLayer.h"
+#include "ccTypes.h"
+#include "math/Vec2.h"
+
+namespace ax 
+{ 
+	class Node; 
+}
+
 
 class ListLayer : public ax::LayerColor {
 	private:		

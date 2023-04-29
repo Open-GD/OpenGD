@@ -1,6 +1,6 @@
 #pragma once
 
-#include <axmol.h>
+#include "ccTypes.h"
 
 class SpriteColor
 {
@@ -11,5 +11,5 @@ class SpriteColor
 	int _copyingColorID = -1;
 
 	SpriteColor(ax::Color3B color, float opacity, bool blending) : _color(color), _opacity(opacity), _blending(blending) {}
-	SpriteColor() {};
+	SpriteColor() = default;
 };

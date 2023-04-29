@@ -1,8 +1,22 @@
 #pragma once
-#include <axmol.h>
-#include "SimplePlayer.h"
-#include <ui/CocosGUI.h>
 #include <array>
+
+#include "2d/CCScene.h"
+
+enum IconType;
+class SimplePlayer;
+
+namespace ax 
+{ 
+	class Menu;
+	class Sprite;
+
+	namespace ui 
+	{ 
+		class TextField; 
+	}
+}
+
 
 class GarageLayer : public ax::Scene {
 public:

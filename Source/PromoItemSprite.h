@@ -1,9 +1,17 @@
 #pragma once
-#include <axmol.h>
+#include <functional>
+
+#include "2d/CCMenuItem.h"
+
+namespace ax 
+{ 
+	class Node; 
+}
+
 
 class PromoItemSprite : public ax::MenuItemSprite {
 private:
-	PromoItemSprite(const char* sprite, std::function<void(Node*)> callback);
+	PromoItemSprite(const char* sprite, std::function<void(ax::Node*)> callback);
 	bool init() override;
 	void selected() override;
 	void unselected() override;
@@ -17,7 +25,7 @@ public:
 	/// @param sprite The name of the sprite
 	/// @param callback Runs when you release the button with mouse hovered. Can be a lambda func. The Node* param is the button itself
 	/// @return The button
-	static PromoItemSprite* create(const char* sprite, std::function<void(Node*)> callback);
+	static PromoItemSprite* create(const char* sprite, std::function<void(ax::Node*)> callback);
 	
 	ax::Node* getSprite();
 };

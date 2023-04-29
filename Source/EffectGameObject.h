@@ -1,8 +1,16 @@
 #pragma once
+#include <string_view>
+
 #include "GameObject.h"
-#include <axmol.h>
+#include "ccTypes.h"
+#include "math/Vec2.h"
 
 class BaseGameLayer;
+namespace ax 
+{ 
+	class Action;
+	class ActionInterval;
+}
 
 class EffectGameObject : public GameObject
 {
@@ -39,7 +47,7 @@ private:
 	ax::Action* actionEasing(ax::ActionInterval* ac);
 
 public:
-	void triggerActivated(float idk);
+	void triggerActivated(float);
 	static EffectGameObject *create(std::string_view frame);
 	void update(float dt) override;
 };

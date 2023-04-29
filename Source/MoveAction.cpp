@@ -1,6 +1,7 @@
 #include "MoveAction.h"
 #include "2d/CCActionInterval.h"
 #include "BaseGameLayer.h"
+#include "GameToolbox.h"
 
 MoveAction* MoveAction::create(float duration, const ax::Vec2& deltaPosition, GroupProperties* group)
 {

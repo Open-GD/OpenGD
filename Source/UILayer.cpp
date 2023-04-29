@@ -1,6 +1,8 @@
 #include "UILayer.h"
 #include "PlayLayer.h"
 #include "GameToolbox.h"
+#include "CCEventListenerTouch.h"
+#include "CCEventDispatcher.h"
 
 UILayer* UILayer::create()
 {

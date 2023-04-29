@@ -1,8 +1,15 @@
 #pragma once
 
-#include <axmol.h>
 #include "PopupLayer.h"
-#include "MenuItemSpriteExtra.h"
+
+class MenuItemSpriteExtra;
+class RateLevelLayer;
+
+namespace ax 
+{ 
+	class Node; 
+}
+
 
 class RateLevelLayer : public PopupLayer
 {

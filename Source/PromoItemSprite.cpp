@@ -1,5 +1,6 @@
 #include "PromoItemSprite.h"
 #include "GameManager.h"
+#include "2d/CCSprite.h"
 USING_NS_AX;
 
 

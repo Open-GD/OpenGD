@@ -7,6 +7,18 @@
 #include "RateLevelLayer.h"
 #include "AlertLayer.h"
 #include "GarageLayer.h"
+#include "CCDirector.h"
+#include "GameToolbox.h"
+#include "2d/CCMenu.h"
+#include "network/HttpResponse.h"
+#include "GJGameLevel.h"
+#include "LoadingCircle.h"
+#include "CCEventDispatcher.h"
+#include "MenuItemSpriteExtra.h"
+#include "2d/CCLabel.h"
+#include "2d/CCTransition.h"
+#include "CCEventListenerKeyboard.h"
+#include "network/HttpClient.h"
 
 USING_NS_AX;
 
@@ -34,7 +46,7 @@ Scene* LevelInfoLayer::scene(GJGameLevel* level)
 bool LevelInfoLayer::init(GJGameLevel* level)
 {
 	if (!Layer::init()) return false;
-	auto winSize = Director::getInstance()->getWinSize();
+	const auto& winSize = Director::getInstance()->getWinSize();
 
 	_level = level;
 

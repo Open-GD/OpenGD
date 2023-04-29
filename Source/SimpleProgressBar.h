@@ -1,6 +1,13 @@
 #pragma once
 
-#include <axmol.h>
+#include "2d/CCLayer.h"
+#include "CCPlatformMacros.h"
+
+namespace ax 
+{ 
+	class Sprite; 
+}
+
 
 // opengd addition
 class SimpleProgressBar : public ax::Layer {

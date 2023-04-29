@@ -1,15 +1,17 @@
 #include "LevelDebugLayer.h"
-#include "CocosExplorer.h"
-#include "EffectGameObject.h"
 #include "GameToolbox.h"
-#include "ImGui/ImGuiPresenter.h"
-#include "ImGui/imgui/imgui.h"
 #include "LevelSearchLayer.h"
 #include "LevelSelectLayer.h"
 #include "MenuItemSpriteExtra.h"
 #include "format.h"
 #include <AudioEngine.h>
 #include <ccMacros.h>
+#include "EffectGameObject.h"
+#include "ImGui/imgui/imgui.h"
+#include "ImGui/ImGuiPresenter.h"
+#include "CocosExplorer.h"
+#include "GJGameLevel.h"
+#include "2d/CCTransition.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -213,7 +215,7 @@ void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 		_showDebugMenu = !_showDebugMenu;
 		if (_showDebugMenu)
 			CocosExplorer::close();
-		else
+		else 
 			CocosExplorer::open();
 	}
 	break;

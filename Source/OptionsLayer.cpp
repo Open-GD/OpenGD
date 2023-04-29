@@ -1,6 +1,9 @@
 #include "OptionsLayer.h"
 #include "ButtonSprite.h"
 #include "GameManager.h"
+#include "MenuItemSpriteExtra.h"
+#include "2d/CCMenu.h"
+#include "DropDownLayer.h"
 
 USING_NS_AX;
 

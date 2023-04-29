@@ -1,17 +1,29 @@
 #pragma once
-#include <axmol.h>
 #include <string>
-#include <fmt/chrono.h>
+#include <string_view>
 #include <optional>
-#include <network/HttpClient.h>
-
-#include <regex>
-#include <sstream>
-#include <iostream>
-#include <filesystem>
-#include <string>
-
 #include <vector>
+#include <type_traits>
+
+#include "ccTypes.h"
+#include "CCVector.h"
+#include "math/Vec2.h"
+#include "CCFileUtils.h"
+#include "network/HttpRequest.h"
+#include "fmt/core.h"
+#include "fmt/chrono.h"
+
+namespace ax 
+{ 
+	class Label; 
+	class Menu;
+	class Node;
+	namespace network
+	{
+		ccHttpRequestCallback;
+	}
+}
+
 
 enum IconType {
 	kIconTypeCube		= 0,

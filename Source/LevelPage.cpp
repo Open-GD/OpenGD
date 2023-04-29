@@ -4,6 +4,12 @@
 #include "PlayLayer.h"
 #include "LevelDebugLayer.h"
 #include <AudioEngine.h>
+#include "GameToolbox.h"
+#include "2d/CCLabel.h"
+#include "2d/CCMenu.h"
+#include "2d/CCTransition.h"
+#include "MenuLayer.h"
+#include "GJGameLevel.h"
 
 bool LevelPage::replacingScene = false;
 
@@ -23,7 +29,7 @@ bool LevelPage::init(GJGameLevel* level)
 	std::string barTexture = GameToolbox::getTextureString("GJ_progressBar_001.png");
 	std::string bigFontTexture = GameToolbox::getTextureString("bigFont.fnt");
 
-	auto winSize = ax::Director::getInstance()->getWinSize();
+	const auto& winSize = ax::Director::getInstance()->getWinSize();
 
 	//TODO: fix bars lol
 	auto normalBar = ax::Sprite::create(barTexture);

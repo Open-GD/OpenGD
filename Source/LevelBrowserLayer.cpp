@@ -1,6 +1,19 @@
 #include "LevelBrowserLayer.h"
 #include "LevelCell.h"
 #include "LevelSearchLayer.h"
+#include "2d/CCScene.h"
+#include "CCDirector.h"
+#include "LoadingCircle.h"
+#include "2d/CCMenu.h"
+#include "GameToolbox.h"
+#include "GJGameLevel.h"
+#include "GJSearchObject.h"
+#include "MenuItemSpriteExtra.h"
+#include "ui/UIListView.h"
+#include "CCEventDispatcher.h"
+#include "2d/CCLabel.h"
+#include "ListLayer.h"
+#include "CCEventListenerKeyboard.h"
 
 ax::Scene* LevelBrowserLayer::scene(GJSearchObject* search)
 {
@@ -32,7 +45,7 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 	_searchObj = search;
 
 	auto director = ax::Director::getInstance();
-	auto winSize = director->getWinSize();
+	const auto& winSize = director->getWinSize();
 
 	_loading = LoadingCircle::create();
 	_loading->setPosition(winSize.x/2, winSize.y/2);

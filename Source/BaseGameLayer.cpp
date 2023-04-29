@@ -2,6 +2,8 @@
 #include "EffectGameObject.h"
 #include "GameToolbox.h"
 #include "external/json.hpp"
+#include "GJGameLevel.h"
+#include "external/benchmark.h"
 
 USING_NS_AX;
 
@@ -190,7 +192,7 @@ void BaseGameLayer::createObjectsFromSetup(std::string_view uncompressedLevelStr
 	firstPart.join();
 	secondPart.join();
 #else
-	for (auto objectDataSpecific : objData)
+	for (const auto& objectDataSpecific : objData)
 	{
 		GameObject* obj = GameObject::createFromString(objectDataSpecific);
 		if (obj)

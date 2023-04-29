@@ -8,6 +8,13 @@
 #include "LevelPage.h"
 #include "SongsLayer.h"
 #include "Checkbox.h"
+#include "GroundLayer.h"
+#include "BoomScrollLayer.h"
+#include "2d/CCMenu.h"
+#include "2d/CCLabel.h"
+#include "CCEventListenerKeyboard.h"
+#include "2d/CCTransition.h"
+#include "CCEventDispatcher.h"
 
 USING_NS_AX;
 
@@ -37,7 +44,7 @@ bool LevelSelectLayer::init(int page)
 	if(!Layer::init()) return false;
 
 	auto director = Director::getInstance();
-	auto winSize = director->getWinSize();
+	const auto& winSize = director->getWinSize();
 
 	_background = Sprite::create("GJ_gradientBG.png");
 	_background->setAnchorPoint({0.0f, 0.0f});

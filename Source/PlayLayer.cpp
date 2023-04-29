@@ -22,6 +22,11 @@
 #include <fstream>
 
 #include "LevelDebugLayer.h"
+#include "UILayer.h"
+#include "GJGameLevel.h"
+#include "GroundLayer.h"
+#include "SimpleProgressBar.h"
+#include "CircleWave.h"
 
 
 USING_NS_AX;

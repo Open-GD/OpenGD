@@ -1,5 +1,6 @@
 #pragma once
-#include <axmol.h>
+
+#include "2d/CCLayer.h"
 
 class PopupLayer : public ax::LayerColor {
 public:

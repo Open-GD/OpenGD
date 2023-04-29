@@ -1,10 +1,19 @@
 #pragma once
+#include "2d/CCLayer.h"
+#include "math/Vec2.h"
+#include "CCPlatformMacros.h"
 
-//#include "PlayerObject.h"
+class PlayerObject;
+class GroundLayer;
 
-#include <axmol.h>
-#include "GroundLayer.h"
-#include "PlayerObject.h"
+namespace ax 
+{ 
+	class Sprite; 
+	class Menu;
+	class Scene;
+}
+
+
 
 class MenuGameLayer : public ax::Layer {
 public:
