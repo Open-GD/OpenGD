@@ -1,5 +1,6 @@
 #include "MoveAction.h"
 #include "2d/CCActionInterval.h"
+#include "BaseGameLayer.h"
 
 MoveAction* MoveAction::create(float duration, const ax::Vec2& deltaPosition, GroupProperties* group)
 {
@@ -19,31 +20,62 @@ MoveAction* MoveAction::create(float duration, const ax::Vec2& deltaPosition, Gr
 bool MoveAction::initWithDuration(float duration, const ax::Vec2& deltaPosition, GroupProperties* group)
 {
 	_group = group;
+	_posDelta = deltaPosition;
 	return MoveBy::initWithDuration(duration, deltaPosition);
 }
 
 void MoveAction::startWithTarget(ax::Node* target)
 {
 	ActionInterval::startWithTarget(target);
+	_prevPositions.clear();
 	for (auto obj : _group->_objects)
-		obj->_prevPos = obj->_startPosition = obj->getPosition();
+	{
+		_prevPositions.push_back(obj->getPosition());
+		_startPositions.push_back(obj->getPosition());
+	}
 	GameToolbox::log("action start");
 }
+
+ax::Vec2 currentPos, diff, newPos;
 
 void MoveAction::update(float time)
 {
 #if AX_ENABLE_STACKABLE_ACTIONS
+	size_t i = 0;
 	for (auto obj : _group->_objects)
 	{
-		ax::Vec2 currentPos = obj->getPosition();
-		ax::Vec2 diff = currentPos - obj->_prevPos;
-		obj->_startPosition = obj->_startPosition + diff;
-		ax::Vec2 newPos = obj->_startPosition + (ax::Vec2(_positionDelta.x, _positionDelta.y) * time);
+		currentPos = obj->getPosition();
+		diff = currentPos - _prevPositions[i];
+		_startPositions[i] = _startPositions[i] + diff;
+		newPos = _startPositions[i] + (_posDelta * time);
 		obj->setPosition(newPos);
-		obj->_prevPos = newPos;
+		_prevPositions[i] = newPos;
+		auto section = BaseGameLayer::sectionForPos(newPos.x);
+		section = section - 1 < 0 ? 0 : section - 1;
+		if (obj->_section != section)
+		{
+			auto bgl = BaseGameLayer::getInstance();
+			auto vec = &bgl->_sectionObjects[obj->_section];
+			vec->erase(std::remove_if(vec->begin(), vec->end(), [&](GameObject* a) { return a == obj; }), vec->end());
+			while (section >= bgl->_sectionObjects.size())
+			{
+				std::vector<GameObject*> vec;
+				bgl->_sectionObjects.push_back(vec);
+			}
+			bgl->_sectionObjects[section].push_back(obj);
+			obj->_section = section;
+		}
+		i++;
 	}
 #else
 	for (auto obj : _group->_objects)
 		_obj->setPosition3D(_startPosition + _positionDelta * t);
 #endif // AX_ENABLE_STACKABLE_ACTIONS
+}
+
+void MoveAction::stop()
+{
+	MoveBy::stop();
+	_prevPositions.clear();
+	_startPositions.clear();
 }
