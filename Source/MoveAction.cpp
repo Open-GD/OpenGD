@@ -1,7 +1,5 @@
 #include "MoveAction.h"
 #include "2d/CCActionInterval.h"
-#include "BaseGameLayer.h"
-#include "GameToolbox.h"
 
 MoveAction* MoveAction::create(float duration, const ax::Vec2& deltaPosition, GroupProperties* group)
 {
@@ -48,4 +46,9 @@ void MoveAction::update(float time)
 	for (auto obj : _group->_objects)
 		_obj->setPosition3D(_startPosition + _positionDelta * t);
 #endif // AX_ENABLE_STACKABLE_ACTIONS
+}
+
+void MoveAction::stop()
+{
+	return;
 }

@@ -1,15 +1,6 @@
 #pragma once
-#include "2d/CCLayer.h"
-
-class SimpleProgressBar;
-
-namespace ax 
-{ 
-	class Scene; 
-	class SpriteFrameCache;
-	class TextureCache;
-}
-
+#include <axmol.h>
+#include "SimpleProgressBar.h"
 
 class LoadingLayer : public ax::Layer {
 public:

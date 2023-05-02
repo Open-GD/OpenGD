@@ -4,13 +4,6 @@
 #include "MenuLayer.h"
 #include "SimplePlayer.h"
 #include "GameManager.h"
-#include "ui/UITextField.h"
-#include "2d/CCTransition.h"
-#include "2d/CCMenu.h"
-#include "CCEventDispatcher.h"
-#include "ccUTF8.h"
-#include "CCEventListenerKeyboard.h"
-#include "ui/UIScale9Sprite.h"
 
 USING_NS_AX;
 
@@ -144,7 +137,7 @@ int GarageLayer::selectedGameModeInt()
 
 void GarageLayer::createStat(const char* sprite, const char* statKey)
 {
-	const auto& size = Director::getInstance()->getWinSize();
+	auto size = Director::getInstance()->getWinSize();
 
 	auto stat = Sprite::createWithSpriteFrameName(sprite);
 	stat->setScale(.65);
@@ -162,7 +155,7 @@ void GarageLayer::createStat(const char* sprite, const char* statKey)
 
 void GarageLayer::setupIconSelect()
 {
-	const auto& size = Director::getInstance()->getWinSize();
+	auto size = Director::getInstance()->getWinSize();
 
 	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("square02_001.png"));
 	bg->setContentSize({385, 100});

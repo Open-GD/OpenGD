@@ -6,13 +6,6 @@
 #include "MenuItemSpriteExtra.h"
 #include <ui/CocosGUI.h>
 #include "LevelBrowserLayer.h"
-#include "2d/CCMenu.h"
-#include "GJSearchObject.h"
-#include "TextInputNode.h"
-#include "2d/CCTransition.h"
-#include "CCEventListenerKeyboard.h"
-#include "CCEventDispatcher.h"
-#include "ccUTF8.h"
 
 USING_NS_AX;
 
@@ -32,7 +25,7 @@ Sprite* searchButton(std::string texture, std::string text, float scale, std::st
 	auto sprite = Sprite::createWithSpriteFrameName(texture);
 	auto menu = Menu::create();
 
-	const auto& content_size = sprite->getContentSize();
+	auto content_size = sprite->getContentSize();
 	auto label = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), text);
 	label->setScale(scale);
 	menu->addChild(label);

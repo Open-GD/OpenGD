@@ -10,6 +10,10 @@
 #include "format.h"
 #include <AudioEngine.h>
 #include <ccMacros.h>
+#include "EffectGameObject.h"
+#include "ImGui/imgui/imgui.h"
+#include "ImGui/ImGuiPresenter.h"
+#include "CocosExplorer.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;

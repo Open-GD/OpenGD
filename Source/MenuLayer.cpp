@@ -17,12 +17,6 @@
 #include "GameManager.h"
 #include "OptionsLayer.h"
 #include "EndLevelLayer.h"
-#include "2d/CCTransition.h"
-#include "2d/CCMenu.h"
-#include "ios/CCApplication-ios.h"
-#include "2d/CCLabel.h"
-#include "CCEventDispatcher.h"
-#include "CCEventListenerKeyboard.h"
 
 /*
 #include "ColoursPalette.h"
@@ -80,7 +74,7 @@ bool MenuLayer::init()
 	addChild(_mgl, -1);
 
 	float offsetScale = 1.13F;
-	const auto& winSize = Director::getInstance()->getWinSize();
+	auto winSize = Director::getInstance()->getWinSize();
 
 	auto log_oSpr = Sprite::createWithSpriteFrameName("GJ_logo_001.png");
 	log_oSpr->setStretchEnabled(false);

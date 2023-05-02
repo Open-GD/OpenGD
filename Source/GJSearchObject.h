@@ -1,8 +1,6 @@
 #pragma once
-#include <string>
-#include <string_view>
 
-#include "2d/CCNode.h"
+#include <axmol.h>
 
 enum SearchType {
 	kGJSearchTypeLiked = 2,

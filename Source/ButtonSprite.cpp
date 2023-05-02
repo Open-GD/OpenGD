@@ -1,12 +1,6 @@
 #include "ButtonSprite.h"
 #include "GameToolbox.h"
 #include "MenuItemSpriteExtra.h"
-#include "2d/CCLabel.h"
-#include "ui/UIScale9Sprite.h"
-#include "CCDirector.h"
-#include "renderer/CCTextureCache.h"
-
-USING_NS_AX;
 
 ButtonSprite* ButtonSprite::create(std::string_view caption, int width, int minWidth, float scale, bool absoluteWidth, std::string_view font, std::string_view texture, float height)
 {
@@ -63,10 +57,10 @@ bool ButtonSprite::initWithText(std::string_view caption, int width, int minWidt
 	if (font == GameToolbox::getTextureString("bigFont.fnt"))
 		_spriteOffset = { -1, 2 };
 
-	_label = ax::Label::createWithBMFont(font, "");
+	_label = Label::createWithBMFont(font, "");
 	this->addChild(_label, 1);
 
-	_buttonTexture = ui::Scale9Sprite::create(texture, ax::Rect(0, 0, 40, 40));
+	_buttonTexture = ui::Scale9Sprite::create(texture, Rect(0, 0, 40, 40));
 	_buttonTexture->setContentSize({ 16, 16 });
 	this->addChild(_buttonTexture, 0);
 
@@ -96,7 +90,7 @@ bool ButtonSprite::initWithSprite(Sprite* iconSprite, int width, int minWidth, f
 	}
 	else
 	{
-		_buttonTexture = ui::Scale9Sprite::create(texture, ax::Rect(0, 0, 40, 40));
+		_buttonTexture = ui::Scale9Sprite::create(texture, Rect(0, 0, 40, 40));
 		_buttonTexture->setContentSize({ 16,16 });
 		this->addChild(_buttonTexture, 0);
 	}
@@ -132,7 +126,7 @@ void ButtonSprite::updateBGImage(std::string_view file)
 	{
 		_buttonTexture->removeFromParent();
 		
-		_buttonTexture = ax::ui::Scale9Sprite::create(file, ax::Rect(0, 0, 40, 40));
+		_buttonTexture = ui::Scale9Sprite::create(file, Rect(0, 0, 40, 40));
 		_buttonTexture->setContentSize({ 16, 16 });
 
 		this->addChild(_buttonTexture, 0);

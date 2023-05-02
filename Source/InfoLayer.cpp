@@ -6,11 +6,6 @@
 #include <ui/UITextField.h>
 #include "external/base64.h"
 #include "ButtonSprite.h"
-#include "CCDirector.h"
-#include "GameToolbox.h"
-#include "2d/CCMenu.h"
-#include "GJGameLevel.h"
-#include "ccUTF8.h"
 
 USING_NS_AX;
 
@@ -31,7 +26,7 @@ InfoLayer* InfoLayer::create(GJGameLevel* level)
 bool InfoLayer::init(GJGameLevel* level)
 {
 	if (!PopupLayer::init()) return false;
-	const auto& winSize = Director::getInstance()->getWinSize();
+	auto winSize = Director::getInstance()->getWinSize();
 
 	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_square01.png"));
 	bg->setContentSize({ 420.0, 260.0 });

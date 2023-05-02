@@ -1,12 +1,5 @@
 #pragma once
-
-#include "2d/CCLayer.h"
-
-namespace ax 
-{ 
-	class Touch; 
-	class Event;
-}
+#include <axmol.h>
 
 class UILayer : public ax::Layer {
 public:

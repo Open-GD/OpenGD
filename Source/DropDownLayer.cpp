@@ -1,13 +1,4 @@
 #include "DropDownLayer.h"
-#include "CCDirector.h"
-#include "2d/CCMenu.h"
-#include "MenuItemSpriteExtra.h"
-#include "ListLayer.h"
-#include "CCEventListenerTouch.h"
-#include "CCEventDispatcher.h"
-#include "2d/CCActionInterval.h"
-#include "2d/CCActionEase.h"
-#include "2d/CCActionInstant.h"
 
 USING_NS_AX;
 
@@ -81,7 +72,7 @@ bool DropDownLayer::init(Node* scrollLayer, const char* label)
 
 void DropDownLayer::showLayer(bool attachToScene, bool bounce)
 {
-	const auto& winSize = Director::getInstance()->getWinSize();
+	auto winSize = Director::getInstance()->getWinSize();
 
 	this->runAction(FadeTo::create(0.5, 125));
 	if (!bounce) this->_dropLayer->runAction(EaseInOut::create(MoveTo::create(0.5f, {this->getPositionX(), 0}), 2));
@@ -95,7 +86,7 @@ void DropDownLayer::showLayer(bool attachToScene, bool bounce)
 }
 
 void DropDownLayer::hideLayer(){
-	const auto& winSize = Director::getInstance()->getWinSize();
+	auto winSize = Director::getInstance()->getWinSize();
 
 	this->runAction(FadeTo::create(0.5, 0));
 	this->_dropLayer->runAction(

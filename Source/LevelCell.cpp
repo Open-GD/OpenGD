@@ -4,12 +4,6 @@
 #include "ui/UIScale9Sprite.h"
 #include "LevelInfoLayer.h"
 #include "ButtonSprite.h"
-#include "GJGameLevel.h"
-#include "2d/CCLabel.h"
-#include "2d/CCMenu.h"
-#include "fmt/core.h"
-#include "LevelTools.h"
-#include "2d/CCTransition.h"
 
 USING_NS_AX;
 

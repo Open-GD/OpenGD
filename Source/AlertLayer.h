@@ -1,7 +1,6 @@
 #pragma once
 #include "PopupLayer.h"
-
-class MenuItemSpriteExtra;
+#include "MenuItemSpriteExtra.h"
 
 class AlertLayer : public PopupLayer {
 private:

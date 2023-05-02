@@ -1,11 +1,6 @@
 #pragma once
 #include "GameObject.h"
-
-namespace ax 
-{ 
-	class Sprite; 
-}
-
+#include <axmol.h>
 
 class EndPortalObject : public GameObject
 {

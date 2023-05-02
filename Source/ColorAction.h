@@ -1,9 +1,6 @@
 #pragma once
-
-#include "2d/CCActionInterval.h"
-#include "ccTypes.h"
-
-class SpriteColor;
+#include <axmol.h>
+#include "SpriteColor.h"
 
 class ColorAction : public ax::ActionInterval
 {

@@ -1,12 +1,6 @@
 #pragma once
-#include "2d/CCLayer.h"
-#include "CCPlatformMacros.h"
 
-namespace ax 
-{ 
-	class Sprite; 
-}
-
+#include <axmol.h>
 
 class LoadingCircle : public ax::Layer {
 public:

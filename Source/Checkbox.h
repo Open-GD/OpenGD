@@ -1,17 +1,8 @@
 #pragma once
-#include <functional>
-#include <string_view>
-
+#include <axmol.h>
 #include "MenuItemSpriteExtra.h"
 
-namespace ax 
-{ 
-	class Node; 
-}
-
-
 using CheckboxCallback = const std::function<void(ax::Node*, bool)>&;
-
 class Checkbox : public MenuItemSpriteExtra {
 public:
 	Checkbox(std::string_view off, std::string_view on, bool toggled, CheckboxCallback callback);

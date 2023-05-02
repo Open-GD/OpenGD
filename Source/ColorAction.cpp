@@ -1,6 +1,5 @@
 #include "ColorAction.h"
 #include "2d/CCActionTween.h"
-#include "SpriteColor.h"
 
 ColorAction* ColorAction::create(float duration, SpriteColor* target, ax::Color3B from, ax::Color3B to, float afrom ,
 								 float ato)

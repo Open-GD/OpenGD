@@ -1,10 +1,7 @@
 #pragma once
 
-#include <string>
-#include <string_view>
-
+#include <axmol.h>
 #include "PopupLayer.h"
-
 
 class SongInfoLayer : public PopupLayer
 {

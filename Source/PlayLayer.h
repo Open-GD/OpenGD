@@ -1,32 +1,20 @@
 #pragma once
-#include <span>
-#include <string_view>
-#include <vector>
 
-#include "2d/CCLayer.h"
-#include "CCEventKeyboard.h"
-#include "BaseGameLayer.h"
+#include <axmol.h>
+
+#include "GroundLayer.h"
+#include "MenuItemSpriteExtra.h"
+#include "MenuLayer.h"
+#include "PlayerObject.h"
+#include "SimpleProgressBar.h"
+
+#include "GJGameLevel.h"
 #include "SpriteColor.h"
-#include "CCPlatformMacros.h"
-#include "ccTypes.h"
+#include "UILayer.h"
+#include "BaseGameLayer.h"
 
-enum PlayerGamemode;
-
-class GJGameLevel;
-class GameObject;
-class SimpleProgressBar;
-class UILayer;
-class PlayerObject;
-class GroundLayer;
-class MenuItemSpriteExtra;
-
-namespace ax 
-{ 
-	class Event; 
-	class Sprite;
-	class Label;
-}
-
+#include <vector>
+#include <span>
 
 class PlayLayer : public ax::Layer
 {

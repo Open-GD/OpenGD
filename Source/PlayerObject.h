@@ -1,19 +1,8 @@
 #pragma once
+#include "CircleWave.h"
 #include "GameObject.h"
-#include "ccTypes.h"
-#include "math/Vec2.h"
-
-class GameObject;
-class MotionTrail;
-
-namespace ax 
-{ 
-	class Layer; 
-	class Sprite;
-	class ParticleSystemQuad;
-	class Texture2D;
-}
-
+#include <MotionTrail.h>
+#include <axmol.h>
 
 enum PlayerGamemode
 {

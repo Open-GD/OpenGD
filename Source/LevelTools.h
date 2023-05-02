@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <string_view>
+#include "SongObject.h"
 
 namespace LevelTools {
 	bool verifyLevelIntegrity(std::string_view levelData, int id);

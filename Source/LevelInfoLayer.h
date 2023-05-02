@@ -1,21 +1,10 @@
 #pragma once
-#include "2d/CCLayer.h"
 
-class LoadingCircle;
-class MenuItemSpriteExtra;
-class GJGameLevel;
-
-namespace ax 
-{ 
-	class Scene;
-	namespace network 
-	{ 
-		class HttpRequest; 
-		class HttpClient;
-		class HttpResponse;
-	} 
-}
-
+#include <axmol.h>
+#include "GJGameLevel.h"
+#include "network/HttpClient.h"
+#include "LoadingCircle.h"
+#include "MenuItemSpriteExtra.h"
 
 class LevelInfoLayer : public ax::Layer
 {

@@ -1,12 +1,7 @@
 #pragma once
-
-#include <string_view>
-
-#include "2d/CCLayer.h"
-
-class DropDownLayer;
-class PlayLayer;
-
+#include <axmol.h>
+#include "DropDownLayer.h"
+#include "PlayLayer.h"
 
 class EndLevelLayer : public ax::Layer {
 private:

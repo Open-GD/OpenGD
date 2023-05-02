@@ -1,20 +1,9 @@
 #pragma once
-
-#include <string_view>
-#include <vector>
-#include <unordered_map>
+#include <axmol.h>
 #include <map>
-
-#include "2d/CCSprite.h"
-#include "2d/CCActionTween.h"
-#include "math/Rect.h"
-#include "math/Vec2.h"
+#include <string>
 
 class PlayerObject;
-namespace ax 
-{ 
-	class ParticleSystemQuad; 
-}
 
 enum GameObjectType
 {
@@ -89,6 +78,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	std::string _texturePath;
 
 	ax::Vec2 _startPosition;
+	ax::Vec2 _prevPos;
 
 	float _effectOpacityMultipler = 1.f;
 

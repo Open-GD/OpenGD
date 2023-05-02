@@ -1,7 +1,7 @@
-#pragma once
-#include <string>
-
-enum IconType;
+#include <iostream>
+#include <fstream>
+#include <map>
+#include "GameToolbox.h"
 
 class GameManager
 {

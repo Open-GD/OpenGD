@@ -2,11 +2,6 @@
 #include "AudioEngine.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
-#include "2d/CCParticleSystem.h"
-#include "2d/CCParticleSystemQuad.h"
-#include "2d/CCActionInstant.h"
-#include "2d/CCActionEase.h"
-#include "CircleWave.h"
 
 USING_NS_AX;
 

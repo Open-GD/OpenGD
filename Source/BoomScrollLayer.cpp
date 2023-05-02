@@ -3,9 +3,6 @@
 #include "MenuItemSpriteExtra.h"
 #include "AudioEngine.h"
 #include "GameToolbox.h"
-#include "2d/CCActionEase.h"
-#include "CCDirector.h"
-#include "CCEventDispatcher.h"
 
 USING_NS_AX;
 
@@ -100,7 +97,7 @@ bool BoomScrollLayer::init(std::vector<ax::Layer*> layers, int currentPage)
 	_internalLayer = Layer::create();
 	_internalLayer->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	auto dir = Director::getInstance();
-	const auto& winSize = dir->getWinSize();
+	auto winSize = dir->getWinSize();
 	if (_internalLayer->getChildrenCount() < _totalPages)
 	{
 		int i = 0;

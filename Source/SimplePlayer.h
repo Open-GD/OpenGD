@@ -1,9 +1,6 @@
 #pragma once
-
-#include "2d/CCSprite.h"
-#include "ccTypes.h"
-
-enum IconType;
+#include <axmol.h>
+#include "GameToolbox.h"
 
 class SimplePlayer : public ax::Sprite {
 public:

@@ -3,12 +3,6 @@
 #include "AudioEngine.h"
 #include <fmt/chrono.h>
 #include <array>
-#include "PlayLayer.h"
-#include "DropDownLayer.h"
-#include "2d/CCLabel.h"
-#include "2d/CCMenu.h"
-#include "MenuItemSpriteExtra.h"
-#include "UILayer.h"
 
 //same as LoadingLayer
 constexpr static auto _endingStrings = std::to_array <const char*>({
@@ -66,7 +60,7 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	_playlayer = pl;
 	if (!_createdWithoutPlaylayer)
 		pl->m_pHudLayer->addChild(_statsLayer);
-	const auto& wsize = ax::Director::getInstance()->getWinSize();
+	auto wsize = ax::Director::getInstance()->getWinSize();
 
 	// image
 

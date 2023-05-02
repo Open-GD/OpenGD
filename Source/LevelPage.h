@@ -1,12 +1,7 @@
 #pragma once
 
-#include "2d/CCLayer.h"
-
-class GJGameLevel;
-namespace ax 
-{ 
-	class Node; 
-}
+#include <axmol.h>
+#include "GJGameLevel.h"
 
 class LevelPage : public ax::Layer
 {

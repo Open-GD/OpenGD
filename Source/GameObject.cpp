@@ -7,7 +7,6 @@
 #include "external/json.hpp"
 #include <fmt/format.h>
 #include <fstream>
-#include "2d/CCParticleSystemQuad.h"
 
 USING_NS_AX;
 

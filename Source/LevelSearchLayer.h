@@ -1,19 +1,9 @@
 #pragma once
 
-#include <vector>
-
-#include "2d/CCLayer.h"
-
-class GJSearchObject;
-class TextInputNode;
-
-namespace ax 
-{ 
-	class Ref; 
-	class Node;
-	class Menu;
-	class Scene;
-}
+#include <axmol.h>
+#include "GJSearchObject.h"
+#include "TextInputNode.h"
+#include <ui/CocosGUI.h>
 
 class LevelSearchLayer : public ax::Layer {
 private:

@@ -1,9 +1,4 @@
 #include "CircleWave.h"
-#include "glad/gl.h"
-#include "CCDirector.h"
-#include "2d/CCActionInstant.h"
-#include "2d/CCActionManager.h"
-#include "2d/CCActionEase.h"
 
 USING_NS_AX;
 

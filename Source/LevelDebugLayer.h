@@ -1,17 +1,7 @@
 #pragma once
+#include <axmol.h>
+
 #include "BaseGameLayer.h"
-#include "math/Vec2.h"
-#include "CCEventKeyboard.h"
-
-class GJGameLevel;
-
-namespace ax 
-{ 
-    class Sprite; 
-    class Scene;
-    class Event;
-}
-
 
 
 //follow structure

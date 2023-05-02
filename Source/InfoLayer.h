@@ -1,8 +1,8 @@
 #pragma once
 
+#include <axmol.h>
+#include "GJGameLevel.h"
 #include "PopupLayer.h"
-
-class GJGameLevel;
 
 class InfoLayer : public PopupLayer
 {

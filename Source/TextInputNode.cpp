@@ -2,11 +2,6 @@
 
 #include <ui/CocosGUI.h>
 #include <fmt/format.h>
-#include "CCEventListenerTouch.h"
-#include "CCEventListenerKeyboard.h"
-#include "CCDirector.h"
-#include "CCEventDispatcher.h"
-#include "axmol.h"
 
 USING_NS_AX;
 
@@ -111,7 +106,7 @@ bool TextInputNode::onTouchBegan(Touch* touch, Event* event)
 
 	auto nodeTouchPoint = this->convertTouchToNodeSpace(touch);
 
-	const auto& contentSize = this->getContentSize();
+	auto contentSize = this->getContentSize();
 	auto boundingBox = Rect(0, 0, contentSize.width, contentSize.height);
 
 	bool touchInside = boundingBox.containsPoint(nodeTouchPoint);

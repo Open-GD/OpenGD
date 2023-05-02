@@ -11,12 +11,6 @@
 #include "MenuLayer.h"
 #include "PlayLayer.h"
 #include <network/HttpClient.h>
-#include "2d/CCMenu.h"
-#include "2d/CCTransition.h"
-#include "CCEventListenerKeyboard.h"
-#include "CCDirector.h"
-#include "CCEventDispatcher.h"
-#include "GJSearchObject.h"
 
 USING_NS_AX;
 using namespace ax::network;
@@ -47,7 +41,7 @@ bool CreatorLayer::init()
 		return false;
 
 	auto director = Director::getInstance();
-	const auto& winSize = director->getWinSize();
+	auto winSize = director->getWinSize();
 
 	GameToolbox::createBG(this);
 	GameToolbox::createAllCorners(this);

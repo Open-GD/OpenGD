@@ -1,15 +1,9 @@
 #pragma once
 
-#include "2d/CCLayer.h"
+#include <axmol.h>
+#include "MenuGameLayer.h"
 
 class MenuItemSpriteExtra;
-class MenuGameLayer;
-
-namespace ax 
-{ 
-	class Scene; 
-	class Label;
-}
 
 extern bool music;
 

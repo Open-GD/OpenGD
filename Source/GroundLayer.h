@@ -1,16 +1,5 @@
 #pragma once
-
-#include <string_view>
-
-#include "2d/CCLayer.h"
-#include "2d/CCActionTween.h"
-#include "2d/CCAction.h"
-
-namespace ax 
-{ 
-	class Sprite; 
-}
-
+#include <axmol.h>
 
 class GroundLayer : public ax::Layer, public ax::ActionTweenDelegate 
 {

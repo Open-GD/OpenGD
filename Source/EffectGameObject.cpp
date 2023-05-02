@@ -4,7 +4,6 @@
 #include "GameToolbox.h"
 #include "MoveAction.h"
 #include "PlayLayer.h"
-#include "2d/CCActionEase.h"
 
 USING_NS_AX;
 
@@ -70,7 +69,7 @@ Action* EffectGameObject::actionEasing(ActionInterval* ac)
 	return ac;
 }
 
-void EffectGameObject::triggerActivated(float)
+void EffectGameObject::triggerActivated(float idk)
 {
 	if (!_bgl)
 		return;

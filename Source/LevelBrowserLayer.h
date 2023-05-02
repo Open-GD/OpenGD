@@ -1,30 +1,12 @@
 #pragma once
-#include <unordered_map>
-#include <vector>
 
-#include "2d/CCLayer.h"
-
-class GJSearchObject;
-class LoadingCircle;
-class MenuItemSpriteExtra;
-class GJGameLevel;
-
-namespace ax 
-{ 
-    class Scene; 
-    namespace ui
-    {
-        class ListView;
-    }
-
-    namespace network
-    {
-        class HttpClient;
-        class HttpResponse;
-    }
-}
-
-
+#include <axmol.h>
+#include "GJSearchObject.h"
+#include "network/HttpClient.h"
+#include "ListLayer.h"
+#include "ui/UIListView.h"
+#include "GJGameLevel.h"
+#include "LoadingCircle.h"
 
 class LevelBrowserLayer : public ax::Layer {
 public:
