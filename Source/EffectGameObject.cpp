@@ -253,6 +253,13 @@ void EffectGameObject::triggerActivated(float)
 	}
 }
 
+void EffectGameObject::update(float dt)
+{
+	GameObject::update();
+	if(_scheduledRemoval && getNumberOfRunningActions() <= 0)
+		removeFromGameLayer();
+}
+
 void EffectGameObject::updateTweenAction(float value, std::string_view key)
 {
 	if (!_bgl)
