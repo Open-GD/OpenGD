@@ -45,7 +45,7 @@ ax::Node* cameraFollow;
 
 Scene* PlayLayer::scene(GJGameLevel* level)
 {
-	return LevelDebugLayer::scene(level);
+	//return LevelDebugLayer::scene(level);
 	auto scene = Scene::create();
 	scene->addChild(PlayLayer::create(level));
 	return scene;
