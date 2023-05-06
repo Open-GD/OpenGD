@@ -15,6 +15,9 @@
 #include "ListLayer.h"
 #include "CCEventListenerKeyboard.h"
 
+
+//TODO: rewrite cached levels + handle delete levels
+
 ax::Scene* LevelBrowserLayer::scene(GJSearchObject* search)
 {
 	auto scene = ax::Scene::create();
@@ -191,7 +194,7 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 				if(GameToolbox::stoi(author[0]) == gjlevel->_playerID)
 					return author[1];
 			}
-			return std::string("-");
+			return "-";
 		};
 		
 		std::vector<GJGameLevel*> toInsert;

@@ -33,5 +33,4 @@ public:
 	void onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response);
 
 	void onDownloadFailed();
-	void onExit() override;
 };

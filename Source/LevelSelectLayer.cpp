@@ -95,6 +95,7 @@ bool LevelSelectLayer::init(int page)
 		auto level = GJGameLevel::createWithMinimumData(name, creator, id);
 		layers.push_back(LevelPage::create(level));
 	}
+	_levelPages = layers;
 	_bsl = BoomScrollLayer::create(layers, page);
 	addChild(_bsl);
 
@@ -201,4 +202,21 @@ bool LevelSelectLayer::init(int page)
 
 	//if (controller) GameToolbox::addBackButton(this, backBtn);
 	return true;
+}
+
+void LevelSelectLayer::onExit()
+{
+	if (LevelPage::replacingScene)
+		return;
+
+	for (const auto& page : _levelPages)
+	{
+		if (LevelPage* levelPage = dynamic_cast<LevelPage*>(page))
+		{
+			if (GJGameLevel* level = levelPage->_level; level) {
+				delete level;
+			}
+		}
+	}
+	Layer::onExit();
 }

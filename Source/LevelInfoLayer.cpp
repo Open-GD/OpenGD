@@ -301,12 +301,6 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	return true;
 }
 
-void LevelInfoLayer::onExit()
-{
-	// _request->setTag("-1");
-	Layer::onExit();
-}
-
 void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	GameToolbox::log("ON COMPLETEDDDDDDDDD");
@@ -335,7 +329,7 @@ void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax:
 			onDownloadFailed();
 			return;
 		}
-
+		delete _level;
 		_level = level;
 		_level->_musicID = _level->_officialSongID;
 

@@ -3,7 +3,6 @@
 
 class GroundLayer;
 class BoomScrollLayer;
-
 namespace ax 
 { 
 	class Sprite;
@@ -15,6 +14,7 @@ class LevelSelectLayer : public ax::Layer {
 private:
 	ax::Sprite* _background;
 	GroundLayer* _ground;
+	std::vector<Layer*> _levelPages;
 public:
 	BoomScrollLayer* _bsl;
 
@@ -23,4 +23,5 @@ public:
 	static ax::Scene* scene(int page);
 	bool init(int page);
 	static LevelSelectLayer* create(int page);
+	void onExit() override;
 };
