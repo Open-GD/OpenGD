@@ -3,6 +3,7 @@
 #include "GroundLayer.h"
 #include "2d/CCMenu.h"
 #include "PlayerObject.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

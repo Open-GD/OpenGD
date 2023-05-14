@@ -1,13 +1,14 @@
-
-#include <axmol.h>
-
-#ifdef AX_PLATFORM_PC
-
 #include "GameToolbox.h"
 #include "GameManager.h"
 #include "ResourcesLoadingLayer.h"
-#include <LoadingLayer.h>
+#include "LoadingLayer.h"
 
+#include <2d/CCScene.h>
+#include <2d/CCLabel.h>
+#include <2d/CCActionInterval.h>
+#include <2d/CCActionInstant.h>
+#include <platform/CCFileUtils.h>
+#include <base/CCDirector.h>
 
 USING_NS_AX;
 
@@ -198,6 +199,3 @@ void ResourcesLoadingLayer::handleMac() {}
 //#if (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
 void ResourcesLoadingLayer::handleLinux() {}
 //#endif
-
-
-#endif //#ifdef AX_PLATFORM_PC

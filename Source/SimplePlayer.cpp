@@ -1,6 +1,7 @@
 #include "SimplePlayer.h"
 #include "GameToolbox.h"
 #include "ccUTF8.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

@@ -5,7 +5,7 @@
 #include "MenuItemSpriteExtra.h"
 
 namespace ax 
-{ 
+{
 	class Node; 
 }
 

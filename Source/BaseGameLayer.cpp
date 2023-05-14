@@ -5,6 +5,8 @@
 #include "GJGameLevel.h"
 #include "external/benchmark.h"
 
+#include <2d/CCSpriteBatchNode.h>
+
 USING_NS_AX;
 
 // #define USE_MULTITHREADING

@@ -1,10 +1,10 @@
 #include "GameManager.h"
 #include "external/hps/hps.h"
-#include <axmol.h>
 #include "GameToolbox.h"
 #include "ResourcesLoadingLayer.h"
 #include "AppDelegate.h"
 
+#include <platform/CCFileUtils.h>
 
 struct GameOptions
 {

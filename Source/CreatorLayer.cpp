@@ -14,7 +14,7 @@
 #include "2d/CCMenu.h"
 #include "2d/CCTransition.h"
 #include "CCEventListenerKeyboard.h"
-#include "CCDirector.h"
+#include "base/CCDirector.h"
 #include "CCEventDispatcher.h"
 #include "GJSearchObject.h"
 

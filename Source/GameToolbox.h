@@ -8,13 +8,11 @@
 #include "ccTypes.h"
 #include "CCVector.h"
 #include "math/Vec2.h"
-#include "CCFileUtils.h"
 #include "network/HttpRequest.h"
-#include "fmt/core.h"
-#include "fmt/chrono.h"
+#include "fmt/format.h"
 
-namespace ax 
-{ 
+namespace ax
+{
 	class Label; 
 	class Menu;
 	class Node;
@@ -64,8 +62,8 @@ namespace GameToolbox
 	float randomFloat(int max);
 	
 	ax::Color3B colorForIdx(int col);
-		const char* getNameGamemode(IconType mode);
-		int getValueForGamemode(IconType mode);
+	const char* getNameGamemode(IconType mode);
+	int getValueForGamemode(IconType mode);
 
 	ax::Color3B randomColor3B();
 	std::string getTextureString(std::string texture);
@@ -73,11 +71,11 @@ namespace GameToolbox
 	void alignItemsVerticallyWithPadding(ax::Vector<ax::Node*> children, float padding);
 	void alignItemsHorizontally(ax::Vector<ax::Node*> children, float padding, ax::Point location);
 	void alignItemsHorizontallyWithPadding(ax::Vector<ax::Node*> children, float padding);
-		void createBG(ax::Node* layer, ax::Color3B color);
-		void createBG(ax::Node* layer);
+	void createBG(ax::Node* layer, ax::Color3B color);
+	void createBG(ax::Node* layer);
 	void createCorners(ax::Node* layer, bool topRight, bool topLeft, bool botLeft, bool botRight);
 	inline void createAllCorners(ax::Node* self) { return createCorners(self, true, true, true, true); }
-	inline std::string getFileContentsResources(std::string_view file) { return ax::FileUtils::getInstance()->getStringFromFile(file); }
+	std::string getFileContentsResources(std::string_view file);
 	
 	float SquareDistance(float xa, float ya, float xb, float yb);
 	float SquareDistance(ax::Vec2 a, ax::Vec2 b);
@@ -109,7 +107,7 @@ namespace GameToolbox
 	
 	template <typename... T>
 		void log(fmt::format_string<T...> fmt, T&&... args) {
-		return fmt::print("[{:%H:%M:%S}] {}\n", fmt::gmtime(std::time(NULL)), fmt::format(fmt, std::forward<T>(args)...));
+		return fmt::print("{}\n", fmt::format(fmt, std::forward<T>(args)...));
 	}
 	
 };

@@ -1,5 +1,10 @@
 #include "PopupLayer.h"
-#include <axmol.h>
+
+#include <2d/CCActionEase.h>
+#include <2d/CCActionInterval.h>
+#include <base/CCDirector.h>
+#include <base/CCEventDispatcher.h>
+#include <base/CCEventListenerTouch.h>
 
 USING_NS_AX;
 

@@ -1,12 +1,15 @@
 #include "TextInputNode.h"
 
-#include <ui/CocosGUI.h>
 #include <fmt/format.h>
-#include "CCEventListenerTouch.h"
-#include "CCEventListenerKeyboard.h"
-#include "CCDirector.h"
-#include "CCEventDispatcher.h"
-#include "axmol.h"
+#include <CCEventListenerTouch.h>
+#include <CCEventListenerKeyboard.h>
+#include <CCDirector.h>
+#include <CCEventDispatcher.h>
+#include <ui/UITextField.h>
+
+#ifdef AX_PLATFORM_PC
+#include <platform/desktop/CCGLViewImpl-desktop.h>
+#endif
 
 USING_NS_AX;
 

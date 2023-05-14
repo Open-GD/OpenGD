@@ -1,5 +1,6 @@
 #include "EndPortalObject.h"
 #include "GameToolbox.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

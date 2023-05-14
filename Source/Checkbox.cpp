@@ -1,7 +1,8 @@
 #pragma once
-#include <axmol.h>
 #include "Checkbox.h"
 #include "GameToolbox.h"
+
+#include <2d/CCSprite.h>
 
 USING_NS_AX;
 

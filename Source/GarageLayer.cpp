@@ -11,6 +11,7 @@
 #include "ccUTF8.h"
 #include "CCEventListenerKeyboard.h"
 #include "ui/UIScale9Sprite.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

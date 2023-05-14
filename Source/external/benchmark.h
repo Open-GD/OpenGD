@@ -14,13 +14,8 @@
 //
 #pragma once
 
-#include <string>
 #include <chrono>
-#include <algorithm>
-#include <fstream>
 #include "GameToolbox.h"
-#include <thread>
-#include <axmol.h>
 
 class BenchmarkTimer
 {

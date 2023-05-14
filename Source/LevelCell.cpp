@@ -10,6 +10,7 @@
 #include "fmt/core.h"
 #include "LevelTools.h"
 #include "2d/CCTransition.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

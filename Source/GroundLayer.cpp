@@ -1,6 +1,7 @@
 #include "GroundLayer.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

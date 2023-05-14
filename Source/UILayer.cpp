@@ -3,6 +3,7 @@
 #include "GameToolbox.h"
 #include "CCEventListenerTouch.h"
 #include "CCEventDispatcher.h"
+#include "base/CCDirector.h"
 
 UILayer* UILayer::create()
 {

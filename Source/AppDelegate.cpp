@@ -30,6 +30,15 @@
 #include "GameToolbox.h"
 #include "external/constants.h"
 
+#include "platform/CCApplication.h"
+#include "platform/CCGLView.h"
+#include "base/CCDirector.h"
+#include "base/CCEventDispatcher.h"
+
+#ifdef AX_PLATFORM_PC
+#include "platform/desktop/CCGLViewImpl-desktop.h"
+#endif
+
 #define USE_AUDIO_ENGINE 1
 
 #if USE_AUDIO_ENGINE
@@ -47,6 +56,7 @@ AppDelegate::AppDelegate() {}
 
 AppDelegate::~AppDelegate() {}
 
+
 // if you want a different context, modify the value of glContextAttrs
 // it will affect all platforms
 void AppDelegate::initGLContextAttrs()
@@ -63,7 +73,6 @@ static int register_all_packages()
 {
 	return 0; // flag for packages manager
 }
-
 int AppDelegate::applicationGetRefreshRate()
 {
 #if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
@@ -73,9 +82,10 @@ int AppDelegate::applicationGetRefreshRate()
 	return 60;
 #endif
 }
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
-	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
-void AppDelegate::onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
+
+
+#ifdef AX_PLATFORM_PC
+static void onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 {
 	auto director = Director::getInstance();
 	auto glView = director->getOpenGLView();
@@ -104,6 +114,8 @@ void AppDelegate::onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 	director->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_RESIZED, nullptr);
 }
 #endif
+
+
 bool AppDelegate::applicationDidFinishLaunching()
 {
 
@@ -113,8 +125,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	auto glView = director->getOpenGLView();
 	if (!glView)
 	{
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
-	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+#ifdef AX_PLATFORM_PC
 		glView = GLViewImpl::createWithRect(
 			"OpenGD", ax::Rect(0, 0, 1280, 720), 1.f, true);
 #else
@@ -160,12 +171,11 @@ bool AppDelegate::applicationDidFinishLaunching()
 		glView->setDesignResolutionSize(569 - (glView->getFrameSize().height - 720), 320,
 			ResolutionPolicy::FIXED_HEIGHT);
 
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
-	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
+#ifdef AX_PLATFORM_PC
 
 	glfwSetWindowAspectRatio(static_cast<GLViewImpl*>(glView)->getWindow(), 16, 9);
 
-	glfwSetWindowSizeCallback(static_cast<GLViewImpl*>(glView)->getWindow(), AppDelegate::onGLFWwindowSizeCallback);
+	glfwSetWindowSizeCallback(static_cast<GLViewImpl*>(glView)->getWindow(), onGLFWwindowSizeCallback);
 
 #endif
 

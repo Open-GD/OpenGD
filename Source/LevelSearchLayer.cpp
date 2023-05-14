@@ -13,6 +13,7 @@
 #include "CCEventListenerKeyboard.h"
 #include "CCEventDispatcher.h"
 #include "ccUTF8.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

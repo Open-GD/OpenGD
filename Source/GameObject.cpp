@@ -8,6 +8,7 @@
 #include <fmt/format.h>
 #include <fstream>
 #include "2d/CCParticleSystemQuad.h"
+#include "platform/CCFileUtils.h"
 
 USING_NS_AX;
 

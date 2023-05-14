@@ -8,6 +8,7 @@
 #include "SongObject.h"
 #include "2d/CCLabel.h"
 #include "2d/CCMenu.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

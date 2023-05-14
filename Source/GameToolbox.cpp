@@ -6,6 +6,12 @@
 #include "external/fast_float.h"
 #include "network/HttpResponse.h"
 #include "network/HttpClient.h"
+#include "2d/CCTransition.h"
+#include "2d/CCSprite.h"
+#include "2d/CCLabel.h"
+#include "2d/CCMenu.h"
+#include "math/MathUtil.h"
+#include "platform/CCFileUtils.h"
 
 USING_NS_AX;
 
@@ -423,7 +429,7 @@ static inline std::string getTextureString_AppendResources(std::string texture)
 	std::string nTexture = "Resources/";
 	nTexture += texture;
 
-	auto pos = nTexture.find(".");
+	auto pos = nTexture.find('.');
 	if (pos != std::string::npos) {
 		nTexture.insert(pos, GameManager::getInstance()->isHigh() ? "-uhd" : "-hd");	
 	}
@@ -433,7 +439,7 @@ static inline std::string getTextureString_AppendResources(std::string texture)
 
 static inline std::string getTextureString_WithoutResources(std::string texture)
 {
-	auto pos = texture.find(".");
+	auto pos = texture.find('.');
 	if (pos != std::string::npos) {
 		texture.insert(pos, GameManager::getInstance()->isHigh() ? "-uhd" : "-hd");	
 	}
@@ -713,4 +719,8 @@ float GameToolbox::stof(const std::string_view s) {
 	float ret = 0.0f;
 	fast_float::from_chars(s.data(),s.data() + s.size(), ret);
 	return ret;
+}
+
+std::string GameToolbox::getFileContentsResources(std::string_view file) {
+	return ax::FileUtils::getInstance()->getStringFromFile(file);
 }

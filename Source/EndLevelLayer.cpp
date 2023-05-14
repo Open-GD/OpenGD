@@ -1,14 +1,17 @@
 #include "EndLevelLayer.h"
 #include "GameToolbox.h"
-#include "AudioEngine.h"
-#include <fmt/chrono.h>
-#include <array>
 #include "PlayLayer.h"
 #include "DropDownLayer.h"
-#include "2d/CCLabel.h"
-#include "2d/CCMenu.h"
 #include "MenuItemSpriteExtra.h"
 #include "UILayer.h"
+
+#include "2d/CCLabel.h"
+#include "2d/CCMenu.h"
+#include "base/CCDirector.h"
+#include "AudioEngine.h"
+
+#include <fmt/chrono.h>
+#include <array>
 
 //same as LoadingLayer
 constexpr static auto _endingStrings = std::to_array <const char*>({

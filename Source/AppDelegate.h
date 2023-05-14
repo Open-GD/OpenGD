@@ -26,7 +26,7 @@
 #ifndef _APP_DELEGATE_H_
 #define _APP_DELEGATE_H_
 
-#include <axmol.h>
+#include "platform/CCApplication.h"
 
 /**
 @brief	The axmol Application.
@@ -66,10 +66,7 @@ public:
 	*/
 	int applicationGetRefreshRate();
 
-#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32) || (AX_TARGET_PLATFORM == AX_PLATFORM_MAC) || \
-	(AX_TARGET_PLATFORM == AX_PLATFORM_LINUX)
-	static void onGLFWwindowSizeCallback(GLFWwindow*, int w, int h);
-#endif
+
 };
 
 #endif  // _APP_DELEGATE_H_

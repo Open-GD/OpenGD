@@ -2,6 +2,7 @@
 #include "DropDownLayer.h"
 #include "2d/CCMenu.h"
 #include "2d/CCLabel.h"
+#include "base/CCDirector.h"
 #include "CCApplication.h"
 #include "GameToolbox.h"
 

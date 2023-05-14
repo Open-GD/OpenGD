@@ -10,6 +10,7 @@
 #include "2d/CCTransition.h"
 #include "MenuLayer.h"
 #include "GJGameLevel.h"
+#include "base/CCDirector.h"
 
 bool LevelPage::replacingScene = false;
 

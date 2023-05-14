@@ -1,19 +1,18 @@
 #pragma once
-#include <axmol.h>
+#include "base/CCDirector.h"
 
-USING_NS_AX;
-
-class AltDirector : public Director { 
+	
+class AltDirector : public ax::Director { 
 public:
 	static AltDirector* getInstance() {
-		return (AltDirector*)Director::getInstance();
+		return (AltDirector*)ax::Director::getInstance();
 	}
 
 	// Director have this variables in "protected", so i did this class to use them
-	Vector<Scene*> getScenesStack() {
+	ax::Vector<ax::Scene*> getScenesStack() {
 		return Director::_scenesStack;
 	}
 	void setSendCleanupToScene(bool cleanupToScene) {
-		Director::_sendCleanupToScene = cleanupToScene;
+		ax::Director::_sendCleanupToScene = cleanupToScene;
 	}
 };

@@ -6,6 +6,7 @@
 #include "ButtonSprite.h"
 #include "2d/CCMenu.h"
 #include "ccUTF8.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

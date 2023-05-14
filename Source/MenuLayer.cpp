@@ -19,6 +19,7 @@
 #include "EndLevelLayer.h"
 #include "2d/CCTransition.h"
 #include "2d/CCMenu.h"
+#include "base/CCDirector.h"
 #include "ios/CCApplication-ios.h"
 #include "2d/CCLabel.h"
 #include "CCEventDispatcher.h"

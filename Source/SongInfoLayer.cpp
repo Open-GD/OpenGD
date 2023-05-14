@@ -7,6 +7,7 @@
 #include "2d/CCLabel.h"
 #include "CCApplication.h"
 #include "2d/CCMenu.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 

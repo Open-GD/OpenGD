@@ -15,6 +15,7 @@
 #include "CCEventListenerKeyboard.h"
 #include "2d/CCTransition.h"
 #include "CCEventDispatcher.h"
+#include "base/CCDirector.h"
 
 USING_NS_AX;
 
