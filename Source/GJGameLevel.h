@@ -66,13 +66,7 @@ public:
 
 	// Expects RobTop like string. If it not, nullptr gets returned.
 	static GJGameLevel *createWithResponse(std::string_view backendResponse);
-	GJGameLevel() = default;
-	GJGameLevel(std::string levelName, int levelID);
-	static GJGameLevel *createWithMinimumData(
-		std::string levelName, 
-		std::string creatorNickname, 
-		int levelID
-	);
+	static GJGameLevel *createWithMinimumData(std::string levelName, std::string creatorNickname, int levelID);
 	static GJGameLevel *create();
 
 	static std::string getLevelStrFromID(int gdLevelID);

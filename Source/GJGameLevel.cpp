@@ -73,21 +73,22 @@ GJGameLevel* GJGameLevel::createWithResponse(std::string_view backendResponse)
 	return level;
 }
 
-GJGameLevel::GJGameLevel(std::string levelName, int levelID)
-{
-	this->_levelName = levelName;
-	this->_levelID = levelID;
-	this->_musicID = levelID - 1;
-}
+//GJGameLevel::GJGameLevel(std::string levelName, int levelID)
+//{
+//	this->_levelName = levelName;
+//	this->_levelID = levelID;
+//	this->_musicID = levelID - 1;
+//}
 
 GJGameLevel* GJGameLevel::create() { return createWithMinimumData("", "", 0); }
 
 GJGameLevel* GJGameLevel::createWithMinimumData(std::string levelName, std::string levelCreator, int levelID)
 {
-	GJGameLevel* level = new GJGameLevel(levelName, levelID);
-
+	GJGameLevel* level = new GJGameLevel;
 	if (!level) return nullptr;
 
+	level->_levelName = levelName;
+	level->_levelID = levelID;
 	level->_levelCreator = levelCreator;
 
 	return level;
