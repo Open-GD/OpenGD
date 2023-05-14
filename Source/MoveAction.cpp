@@ -56,15 +56,18 @@ void MoveAction::update(float time)
 		if (obj->_section != section)
 		{
 			auto bgl = BaseGameLayer::getInstance();
-			auto vec = &bgl->_sectionObjects[obj->_section];
-			vec->erase(std::remove_if(vec->begin(), vec->end(), [&](GameObject* a) { return a == obj; }), vec->end());
-			while (section >= bgl->_sectionObjects.size())
-			{
-				std::vector<GameObject*> vec;
-				bgl->_sectionObjects.push_back(vec);
-			}
-			bgl->_sectionObjects[section].push_back(obj);
-			obj->_section = section;
+			if(bgl->_sectionObjects.size() > obj->_section)
+            {
+                auto vec = &(bgl->_sectionObjects[obj->_section]);
+                vec->erase(std::remove_if(vec->begin(), vec->end(), [&](GameObject* a) { return a == obj; }), vec->end());
+                while (section >= bgl->_sectionObjects.size())
+                {
+                    std::vector<GameObject*> vec;
+                    bgl->_sectionObjects.push_back(vec);
+                }
+                bgl->_sectionObjects[section].push_back(obj);
+                obj->_section = section;
+            }
 		}
 		i++;
 	}

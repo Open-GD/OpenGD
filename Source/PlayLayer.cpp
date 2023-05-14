@@ -45,7 +45,7 @@ ax::Node* cameraFollow;
 
 Scene* PlayLayer::scene(GJGameLevel* level)
 {
-	return LevelDebugLayer::scene(level);
+	// return LevelDebugLayer::scene(level);
 	auto scene = Scene::create();
 	scene->addChild(PlayLayer::create(level));
 	return scene;
@@ -160,13 +160,13 @@ void PlayLayer::fillColorChannel(std::span<std::string_view> colorString, int id
 		switch (GameToolbox::stoi(colorString[j]))
 		{
 		case 1:
-			m_pColorChannels.insert({id, SpriteColor(ax::Color3B(GameToolbox::stof(colorString[j + 1]), 0, 0), 255, 0)});
+			_colorChannels.insert({id, SpriteColor(ax::Color3B(GameToolbox::stof(colorString[j + 1]), 0, 0), 255, 0)});
 			break;
 		case 2:
-			m_pColorChannels.at(id)._color.g = GameToolbox::stof(colorString[j + 1]);
+			_colorChannels.at(id)._color.g = GameToolbox::stof(colorString[j + 1]);
 			break;
 		case 3:
-			m_pColorChannels.at(id)._color.b = GameToolbox::stof(colorString[j + 1]);
+			_colorChannels.at(id)._color.b = GameToolbox::stof(colorString[j + 1]);
 			break;
 		}
 	}
@@ -186,27 +186,27 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 		{
 			if (levelData[i] == "kS1")
 			{
-				m_pColorChannels.insert({1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
+				_colorChannels.insert({1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
 			}
 			else if (levelData[i] == "kS2")
 			{
-				m_pColorChannels.at(1000)._color.g = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1000)._color.g = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS3")
 			{
-				m_pColorChannels.at(1000)._color.b = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1000)._color.b = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS4")
 			{
-				m_pColorChannels.insert({1001, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
+				_colorChannels.insert({1001, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
 			}
 			else if (levelData[i] == "kS5")
 			{
-				m_pColorChannels.at(1001)._color.g = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1001)._color.g = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS6")
 			{
-				m_pColorChannels.at(1001)._color.b = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1001)._color.b = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS29")
 			{
@@ -266,7 +266,7 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 							break;
 						}
 					}
-					m_pColorChannels.insert({key, col});
+					_colorChannels.insert({key, col});
 				}
 			}
 			else if (levelData[i] == "kA6")
@@ -318,14 +318,14 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 	std::thread t_gameObjects([&]() {
 		
 		
-	m_pColorChannels[1005]._color = _player1->getMainColor();
-	m_pColorChannels[1005]._blending = true;
-	m_pColorChannels[1006]._color = _player1->getSecondaryColor();
-	m_pColorChannels[1006]._blending = true;
-	m_pColorChannels[1010]._color = Color3B::BLACK;
-	m_pColorChannels[1007]._color = getLightBG();
+	_colorChannels[1005]._color = _player1->getMainColor();
+	_colorChannels[1005]._blending = true;
+	_colorChannels[1006]._color = _player1->getSecondaryColor();
+	_colorChannels[1006]._blending = true;
+	_colorChannels[1010]._color = Color3B::BLACK;
+	_colorChannels[1007]._color = getLightBG();
 
-	_originalColors = std::unordered_map<int, SpriteColor>(m_pColorChannels);
+	_originalColors = std::unordered_map<int, SpriteColor>(_colorChannels);
 
 	for (std::string_view data : objData)
 	{
@@ -515,12 +515,12 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 
 bool PlayLayer::isObjectBlending(GameObject* obj)
 {
-	return m_pColorChannels.contains(obj->_mainColorChannel) && m_pColorChannels[obj->_mainColorChannel]._blending &&
-			   m_pColorChannels.contains(obj->_secColorChannel) && m_pColorChannels[obj->_secColorChannel]._blending ||
-		   !m_pColorChannels.contains(obj->_mainColorChannel) && m_pColorChannels.contains(obj->_secColorChannel) &&
-			   m_pColorChannels[obj->_secColorChannel]._blending ||
-		   !m_pColorChannels.contains(obj->_secColorChannel) && m_pColorChannels.contains(obj->_mainColorChannel) &&
-			   m_pColorChannels[obj->_mainColorChannel]._blending;
+	return _colorChannels.contains(obj->_mainColorChannel) && _colorChannels[obj->_mainColorChannel]._blending &&
+			   _colorChannels.contains(obj->_secColorChannel) && _colorChannels[obj->_secColorChannel]._blending ||
+		   !_colorChannels.contains(obj->_mainColorChannel) && _colorChannels.contains(obj->_secColorChannel) &&
+			   _colorChannels[obj->_secColorChannel]._blending ||
+		   !_colorChannels.contains(obj->_secColorChannel) && _colorChannels.contains(obj->_mainColorChannel) &&
+			   _colorChannels[obj->_mainColorChannel]._blending;
 }
 
 bool PlayLayer::init(GJGameLevel* level)
@@ -530,6 +530,9 @@ bool PlayLayer::init(GJGameLevel* level)
 	setLevel(level);
 
 	Instance = this;
+    _instance = this;
+
+    // initBatchNodes();
 
 	auto winSize = Director::getInstance()->getWinSize();
 
@@ -656,8 +659,8 @@ bool PlayLayer::init(GJGameLevel* level)
 	this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
 	this->addChild(this->m_pBG, -100);
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
+	if (this->_colorChannels.contains(1000))
+		this->m_pBG->setColor(this->_colorChannels.at(1000)._color);
 	this->_bottomGround->update(0);
 
 	if (_pObjects.size() != 0)
@@ -677,22 +680,22 @@ bool PlayLayer::init(GJGameLevel* level)
 		{
 			// GameToolbox::log("i = {}", i);
 			std::vector<GameObject*> vec;
-			m_pSectionObjects.push_back(vec);
+			_sectionObjects.push_back(vec);
 		}
 
 		for (GameObject* object : _pObjects)
 		{
 			int section = sectionForPos(object->getPositionX());
-			m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
+			_sectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
-			if (m_pColorChannels.contains(object->_mainColorChannel) &&
-				m_pColorChannels[object->_mainColorChannel]._blending)
+			if (_colorChannels.contains(object->_mainColorChannel) &&
+				_colorChannels[object->_mainColorChannel]._blending)
 			{
 				object->setBlendFunc(GameToolbox::getBlending());
 			}
 
-			if (m_pColorChannels.contains(object->_secColorChannel) &&
-				m_pColorChannels[object->_secColorChannel]._blending)
+			if (_colorChannels.contains(object->_secColorChannel) &&
+				_colorChannels[object->_secColorChannel]._blending)
 			{
 				for (auto s : object->_detailSprites)
 					s->setBlendFunc(GameToolbox::getBlending());
@@ -789,10 +792,10 @@ void PlayLayer::update(float dt)
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	this->m_pColorChannels.at(1005)._color = this->_player1->getMainColor();
-	this->m_pColorChannels.at(1006)._color = this->_player1->getSecondaryColor();
+	this->_colorChannels.at(1005)._color = this->_player1->getMainColor();
+	this->_colorChannels.at(1006)._color = this->_player1->getSecondaryColor();
 
-	m_pColorChannels[1007]._color = getLightBG();
+	_colorChannels[1007]._color = getLightBG();
 
 	if (!m_freezePlayer && (!this->_player1->isDead() || !this->_player2->isDead()))
 	{
@@ -840,13 +843,13 @@ void PlayLayer::update(float dt)
 	if (_isDualMode && _player2->_currentGamemode == PlayerGamemodeShip)
 		_player2->updateShipRotation(step);
 
-	m_pColorChannels[1005]._color = _player1->getMainColor();
-	m_pColorChannels[1006]._color = _player1->getSecondaryColor();
+	_colorChannels[1005]._color = _player1->getMainColor();
+	_colorChannels[1006]._color = _player1->getSecondaryColor();
 }
 
 ax::Color3B PlayLayer::getLightBG()
 {
-	return m_pColorChannels[1000]._color;
+	return _colorChannels[1000]._color;
 }
 
 void PlayLayer::destroyPlayer(PlayerObject* player)
@@ -1038,9 +1041,9 @@ void PlayLayer::updateVisibility()
 	{
 		if (i >= 0)
 		{
-			if (i < m_pSectionObjects.size())
+			if (i < _sectionObjects.size())
 			{
-				auto section = m_pSectionObjects[i];
+				auto section = _sectionObjects[i];
 				for (size_t j = 0; j < section.size(); j++)
 				{
 					GameObject* obj = section[j];
@@ -1148,9 +1151,9 @@ void PlayLayer::updateVisibility()
 		}
 	}
 
-	if (_prevSection - 1 >= 0 && m_pSectionObjects.size() != 0 && _prevSection <= m_pSectionObjects.size())
+	if (_prevSection - 1 >= 0 && _sectionObjects.size() != 0 && _prevSection <= _sectionObjects.size())
 	{
-		auto section = m_pSectionObjects[_prevSection - 1];
+		auto section = _sectionObjects[_prevSection - 1];
 		for (size_t j = 0; j < section.size(); j++)
 		{
 			section[j]->setActive(false);
@@ -1350,9 +1353,9 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 
 	for (int i = current_section - 2; i < current_section + 1; i++)
 	{
-		if (i < m_pSectionObjects.size() && i >= 0)
+		if (i < _sectionObjects.size() && i >= 0)
 		{
-			std::vector<GameObject*> section = m_pSectionObjects[i];
+			std::vector<GameObject*> section = _sectionObjects[i];
 
 			for (int j = 0; j < section.size(); j++)
 			{
@@ -1389,7 +1392,7 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 						renderRect(objBounds, ax::Color4B::BLUE);
 					}
 
-					if (playerOuterBounds.intersectsRect(objBounds) && !obj->hasBeenActiavedByPlayer(player))
+					if (playerOuterBounds.intersectsRect(objBounds) && !obj->hasBeenActivatedByPlayer(player))
 					{
 						switch (obj->getGameObjectType())
 						{
@@ -1623,9 +1626,9 @@ void PlayLayer::onDrawImGui()
 	if (ImGui::InputFloat("FPS", &fps))
 		Director::getInstance()->setAnimationInterval(1.0f / fps);
 
-	ImGui::Text("Sections: %i", m_pSectionObjects.size());
-	if (m_pSectionObjects.size() > 0 && sectionForPos(_player1->getPositionX()) - 1 < m_pSectionObjects.size())
-		ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(_player1->getPositionX()) <= 0
+	ImGui::Text("Sections: %i", _sectionObjects.size());
+	if (_sectionObjects.size() > 0 && sectionForPos(_player1->getPositionX()) - 1 < _sectionObjects.size())
+		ImGui::Text("Current Section Size: %i", _sectionObjects[sectionForPos(_player1->getPositionX()) <= 0
 																	  ? 0
 																	  : sectionForPos(_player1->getPositionX()) - 1]
 													.size());
@@ -1759,13 +1762,13 @@ void PlayLayer::resetLevel()
 
 	dir->getActionManager()->removeAllActions();
 
-	m_pColorChannels = std::unordered_map<int, SpriteColor>(_originalColors);
+	_colorChannels = std::unordered_map<int, SpriteColor>(_originalColors);
 
 	_prevSection = -1;
 	_nextSection = -1;
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
+	if (this->_colorChannels.contains(1000))
+		this->m_pBG->setColor(this->_colorChannels.at(1000)._color);
 	this->_bottomGround->update(0);
 	this->_ceiling->update(0);
 

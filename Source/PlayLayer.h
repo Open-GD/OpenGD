@@ -28,10 +28,10 @@ namespace ax
 }
 
 
-class PlayLayer : public ax::Layer
+class PlayLayer : public BaseGameLayer
 {
   private:
-	bool init(GJGameLevel* level);
+	bool init(GJGameLevel* level) override;
 	void onEnter() override;
 	void onExit() override;
 	void onDrawImGui();
@@ -39,7 +39,7 @@ class PlayLayer : public ax::Layer
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void createLevelEnd();
 
-	void fillColorChannel(std::span<std::string_view> colorString, int id);
+	void fillColorChannel(std::span<std::string_view> colorString, int id) override;
 
 	ax::Sprite* m_pBG;
 	GroundLayer *_bottomGround, *_ceiling;
@@ -52,8 +52,6 @@ class PlayLayer : public ax::Layer
 
 	std::vector<GameObject*> _pObjects;
 
-	std::vector<std::vector<GameObject*>> m_pSectionObjects;
-
 	float m_fCameraYCenter;
 	float m_lastObjXPos = 570.0f;
 	bool m_bFirstAttempt = true;
@@ -63,14 +61,10 @@ class PlayLayer : public ax::Layer
 	float m_fEndOfLevel = FLT_MAX;
 	float m_fShakeIntensity = 1;
 
-	int _prevSection, _nextSection;
-
 	bool m_bIsJumpPressed;
 
 	SimpleProgressBar* m_pBar;
 	ax::Label* m_pPercentage;
-
-	LevelSettings _levelSettings;
 
 	//----IMGUI DEBUG MEMBERS----
 	bool m_freezePlayer;
@@ -93,26 +87,7 @@ public:
 
 	std::vector<bool> _coinsCollected;
 
-	PlayerObject* _player1;
-	PlayerObject* _player2;
-
 	bool _isDualMode;
-
-	std::string _mainBatchNodeTexture = "GJ_GameSheet.png";
-	std::string _main2BatchNodeTexture = "GJ_GameSheet02.png";
-
-	ax::SpriteBatchNode *_mainBatchNodeB4, *_mainBatchNodeB3, *_mainBatchNodeB2, *_mainBatchNodeB1, *_mainBatchNodeT1,
-		*_mainBatchNodeT2, *_mainBatchNodeT3;
-	ax::SpriteBatchNode *_blendingBatchNodeB4, *_blendingBatchNodeB3, *_blendingBatchNodeB2, *_blendingBatchNodeB1,
-		*_blendingBatchNodeT1, *_blendingBatchNodeT2, *_blendingBatchNodeT3;
-	ax::SpriteBatchNode* _main2BatchNode;
-	ax::SpriteBatchNode* _glowBatchNode;
-	ax::ParticleBatchNode* _particleBatchNode;
-
-	std::unordered_map<int, SpriteColor> m_pColorChannels, _originalColors;
-	std::unordered_map<int, GroupProperties> _groups;
-
-	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 
 	void destroyPlayer(PlayerObject* player);
 
@@ -122,7 +97,7 @@ public:
 	void showEndLayer();
 	void showCompleteText();
 
-	void update(float delta);
+	void update(float delta) override;
 	void updateCamera(float dt);
 	void updateVisibility();
 	void moveCameraToPos(ax::Vec2);
@@ -140,7 +115,7 @@ public:
 	void applyEnterEffect(GameObject* obj);
 	float getRelativeMod(ax::Vec2 objPos, float v1, float v2, float v3);
 	
-	bool isObjectBlending(GameObject* obj);
+	bool isObjectBlending(GameObject* obj) override;
 
 	int sectionForPos(float x);
 

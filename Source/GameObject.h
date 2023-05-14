@@ -191,7 +191,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	bool isActive() { return m_bActive; }
 
 	void triggerActivated(PlayerObject* player);
-	bool hasBeenActiavedByPlayer(PlayerObject* player);
+	bool hasBeenActivatedByPlayer(PlayerObject* player);
 
 	void update();
 

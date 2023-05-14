@@ -1,5 +1,5 @@
 #include "GameObject.h"
-#include "BaseGameLayer.h"
+#include "PlayLayer.h"
 #include "EffectGameObject.h"
 #include "GameToolbox.h"
 #include "PlayLayer.h"
@@ -257,7 +257,7 @@ void GameObject::update()
 		setScaleY(_startScale.y);
 	}
 
-	auto bgl = BaseGameLayer::getInstance();
+	auto bgl = PlayLayer::getInstance();
 	if (!bgl)
 		return;
 
@@ -554,7 +554,7 @@ GameObject* GameObject::createFromString(std::string_view data)
 			{
 				int group = GameToolbox::stoi(groupStr);
 				// TODO add groups in derived class
-				BaseGameLayer::getInstance()->_groups[group]._objects.push_back(obj);
+				PlayLayer::getInstance()->_groups[group]._objects.push_back(obj);
 				obj->_groups.push_back(group);
 			}
 			break;
@@ -667,13 +667,13 @@ std::map<std::string, std::string> GameObject::stringSetupToDict(std::string str
 }
 void GameObject::triggerActivated(PlayerObject* player)
 {
-	auto bgl = BaseGameLayer::getInstance();
+    auto bgl = PlayLayer::getInstance();
 	player == bgl->_player1 ? _hasBeenActivatedP1 = true : _hasBeenActivatedP2 = true;
 }
 
-bool GameObject::hasBeenActiavedByPlayer(PlayerObject* player)
+bool GameObject::hasBeenActivatedByPlayer(PlayerObject* player)
 {
-	auto bgl = BaseGameLayer::getInstance();
+	auto bgl = PlayLayer::getInstance();
 	return player == bgl->_player1 ? _hasBeenActivatedP1 : _hasBeenActivatedP2;
 }
 
@@ -691,22 +691,22 @@ ax::Rect GameObject::getOuterBounds(float a, float b)
 
 std::string_view GameObject::getGlowFrame(int objectID)
 {
-	return "";
+	 // return "";
 
-	// switch(objectID)
-	// {
-	// [[likely]] default: return "";
-	// case 44: return "checkpoint_01_glow_001";
-	// [[likely]] case 1: return "square_01_glow_001";
-	// [[likely]] case 2: return "square_02_glow_001";
-	// [[likely]] case 3: return "square_03_glow_001";
-	// [[likely]] case 4: return "square_04_glow_001";
-	// [[likely]] case 6: return "square_06_glow_001";
-	// [[likely]] case 7: return "square_07_glow_001";
-	// [[likely]] case 8: return "spike_01_glow_001";
-	// case 35: return "bump_01_glow_001";
-	// case 39: return "spike_02_glow_001";
-	// case 40: return "plank_01_glow_001";
-	// [[unlikely]] case 1903: return "plank_01_glow_001";
-	// }
+	 switch(objectID)
+	 {
+	 [[likely]] default: return "";
+	 case 44: return "checkpoint_01_glow_001";
+	 [[likely]] case 1: return "square_01_glow_001";
+	 [[likely]] case 2: return "square_02_glow_001";
+	 [[likely]] case 3: return "square_03_glow_001";
+	 [[likely]] case 4: return "square_04_glow_001";
+	 [[likely]] case 6: return "square_06_glow_001";
+	 [[likely]] case 7: return "square_07_glow_001";
+	 [[likely]] case 8: return "spike_01_glow_001";
+	 case 35: return "bump_01_glow_001";
+	 case 39: return "spike_02_glow_001";
+	 case 40: return "plank_01_glow_001";
+	 [[unlikely]] case 1903: return "plank_01_glow_001";
+	 }
 }
