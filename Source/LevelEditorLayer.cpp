@@ -4,6 +4,7 @@
 #include "AudioEngine.h"
 #include "CreatorLayer.h"
 #include "external/constants.h"
+#include "CocosExplorer.h"
 
 ax::Scene* LevelEditorLayer::scene(GJGameLevel* level) {
 	auto scene = new ax::Scene();
@@ -30,6 +31,7 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		return false;
 
 	setLevel(level);
+	CocosExplorer::close();
 
 	ax::AudioEngine::stopAll();
 

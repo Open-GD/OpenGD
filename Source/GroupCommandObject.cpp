@@ -59,7 +59,7 @@ void GroupCommandObject::updateTweenAction(float value, std::string_view key)
 			}
 		}
 		this->_currentOffset.y = offsetY;
-		this->_newPos.y += delta;
+		this->_newPos.y = delta;
 	}
 	else if (key == "1") // x
 	{
@@ -77,7 +77,7 @@ void GroupCommandObject::updateTweenAction(float value, std::string_view key)
 			}
 		}
 		this->_currentOffset.x = offsetX;
-		this->_newPos.x += delta;
+		this->_newPos.x = delta;
 	}
 }
 

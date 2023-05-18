@@ -15,7 +15,7 @@ class GroupCommandObject : public ax::Node, public ax::ActionTweenDelegate
   int _groupID;
   int _actionID;
 
-  float _elapsed, _duration;
+  float _elapsed, _duration, _delta1, _delta2;
 
   bool _followPlayerX, _followPlayerY;
   bool _actionDone, _actionDoneForNextLoop;

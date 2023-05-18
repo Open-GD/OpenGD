@@ -430,7 +430,9 @@ void BaseGameLayer::processMoveActions(float dt)
 				}
 
 				if (y != 0)
+				{
 					obj->_startPosOffset.y += y;
+				}
 				if (x != 0)
 				{
 					obj->_startPosOffset.x += x;

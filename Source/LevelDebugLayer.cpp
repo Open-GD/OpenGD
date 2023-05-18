@@ -1,17 +1,17 @@
 #include "LevelDebugLayer.h"
+#include "2d/CCTransition.h"
+#include "CocosExplorer.h"
+#include "EffectGameObject.h"
+#include "GJGameLevel.h"
 #include "GameToolbox.h"
+#include "ImGui/ImGuiPresenter.h"
+#include "ImGui/imgui/imgui.h"
 #include "LevelSearchLayer.h"
 #include "LevelSelectLayer.h"
 #include "MenuItemSpriteExtra.h"
 #include "format.h"
 #include <AudioEngine.h>
 #include <ccMacros.h>
-#include "EffectGameObject.h"
-#include "ImGui/imgui/imgui.h"
-#include "ImGui/ImGuiPresenter.h"
-#include "CocosExplorer.h"
-#include "GJGameLevel.h"
-#include "2d/CCTransition.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
@@ -215,7 +215,7 @@ void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 		_showDebugMenu = !_showDebugMenu;
 		if (_showDebugMenu)
 			CocosExplorer::close();
-		else 
+		else
 			CocosExplorer::open();
 	}
 	break;
@@ -258,13 +258,29 @@ void LevelDebugLayer::update(float delta)
 	cam->setPosition(cam->getPosition() + (_camInput * _camSpeed * delta));
 	_BG->setPosition({cam->getPosition().x, cam->getPosition().y - winSize.y / 2});
 
+	const double delta60 = delta * 60.0;
+	const double delta240 = delta60 * 4.0;
+	const float newStepCount = delta240 < 0.0 ? ceil(delta240 - 0.5) : floor(delta240 + 0.5);
+	int subStepCount = 4;
+	if (newStepCount >= 4.0)
+	{
+		subStepCount = static_cast<int>(newStepCount);
+	}
+
+	const float stepDelta60 = delta60 / (float)subStepCount;
+	const double stepDelta = delta / (float)subStepCount;
+
 	if (this->_colorChannels.contains(1000))
 	{
 		this->_BG->setColor(this->_colorChannels.at(1000)._color);
 	}
 
-	_effectManager->prepareMoveActions(delta, 0);
-	this->processMoveActionsStep(delta);
+	for (int curStep = 0; curStep < subStepCount; curStep++)
+	{
+		const bool isLastSubStep = curStep == (subStepCount - 1);
+		_effectManager->prepareMoveActions(stepDelta, !isLastSubStep);
+		this->processMoveActionsStep(stepDelta);
+	}
 
 	updateVisibility();
 	updateTriggers(delta);

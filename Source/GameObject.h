@@ -102,6 +102,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	virtual void setScaleX(float scalex) override;
 	virtual void setScaleY(float scaley) override;
 	virtual void setOpacity(uint8_t opacity) override;
+	
 
 	void setStartPosition(ax::Vec2 pos) { _startPosition = pos; }
 

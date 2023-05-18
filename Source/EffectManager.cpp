@@ -50,6 +50,8 @@ void EffectManager::prepareMoveActions(float dt, bool idk)
 			if (!commandObject->_actionDoneForNextLoop)
 			{
 				commandObject->step(dt);
+				moveNode->_delta1 = commandObject->_delta1;
+				commandObject->_delta2 += commandObject->_delta1;
 
 				unk = commandObject->_unkPoint, newPos = commandObject->_newPos;
 
@@ -80,6 +82,8 @@ void EffectManager::prepareMoveActions(float dt, bool idk)
                 moveNode->_newPosOptimized.x += newPos.x;
 				moveNode->_newPosOptimized.y += newPos.y;
             }
+
+			commandObject->_delta1 = 0;
 
             if(commandObject->_actionDoneForNextLoop)
                 this->_tempCompletedActions.push_back(commandObject);
