@@ -36,6 +36,7 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 			_hasGlow = true;
 			_glowSprite->setBlendFunc(GameToolbox::getBlending());
 			_glowSprite->setStretchEnabled(false);
+			_glowSprite->setLocalZOrder(-1);
 			_glowSprite->retain();
 		}
 	}
@@ -215,42 +216,49 @@ GameObject* GameObject::create(std::string_view frame, std::string_view glowFram
 	return nullptr;
 }
 
+void GameObject::setPosition(const ax::Vec2& pos)
+{
+	Sprite::setPosition(pos);
+	if(_hasGlow)
+		_glowSprite->setPosition(pos);
+	if(_hasParticle)
+		_particle->setPosition(pos);
+}
+void GameObject::setRotation(float rotation)
+{
+	Sprite::setRotation(rotation);
+	if(_hasGlow)
+		_glowSprite->setRotation(rotation);
+	if(_hasParticle)
+		_particle->setRotation(rotation);
+}
+void GameObject::setScaleX(float scalex)
+{
+	Sprite::setScaleX(scalex);
+	if(_hasGlow)
+		_glowSprite->setScaleX(scalex);
+	if(_hasParticle)
+		_particle->setRotation(scalex * (isFlippedX() ? -1.f : 1.f));
+}
+void GameObject::setScaleY(float scaley)
+{
+	Sprite::setScaleY(scaley);
+	if(_hasGlow)
+		_glowSprite->setScaleY(scaley);
+	if(_hasParticle)
+		_particle->setScaleY(scaley * (isFlippedX() ? -1.f : 1.f));
+}
+void GameObject::setOpacity(uint8_t opacity)
+{
+	Sprite::setOpacity(opacity);
+	if(_hasGlow)
+		_glowSprite->setOpacity(opacity);
+	if(_hasParticle)
+		_particle->setOpacity(opacity);
+}
+
 void GameObject::update()
 {
-	if (_hasGlow)
-	{
-		auto pos = getPosition();
-
-		if (_glowSprite->getPosition() != pos)
-			_glowSprite->setPosition(pos);
-
-		_glowSprite->setScaleX(getScaleX());
-		_glowSprite->setScaleY(getScaleY());
-		_glowSprite->setRotation(getRotation());
-		_glowSprite->setFlippedX(isFlippedX());
-		_glowSprite->setFlippedY(isFlippedY());
-		_glowSprite->setLocalZOrder(-1);
-		float op = getOpacity();
-
-		if (_glowSprite->getOpacity() != op)
-			_glowSprite->setOpacity(op);
-	}
-	if (_hasParticle)
-	{
-		auto pos = getPosition();
-
-		if (_particle->getPosition() != pos)
-			_particle->setPosition(pos);
-
-		_particle->setRotation(getRotation());
-		_particle->setScaleX(getScaleX() * (isFlippedX() ? -1.f : 1.f));
-		_particle->setScaleY(getScaleY() * (isFlippedY() ? -1.f : 1.f));
-		float op = getOpacity();
-
-		if (_particle->getOpacity() != op)
-			_particle->setOpacity(op);
-	}
-
 	if (getEnterEffectID() == 0)
 	{
 		//setPosition(_startPosition);
@@ -261,6 +269,8 @@ void GameObject::update()
 	auto bgl = BaseGameLayer::getInstance();
 	if (!bgl)
 		return;
+
+	this->setPosition(this->_startPosition + this->_startPosOffset);
 
 	float opacityMultiplier = 1.f;
 

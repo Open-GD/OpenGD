@@ -1,9 +1,9 @@
 #include "BaseGameLayer.h"
 #include "EffectGameObject.h"
-#include "GameToolbox.h"
-#include "external/json.hpp"
 #include "GJGameLevel.h"
+#include "GameToolbox.h"
 #include "external/benchmark.h"
+#include "external/json.hpp"
 
 #include <2d/CCSpriteBatchNode.h>
 
@@ -38,12 +38,14 @@ bool BaseGameLayer::init(GJGameLevel* level)
 	_instance = this;
 	_level = level;
 
+	_effectManager = EffectManager::create();
+	this->addChild(_effectManager);
+
 	initBatchNodes();
 	loadLevel();
 
 	return true;
 }
-
 
 void BaseGameLayer::loadLevel()
 {
@@ -342,7 +344,7 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 		}
 	}
 
-	//change to get the player color not from player
+	// change to get the player color not from player
 	//_colorChannels[1005]._color = _player1->getMainColor();
 	_colorChannels[1005]._blending = true;
 	//_colorChannels[1006]._color = _player1->getSecondaryColor();
@@ -397,4 +399,71 @@ void BaseGameLayer::addObject(GameObject* obj)
 void BaseGameLayer::loadLevelData(std::string_view levelDataString)
 {
 	// std::vector<std::string_view> levelData = GameToolbox::splitByDelimStringView(levelDataString, ',');
+}
+
+void BaseGameLayer::processMoveActions(float dt)
+{
+	for (auto dictObject : this->_effectManager->_activeMoveActions)
+	{
+		GroupProperties* currentGroup;
+		float x, y;
+		if (!this->_groups.contains(dictObject.first))
+		{
+			GroupProperties gp;
+			this->_groups.insert({dictObject.first, gp});
+			currentGroup = &gp;
+		}
+		else
+			currentGroup = &this->_groups[dictObject.first];
+		x = dictObject.second->_newPosOptimized.x;
+		y = dictObject.second->_newPosOptimized.y;
+
+		if (currentGroup && (x != 0 || y != 0))
+		{
+			for (auto obj : currentGroup->_objects)
+			{
+				if (!obj->_unkbool)
+				{
+					obj->_firstPosition.x = obj->_startPosition.x + obj->_startPosOffset.x;
+					obj->_firstPosition.y = obj->_startPosition.y + obj->_startPosOffset.y;
+					obj->_unkbool = true;
+				}
+
+				if (y != 0)
+					obj->_startPosOffset.y += y;
+				if (x != 0)
+				{
+					obj->_startPosOffset.x += x;
+
+					int sectionSize = this->_sectionObjects.size();
+					auto section = BaseGameLayer::sectionForPos(obj->_startPosition.x + obj->_startPosOffset.x);
+					section = section - 1 < 0 ? 0 : section - 1;
+					if (obj->_section != section)
+					{
+						auto vec = &this->_sectionObjects[obj->_section];
+						auto newEnd = std::partition(vec->begin(), vec->end(), [&](GameObject* a) { return a != obj; });
+						vec->resize(newEnd - vec->begin());
+						while (section >= sectionSize)
+						{
+							std::vector<GameObject*> vec;
+							this->_sectionObjects.push_back(vec);
+							sectionSize++;
+						}
+						this->_sectionObjects[section].push_back(obj);
+						obj->_section = section;
+					}
+				}
+			}
+		}
+	}
+}
+
+void BaseGameLayer::runMoveCommand(float duration, ax::Point offsetPos, int easeType, float easeAmt, int groupID)
+{
+	this->_effectManager->runMoveCommand(duration, offsetPos, easeType, easeAmt, groupID);
+}
+
+void BaseGameLayer::processMoveActionsStep(float dt)
+{
+	this->processMoveActions(dt);
 }

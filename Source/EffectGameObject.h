@@ -40,14 +40,11 @@ public:
 
 	bool _lockToPlayerX, _lockToPlayerY;
 
-	bool _scheduledRemoval;
-
 private:
 	virtual void updateTweenAction(float value, std::string_view key) override;
-	ax::Action* actionEasing(ax::ActionInterval* ac);
 
 public:
 	void triggerActivated(float);
 	static EffectGameObject *create(std::string_view frame);
-	void update(float dt) override;
+	static ax::Action* actionEasing(ax::ActionInterval* ac, int ease, float rate);
 };

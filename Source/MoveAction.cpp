@@ -37,36 +37,51 @@ void MoveAction::startWithTarget(ax::Node* target)
 	GameToolbox::log("action start");
 }
 
-ax::Vec2 currentPos, diff, newPos;
-
 void MoveAction::update(float time)
 {
 #if AX_ENABLE_STACKABLE_ACTIONS
 	size_t i = 0;
+	auto bgl = BaseGameLayer::getInstance();
+	auto sectionObjects = &bgl->_sectionObjects;
+	int sectionSize = sectionObjects->size();
+	ax::Vec2 currentPos, diff, newPos;
+	float posx, posy;
+	ax::Vec2 cool;
 	for (auto obj : _group->_objects)
 	{
-		currentPos = obj->getPosition();
-		diff = currentPos - _prevPositions[i];
-		_startPositions[i] = _startPositions[i] + diff;
-		newPos = _startPositions[i] + (_posDelta * time);
-		obj->setPosition(newPos);
-		_prevPositions[i] = newPos;
+		obj->getPosition(&posx, &posy);
+		currentPos = {posx, posy};
+		if (i == 0)
+		{
+			diff = currentPos - _prevPositions[i];
+			_startPositions[i] = _startPositions[i] + diff;
+			newPos = _startPositions[i] + (_posDelta * time);
+			obj->setPosition(newPos);
+			_prevPositions[i] = newPos;
+			cool = newPos - currentPos;
+		}
+		else 
+		{
+			newPos = currentPos + cool;
+			obj->setPosition(newPos);
+		}
 		auto section = BaseGameLayer::sectionForPos(newPos.x);
 		section = section - 1 < 0 ? 0 : section - 1;
 		if (obj->_section != section)
 		{
-			auto bgl = BaseGameLayer::getInstance();
-			auto vec = &bgl->_sectionObjects[obj->_section];
-			vec->erase(std::remove_if(vec->begin(), vec->end(), [&](GameObject* a) { return a == obj; }), vec->end());
-			while (section >= bgl->_sectionObjects.size())
+			auto vec = &(*sectionObjects)[obj->_section];
+			auto newEnd = std::partition(vec->begin(), vec->end(), [&](GameObject* a) { return a != obj; });
+			vec->resize(newEnd - vec->begin());
+			while (section >= sectionSize)
 			{
 				std::vector<GameObject*> vec;
 				bgl->_sectionObjects.push_back(vec);
+				sectionSize++;
 			}
-			bgl->_sectionObjects[section].push_back(obj);
+			(*sectionObjects)[section].push_back(obj);
 			obj->_section = section;
 		}
-		i++;
+		++i;
 	}
 #else
 	for (auto obj : _group->_objects)

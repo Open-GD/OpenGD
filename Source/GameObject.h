@@ -9,6 +9,7 @@
 #include "2d/CCActionTween.h"
 #include "math/Rect.h"
 #include "math/Vec2.h"
+#include "SpriteColor.h"
 
 class PlayerObject;
 namespace ax 
@@ -88,11 +89,19 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	std::vector<ax::Sprite*> _detailSprites;
 	std::string _texturePath;
 
-	ax::Vec2 _startPosition;
+	ax::Vec2 _startPosition, _firstPosition, _startPosOffset;
 
 	float _effectOpacityMultipler = 1.f;
 
+	bool _unkbool;
+
 	std::vector<int> _groups;
+
+	virtual void setPosition(const ax::Vec2& pos) override;
+	virtual void setRotation(float rotation) override;
+	virtual void setScaleX(float scalex) override;
+	virtual void setScaleY(float scaley) override;
+	virtual void setOpacity(uint8_t opacity) override;
 
 	void setStartPosition(ax::Vec2 pos) { _startPosition = pos; }
 

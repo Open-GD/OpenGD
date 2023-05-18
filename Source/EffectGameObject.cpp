@@ -2,33 +2,32 @@
 #include "BaseGameLayer.h"
 #include "ColorAction.h"
 #include "GameToolbox.h"
-#include "MoveAction.h"
 #include "PlayLayer.h"
 #include "2d/CCActionEase.h"
 
 USING_NS_AX;
 
-Action* EffectGameObject::actionEasing(ActionInterval* ac)
+Action* EffectGameObject::actionEasing(ActionInterval* ac, int ease, float rate)
 {
-	switch (_easing)
+	switch (ease)
 	{
 	case 1:
-		return EaseInOut::create(ac, _easeRate);
+		return EaseInOut::create(ac, rate);
 		break;
 	case 2:
-		return EaseIn::create(ac, _easeRate);
+		return EaseIn::create(ac, rate);
 		break;
 	case 3:
-		return EaseOut::create(ac, _easeRate);
+		return EaseOut::create(ac, rate);
 		break;
 	case 4:
-		return EaseElasticInOut::create(ac, _easeRate);
+		return EaseElasticInOut::create(ac, rate);
 		break;
 	case 5:
-		return EaseElasticIn::create(ac, _easeRate);
+		return EaseElasticIn::create(ac, rate);
 		break;
 	case 6:
-		return EaseElasticOut::create(ac, _easeRate);
+		return EaseElasticOut::create(ac, rate);
 		break;
 	case 7:
 		return EaseBounceInOut::create(ac);
@@ -131,7 +130,7 @@ void EffectGameObject::triggerActivated(float)
 			_color = GameToolbox::hsvToRgb(hsv);
 		}
 
-		this->runAction(ColorAction::create(_duration, &_bgl->_colorChannels.at(_targetColorId),
+		_bgl->runAction(ColorAction::create(_duration, &_bgl->_colorChannels.at(_targetColorId),
 											_bgl->_colorChannels.at(_targetColorId)._color, _color,
 											_bgl->_colorChannels.at(_targetColorId)._opacity, _opacity));
 		_bgl->_colorChannels.at(_targetColorId)._blending = _blending;
@@ -167,7 +166,7 @@ void EffectGameObject::triggerActivated(float)
 			pl->_enterEffectID = 3;
 		break;
 	case 901: {
-		runAction(actionEasing(MoveAction::create(_duration, _offset, &_bgl->_groups[_targetGroupId])));
+		_bgl->runMoveCommand(_duration, _offset, _easing, _easeRate, _targetGroupId);
 	}
 	break;
 	case 1007:
@@ -229,7 +228,7 @@ void EffectGameObject::triggerActivated(float)
 										 ColorAction::create(_hold, colPointer, target, target),
 										 ColorAction::create(_fadeOut, colPointer, target, original)});
 
-		this->runAction(seq);
+		_bgl->runAction(seq);
 		break;
 	}
 	case 1049:
@@ -251,13 +250,6 @@ void EffectGameObject::triggerActivated(float)
 
 		break;
 	}
-}
-
-void EffectGameObject::update(float dt)
-{
-	GameObject::update();
-	if (_scheduledRemoval && getNumberOfRunningActions() <= 0)
-		removeFromGameLayer();
 }
 
 void EffectGameObject::updateTweenAction(float value, std::string_view key)

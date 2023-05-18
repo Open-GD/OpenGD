@@ -8,6 +8,7 @@
 #include "PlayerObject.h"
 #include "SpriteColor.h"
 #include "2d/CCLayer.h"
+#include "EffectManager.h"
 
 class GameObject;
 class BaseGameLayer;
@@ -72,6 +73,8 @@ protected:
 	LevelSettings _levelSettings;
 	int _prevSection, _nextSection;
 
+	EffectManager* _effectManager;
+
 public:
 
 	GJGameLevel* _level;
@@ -90,10 +93,13 @@ protected:
     void addObject(GameObject* obj);
     void loadLevelData(std::string_view data);
 	void fillColorChannel(std::span<std::string_view> colorString, int id);
+	void processMoveActionsStep(float dt);
+	void processMoveActions(float dt);
 public:
     static BaseGameLayer* create(GJGameLevel*);
     bool init(GJGameLevel*);
 	static int sectionForPos(float x);
 	static BaseGameLayer* getInstance() {return _instance;}
 	bool isObjectBlending(GameObject* obj);
+	void runMoveCommand(float duration, ax::Point offsetPos, int easeType, float easeAmt, int groupID);
 };

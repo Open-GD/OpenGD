@@ -263,6 +263,9 @@ void LevelDebugLayer::update(float delta)
 		this->_BG->setColor(this->_colorChannels.at(1000)._color);
 	}
 
+	_effectManager->prepareMoveActions(delta, 0);
+	this->processMoveActionsStep(delta);
+
 	updateVisibility();
 	updateTriggers(delta);
 }
@@ -398,9 +401,6 @@ void LevelDebugLayer::updateVisibility()
 						AX_SAFE_RELEASE(obj);
 					}
 
-					if (section[j]->_isTrigger)
-						static_cast<EffectGameObject*>(section[j])->_scheduledRemoval = false;
-
 					obj->setActive(true);
 					obj->update();
 				}
@@ -415,10 +415,7 @@ void LevelDebugLayer::updateVisibility()
 		{
 			if (section[j]->getParent() != nullptr)
 			{
-				if (section[j]->_isTrigger)
-					static_cast<EffectGameObject*>(section[j])->_scheduledRemoval = true;
-				else
-					section[j]->removeFromGameLayer();
+				section[j]->removeFromGameLayer();
 			}
 		}
 	}
@@ -430,10 +427,7 @@ void LevelDebugLayer::updateVisibility()
 		{
 			if (section[j]->getParent() != nullptr)
 			{
-				if (section[j]->_isTrigger)
-					static_cast<EffectGameObject*>(section[j])->_scheduledRemoval = true;
-				else
-					section[j]->removeFromGameLayer();
+				section[j]->removeFromGameLayer();
 			}
 		}
 	}
