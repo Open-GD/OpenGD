@@ -11,6 +11,7 @@
 #include "LevelTools.h"
 #include "2d/CCTransition.h"
 #include "base/CCDirector.h"
+#include "ProfilePage.h"
 
 USING_NS_AX;
 
@@ -340,7 +341,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	if (level->_levelCreator == "-")
 		creatorNameLabel->setColor(ax::Color3B(90, 255, 255)); // thanks gd colon
 
-	auto creatorLabelMenuItem = MenuItemSpriteExtra::create(creatorNameLabel, [](Node*) {});
+	auto creatorLabelMenuItem = MenuItemSpriteExtra::create(creatorNameLabel, [level](Node*) { ProfilePage::create(level->_playerID, false)->show(); });
 	creatorLabelMenuItem->setPosition(
 		menu->convertToNodeSpace(levelNameLabel->getPosition() + Point(((creatorNameLabel->getContentSize().width / 2) * creatorNameLabel->getScale()) + 2, -22))
 	);
