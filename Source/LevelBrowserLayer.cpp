@@ -176,7 +176,6 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 		if((*str).length() < 5)
 			return;
 		
-		GameToolbox::log("response: {}", *str);
 		auto splits = GameToolbox::splitByDelimStringView((*str), '#');
 		auto levels = GameToolbox::splitByDelimStringView(splits[0], '|');
 		auto authorsStrings = GameToolbox::splitByDelimStringView(splits[1], '|');

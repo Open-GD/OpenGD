@@ -13,7 +13,7 @@ namespace ax
 class ProfilePage : public PopupLayer
 {
 public:
-	static ProfilePage* create(int accountID, bool idk);
+	static ProfilePage* create(int accountID, bool mainMenuProfile);
 
-	bool init(int accountID, bool idk);
+	bool init(int accountID, bool mainMenuProfile);
 };

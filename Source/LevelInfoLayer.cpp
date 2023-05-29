@@ -304,7 +304,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 void LevelInfoLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	GameToolbox::log("ON COMPLETEDDDDDDDDD");
-
+	
 	std::string_view tag = response->getHttpRequest()->getTag();
 	
 	GameToolbox::log("tag: {}", tag);
