@@ -8,6 +8,9 @@
 #include "ccUTF8.h"
 #include "base/CCDirector.h"
 #include "LoadingCircle.h"
+#include "SimplePlayer.h"
+#include "GameManager.h"
+#include "GJUserScore.h"
 
 USING_NS_AX;
 
@@ -25,6 +28,108 @@ ProfilePage* ProfilePage::create(int accountID, bool mainMenuProfile)
 	return nullptr;
 }
 
+void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUserScore* score'
+{
+	const auto& winSize = Director::getInstance()->getWinSize();
+
+	//GameToolbox::limitLabelWidth(playerName, 185.0f, 0.9f, 0.0f);
+
+	auto playerStatsNode = Node::create();
+	std::string statSpriteName;
+
+	bool hasCP = false; // todo
+
+	int widthLimit = hasCP ? 50 : 60;
+
+	for (int i = 0; i < (hasCP ? 6 : 5); i++)
+	{
+		switch (i)
+		{
+			case 1:
+				statSpriteName = "GJ_diamondsIcon_001.png";
+				break;
+			case 2:
+				statSpriteName = "GJ_coinsIcon_001.png";
+				break;
+			case 3:
+				statSpriteName = "GJ_coinsIcon2_001.png";
+				break;
+			case 4:
+				statSpriteName = "GJ_demonIcon_001.png";
+				break;
+			case 5:
+				statSpriteName = "GJ_hammerIcon_001.png";
+				break;
+			default:
+				statSpriteName = "GJ_starsIcon_001.png";
+				break;
+		}
+		auto statValueLabel = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "1000");
+		GameToolbox::limitLabelWidth(statValueLabel, widthLimit, 0.6, 0.0);
+
+		playerStatsNode->addChild(statValueLabel);
+
+		auto statSprite = Sprite::createWithSpriteFrameName(statSpriteName);
+
+		playerStatsNode->addChild(statSprite);
+		
+	}
+	
+	float offset = 420.0;
+
+	if (true) // if has more than 2 social medias linked
+	{
+		offset = 340.0;
+	}
+
+	playerStatsNode->setPosition(winSize.width / 2 - offset / 2, winSize.height / 2 + 85);
+	this->_mainLayer->addChild(playerStatsNode);
+
+	IconType gamemode;
+	int iconID;
+
+	for (int i = 0; i < 7; i++)
+	{
+		switch(i)
+		{
+			case 0:
+				gamemode = kIconTypeCube;
+				iconID = score->_accIcon;
+				break;
+			case 1:
+				gamemode = kIconTypeShip;
+				iconID = score->_accShip;
+				break;
+			case 2:
+				gamemode = kIconTypeBall;
+				iconID = score->_accBall;
+				break;
+			case 3:
+				gamemode = kIconTypeUfo;
+				iconID = score->_accBird;
+				break;
+			case 4:
+				gamemode = kIconTypeWave;
+				iconID = score->_accDart;
+				break;
+			case 5:
+				gamemode = kIconTypeRobot;
+				iconID = score->_accRobot;
+				break;
+			case 6:
+				gamemode = kIconTypeSpider;
+				iconID = score->_accSpider;
+				break;
+		}
+
+		SimplePlayer* iconSprite = SimplePlayer::create(iconID);
+		iconSprite->updateGamemode(iconID, gamemode);
+		ax::Vec2 iconPos = {i * 48.0f - 144.0f, 0.0f};
+		iconSprite->setPosition(iconPos.operator+({winSize.width / 2, winSize.height / 2 + 40.0f}));
+		this->_mainLayer->addChild(iconSprite);
+	}
+}
+
 bool ProfilePage::init(int accountID, bool mainMenuProfile)
 {
 	if (!PopupLayer::init()) return false;
@@ -38,6 +143,7 @@ bool ProfilePage::init(int accountID, bool mainMenuProfile)
 
 	auto playerName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Hello World");
 	playerName->setPosition({ winSize.width / 2, ((winSize.height / 2) + 145.0f) - 20.0f});
+	GameToolbox::limitLabelWidth(playerName, 185.0f, 0.9f, 0.0f);
 
 	this->_mainLayer->addChild(playerName);
 
@@ -97,6 +203,8 @@ bool ProfilePage::init(int accountID, bool mainMenuProfile)
 
 	refreshBtn->setPosition(menu->convertToNodeSpace({(winSize.width / 2 - 220.0f) + 10.0f, (winSize.height / 2 - 145.0f) + 10.0f + 1.0f}));
 	refreshBtn->setScaleMultiplier(1.5f);
+
+	loadPageFromUserInfo(0); // temporary
 
 	menu->addChild(refreshBtn);
 

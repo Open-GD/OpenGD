@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PopupLayer.h"
+#include "GJUserScore.h"
 
 class ProfilePage;
 
@@ -16,4 +17,5 @@ public:
 	static ProfilePage* create(int accountID, bool mainMenuProfile);
 
 	bool init(int accountID, bool mainMenuProfile);
+	void loadPageFromUserInfo(GJUserScore* score);
 };
