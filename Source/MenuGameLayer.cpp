@@ -4,8 +4,26 @@
 #include "2d/CCMenu.h"
 #include "PlayerObject.h"
 #include "base/CCDirector.h"
+#include "CCEventListenerTouch.h"
+#include "CCEventDispatcher.h"
 
 USING_NS_AX;
+
+MenuGameLayer* MenuGameLayer::create()
+{
+	MenuGameLayer* pRet = new MenuGameLayer();
+	if (pRet->init())
+	{
+		pRet->autorelease();
+		return pRet;
+	}
+	else
+	{
+		delete pRet;
+		pRet = nullptr;
+		return nullptr;
+	}
+}
 
 Scene* MenuGameLayer::scene() {
 	auto scene = Scene::create();
@@ -88,7 +106,14 @@ bool MenuGameLayer::init(){
 	// );
 	
 	scheduleUpdate();
-	
+
+	auto listener = EventListenerTouchOneByOne::create();
+
+	listener->setEnabled(true);
+	listener->setSwallowTouches(true);
+	listener->onTouchBegan = AX_CALLBACK_2(MenuGameLayer::onTouchBegan, this);
+	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+
 	return true;
 }
 void MenuGameLayer::processPlayerMovement(float delta) {
@@ -99,21 +124,29 @@ void MenuGameLayer::processPlayerMovement(float delta) {
 	this->player->setPositionX(this->player->getPositionX() + (step * 18.f));
 
 	if(this->player->getPositionX() >= winSize.width + player->getContentSize().width) {
-		player->setPosition({-300, 93.f});
-		auto mainColor = GameToolbox::randomColor3B();
-		auto secondaryColor = GameToolbox::randomColor3B();
-		player->setMainColor(mainColor);
-		player->setSecondaryColor(secondaryColor);
+		this->resetPlayer(false);
 	}
 }
+
+void MenuGameLayer::resetPlayer(bool touched)
+{
+	float x = touched ? -600.0f : -300.0f;
+	player->setPosition({x, 93.f});
+	auto mainColor = GameToolbox::randomColor3B();
+	auto secondaryColor = GameToolbox::randomColor3B();
+	player->setMainColor(mainColor);
+	player->setSecondaryColor(secondaryColor);
+}
+
 void MenuGameLayer::processBackground(float delta) {
-	if(this->bgStartPos - bgSprites->getPositionX() < this->bsizeX) 
+	float xpos =  bgSprites->getPositionX();
+	if(this->bgStartPos - xpos < this->bsizeX) 
 	{
-		bgSprites->setPositionX(bgSprites->getPositionX() - this->sep);
+		bgSprites->setPositionX(xpos - this->sep);
 	}
 	else 
 	{
-		bgSprites->setPositionX(bgSprites->getPositionX() + this->bsizeX);
+		bgSprites->setPositionX(xpos + this->bsizeX);
 	}
 }
 
@@ -121,4 +154,27 @@ void MenuGameLayer::update(float delta) {
 	processBackground(delta);
 	processPlayerMovement(delta);
 	groundLayer->update(delta * 60.0f);
+}
+
+//void MenuGameLayer::renderRect(ax::Rect rect, ax::Color4B col)
+//{
+//	_dnHitbox->drawRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()}, col);
+//	_dnHitbox->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxY()},
+//					  Color4B(col.r, col.g, col.b, 100));
+//}
+
+bool MenuGameLayer::onTouchBegan(ax::Touch* touch, ax::Event* event)
+{
+	auto touchPos = touch->getLocation();
+	ax::Rect hitbox = player->getBoundingBox();
+
+	//hitbox probably needs to be adjusted because it feels a bit off atm
+	//constexpr float hitboxMult = 2.5f;
+	//hitbox.origin -= {hitboxMult, hitboxMult};
+	//hitbox.size += {hitboxMult * 2, hitboxMult * 2};
+	
+	if(hitbox.containsPoint(touchPos)) {
+		this->resetPlayer(true);
+	}
+	return true;
 }
