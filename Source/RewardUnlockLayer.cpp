@@ -38,6 +38,8 @@ bool RewardUnlockLayer::init(int chestID)
 	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_square02.png"));
 	bg->setContentSize({ 340.0, 220.0 });
 	bg->setPosition(winSize / 2);
+	bg->setOpacity(0);
+	bg->runAction(FadeIn::create(0.2));
 	this->_mainLayer->addChild(bg);
 
 	for (int i = 0; i < 4; i++)
@@ -68,6 +70,8 @@ bool RewardUnlockLayer::init(int chestID)
 			default:
 				yPosition = 85.0;
 		}
+		rewardsCorners->setOpacity(0);
+		rewardsCorners->runAction(FadeIn::create(0.2));
 		rewardsCorners->setPosition(winSize.width / 2 + xPosition, winSize.height / 2 + yPosition);
 	}
 
@@ -99,5 +103,18 @@ bool RewardUnlockLayer::init(int chestID)
 
 	chestSprite->runAction(EaseBounceOut::create(MoveTo::create(1.0, position.operator+({0.0, chestSprite->getContentSize().x / 2 - 10})))); // these coords were hardcoded bc i couldnt figure them out
 	chestSprite->runAction(Sequence::create(DelayTime::create(0.36f), CallFunc::create([=]() {AudioEngine::play2d("chestLand.ogg", false, 0.5f);}), 0));
+	
+	auto shake0 = DelayTime::create(1.2f);
+	auto shake1 = MoveBy::create(0.05f, {-4.0f,0.0f});
+	auto shake2 = MoveBy::create(0.05f, {4.0f,0.0f});
+	auto shake3 = MoveBy::create(0.05f, {-4.0f,0.0f});
+	auto shake4 = MoveBy::create(0.05f, {4.0f,0.0f});
+	auto shake5 = MoveBy::create(0.05f, {-4.0f,0.0f});
+	auto shake6 = MoveBy::create(0.05f, {4.0f,0.0f});
+	auto shake7 = DelayTime::create(0.2f);
+	auto shake8 = CallFunc::create([=]() { /*Chest Open!*/ });
+	
+	chestSprite->runAction(Sequence::create(shake0, shake1, shake2, shake3, shake4, shake5, shake6, shake7, shake8, 0));
+	
 	return true;
 }

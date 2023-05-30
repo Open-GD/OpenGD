@@ -4,9 +4,8 @@
 
 enum Transitions
 {
-	kScaleUp,
 	kNone,
-	kFadeIn
+	kScaleUp
 };
 
 class PopupLayer : public ax::LayerColor {

@@ -122,7 +122,7 @@ void RewardsLayer::onChestClicked(int chestID)
 	else
 	{
 		timer = _dailyChestTimer2;
-		RewardUnlockLayer::create(chestID)->show(kFadeIn);
+		RewardUnlockLayer::create(chestID)->show(kNone);
 		return;
 	}
 	this->stopAllActions();

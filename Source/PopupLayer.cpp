@@ -14,15 +14,14 @@ void PopupLayer::show(Transitions transitions)
 
 	switch (transitions)
 	{
-		case kFadeIn:
-			this->_mainLayer->runAction(FadeIn::create(0.2f));
-			this->runAction(FadeTo::create(0.2f, 150));
+		case kNone:
 			break;
 		default:
 			this->_mainLayer->setScale(0.1f);
 			this->_mainLayer->runAction(EaseElasticOut::create(ScaleTo::create(0.5f, 1.0f), 0.6f));
-			this->runAction(FadeTo::create(0.14, 150));
 	}
+
+	this->runAction(FadeTo::create(0.14, 150));
 
 	if(!getParent())
 	{
