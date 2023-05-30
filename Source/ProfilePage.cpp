@@ -37,9 +37,9 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 	//GameToolbox::limitLabelWidth(playerName, 185.0f, 0.9f, 0.0f);
 
 	auto playerStatsNode = Node::create();
-	std::string statSpriteName;
+	std::string_view statSpriteName;
 
-	bool hasCP = (score->_creatorpoints > 0) ? true : false;
+	bool hasCP = score->_creatorpoints > 0;
 
 	int widthLimit = hasCP ? 50 : 60;
 	int statValue;
@@ -139,6 +139,7 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 		iconSprite->setSecondaryColor(GameToolbox::colorForIdx(score->_playerColor2));
 		if (score->_accGlow){iconSprite->setGlow(true);iconSprite->setGlowColor(GameToolbox::colorForIdx(score->_playerColor2));}
 		this->_mainLayer->addChild(iconSprite);
+		_loadingcircle->setVisible(false);
 	}
 }
 
@@ -212,11 +213,14 @@ bool ProfilePage::init(int accountID, bool mainMenuProfile)
 	_loadingcircle->setPosition({ winSize.width / 2, winSize.height / 2 - 53.0f});
 	this->_mainLayer->addChild(_loadingcircle);
 
-	auto refreshBtnSprite = Sprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
-	auto refreshBtn = MenuItemSpriteExtra::create(refreshBtnSprite, [&](Node*) { /*Refresh Function*/ });
-
-	refreshBtn->setPosition(menu->convertToNodeSpace({(winSize.width / 2 - 220.0f) + 10.0f, (winSize.height / 2 - 145.0f) + 10.0f + 1.0f}));
-	refreshBtn->setScaleMultiplier(1.5f);
+	if(mainMenuProfile)
+	{
+		auto refreshBtnSprite = Sprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
+		auto refreshBtn = MenuItemSpriteExtra::create(refreshBtnSprite, [&](Node*) { /*Refresh Function*/ });
+		refreshBtn->setPosition(menu->convertToNodeSpace({(winSize.width / 2 - 220.0f) + 10.0f, (winSize.height / 2 - 145.0f) + 10.0f + 1.0f}));
+		refreshBtn->setScaleMultiplier(1.5f);
+		menu->addChild(refreshBtn);
+	}
 
 	std::string postData = fmt::format("secret=Wmfd2893gb7&targetAccountID={}", accountID);
 	
@@ -230,7 +234,6 @@ bool ProfilePage::init(int accountID, bool mainMenuProfile)
 	ax::network::HttpClient::getInstance()->send(_request);
 	_request->release();
 
-	menu->addChild(refreshBtn);
 
 	this->_mainLayer->addChild(menu);
 
@@ -241,11 +244,16 @@ void ProfilePage::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::ne
 {
 	if (auto str = GameToolbox::getResponse(response))
 	{
-		GameToolbox::log("{}", (*str));
-		if (*str == "-1") return;
-		auto score = GJUserScore::createWithResponse((*str));
+		std::string_view strResp {*str};
+		
+		GameToolbox::log("{}", strResp);
+		auto score = GJUserScore::createWithResponse(strResp);
 		loadPageFromUserInfo(score);
-		return;
+		delete score;
+
 	}
-	_errorMsg->setVisible(true);
+	else {
+		GameToolbox::log("test");
+		_errorMsg->setVisible(true);
+	}
 }
