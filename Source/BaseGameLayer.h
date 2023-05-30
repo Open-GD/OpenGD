@@ -78,7 +78,7 @@ protected:
 public:
 
 	GJGameLevel* _level;
-    std::vector<GameObject*> _allObjects;
+	std::vector<GameObject*> _allObjects;
 	std::vector<std::vector<GameObject*>> _sectionObjects;
 	std::unordered_map<int, SpriteColor> _colorChannels, _originalColors;
 	std::unordered_map<int, GroupProperties> _groups;
@@ -86,18 +86,18 @@ public:
 	PlayerObject* _player1, _player2;
 
 protected:
-    void loadLevel();
-    void initBatchNodes();
-    void createObjectsFromSetup(std::string_view uncompressedLevelString);
+	void loadLevel();
+	void initBatchNodes();
+	void createObjectsFromSetup(std::string_view uncompressedLevelString);
 	void setupLevel(std::string_view uncompressedLevelString);
-    void addObject(GameObject* obj);
-    void loadLevelData(std::string_view data);
+	void addObject(GameObject* obj);
+	void loadLevelData(std::string_view data);
 	void fillColorChannel(std::span<std::string_view> colorString, int id);
 	void processMoveActionsStep(float dt);
 	void processMoveActions(float dt);
 public:
-    static BaseGameLayer* create(GJGameLevel*);
-    bool init(GJGameLevel*);
+	static BaseGameLayer* create(GJGameLevel*);
+	bool init(GJGameLevel*);
 	static int sectionForPos(float x);
 	static BaseGameLayer* getInstance() {return _instance;}
 	bool isObjectBlending(GameObject* obj);

@@ -12,16 +12,16 @@ template <class B>
 class Serializer<std::string, B> {
  public:
   static void serialize(const std::string& str, B& ob) {
-    const size_t n_bytes = str.size();
-    Serializer<size_t, B>::serialize(n_bytes, ob);
-    ob.write(str.data(), n_bytes);
+	const size_t n_bytes = str.size();
+	Serializer<size_t, B>::serialize(n_bytes, ob);
+	ob.write(str.data(), n_bytes);
   }
 
   static void parse(std::string& str, B& ib) {
-    size_t n_bytes;
-    Serializer<size_t, B>::parse(n_bytes, ib);
-    str.resize(n_bytes);
-    ib.read(&str[0], n_bytes);
+	size_t n_bytes;
+	Serializer<size_t, B>::parse(n_bytes, ib);
+	str.resize(n_bytes);
+	ib.read(&str[0], n_bytes);
   }
 };
 

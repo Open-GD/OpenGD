@@ -22,9 +22,9 @@ class GroupCommandObject : public ax::Node, public ax::ActionTweenDelegate
 
   ax::Action *_action1, *_action2;
 
-    void runMoveCommand(float duration, ax::Point offsetPos, int easeType, float easeAmt);
-    void step(float dt);
-    virtual void updateTweenAction(float value, std::string_view key) override;
+	void runMoveCommand(float duration, ax::Point offsetPos, int easeType, float easeAmt);
+	void step(float dt);
+	virtual void updateTweenAction(float value, std::string_view key) override;
 
-    static GroupCommandObject *create();
+	static GroupCommandObject *create();
 };

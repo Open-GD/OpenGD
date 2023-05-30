@@ -123,19 +123,19 @@ bool CreatorLayer::init()
 	
 	auto listener = EventListenerKeyboard::create();
 
-    listener->onKeyPressed  = AX_CALLBACK_2(CreatorLayer::onKeyPressed, this);
+	listener->onKeyPressed  = AX_CALLBACK_2(CreatorLayer::onKeyPressed, this);
 
-    director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+	director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
 	return true;
 }
 
 //TODO: add keybinds for other stuff
 void CreatorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) {
-    switch (keyCode) 
-    {
-    case EventKeyboard::KeyCode::KEY_BACK:
-        Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
-        break;
-    }
+	switch (keyCode) 
+	{
+	case EventKeyboard::KeyCode::KEY_BACK:
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+		break;
+	}
 }

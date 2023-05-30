@@ -77,25 +77,25 @@ void EffectManager::prepareMoveActions(float dt, bool idk)
 				moveNode->_newPosOptimized.x += newPos.x;
 				moveNode->_newPosOptimized.y += newPos.y;
 			}
-            else
-            {
-                moveNode->_newPosOptimized.x += newPos.x;
+			else
+			{
+				moveNode->_newPosOptimized.x += newPos.x;
 				moveNode->_newPosOptimized.y += newPos.y;
-            }
+			}
 
 			commandObject->_delta1 = 0;
 
-            if(commandObject->_actionDoneForNextLoop)
-                this->_tempCompletedActions.push_back(commandObject);
-            else if(commandObject->_actionDone)
-                commandObject->_actionDoneForNextLoop = true;
+			if(commandObject->_actionDoneForNextLoop)
+				this->_tempCompletedActions.push_back(commandObject);
+			else if(commandObject->_actionDone)
+				commandObject->_actionDoneForNextLoop = true;
 		}
 	}
 
-    for(auto ac : this->_tempCompletedActions)
-    {
-        this->_completedMoveActions.push_back(ac);
+	for(auto ac : this->_tempCompletedActions)
+	{
+		this->_completedMoveActions.push_back(ac);
 		this->_groupActions.erase(std::remove(this->_groupActions.begin(), this->_groupActions.end(), ac), this->_groupActions.end());
-    }
-    this->_tempCompletedActions.clear();
+	}
+	this->_tempCompletedActions.clear();
 }

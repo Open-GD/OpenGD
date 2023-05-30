@@ -58,7 +58,7 @@ public:
 	/**
 	 * Creates a sprite button.
 	 *
-	 * @param iconSprite    The icon sprite for the button.
+	 * @param iconSprite	The icon sprite for the button.
 	 * @param width   The maximum width the icon sprite can have before it shrinks.
 	 * @param minWidth   The minimum width of the button.
 	 * @param height   The height for the button.

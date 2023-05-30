@@ -33,11 +33,11 @@ private:
 public:
 	static GameManager* getInstance();
 	
-    template<typename T>
-    T get(const std::string& key);
+	template<typename T>
+	T get(const std::string& key);
 
-    template<typename T>
-    void set(const std::string& key, const T& val);
+	template<typename T>
+	void set(const std::string& key, const T& val);
 	
 	void save();
 	

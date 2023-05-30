@@ -33,11 +33,11 @@ GameManager* GameManager::getInstance()
 {
 	static GameManager* _gameManager = nullptr;
 	if (!_gameManager)
-    {
-        _gameManager = new GameManager();
+	{
+		_gameManager = new GameManager();
 		return _gameManager->init() ? _gameManager : nullptr;
-    }
-    return _gameManager;
+	}
+	return _gameManager;
 	
 }
 
@@ -77,59 +77,59 @@ void GameManager::save()
 
 void GameManager::print()
 {
-    for (const auto& [key, val] : _options.boolOptions) {
-        GameToolbox::log("boolOptions[{}] = {}", key, val);
-    }
+	for (const auto& [key, val] : _options.boolOptions) {
+		GameToolbox::log("boolOptions[{}] = {}", key, val);
+	}
 
-    for (const auto& [key, val] : _options.intOptions) {
-        GameToolbox::log("intOptions[{}] = {}", key, val);
-    }
+	for (const auto& [key, val] : _options.intOptions) {
+		GameToolbox::log("intOptions[{}] = {}", key, val);
+	}
 
-    for (const auto& [key, val] : _options.stringOptions) {
-        GameToolbox::log("stringOptions[{}] = {}", key, val);
-    }
+	for (const auto& [key, val] : _options.stringOptions) {
+		GameToolbox::log("stringOptions[{}] = {}", key, val);
+	}
 }
 
 template<>
 bool GameManager::get<bool>(const std::string& key)
 {
-    if (_options.boolOptions.count(key))
-        return _options.boolOptions.at(key);
+	if (_options.boolOptions.count(key))
+		return _options.boolOptions.at(key);
 
-    return false;
+	return false;
 }
 
 template<>
 int GameManager::get<int>(const std::string& key)
 {
-    if (_options.intOptions.count(key))
-        return _options.intOptions.at(key);
+	if (_options.intOptions.count(key))
+		return _options.intOptions.at(key);
 
-    return 0;
+	return 0;
 }
 
 template<>
 std::string GameManager::get<std::string>(const std::string& key)
 {
-    if (_options.stringOptions.count(key))
-        return _options.stringOptions.at(key);
+	if (_options.stringOptions.count(key))
+		return _options.stringOptions.at(key);
 
-    return "";
+	return "";
 }
 
 template<>
 void GameManager::set<bool>(const std::string& key, const bool& val) {
-    _options.boolOptions[key] = val;
+	_options.boolOptions[key] = val;
 }
 
 template<>
 void GameManager::set<int>(const std::string& key, const int& val) {
-    _options.intOptions[key] = val;
+	_options.intOptions[key] = val;
 }
 
 template<>
 void GameManager::set<std::string>(const std::string& key, const std::string& val) {
-    _options.stringOptions[key] = val;
+	_options.stringOptions[key] = val;
 }
 
 

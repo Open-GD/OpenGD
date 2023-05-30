@@ -13,6 +13,6 @@ public:
 	static UILayer* create();
 	bool init();
 
-    bool onTouchBegan(ax::Touch* touch, ax::Event* event);
+	bool onTouchBegan(ax::Touch* touch, ax::Event* event);
 	void onTouchEnded(ax::Touch* touch, ax::Event* event);
 };

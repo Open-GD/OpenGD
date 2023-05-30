@@ -42,11 +42,11 @@ bool UILayer::init()
 
 bool UILayer::onTouchBegan(ax::Touch* touch, ax::Event* event)
 {
-    GameToolbox::log("as-fsaf");
+	GameToolbox::log("as-fsaf");
 	auto pl = PlayLayer::getInstance();
 	pl->_player1->pushButton();
 	if (pl->_isDualMode) pl->_player2->pushButton();
-    return true;
+	return true;
 }
 
 void UILayer::onTouchEnded(ax::Touch* touch, ax::Event* event)

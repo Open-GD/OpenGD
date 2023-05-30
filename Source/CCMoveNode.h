@@ -8,5 +8,5 @@ class CCMoveNode : public ax::Node
 	ax::Point _newPosStatic, _newPosOptimized, _oldPos;
   float _delta1;
 
-    static CCMoveNode* create();
+	static CCMoveNode* create();
 };

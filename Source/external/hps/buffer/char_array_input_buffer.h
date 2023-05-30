@@ -11,20 +11,20 @@ class CharArrayInputBuffer {
   CharArrayInputBuffer(const char* arr) : arr(arr) { pos = 0; }
 
   void read(char* content, size_t length) {
-    strncpy(content, &arr[pos], length);
-    pos += length;
+	strncpy(content, &arr[pos], length);
+	pos += length;
   }
 
   char read_char() {
-    const char ch = arr[pos];
-    pos++;
-    return ch;
+	const char ch = arr[pos];
+	pos++;
+	return ch;
   }
 
   template <class T>
   CharArrayInputBuffer& operator>>(T& t) {
-    Serializer<T, CharArrayInputBuffer>::parse(t, *this);
-    return *this;
+	Serializer<T, CharArrayInputBuffer>::parse(t, *this);
+	return *this;
   }
 
  private:

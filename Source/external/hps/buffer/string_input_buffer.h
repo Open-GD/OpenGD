@@ -11,20 +11,20 @@ class StringInputBuffer {
   StringInputBuffer(const std::string& str) : str(&str) { pos = 0; }
 
   void read(char* content, size_t length) {
-    str->copy(content, length, pos);
-    pos += length;
+	str->copy(content, length, pos);
+	pos += length;
   }
 
   char read_char() {
-    const char ch = (*str)[pos];
-    pos++;
-    return ch;
+	const char ch = (*str)[pos];
+	pos++;
+	return ch;
   }
 
   template <class T>
   StringInputBuffer& operator>>(T& t) {
-    Serializer<T, StringInputBuffer>::parse(t, *this);
-    return *this;
+	Serializer<T, StringInputBuffer>::parse(t, *this);
+	return *this;
   }
 
  private:
