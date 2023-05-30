@@ -8,11 +8,21 @@
 
 USING_NS_AX;
 
-void PopupLayer::show()
+void PopupLayer::show(Transitions transitions)
 {
-	this->_mainLayer->setScale(0.1f);
-	this->_mainLayer->runAction(EaseElasticOut::create(ScaleTo::create(0.5f, 1.0f), 0.6f));
-	this->runAction(FadeTo::create(0.14, 100));
+	this->setOpacity(0);
+
+	switch (transitions)
+	{
+		case kFadeIn:
+			this->_mainLayer->runAction(FadeIn::create(0.2f));
+			this->runAction(FadeTo::create(0.2f, 150));
+			break;
+		default:
+			this->_mainLayer->setScale(0.1f);
+			this->_mainLayer->runAction(EaseElasticOut::create(ScaleTo::create(0.5f, 1.0f), 0.6f));
+			this->runAction(FadeTo::create(0.14, 150));
+	}
 
 	if(!getParent())
 	{

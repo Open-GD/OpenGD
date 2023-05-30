@@ -2,6 +2,13 @@
 
 #include "2d/CCLayer.h"
 
+enum Transitions
+{
+	kScaleUp,
+	kNone,
+	kFadeIn
+};
+
 class PopupLayer : public ax::LayerColor {
 public:
 	ax::Layer* _mainLayer;
@@ -11,6 +18,6 @@ public:
 	bool init();
 	void keyBackClicked();
 
-	virtual void show();
+	virtual void show(Transitions = kScaleUp);
 	virtual void close();
 };
