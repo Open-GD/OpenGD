@@ -23,7 +23,6 @@ public:
     int _usercoins = 0;
     int _messageState = 0;
     int _friendsState = 0;
-    std::string _youTube;
     int _accIcon = 0;
     int _accShip = 0;
     int _accBall = 0;
@@ -31,7 +30,6 @@ public:
     int _accDart = 0;
     int _accRobot = 0;
     int _accStreak = 0;
-    int _accGlow = 0;
     int _isRegistered = 0;
     int _globalRank = 0;
     int _friendState = 0;
@@ -39,14 +37,18 @@ public:
     int _friendRequests = 0;
     int _newFriends = 0;
     int _newFriendRequest = 0;
-    std::string _age;
     int _accSpider = 0;
-    std::string _twitter;
-    std::string _twitch;
     int _diamonds = 0;
     int _accExplosion = 0;
     int _modlevel = 0;
     int _commentHistoryState = 0;
+
+    bool _accGlow = 0;
+    
+    std::string _youTube;
+    std::string _age;
+    std::string _twitter;
+    std::string _twitch;
 
 	static GJUserScore *createWithResponse(std::string_view backendResponse);
 	static GJUserScore *create();

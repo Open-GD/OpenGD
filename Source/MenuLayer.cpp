@@ -204,7 +204,7 @@ bool MenuLayer::init()
 	
 	Vec2 profilePos {mainButtonMenu->convertToNodeSpace({45.0f, 105.0f})};
 	
-	_profileBtn = MenuItemSpriteExtra::create("GJ_profileButton_001.png", [](Node*){ProfilePage::create(0, true)->show();});
+	_profileBtn = MenuItemSpriteExtra::create("GJ_profileButton_001.png", [](Node*){ProfilePage::create(71, true)->show();});
 	_profileBtn->setPosition(profilePos);
 	_profileBtn->setScale(0.92f); //no setScale in 2.1 but oversized for some reason in opengd
 	mainButtonMenu->addChild(_profileBtn);

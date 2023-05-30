@@ -172,6 +172,7 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 	_loading->setVisible(false);
 	if (auto str = GameToolbox::getResponse(response))
 	{
+		GameToolbox::log("{}", *str);
 		//error codes -1, -2 etc
 		if((*str).length() < 5)
 			return;
