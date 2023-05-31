@@ -32,6 +32,14 @@ void MenuItemSpriteExtra::setScaleMultiplier(float s) {
 	m_fScaleMult = s;
 	m_fSelectedScale = m_fUnselectedScale * s;
 }
+
+void MenuItemSpriteExtra::setSpriteFrame(std::string_view frame)
+{
+	if(auto sprite = dynamic_cast<ax::Sprite*>(m_pSprite))
+	{
+		sprite->setSpriteFrame(frame);
+	}
+}
 void MenuItemSpriteExtra::selected() {
 	if (_altAnim) m_pSprite->runAction(EaseInOut::create(MoveTo::create(m_fAnimDuration, _offsetPos), 1.5f));
 	else m_pSprite->runAction(EaseBounceOut::create(ScaleTo::create(m_fAnimDuration, m_fSelectedScale)));

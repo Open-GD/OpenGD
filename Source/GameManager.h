@@ -5,12 +5,8 @@ enum IconType;
 
 class GameManager
 {
-private:
-	std::string _filepath;
-	
-	bool _mediumQuality;
-	
 public:
+	bool _mediumQuality;
 	bool _openedGarage;
 	bool _openedCreator;
 	bool _openedPracticeMode;
@@ -24,7 +20,9 @@ public:
 	int _selectedSpider;
 	int _selectedSpecial;
 	int _selectedDeathEffect;
+	int _accountID;
 	IconType _mainSelectedMode;
+	std::string _filepath;
 
 private:
 	bool init();
@@ -40,19 +38,15 @@ public:
 	void set(const std::string& key, const T& val);
 	
 	void save();
-	
 	void setMembersToMap();
 	void loadMembersFromMap();
-	
 	bool isMedium();
 	bool isHigh();
-	
 	void setQuality(bool medium);
 	void setQualityMedium();
 	void setQualityHigh();
-	
 	void print();
-
 	int getSelectedIcon(IconType);
 	void setSelectedIcon(IconType, int);
+	bool isFollowingUser(int accountID);
 };

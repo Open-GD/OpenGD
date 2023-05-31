@@ -43,4 +43,5 @@ public:
 	ax::Node* getSprite();
 	void setScale(float) override;
 	void setCallback(std::function<void(ax::Node*)> callback);
+	void setSpriteFrame(std::string_view spriteFrame);
 };

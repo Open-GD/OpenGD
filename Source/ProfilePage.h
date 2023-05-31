@@ -23,6 +23,7 @@ namespace ax
 class ProfilePage : public PopupLayer
 {
 private:
+	int _accountID;
 	LoadingCircle* _loadingcircle;
 	ax::Label* _errorMsg;
 public:

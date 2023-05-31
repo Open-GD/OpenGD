@@ -2,6 +2,7 @@
 
 #include <MenuItemSpriteExtra.h>
 #include "GameToolbox.h"
+#include "GameManager.h"
 #include <ui/CocosGUI.h>
 #include "ButtonSprite.h"
 #include "2d/CCMenu.h"
@@ -30,6 +31,121 @@ ProfilePage* ProfilePage::create(int accountID, bool mainMenuProfile)
 	return nullptr;
 }
 
+bool ProfilePage::init(int accountID, bool mainMenuProfile)
+{
+	GameToolbox::log("{}", accountID);
+	if (!PopupLayer::init()) return false;
+	const auto& winSize = Director::getInstance()->getWinSize();
+	_accountID = accountID;
+
+	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_square01.png"));
+	bg->setContentSize({ 440.0, 290.0 });
+	bg->setPosition(winSize / 2);
+
+	_mainLayer->addChild(bg);
+
+	auto playerName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Hello World");
+	playerName->setPosition({ winSize.width / 2, ((winSize.height / 2) + 145.0f) - 20.0f});
+	GameToolbox::limitLabelWidth(playerName, 185.0f, 0.9f, 0.0f);
+
+	_mainLayer->addChild(playerName);
+
+	auto floorLine = Sprite::createWithSpriteFrameName("floorLine_001.png");
+	floorLine->setOpacity(100);
+	floorLine->setScaleX(0.8f);
+	floorLine->setPosition({ winSize.width / 2, bg->getPositionY() + 100.0f});
+
+	_mainLayer->addChild(floorLine);
+
+	// TODO: GJCommentListLayer position: -170.0f,-22.5f;
+
+	auto closeBtnSprite = Sprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
+	auto closeBtn = MenuItemSpriteExtra::create(closeBtnSprite, [&](Node*) { this->close(); });
+
+	auto menu = Menu::create();
+	menu->setPosition((winSize.width / 2 - 220.0f) + 10.0f, ((winSize.y / 2) + 145.0f) - 10.0f );
+	menu->addChild(closeBtn);
+
+	_errorMsg = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), "Something went wrong...");
+	_errorMsg->setScale(0.6f);
+	_errorMsg->setPosition({ winSize.width / 2, winSize.height / 2 - 53.0f});
+	_errorMsg->setVisible(false);
+
+	_mainLayer->addChild(_errorMsg);
+
+	auto gm = GameManager::getInstance();
+	if (!mainMenuProfile)
+	{
+		bool isFollowingUser = gm->isFollowingUser(accountID);
+		const char* heartSprite = isFollowingUser ? "gj_heartOn_001.png" : "gj_heartOff_001.png";
+		auto heartObject = MenuItemSpriteExtra::create(heartSprite, [this](Node* btn)
+		{
+			bool isFollowingUser = static_cast<bool>(btn->getTag());
+			//if(isFollowingUser) {
+			//	GameManager::getInstance()->followUser(this->_accountID);
+			//}
+			//else {
+			//	GameManager::getInstance()->unfollowUser(this->_accountID);
+			//}
+			
+			const char* heartSprite = isFollowingUser ? "gj_heartOff_001.png" : "gj_heartOn_001.png";
+			if(auto btn2 = dynamic_cast<MenuItemSpriteExtra*>(btn); btn) {
+				btn2->setSpriteFrame(heartSprite);
+			}
+			isFollowingUser = !isFollowingUser;
+			btn->setTag(static_cast<int>(isFollowingUser));
+		});
+		heartObject->setTag(static_cast<int>(isFollowingUser));
+		ax::Vec2 heartPosition = { (winSize.width / 2) - 198.0f, (winSize.height / 2) - 123.0f };
+		heartObject->setPosition(menu->convertToNodeSpace(heartPosition));
+		
+		if (!isFollowingUser)
+		{
+			auto followTxtSprite = Sprite::createWithSpriteFrameName("GJ_followTxt_001.png");
+			followTxtSprite->setPosition(heartPosition.operator+({48.0f,-2.0f}));
+			
+			_mainLayer->addChild(followTxtSprite);
+		}
+
+		menu->addChild(heartObject);
+		
+	}
+
+	_loadingcircle = LoadingCircle::create();
+	_loadingcircle->setPosition({ winSize.width / 2, winSize.height / 2 - 53.0f});
+	_mainLayer->addChild(_loadingcircle);
+	
+	_mainLayer->addChild(menu);
+
+	if(mainMenuProfile)
+	{
+		auto refreshBtnSprite = Sprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
+		auto refreshBtn = MenuItemSpriteExtra::create(refreshBtnSprite, [&](Node*) { /*Refresh Function*/ });
+		refreshBtn->setPosition(menu->convertToNodeSpace({(winSize.width / 2 - 220.0f) + 10.0f, (winSize.height / 2 - 145.0f) + 10.0f + 1.0f}));
+		//refreshBtn->setScaleMultiplier(1.5f);
+		menu->addChild(refreshBtn);
+	}
+
+	std::string postData = fmt::format("secret=Wmfd2893gb7&targetAccountID={}", accountID);
+	GameToolbox::log("postData: {}", postData);
+	
+	auto _request = new ax::network::HttpRequest();
+	_request->setUrl("http://www.boomlings.com/database/getGJUserInfo20.php");
+	_request->setRequestType(ax::network::HttpRequest::Type::POST);
+	_request->setHeaders(std::vector<std::string>{"user-agent: "});
+	_request->setRequestData(postData.c_str(), postData.length());
+	_request->setResponseCallback(AX_CALLBACK_2(ProfilePage::onHttpRequestCompleted, this));
+	_request->setTag("valid");
+	ax::network::HttpClient::getInstance()->send(_request);
+	_request->release();
+
+
+
+	return true;
+}
+
+
+
 void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUserScore* score'
 {
 	const auto& winSize = Director::getInstance()->getWinSize();
@@ -40,10 +156,11 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 	std::string_view statSpriteName;
 
 	bool hasCP = score->_creatorpoints > 0;
-
-	int widthLimit = hasCP ? 50 : 60;
 	int statValue;
-
+	ax::Vec2 initialPos = ax::Vec2::ZERO;
+	
+	float v16 = 0.0f;
+	
 	for (int i = 0; i < (hasCP ? 6 : 5); i++)
 	{
 		switch (i)
@@ -73,26 +190,40 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 				statValue = score->_stars;
 				break;
 		}
-		auto statValueLabel = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), std::to_string(statValue));
-		GameToolbox::limitLabelWidth(statValueLabel, widthLimit, 0.6, 0.0);
-
-		playerStatsNode->addChild(statValueLabel);
+		int widthLimit = hasCP ? 50 : 60;
+		std::string bigFontStr = GameToolbox::getTextureString("bigFont.fnt");
+		auto statLabel = Label::createWithBMFont(bigFontStr, std::to_string(statValue));
+		GameToolbox::limitLabelWidth(statLabel, widthLimit, 0.6, 0.0);
+		statLabel->setAnchorPoint({0.0f, 0.5f});
+		statLabel->setScale(0.6f);
+		statLabel->setPosition(initialPos);
+		playerStatsNode->addChild(statLabel);
 
 		auto statSprite = Sprite::createWithSpriteFrameName(statSpriteName);
-
 		playerStatsNode->addChild(statSprite);
-		
-	}
-	
-	float offset = 420.0;
 
-	if (true) // if has more than 2 social medias linked
-	{
-		offset = 340.0;
+		auto labelPos = statLabel->getPosition();
+		auto scaledContentSize = statLabel->getContentSize();
+		scaledContentSize.x *= statLabel->getScaleX();
+		scaledContentSize.x += 14.0f;
+		ax::Vec2 startSpritePos {labelPos.x + scaledContentSize.x, 0.0f};
+		statSprite->setPosition(startSpritePos);
+		statSprite->setScale(1);
+
+		auto statSpritePos = statSprite->getPosition();
+		statSpritePos.x += 20.0f;
+		initialPos = statSpritePos;
+
+		float labelContentSizeX = statLabel->getContentSize().x;
+		//float v27 = v16 + ((labelContentSizeX * statLabel->getScale()) + 14.0);
+		//float v28 = i == 1 ? 20.0f : 10.0f;
+		//v16 = v27 + v28;
 	}
 
-	playerStatsNode->setPosition(winSize.width / 2 - offset / 2, winSize.height / 2 + 85);
-	this->_mainLayer->addChild(playerStatsNode);
+	//TODO: scale and position of playerState
+	float offset = 420;
+	playerStatsNode->setPosition((winSize.width / 2) - (offset / 2), winSize.height / 2 + 85);
+	_mainLayer->addChild(playerStatsNode);
 
 	IconType gamemode;
 	int iconID;
@@ -138,107 +269,12 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 		iconSprite->setMainColor(GameToolbox::colorForIdx(score->_playerColor));
 		iconSprite->setSecondaryColor(GameToolbox::colorForIdx(score->_playerColor2));
 		if (score->_accGlow){iconSprite->setGlow(true);iconSprite->setGlowColor(GameToolbox::colorForIdx(score->_playerColor2));}
-		this->_mainLayer->addChild(iconSprite);
+		_mainLayer->addChild(iconSprite);
 		_loadingcircle->setVisible(false);
 	}
 }
 
-bool ProfilePage::init(int accountID, bool mainMenuProfile)
-{
-	GameToolbox::log("{}",accountID);
-	if (!PopupLayer::init()) return false;
-	const auto& winSize = Director::getInstance()->getWinSize();
 
-	auto bg = ui::Scale9Sprite::create(GameToolbox::getTextureString("GJ_square01.png"));
-	bg->setContentSize({ 440.0, 290.0 });
-	bg->setPosition(winSize / 2);
-
-	this->_mainLayer->addChild(bg);
-
-	auto playerName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Hello World");
-	playerName->setPosition({ winSize.width / 2, ((winSize.height / 2) + 145.0f) - 20.0f});
-	GameToolbox::limitLabelWidth(playerName, 185.0f, 0.9f, 0.0f);
-
-	this->_mainLayer->addChild(playerName);
-
-	auto floorLine = Sprite::createWithSpriteFrameName("floorLine_001.png");
-	floorLine->setOpacity(100);
-	floorLine->setScaleX(0.8f);
-	floorLine->setPosition({ winSize.width / 2, bg->getPositionY() + 100.0f});
-
-	this->_mainLayer->addChild(floorLine);
-
-	// TODO: GJCommentListLayer position: -170.0f,-22.5f;
-
-	auto closeBtnSprite = Sprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
-	auto closeBtn = MenuItemSpriteExtra::create(closeBtnSprite, [&](Node*) { this->close(); });
-
-	auto menu = Menu::create();
-	menu->setPosition((winSize.width / 2 - 220.0f) + 10.0f, ((winSize.y / 2) + 145.0f) - 10.0f );
-	menu->addChild(closeBtn);
-
-	_errorMsg = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), "Something went wrong...");
-	_errorMsg->setScale(0.6f);
-	_errorMsg->setPosition({ winSize.width / 2, winSize.height / 2 - 53.0f});
-	_errorMsg->setVisible(false);
-
-	this->_mainLayer->addChild(_errorMsg);
-
-	if (true) // complete if statement here: if registered player id is not equal to ProfilePage player id?
-	{
-		const char* heartSprite = "gj_heartOn_001.png";
-		
-		if (true) // complete if statement here: if not following, FUN_004a4950 is the function that checks if the player is followed or not
-		{
-			heartSprite = "gj_heartOff_001.png";
-		}
-		auto heartObject = MenuItemSpriteExtra::create(heartSprite, [&](Node*) { /*Follow Function*/ });
-		heartObject->setScaleMultiplier(1.1f);
-		ax::Vec2 heartPosition = { (winSize.width / 2) - 198.0f, (winSize.height / 2) - 123.0f };
-		heartObject->setPosition(menu->convertToNodeSpace(heartPosition));
-		
-		if (true) // complete if statement here: if not following
-		{
-			auto followTxtSprite = Sprite::createWithSpriteFrameName("GJ_followTxt_001.png");
-			followTxtSprite->setPosition(heartPosition.operator+({48.0f,-2.0f}));
-			
-			this->_mainLayer->addChild(followTxtSprite);
-		}
-
-		menu->addChild(heartObject);
-		
-	}
-
-	_loadingcircle = LoadingCircle::create();
-	_loadingcircle->setPosition({ winSize.width / 2, winSize.height / 2 - 53.0f});
-	this->_mainLayer->addChild(_loadingcircle);
-
-	if(mainMenuProfile)
-	{
-		auto refreshBtnSprite = Sprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
-		auto refreshBtn = MenuItemSpriteExtra::create(refreshBtnSprite, [&](Node*) { /*Refresh Function*/ });
-		refreshBtn->setPosition(menu->convertToNodeSpace({(winSize.width / 2 - 220.0f) + 10.0f, (winSize.height / 2 - 145.0f) + 10.0f + 1.0f}));
-		refreshBtn->setScaleMultiplier(1.5f);
-		menu->addChild(refreshBtn);
-	}
-
-	std::string postData = fmt::format("secret=Wmfd2893gb7&targetAccountID={}", accountID);
-	
-	auto _request = new ax::network::HttpRequest();
-	_request->setUrl("http://www.boomlings.com/database/getGJUserInfo20.php");
-	_request->setRequestType(ax::network::HttpRequest::Type::POST);
-	_request->setHeaders(std::vector<std::string>{"user-agent: "});
-	_request->setRequestData(postData.c_str(), postData.length());
-	_request->setResponseCallback(AX_CALLBACK_2(ProfilePage::onHttpRequestCompleted, this));
-	_request->setTag("valid");
-	ax::network::HttpClient::getInstance()->send(_request);
-	_request->release();
-
-
-	this->_mainLayer->addChild(menu);
-
-	return true;
-}
 
 void ProfilePage::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
@@ -246,14 +282,13 @@ void ProfilePage::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::ne
 	{
 		std::string_view strResp {*str};
 		
-		GameToolbox::log("{}", strResp);
+		GameToolbox::log("RESPONSE: {}", strResp);
 		auto score = GJUserScore::createWithResponse(strResp);
 		loadPageFromUserInfo(score);
 		delete score;
 
 	}
 	else {
-		GameToolbox::log("test");
-		_errorMsg->setVisible(true);
+		_errorMsg->setVisible(false);
 	}
 }

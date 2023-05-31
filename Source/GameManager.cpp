@@ -6,7 +6,7 @@
 
 #include <platform/CCFileUtils.h>
 
-struct GameOptions
+struct SaveObject
 {
 	std::map<std::string, int> intOptions;
 	std::map<std::string, bool> boolOptions;
@@ -27,7 +27,7 @@ struct GameOptions
 };
 
 //cpp struct declaration and definition to avoid including hps in header
-static GameOptions _options;
+static SaveObject _options;
 
 GameManager* GameManager::getInstance()
 {
@@ -62,7 +62,7 @@ void GameManager::load()
 {
 	GameToolbox::log("gamemanager load");
 	std::string byteStr = ax::FileUtils::getInstance()->getStringFromFile(_filepath);
-	_options = hps::from_string<GameOptions>(byteStr);
+	_options = hps::from_string<SaveObject>(byteStr);
 	loadMembersFromMap();
 	print();
 }
@@ -224,5 +224,10 @@ void GameManager::setSelectedIcon(IconType mode, int id) {
 	case kIconTypeSpecial: _selectedSpecial = id; break;
 	case kIconTypeDeathEffect: _selectedDeathEffect = id; break;
 	}
+}
+
+bool GameManager::isFollowingUser(int accountID)
+{
+	return false;
 }
 

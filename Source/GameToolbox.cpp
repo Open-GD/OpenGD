@@ -583,7 +583,8 @@ std::optional<std::string> GameToolbox::getResponse(ax::network::HttpResponse* r
 	int code = response->getResponseCode();
 	GameToolbox::log("response code: {}", code);
 
-	if (code != 200)
+	bool robtopError = ( ret.size() > 1 && ret[0] == '-' && std::isdigit(ret[1]) );
+	if (code != 200 || robtopError)
 	{
 		if (!ret.empty()) {
 			GameToolbox::log("recieved error: {}", ret);
