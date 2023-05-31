@@ -13,6 +13,7 @@
 #include <2d/CCActionEase.h>
 #include "2d/CCActionInstant.h"
 #include "AudioEngine.h"
+#include "GJChestSprite.h"
 
 USING_NS_AX;
 
@@ -94,14 +95,13 @@ bool RewardUnlockLayer::init(int chestID)
 	this->_mainLayer->addChild(chestShadow);
 
 	chestShadow->runAction(FadeTo::create(0.4, 90));
-	chestShadow->runAction(EaseBounceOut::create(ScaleTo::create(1.0, 0.8 * 0.95)));
+	chestShadow->runAction(EaseBounceOut::create(ScaleTo::create(1.0, offset * 0.95)));
 
-	// TODO: Use GJChestSprite::GJChestSprite(); object rather than a Sprite!!!
-	auto chestSprite = Sprite::createWithSpriteFrameName("chest_01_02_001.png");
+	auto chestSprite = GJChestSprite::create(chestID);
 	chestSprite->setPosition(position.operator+({0.0, winSize.height}));
 	this->_mainLayer->addChild(chestSprite);
 
-	chestSprite->runAction(EaseBounceOut::create(MoveTo::create(1.0, position.operator+({0.0, chestSprite->getContentSize().x / 2 - 10})))); // these coords were hardcoded bc i couldnt figure them out
+	chestSprite->runAction(EaseBounceOut::create(MoveTo::create(1.0, position.operator+({0.0, chestSprite->getChildren().front()->getContentSize().x / 2 - 10})))); // these coords were hardcoded bc i couldnt figure them out
 	chestSprite->runAction(Sequence::create(DelayTime::create(0.36f), CallFunc::create([=]() {AudioEngine::play2d("chestLand.ogg", false, 0.5f);}), 0));
 	
 	auto shake0 = DelayTime::create(1.2f);
@@ -112,7 +112,7 @@ bool RewardUnlockLayer::init(int chestID)
 	auto shake5 = MoveBy::create(0.05f, {-4.0f,0.0f});
 	auto shake6 = MoveBy::create(0.05f, {4.0f,0.0f});
 	auto shake7 = DelayTime::create(0.2f);
-	auto shake8 = CallFunc::create([=]() { /*Chest Open!*/ });
+	auto shake8 = CallFunc::create([=]() { chestSprite->switchState(3, false); });
 	
 	chestSprite->runAction(Sequence::create(shake0, shake1, shake2, shake3, shake4, shake5, shake6, shake7, shake8, 0));
 	
