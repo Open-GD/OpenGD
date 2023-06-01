@@ -72,7 +72,7 @@ To actually run the executable you will need the resources from the 2.1 version 
 
 For more details check out the [axmol](https://github.com/axmolengine/axmol) README.
 
-## Linux specific notify
+## Linux Specific Notify
 
 **Also one thing that should be mentioned here.** After pull request for header optimization (removed all unused stuff from the code) being merged to `main` branch, **Linux support was entirely broken.** For anyone, who want to build OpenGD under this platform, please use `no-header-optimization` branch, where all related to HDO changes were reverted.
 
