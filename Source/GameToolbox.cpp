@@ -727,3 +727,11 @@ float GameToolbox::stof(const std::string_view s) {
 std::string GameToolbox::getFileContentsResources(std::string_view file) {
 	return ax::FileUtils::getInstance()->getStringFromFile(file);
 }
+
+std::string GameToolbox::xorCipher(const std::string& message, const std::string& key) {
+    std::string encryptedMessage;
+    for (size_t i = 0; i < message.size(); ++i) {
+        encryptedMessage += message[i] ^ key[i % key.size()];
+    }
+    return encryptedMessage;
+}

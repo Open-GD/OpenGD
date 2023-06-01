@@ -100,6 +100,8 @@ namespace GameToolbox
 
 	ax::BlendFunc getBlending();
 
+	std::string xorCipher(const std::string& message, const std::string& key);
+
 	template <typename T>
 	inline T inRange(T value, T min, T max) {
 		return MIN(MAX(value, min), max);

@@ -11,6 +11,10 @@
 #include "GJUserScore.h"
 #include "2d/CCActionInterval.h"
 #include "RewardUnlockLayer.h"
+#include "fmt/format.h"
+#include "network/HttpResponse.h"
+#include "network/HttpClient.h"
+#include "external/base64.h"
 
 USING_NS_AX;
 
@@ -91,42 +95,149 @@ bool RewardsLayer::init()
 	_dailyChestTimer1 = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "00:00:00");
 	_dailyChestTimer1->setPosition(position.operator+({-70.0f, -50.0f}));
 	_dailyChestTimer1->setScale(0.5f);
+	_dailyChestTimer1->setVisible(false);
 	this->_mainLayer->addChild(_dailyChestTimer1);
 
 	_dailyChestTimer2 = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "00:00:00");
 	_dailyChestTimer2->setPosition(position.operator+({70.0f, -50.0f}));
 	_dailyChestTimer2->setScale(0.5f);
+	_dailyChestTimer2->setVisible(false);
 	this->_mainLayer->addChild(_dailyChestTimer2);
 
-	auto chestSprite1 = Sprite::createWithSpriteFrameName("chest_01_01_001.png");
-	auto chestObject1 = MenuItemSpriteExtra::create(chestSprite1, [&](Node*) {onChestClicked(1);});
+	_chestSprite1 = Sprite::createWithSpriteFrameName("chest_01_01_001.png");
+	auto chestObject1 = MenuItemSpriteExtra::create(_chestSprite1, [&](Node*) {onChestClicked(1);});
 	chestObject1->setPosition(menu->convertToNodeSpace(position.operator+({-70.0f, 14.0f - 10.05f})));
 	menu->addChild(chestObject1);
 
-	auto chestSprite2 = Sprite::createWithSpriteFrameName("chest_02_01_001.png");
-	auto chestObject2 = MenuItemSpriteExtra::create(chestSprite2, [&](Node*) {onChestClicked(2);});
+	_chestSprite2 = Sprite::createWithSpriteFrameName("chest_02_01_001.png");
+	auto chestObject2 = MenuItemSpriteExtra::create(_chestSprite2, [&](Node*) {onChestClicked(2);});
 	chestObject2->setPosition(menu->convertToNodeSpace(position.operator+({70.0f, 14.0f})));
 	menu->addChild(chestObject2);
 
 	this->_mainLayer->addChild(menu);
+
+	sendHttpRequest();
+
 	return true;
 }
 
 void RewardsLayer::onChestClicked(int chestID)
 {
+	if (_dailyChestTimer1->getString() == "00:00:00") return;
+
 	Label* timer;
+	RewardUnlockLayer* unlockLayer;
+
 	if (chestID == 1)
 	{
-		timer = _dailyChestTimer1;
+		if (_dailyChestTimer1->getString() != "Open")
+		{
+			timer = _dailyChestTimer1;
+			unlockLayer = RewardUnlockLayer::create(chestID);
+			unlockLayer->show(kNone);
+		}
+		else
+		{
+			unlockLayer = RewardUnlockLayer::create(chestID);
+			unlockLayer->show(kNone);
+			return;
+		}
 	}
 	else
 	{
-		timer = _dailyChestTimer2;
-		RewardUnlockLayer::create(chestID)->show(kNone);
-		return;
+		if (_dailyChestTimer2->getString() != "Open")
+		{
+			timer = _dailyChestTimer2;
+		}
+		else
+		{
+			unlockLayer = RewardUnlockLayer::create(chestID);
+			unlockLayer->show(kNone);
+			return;
+		}
 	}
+
 	this->stopAllActions();
 	timer->setColor(ax::Color3B(255, 75, 0));
 	auto ax = TintTo::create(1.0,0xff,0xff,0xff);
 	timer->runAction(ax);
+}
+
+std::string formatSeconds(int seconds)
+{
+    int hours = seconds / 3600;
+    int minutes = (seconds % 3600) / 60;
+    int remainingSeconds = seconds % 60;
+
+    std::string formattedTime;
+
+    if (hours > 0)
+    {
+        formattedTime += fmt::format("{}h ", hours);
+    }
+
+    if (minutes > 0 || (hours == 0 && minutes == 0))
+    {
+        formattedTime += fmt::format("{}min", minutes);
+    }
+
+    if (hours == 0 && minutes == 0 && remainingSeconds > 0)
+    {
+        formattedTime = fmt::format("{}sec", remainingSeconds);
+    }
+
+    return formattedTime;
+}
+
+void RewardsLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
+{
+	if (auto str = GameToolbox::getResponse(response))
+	{
+		std::string_view strResp {*str};
+
+		auto decodedResponse = GameToolbox::xorCipher(base64_decode(fmt::format("{}", strResp.substr(5))), "59182");
+		auto data = GameToolbox::splitByDelim(decodedResponse, ':');
+		
+		if (GameToolbox::stoi(data[5]) > 60)
+		{
+			_dailyChestTimer1->setString(formatSeconds(GameToolbox::stoi(data[5])));
+		}
+		else
+		{
+			_chestSprite1->setSpriteFrame("chest_01_02_001.png");
+			_dailyChestTimer1->setString("Open");
+		}
+		
+		if (GameToolbox::stoi(data[7]) > 60)
+		{
+			_dailyChestTimer2->setString(formatSeconds(GameToolbox::stoi(data[7])));
+		}
+		else
+		{
+			_chestSprite2->setSpriteFrame("chest_02_02_001.png");
+			_dailyChestTimer2->setString("Open");
+		}
+		
+		GameToolbox::log("RESPONSE: {}", strResp);
+		GameToolbox::log("RESPONSE: {}", decodedResponse);
+
+		_dailyChestTimer1->setVisible(true);
+		_dailyChestTimer2->setVisible(true);
+	}
+}
+
+void RewardsLayer::sendHttpRequest()
+{
+	std::string postData = fmt::format("secret=Wmfd2893gb7&udid={}&chk={}&rewardType=0", "JUSTANORMALUDID", "5yQrSBA4DAQAH");
+	GameToolbox::log("postData: {}", postData);
+		
+	auto _request = new ax::network::HttpRequest();
+	_request->setUrl("http://www.boomlings.com/database/getGJRewards.php");
+	_request->setRequestType(ax::network::HttpRequest::Type::POST);
+	_request->setHeaders(std::vector<std::string>{"user-agent: "});
+	_request->setRequestData(postData.c_str(), postData.length());
+	_request->setResponseCallback(AX_CALLBACK_2(RewardsLayer::onHttpRequestCompleted, this));
+	_request->setTag("valid");
+	ax::network::HttpClient::getInstance()->send(_request);
+	_request->release();
 }

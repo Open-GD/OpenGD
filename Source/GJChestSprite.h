@@ -3,6 +3,8 @@
 #include "2d/CCSprite.h"
 #include "ccTypes.h"
 
+
+
 class GJChestSprite : public ax::Sprite {
 public:
 	static GJChestSprite* create(int ChestID);
