@@ -133,7 +133,7 @@ void RewardsLayer::onChestClicked(int chestID)
 		if (_dailyChestTimer1->getString() != "Open")
 		{
 			timer = _dailyChestTimer1;
-			unlockLayer = RewardUnlockLayer::create(chestID);
+			unlockLayer = RewardUnlockLayer::create(chestID); // temp
 			unlockLayer->show(kNone);
 		}
 		else
@@ -147,6 +147,7 @@ void RewardsLayer::onChestClicked(int chestID)
 	{
 		if (_dailyChestTimer2->getString() != "Open")
 		{
+			unlockLayer = RewardUnlockLayer::create(chestID); // temp
 			timer = _dailyChestTimer2;
 		}
 		else
@@ -198,7 +199,7 @@ void RewardsLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::n
 		auto decodedResponse = GameToolbox::xorCipher(base64_decode(fmt::format("{}", strResp.substr(5))), "59182");
 		auto data = GameToolbox::splitByDelim(decodedResponse, ':');
 		
-		if (GameToolbox::stoi(data[5]) > 60)
+		if (GameToolbox::stoi(data[5]) > 1)
 		{
 			_dailyChestTimer1->setString(formatSeconds(GameToolbox::stoi(data[5])));
 		}
@@ -208,9 +209,9 @@ void RewardsLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::n
 			_dailyChestTimer1->setString("Open");
 		}
 		
-		if (GameToolbox::stoi(data[7]) > 60)
+		if (GameToolbox::stoi(data[8]) > 1)
 		{
-			_dailyChestTimer2->setString(formatSeconds(GameToolbox::stoi(data[7])));
+			_dailyChestTimer2->setString(formatSeconds(GameToolbox::stoi(data[8])));
 		}
 		else
 		{

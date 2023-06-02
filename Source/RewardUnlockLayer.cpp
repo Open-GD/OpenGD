@@ -152,9 +152,93 @@ bool RewardUnlockLayer::init(int chestID)
 
 void RewardUnlockLayer::playRewardEffect(getGJRewards* rewards)
 {
-	_chestObj->switchState(4, false);
+	std::map<int, int> array;
+    array[1] = rewards->orbs;
+    array[3] = rewards->diamonds;
+
+    _chestObj->switchState(4, false);
+
+    _rewardBtn->runAction(Sequence::createWithTwoActions(DelayTime::create(1.5f), FadeIn::create(1.0)));
+
+    int index = 0;
+    for (const auto& entry : array)
+    {
+        int currencyID = entry.first;
+        int currencyCount = entry.second;
+
+        if (currencyCount != 0)
+        {
+            float delay = static_cast<float>(index) * 0.2f + 0.5f;
+            showEarnedCurrency(currencyID, currencyCount, delay);
+        }
+        index++;
+    }
+}
+
+void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, float delay)
+{
+	std::string_view currencySpriteName;
+
+	float scale = 0;
+	float yoffset = 0;
+
+	switch (currencyID)
+	{
+		case 1:
+      		currencySpriteName = "currencyOrbIcon_001.png";
+			scale = 1.2f;
+			break;
+		case 3:
+			currencySpriteName = "GJ_bigDiamond_001.png";
+			scale = 0.65f;
+			break;
+		case 4:
+			currencySpriteName = "fireShardBig_001.png";
+			break;
+		case 5:
+			currencySpriteName = "iceShardBig_001.png";
+			break;
+		case 6:
+			currencySpriteName = "poisonShardBig_001.png";
+			break;
+		case 7:
+			currencySpriteName = "shadowShardBig_001.png";
+			break;
+		case 8:
+			currencySpriteName = "lavaShardBig_001.png";
+			break;
+		case 9:
+			currencySpriteName = "GJ_bigKey_001.png";
+			scale = 0.9f;
+			yoffset = 0.5f;
+			break;
+	}
+
+	const auto& winSize = Director::getInstance()->getWinSize();
+
+	Sprite* currencySprite = Sprite::createWithSpriteFrameName(currencySpriteName);
 	
-  	_rewardBtn->runAction(Sequence::createWithTwoActions(DelayTime::create(1.0f), FadeIn::create(1.0)));
+    Label* label = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), fmt::format("+{}", currencyCount));
+    GameToolbox::limitLabelWidth(label, 40.0, 0.7, 0.0);
+
+	Node* currencyNode = Node::create();
+
+	this->addChild(currencyNode);
+
+	currencyNode->addChild(label);
+	currencyNode->addChild(currencySprite);
+	currencyNode->setPosition({winSize / 2});
+	currencyNode->setScale(2.f);
+	
+	label->setOpacity(0);
+	currencySprite->setOpacity(0);
+	currencySprite->setPositionX(15.f);
+	currencySprite->setPositionY(yoffset);
+	currencySprite->setScale(scale);
+
+    currencyNode->runAction(Sequence::create(DelayTime::create(delay), EaseBounceOut::create(ScaleTo::create(0.3f, 1.0f)), 0));
+    currencySprite->runAction(Sequence::create(DelayTime::create(delay), FadeIn::create(0.3f), 0));
+	label->runAction(Sequence::create(DelayTime::create(delay), FadeIn::create(0.3f), 0));
 }
 
 void RewardUnlockLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response, int chestID)
@@ -163,10 +247,18 @@ void RewardUnlockLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 	{
 		std::string_view strResp {*str};
 
-		getGJRewards* rewards;
+		getGJRewards* rewards = getGJRewards::create();
 
 		auto decodedResponse = GameToolbox::xorCipher(base64_decode(fmt::format("{}", strResp.substr(5))), "59182");
 		auto data = GameToolbox::splitByDelim(decodedResponse, ':');
+		
+		GameToolbox::log("{}", (chestID == 1) ? data[6] : data[9]);
+		auto chestData = GameToolbox::splitByDelim((chestID == 1) ? data[6] : data[9], ',');
+		int orbs = GameToolbox::stoi(chestData[0]);
+		int diamonds = GameToolbox::stoi(chestData[1]);
+		if (orbs > 0) rewards->orbs = orbs;
+		if (diamonds > 0) rewards->diamonds = diamonds;
+		//add key and shards
 		
 		playRewardEffect(rewards);
 		return;
@@ -177,7 +269,7 @@ void RewardUnlockLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 
 void RewardUnlockLayer::sendHttpRequest(int chestID)
 {
-	std::string postData = fmt::format("secret=Wmfd2893gb7&udid={}&chk={}&rewardType=0", "HELLOWORLDROBTOP", "5yQrSBA4DAQAH"); // todo: udid
+	std::string postData = fmt::format("secret=Wmfd2893gb7&udid={}&chk={}&rewardType={}", "JUSTANORMALUDID", "5yQrSBA4DAQAH", chestID); // todo: udid
 	GameToolbox::log("postData: {}", postData);
 		
 	auto _request = new ax::network::HttpRequest();

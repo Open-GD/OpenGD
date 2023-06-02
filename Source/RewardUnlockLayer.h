@@ -36,4 +36,5 @@ public:
 	void playRewardEffect(getGJRewards* rewards);
 	void onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response, int chestID);
 	void sendHttpRequest(int chestID);
+	void showEarnedCurrency(int currencyID, int currencyCount, float delay);
 };
