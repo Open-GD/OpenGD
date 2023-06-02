@@ -14,6 +14,7 @@ namespace ax
 	class Scene;
 	class Object;
 	class Label;
+	class Vec2;
 	namespace network 
 	{ 
 		class HttpRequest; 
@@ -36,5 +37,5 @@ public:
 	void playRewardEffect(getGJRewards* rewards);
 	void onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response, int chestID);
 	void sendHttpRequest(int chestID);
-	void showEarnedCurrency(int currencyID, int currencyCount, float delay);
+	void showEarnedCurrency(int currencyID, int currencyCount, float delay, ax::Vec2 position);
 };

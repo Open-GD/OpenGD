@@ -147,8 +147,9 @@ void RewardsLayer::onChestClicked(int chestID)
 	{
 		if (_dailyChestTimer2->getString() != "Open")
 		{
-			unlockLayer = RewardUnlockLayer::create(chestID); // temp
 			timer = _dailyChestTimer2;
+			unlockLayer = RewardUnlockLayer::create(chestID); // temp
+			unlockLayer->show(kNone);
 		}
 		else
 		{

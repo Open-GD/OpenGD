@@ -153,14 +153,41 @@ bool RewardUnlockLayer::init(int chestID)
 void RewardUnlockLayer::playRewardEffect(getGJRewards* rewards)
 {
 	std::map<int, int> array;
-    array[1] = rewards->orbs;
-    array[3] = rewards->diamonds;
+	if (rewards->orbs > 0) array[1] = rewards->orbs;
+    if (rewards->diamonds > 0) array[3] = rewards->diamonds;
+	if (rewards->key) array[9] = rewards->key;
+	const auto& winSize = Director::getInstance()->getWinSize();
 
     _chestObj->switchState(4, false);
 
     _rewardBtn->runAction(Sequence::createWithTwoActions(DelayTime::create(1.5f), FadeIn::create(1.0)));
 
-    int index = 0;
+	Vec2 position = {winSize.width / 2, winSize.height / 2 + 68.0f};
+	Vec2 position1;
+	Vec2 position2;
+	Vec2 position3;
+	Vec2 position4;
+	Vec2 position5;
+
+	switch (array.size())
+	{
+		case 1:
+			position1 = position;
+			break;
+		case 2:
+			position1 = position;
+			position1.x -= 45;
+			position2 = {position1.x + 90.f, position1.y};
+			break;
+		case 3:
+			position1 = position;
+			position1 = {position.x - 75.f, position.y - 10.f};
+			position2 = {position.x, position.y + 10.f};
+			position3 = {position.x + 75.f, position.y - 10.f};
+			break;
+	}
+
+    int index = 1;
     for (const auto& entry : array)
     {
         int currencyID = entry.first;
@@ -169,18 +196,30 @@ void RewardUnlockLayer::playRewardEffect(getGJRewards* rewards)
         if (currencyCount != 0)
         {
             float delay = static_cast<float>(index) * 0.2f + 0.5f;
-            showEarnedCurrency(currencyID, currencyCount, delay);
+            switch (index)
+			{
+				case 1:
+					showEarnedCurrency(currencyID, currencyCount, delay, position1);
+					break;
+				case 2:
+					showEarnedCurrency(currencyID, currencyCount, delay, position2);
+					break;
+				case 3:
+					showEarnedCurrency(currencyID, currencyCount, delay, position3);
+					break;
+			}
         }
         index++;
     }
 }
 
-void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, float delay)
+void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, float delay, Vec2 position)
 {
 	std::string_view currencySpriteName;
 
 	float scale = 0;
 	float yoffset = 0;
+	float xoffset = 0;
 
 	switch (currencyID)
 	{
@@ -210,7 +249,8 @@ void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, fl
 		case 9:
 			currencySpriteName = "GJ_bigKey_001.png";
 			scale = 0.9f;
-			yoffset = 0.5f;
+			xoffset = 7.0f;
+			yoffset = -0.5f;
 			break;
 	}
 
@@ -219,7 +259,6 @@ void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, fl
 	Sprite* currencySprite = Sprite::createWithSpriteFrameName(currencySpriteName);
 	
     Label* label = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), fmt::format("+{}", currencyCount));
-    GameToolbox::limitLabelWidth(label, 40.0, 0.7, 0.0);
 
 	Node* currencyNode = Node::create();
 
@@ -227,12 +266,14 @@ void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, fl
 
 	currencyNode->addChild(label);
 	currencyNode->addChild(currencySprite);
-	currencyNode->setPosition({winSize / 2});
+	currencyNode->setPosition(position);
 	currencyNode->setScale(2.f);
 	
 	label->setOpacity(0);
+	GameToolbox::limitLabelWidth(label, 40.0f, 0.7f, 0.0f);
+	label->setPositionX(label->getPositionX()-label->getContentSize().x * 0.4f); // came up with this, not 100% accurate but it does the job
 	currencySprite->setOpacity(0);
-	currencySprite->setPositionX(15.f);
+	currencySprite->setPositionX(15.f + xoffset);
 	currencySprite->setPositionY(yoffset);
 	currencySprite->setScale(scale);
 
@@ -256,8 +297,10 @@ void RewardUnlockLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 		auto chestData = GameToolbox::splitByDelim((chestID == 1) ? data[6] : data[9], ',');
 		int orbs = GameToolbox::stoi(chestData[0]);
 		int diamonds = GameToolbox::stoi(chestData[1]);
+		int key = GameToolbox::stoi(chestData[3]);
 		if (orbs > 0) rewards->orbs = orbs;
 		if (diamonds > 0) rewards->diamonds = diamonds;
+		if (key > 0) rewards->key = true;
 		//add key and shards
 		
 		playRewardEffect(rewards);
