@@ -17,6 +17,7 @@
 #include "base/CCDirector.h"
 #include "CCEventDispatcher.h"
 #include "GJSearchObject.h"
+#include "SecretLayer2.h"
 
 USING_NS_AX;
 using namespace ax::network;
@@ -59,6 +60,13 @@ bool CreatorLayer::init()
 	});
 	backBtn->setPosition(menu->convertToNodeSpace({ 24.0, winSize.height - 23.0f }));
 	menu->addChild(backBtn);
+
+	Sprite* secretLock = Sprite::createWithSpriteFrameName("GJ_lock_open_001.png");
+	MenuItemSpriteExtra* secretLockBtn = MenuItemSpriteExtra::create(secretLock, [](Node*) {
+		Director::getInstance()->replaceScene(TransitionFade::create(.5, SecretLayer2::scene()));
+	});
+	menu->addChild(secretLockBtn);
+	secretLockBtn->setPosition(menu->convertToNodeSpace({winSize.width - 23.0f, winSize.height - 24.0f})); // Wrong cuz the function doesnt want to decompile for some reason
 	
 	auto buttonTexture = [](int n) -> const char*
 	{

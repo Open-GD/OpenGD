@@ -7,6 +7,7 @@ class getGJRewards;
 class getGJRewards { 
 public:
 	int orbs = 0;
+	int stars = 0;
 	int diamonds = 0;
 	bool key = 0;
 

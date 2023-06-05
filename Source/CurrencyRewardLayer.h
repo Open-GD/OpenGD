@@ -8,7 +8,7 @@
 
 class CurrencyRewardLayer : public ax::Layer {
 public:
-	static CurrencyRewardLayer* create();
+	static CurrencyRewardLayer* create(int orbs, int stars, int diamonds);
 
-	bool init();
+	bool init(int orbs, int stars, int diamonds);
 };

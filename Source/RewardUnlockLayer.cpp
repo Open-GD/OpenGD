@@ -16,6 +16,7 @@
 #include "external/base64.h"
 #include "network/HttpResponse.h"
 #include "network/HttpClient.h"
+#include "CurrencyRewardLayer.h"
 
 USING_NS_AX;
 
@@ -211,6 +212,7 @@ void RewardUnlockLayer::playRewardEffect(getGJRewards* rewards)
         }
         index++;
     }
+	this->addChild(CurrencyRewardLayer::create(rewards->orbs, rewards->stars, rewards->diamonds));
 }
 
 void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, float delay, Vec2 position)
