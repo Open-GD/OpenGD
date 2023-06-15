@@ -12,6 +12,7 @@
 #include "2d/CCMenu.h"
 #include "math/MathUtil.h"
 #include "platform/CCFileUtils.h"
+#include <charconv>
 
 USING_NS_AX;
 
@@ -315,24 +316,24 @@ void GameToolbox::createBG(ax::Node* self) {
 
 int GameToolbox::getValueForGamemode(IconType mode) {
 		switch (mode) {
-		case kIconTypeCube:
+		case IconType::kIconTypeCube:
 			return 142;
-		case kIconTypeShip:
+		case IconType::kIconTypeShip:
 			return 51;
-		case kIconTypeBall:
+		case IconType::kIconTypeBall:
 			return 43;
-		case kIconTypeUfo:
-		case kIconTypeWave:
+		case IconType::kIconTypeUfo:
+		case IconType::kIconTypeWave:
 			return 35;
-		case kIconTypeRobot:
+		case IconType::kIconTypeRobot:
 			return 26;
-		case kIconTypeSpider:
+		case IconType::kIconTypeSpider:
 			return 17;
-		case kIconTypeSwing:
+		case IconType::kIconTypeSwing:
 			return 0;
-		case kIconTypeDeathEffect:
+		case IconType::kIconTypeDeathEffect:
 			return 17;
-		case kIconTypeSpecial:
+		case IconType::kIconTypeSpecial:
 			return 7;
 		default:
 			return 0;
@@ -340,19 +341,19 @@ int GameToolbox::getValueForGamemode(IconType mode) {
 }
 const char* GameToolbox::getNameGamemode(IconType mode) {
 		switch (mode) {
-		case kIconTypeShip:
+		case IconType::kIconTypeShip:
 			return "ship";
-		case kIconTypeBall:
+		case IconType::kIconTypeBall:
 			return "player_ball";
-		case kIconTypeUfo:
+		case IconType::kIconTypeUfo:
 			return "bird";
-		case kIconTypeWave:
+		case IconType::kIconTypeWave:
 			return "dart";
-		case kIconTypeRobot:
+		case IconType::kIconTypeRobot:
 			return "robot";
-		case kIconTypeSpider:
+		case IconType::kIconTypeSpider:
 			return "spider";
-		case kIconTypeSwing:
+		case IconType::kIconTypeSwing:
 			return "swing";
 		default:
 			return "player";

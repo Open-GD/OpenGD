@@ -23,7 +23,7 @@ namespace ax
 }
 
 
-enum IconType {
+enum class IconType {
 	kIconTypeCube		= 0,
 	kIconTypeShip		= 1,
 	kIconTypeBall		= 2,

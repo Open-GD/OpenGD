@@ -100,10 +100,14 @@ void NodeSerializer::saveNodeToJsonFile(const std::string_view filename, ax::Nod
 	ax::FileUtils::getInstance()->writeStringToFile(j.dump(indentation), filename);
 }
 
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
 #include <windows.h>
+#endif
+
 #include <string_view>
 
 static void CopyToClipboard(const std::string_view text) {
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
 	// Open the clipboard
 	if (!OpenClipboard(nullptr)) {
 		// Handle error if clipboard cannot be opened
@@ -161,6 +165,7 @@ static void CopyToClipboard(const std::string_view text) {
 
 	// Close the clipboard
 	CloseClipboard();
+#endif
 }
 
 void NodeSerializer::copyNodeJsonToClipboard(ax::Node* node)

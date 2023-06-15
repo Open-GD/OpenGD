@@ -7,6 +7,7 @@
 #include "2d/CCActionInstant.h"
 #include "2d/CCActionEase.h"
 #include "CircleWave.h"
+#include "ccUTF8.h"
 
 USING_NS_AX;
 

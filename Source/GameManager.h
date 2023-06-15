@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-enum IconType;
+enum class IconType : int;
 
 class GameManager
 {
