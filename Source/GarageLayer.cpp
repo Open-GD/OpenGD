@@ -91,7 +91,7 @@ bool GarageLayer::init()
 	menu->addChild(backBtn);
 
 	auto shop = MenuItemSpriteExtra::create("shopRope_001.png", [=](Node*) {
-		_iconPrev->updateGamemode(35, kIconTypeUfo);
+		_iconPrev->updateGamemode(35, IconType::kIconTypeUfo);
 	});
 
 	shop->setPosition({135, size.height - 25});
@@ -135,9 +135,9 @@ bool GarageLayer::init()
 
 int GarageLayer::selectedGameModeInt()
 {
-	if (_selectedMode == kIconTypeSpecial)
+	if (_selectedMode == IconType::kIconTypeSpecial)
 		return 7;
-	if (_selectedMode == kIconTypeDeathEffect)
+	if (_selectedMode == IconType::kIconTypeDeathEffect)
 		return 8;
 
 	return static_cast<int>(_selectedMode);
@@ -188,12 +188,16 @@ void GarageLayer::setupIconSelect()
 		{
 			int tag = a->getTag();
 			int page = _modePages[tag];
-			if (tag == 7)
-				tag = kIconTypeSpecial;
-			if (tag == 8)
-				tag = kIconTypeDeathEffect;
 
-			this->setupPage(static_cast<IconType>(tag), page);
+			IconType mode;
+			if (tag == 7)
+				mode = IconType::kIconTypeSpecial;
+			else if (tag == 8)
+				mode = IconType::kIconTypeDeathEffect;
+			else
+				mode = static_cast<IconType>(tag);
+
+			this->setupPage(mode, page);
 		});
 		i1->setTag(i);
 		menu->addChild(i1);
@@ -322,14 +326,14 @@ void GarageLayer::setupPage(IconType type, int page)
 		auto browserItem = Sprite::createWithSpriteFrameName("playerSquare_001.png");
 		browserItem->setOpacity(0);
 
-		if (type == kIconTypeSpecial)
+		if (type == IconType::kIconTypeSpecial)
 		{
 			auto icono = Sprite::createWithSpriteFrameName(StringUtils::format("player_special_%02d_001.png", i));
 			icono->setPosition(browserItem->getContentSize() / 2);
 			icono->setScale(27.0f / icono->getContentSize().width);
 			browserItem->addChild(icono);
 		}
-		else if (type == kIconTypeDeathEffect)
+		else if (type == IconType::kIconTypeDeathEffect)
 		{
 			auto icono = Sprite::createWithSpriteFrameName(StringUtils::format("explosionIcon_%02d_001.png", i));
 			icono->setPosition(browserItem->getContentSize() / 2);
@@ -342,7 +346,7 @@ void GarageLayer::setupPage(IconType type, int page)
 			icono->updateGamemode(i, type);
 			icono->setMainColor({175, 175, 175});
 			icono->setPosition(browserItem->getContentSize() / 2);
-			if (type == kIconTypeUfo)
+			if (type == IconType::kIconTypeUfo)
 			{
 				icono->setPositionY(icono->getPositionY() + 5);
 				icono->m_pDomeSprite->setVisible(false);

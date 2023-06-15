@@ -233,31 +233,31 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 		switch(i)
 		{
 			case 0:
-				gamemode = kIconTypeCube;
+				gamemode = IconType::kIconTypeCube;
 				iconID = score->_accIcon;
 				break;
 			case 1:
-				gamemode = kIconTypeShip;
+				gamemode = IconType::kIconTypeShip;
 				iconID = score->_accShip;
 				break;
 			case 2:
-				gamemode = kIconTypeBall;
+				gamemode = IconType::kIconTypeBall;
 				iconID = score->_accBall;
 				break;
 			case 3:
-				gamemode = kIconTypeUfo;
+				gamemode = IconType::kIconTypeUfo;
 				iconID = score->_accBird;
 				break;
 			case 4:
-				gamemode = kIconTypeWave;
+				gamemode = IconType::kIconTypeWave;
 				iconID = score->_accDart;
 				break;
 			case 5:
-				gamemode = kIconTypeRobot;
+				gamemode = IconType::kIconTypeRobot;
 				iconID = score->_accRobot;
 				break;
 			case 6:
-				gamemode = kIconTypeSpider;
+				gamemode = IconType::kIconTypeSpider;
 				iconID = score->_accSpider;
 				break;
 		}

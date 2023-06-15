@@ -8,7 +8,7 @@ USING_NS_AX;
 bool SimplePlayer::init(int cubeID) {
 	if (!Sprite::init()) return false;
 
-	this->updateGamemode(cubeID, kIconTypeCube);
+	this->updateGamemode(cubeID, IconType::kIconTypeCube);
 	this->setContentSize({ 60, 60 });
 	this->setAnchorPoint({.25f, .25f});
 
@@ -63,7 +63,7 @@ void SimplePlayer::updateGamemode(int iconID, IconType mode) {
 	}
 
 	// Dome
-	if (mode == kIconTypeUfo) {
+	if (mode == IconType::kIconTypeUfo) {
 		m_pDomeSprite = Sprite::createWithSpriteFrameName(domeFrame);
 		if (m_pDomeSprite) {
 			m_pDomeSprite->setPosition(this->m_pMainSprite->getContentSize() / 2);

@@ -402,8 +402,8 @@ GameObject* GameObject::createFromString(std::string_view data)
 
 	std::string_view frame = GameObject::_pBlocks.at(objectID);
 
-	// actually create the object, use std::ranges
-	if (objectID != 1 && std::ranges::find(GameObject::_pTriggers, objectID) != GameObject::_pTriggers.end())
+	// actually create the object
+	if (objectID != 1 && std::find(GameObject::_pTriggers.begin(), GameObject::_pTriggers.end(), objectID) != GameObject::_pTriggers.end())
 	{
 		// mylock.lock();
 		obj = EffectGameObject::create(frame);

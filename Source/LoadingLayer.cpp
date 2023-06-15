@@ -157,18 +157,18 @@ bool LoadingLayer::init() {
 	
 	auto robLogoSpr = Sprite::createWithSpriteFrameName("RobTopLogoBig_001.png");
 	robLogoSpr->setStretchEnabled(false);
-	robLogoSpr->setPosition({ 284.5f, 240.0f });
+	robLogoSpr->setPosition(logoSpr->getPosition() + Vec2(0, 80));
 	this->addChild(robLogoSpr);
 
 	auto splash = this->getSplash();
 	auto splashText = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), splash);
-	splashText->setPosition({ winSize.width / 2, 60.0f});
+	splashText->setPosition(winSize.width / 2, (winSize.height / 2) - 100);
 	splashText->setScale(0.7f);
 
 	this->addChild(splashText);
 	_pBar = SimpleProgressBar::create();
 	_pBar->setPercentage(0.f);
-	_pBar->setPosition({ winSize.width / 2, 100.0f });
+	_pBar->setPosition({ winSize.width / 2, splashText->getPosition().height + 40 });
 	this->addChild(_pBar);
 	
 	this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([&]() { this->loadAssets(); }), nullptr));

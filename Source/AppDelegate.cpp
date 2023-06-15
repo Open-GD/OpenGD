@@ -36,7 +36,13 @@
 #include "base/CCEventDispatcher.h"
 
 #ifdef AX_PLATFORM_PC
-#include "platform/desktop/CCGLViewImpl-desktop.h"
+	#include "platform/desktop/CCGLViewImpl-desktop.h"
+#elif (AX_TARGET_PLATFORM == AX_PLATFORM_ANDROID)
+	#include "platform/android/CCGLViewImpl-android.h"
+#elif (AX_TARGET_PLATFORM == AX_PLATFORM_IOS)
+	#include "platform/ios/CCGLViewImpl-ios.h"
+#elif (AX_TARGET_PLATFORM == AX_PLATFORM_WINRT)
+	#include "platform/winrt/CCGLViewImpl-winrt.h"
 #endif
 
 #define USE_AUDIO_ENGINE 1
@@ -47,7 +53,7 @@
 
 USING_NS_AX;
 
-static ax::Size designResolutionSize = ax::Size(1280, 720);
+static ax::Size designResolutionSize = ax::Size(480, 320);
 static ax::Size smallResolutionSize = ax::Size(480, 320);
 static ax::Size mediumResolutionSize = ax::Size(1024, 768);
 static ax::Size largeResolutionSize = ax::Size(2048, 1536);
@@ -84,6 +90,23 @@ int AppDelegate::applicationGetRefreshRate()
 }
 
 
+static void setupDesignResolution(GLView* glView)
+{
+	auto screen_size = glView->getFrameSize();
+	ResolutionPolicy resPolicy;
+
+	if (screen_size.height / designResolutionSize.height <= screen_size.width / designResolutionSize.width)
+	{
+		resPolicy = ResolutionPolicy::FIXED_HEIGHT;
+	}
+	else
+	{
+		resPolicy = ResolutionPolicy::FIXED_WIDTH;
+	}
+
+	glView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, resPolicy);
+}
+
 #ifdef AX_PLATFORM_PC
 static void onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 {
@@ -91,25 +114,7 @@ static void onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 	auto glView = director->getOpenGLView();
 
 	glView->setFrameSize(w, h);
-
-	
-	// uhh stuff to make different aspect ratios work ig?
-	if (w > 1280)
-		glView->setDesignResolutionSize(569 + (w - 1280), 320,
-			ResolutionPolicy::FIXED_HEIGHT);
-	else
-		glView->setDesignResolutionSize(569, 320 - (w - 1280),
-			ResolutionPolicy::FIXED_WIDTH);
-
-	if (h > 720)
-		glView->setDesignResolutionSize(569, 320 + (h - 720),
-			ResolutionPolicy::FIXED_WIDTH);
-	else
-		glView->setDesignResolutionSize(569 - (h - 720), 320,
-			ResolutionPolicy::FIXED_HEIGHT);
-	
-	glView->setDesignResolutionSize(569, 320,
-		ResolutionPolicy::SHOW_ALL);
+	setupDesignResolution(glView);
 
 	director->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_RESIZED, nullptr);
 }
@@ -152,24 +157,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	// set FPS. the default value is 1.0/60 if you don't call this
 	director->setAnimationInterval(1.0f / applicationGetRefreshRate());
 
-	// Set the design resolution
-	glView->setDesignResolutionSize(569, 320,
-									ResolutionPolicy::SHOW_ALL);
-
-	// uhh stuff to make different aspect ratios work ig?
-	if (glView->getFrameSize().width > 1280)
-		glView->setDesignResolutionSize(569 + (glView->getFrameSize().width - 1280), 320,
-			ResolutionPolicy::FIXED_HEIGHT);
-	else
-		glView->setDesignResolutionSize(569, 320 - (glView->getFrameSize().width - 1280),
-			ResolutionPolicy::FIXED_WIDTH);
-
-	if (glView->getFrameSize().height > 720)
-		glView->setDesignResolutionSize(569, 320 + (glView->getFrameSize().height - 720),
-			ResolutionPolicy::FIXED_WIDTH);
-	else
-		glView->setDesignResolutionSize(569 - (glView->getFrameSize().height - 720), 320,
-			ResolutionPolicy::FIXED_HEIGHT);
+	setupDesignResolution(glView);
 
 #ifdef AX_PLATFORM_PC
 

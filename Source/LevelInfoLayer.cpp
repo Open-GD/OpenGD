@@ -19,6 +19,7 @@
 #include "2d/CCTransition.h"
 #include "CCEventListenerKeyboard.h"
 #include "network/HttpClient.h"
+#include "ccUTF8.h"
 
 USING_NS_AX;
 

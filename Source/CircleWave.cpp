@@ -1,5 +1,5 @@
 #include "CircleWave.h"
-#include "glad/gl.h"
+#include "platform/CCGL.h"
 #include "CCDirector.h"
 #include "2d/CCActionInstant.h"
 #include "2d/CCActionManager.h"

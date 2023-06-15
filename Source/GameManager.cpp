@@ -198,31 +198,31 @@ int GameManager::getSelectedIcon(IconType mode)
 {
 	switch (mode)
 	{
-	case kIconTypeCube: return _selectedCube;
-	case kIconTypeShip: return _selectedShip;
-	case kIconTypeBall: return _selectedBall;
-	case kIconTypeUfo: return _selectedUfo;
-	case kIconTypeWave: return _selectedWave;
-	case kIconTypeRobot: return _selectedRobot;
-	case kIconTypeSpider: return _selectedSpider;
-	case kIconTypeSpecial: return _selectedSpecial;
-	case kIconTypeDeathEffect: return _selectedDeathEffect;
-	default: return 0;
+		case IconType::kIconTypeCube: return _selectedCube;
+		case IconType::kIconTypeShip: return _selectedShip;
+		case IconType::kIconTypeBall: return _selectedBall;
+		case IconType::kIconTypeUfo: return _selectedUfo;
+		case IconType::kIconTypeWave: return _selectedWave;
+		case IconType::kIconTypeRobot: return _selectedRobot;
+		case IconType::kIconTypeSpider: return _selectedSpider;
+		case IconType::kIconTypeSpecial: return _selectedSpecial;
+		case IconType::kIconTypeDeathEffect: return _selectedDeathEffect;
+		default: return 0;
 	}
 }
 
 void GameManager::setSelectedIcon(IconType mode, int id) {
 	switch (mode)
 	{
-	case kIconTypeCube: _selectedCube = id; break;
-	case kIconTypeShip: _selectedShip = id; break;
-	case kIconTypeBall: _selectedBall = id; break;
-	case kIconTypeUfo: _selectedUfo = id; break;
-	case kIconTypeWave: _selectedWave = id; break;
-	case kIconTypeRobot: _selectedRobot = id; break;
-	case kIconTypeSpider: _selectedSpider = id; break;
-	case kIconTypeSpecial: _selectedSpecial = id; break;
-	case kIconTypeDeathEffect: _selectedDeathEffect = id; break;
+		case IconType::kIconTypeCube: _selectedCube = id; break;
+		case IconType::kIconTypeShip: _selectedShip = id; break;
+		case IconType::kIconTypeBall: _selectedBall = id; break;
+		case IconType::kIconTypeUfo: _selectedUfo = id; break;
+		case IconType::kIconTypeWave: _selectedWave = id; break;
+		case IconType::kIconTypeRobot: _selectedRobot = id; break;
+		case IconType::kIconTypeSpider: _selectedSpider = id; break;
+		case IconType::kIconTypeSpecial: _selectedSpecial = id; break;
+		case IconType::kIconTypeDeathEffect: _selectedDeathEffect = id; break;
 	}
 }
 

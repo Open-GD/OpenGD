@@ -88,7 +88,7 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 			"http://www.boomlings.com/database/getGJLevels21.php", postData, ax::network::HttpRequest::Type::POST,
 			AX_CALLBACK_2(LevelBrowserLayer::onHttpRequestCompleted, this));
 	});
-	_rightBtn->setPosition({259.5, 0});
+	_rightBtn->setPosition(pageMenu->convertToNodeSpace(ax::Vec2(winSize.width - 24, winSize.height / 2)));
 	_leftBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [this](Node*) {
 		_searchObj->_page--;
 		_leftBtn->setEnabled(false);
@@ -115,13 +115,12 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 	});
 	_leftBtn->setEnabled(false);
 	_leftBtn->setVisible(false);
-	_leftBtn->setPosition({-259.5, 0});
+	_leftBtn->setPosition(pageMenu->convertToNodeSpace(ax::Vec2(24, winSize.height / 2)));
 	_rightBtn->setScaleX(-1);
 	_rightBtn->setEnabled(false);
 	_rightBtn->setVisible(false);
 	pageMenu->addChild(_leftBtn);
 	pageMenu->addChild(_rightBtn);
-	pageMenu->setPosition({283.5, 160});
 	this->addChild(pageMenu, 5);
 
 	GameToolbox::createBG(this);
