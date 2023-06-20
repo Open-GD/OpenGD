@@ -1,8 +1,9 @@
 #include "ListLayer.h"
-#include "GameToolbox.h"
+
 
 #include "CCDirector.h"
 #include "2d/CCLabel.h"
+#include "GameToolbox/getTextureString.h"
 
 ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){
 	auto pRet = new(std::nothrow) ListLayer();

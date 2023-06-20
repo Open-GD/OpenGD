@@ -1,5 +1,4 @@
 #include "LevelCell.h"
-#include "GameToolbox.h"
 #include "MenuItemSpriteExtra.h"
 #include "ui/UIScale9Sprite.h"
 #include "LevelInfoLayer.h"
@@ -12,6 +11,9 @@
 #include "2d/CCTransition.h"
 #include "base/CCDirector.h"
 #include "ProfilePage.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/nodes.h"
+#include "GameToolbox/conv.h"
 
 USING_NS_AX;
 
@@ -228,7 +230,7 @@ bool LevelCell::init(GJGameLevel* level) {
 	lenSprite->setScale(0.6f);
 	_layer->addChild(lenSprite, 2);
 
-	Label* lenLabel = Label::createWithBMFont(bigFontStr, GameToolbox::lengthString(level->_length));
+	Label* lenLabel = Label::createWithBMFont(bigFontStr, GameToolbox::levelLengthString(level->_length));
 	GameToolbox::limitLabelWidth(lenLabel, 50.f, 0.4f, 0);
 
 	lenLabel->setPosition({ lenSprite->getPositionX() + 10, 14 });

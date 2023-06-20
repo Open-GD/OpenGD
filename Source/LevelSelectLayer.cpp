@@ -3,11 +3,11 @@
 #include "MenuItemSpriteExtra.h"
 #include "AudioEngine.h"
 #include "PlayLayer.h"
-#include "GameToolbox.h"
+
 #include "MenuLayer.h"
 #include "LevelPage.h"
 #include "SongsLayer.h"
-#include "Checkbox.h"
+//#include "Checkbox.h"
 #include "GroundLayer.h"
 #include "BoomScrollLayer.h"
 #include "2d/CCMenu.h"
@@ -16,6 +16,9 @@
 #include "2d/CCTransition.h"
 #include "CCEventDispatcher.h"
 #include "base/CCDirector.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/nodes.h"
 
 USING_NS_AX;
 
@@ -132,21 +135,21 @@ bool LevelSelectLayer::init(int page)
 			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
 	
-	auto bglCheckbox = Checkbox::create("BaseGameLayer", [this](Node* btn, bool on)
-	{
-		GameToolbox::log("on: {}", on);
-		if (auto currentLevelPage = dynamic_cast<LevelPage*>(_bsl->_layers.at(_bsl->_currentPage)))
-		{
-			currentLevelPage->_openBGL = on;
-		}
-	});
+	//auto bglCheckbox = Checkbox::create("BaseGameLayer", [this](Node* btn, bool on)
+	//{
+	//	GameToolbox::log("on: {}", on);
+	//	if (auto currentLevelPage = dynamic_cast<LevelPage*>(_bsl->_layers.at(_bsl->_currentPage)))
+	//	{
+	//		currentLevelPage->_openBGL = on;
+	//	}
+	//});
 	Menu* backMenu = Menu::create();
 
 	addChild(backMenu, 1);
 	backMenu->addChild(backBtn);
-	backMenu->addChild(bglCheckbox);
+	//backMenu->addChild(bglCheckbox);
 	backMenu->setPosition({25.0f, winSize.height - 22.0f });
-	bglCheckbox->setPosition({backMenu->convertToNodeSpace({winSize.width / 2 + 15.0f, winSize.height - 40.0f})});
+	//bglCheckbox->setPosition({backMenu->convertToNodeSpace({winSize.width / 2 + 15.0f, winSize.height - 40.0f})});
 
 	auto infoMenu = Menu::create();
 	addChild(infoMenu);

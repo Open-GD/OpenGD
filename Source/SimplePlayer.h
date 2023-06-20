@@ -3,7 +3,7 @@
 #include "2d/CCSprite.h"
 #include "ccTypes.h"
 
-enum class IconType : int;
+#include "GameToolbox/enums.h"
 
 class SimplePlayer : public ax::Sprite {
 public:

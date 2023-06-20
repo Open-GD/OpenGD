@@ -1,6 +1,6 @@
 #include "AlertLayer.h"
 #include "CreatorLayer.h"
-#include "GameToolbox.h"
+
 #include <iostream>
 #include "LevelSearchLayer.h"
 #include "MenuItemSpriteExtra.h"
@@ -14,6 +14,11 @@
 #include "CCEventDispatcher.h"
 #include "ccUTF8.h"
 #include "base/CCDirector.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/nodes.h"
+#include "GameToolbox/conv.h"
+#include <fmt/format.h>
+
 
 USING_NS_AX;
 
@@ -275,7 +280,7 @@ bool LevelSearchLayer::init()
 	_lengthFilter->addChild(timeIcon);
 	for (int i = 0; i < 5; ++i)
 	{
-		const char* length = GameToolbox::lengthString(i);
+		const char* length = GameToolbox::levelLengthString(i);
 		auto label = MenuItemLabel::create(Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), length, TextHAlignment::CENTER), AX_CALLBACK_1(LevelSearchLayer::toggleTime, this));
 		label->setColor(UNSELECTED_COLOR);
 		label->setScale(0.5f);

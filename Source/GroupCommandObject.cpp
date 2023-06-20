@@ -1,6 +1,5 @@
 #include "GroupCommandObject.h"
 #include "EffectGameObject.h"
-#include "GameToolbox.h"
 
 GroupCommandObject* GroupCommandObject::create()
 {

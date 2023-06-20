@@ -1,7 +1,7 @@
 #include "GJUserScore.h"
 
 #include "external/base64.h"
-#include "GameToolbox.h"
+#include "GameToolbox/conv.h"
 
 static inline std::string _toString(std::string_view s)
 {

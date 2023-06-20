@@ -1,4 +1,4 @@
-#include "GameToolbox.h"
+
 #include "GameManager.h"
 #include "ResourcesLoadingLayer.h"
 #include "LoadingLayer.h"
@@ -9,6 +9,7 @@
 #include <2d/CCActionInstant.h>
 #include <platform/CCFileUtils.h>
 #include <base/CCDirector.h>
+#include "GameToolbox/log.h"
 
 USING_NS_AX;
 

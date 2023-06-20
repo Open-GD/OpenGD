@@ -27,8 +27,8 @@
 #include "LoadingLayer.h"
 #include "GameManager.h"
 #include "ResourcesLoadingLayer.h"
-#include "GameToolbox.h"
 #include "external/constants.h"
+#include "GameToolbox/log.h"
 
 #include "platform/CCApplication.h"
 #include "platform/CCGLView.h"

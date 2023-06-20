@@ -1,7 +1,7 @@
 #include "RewardsLayer.h"
 
 #include <MenuItemSpriteExtra.h>
-#include "GameToolbox.h"
+
 #include <ui/CocosGUI.h>
 #include "ButtonSprite.h"
 #include "2d/CCMenu.h"
@@ -15,6 +15,10 @@
 #include "network/HttpResponse.h"
 #include "network/HttpClient.h"
 #include "external/base64.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/network.h"
+#include "GameToolbox/log.h"
 
 USING_NS_AX;
 

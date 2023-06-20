@@ -1,5 +1,8 @@
 #include "LoadingCircle.h"
-#include "GameToolbox.h"
+
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/conv.h"
 
 LoadingCircle *LoadingCircle::create()
 { 

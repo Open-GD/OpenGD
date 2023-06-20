@@ -3,7 +3,7 @@
 
 #include "2d/CCScene.h"
 
-enum class IconType : int;
+#include "GameToolbox/enums.h"
 class SimplePlayer;
 
 namespace ax 

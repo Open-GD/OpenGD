@@ -1,5 +1,4 @@
 #include "EndLevelLayer.h"
-#include "GameToolbox.h"
 #include "PlayLayer.h"
 #include "DropDownLayer.h"
 #include "MenuItemSpriteExtra.h"
@@ -12,6 +11,8 @@
 
 #include <fmt/chrono.h>
 #include <array>
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/rand.h"
 
 //same as LoadingLayer
 constexpr static auto _endingStrings = std::to_array <const char*>({

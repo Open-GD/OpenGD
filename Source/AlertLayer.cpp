@@ -8,12 +8,9 @@
 #include "base/CCDirector.h"
 
 #include <string>
+#include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;
-
-namespace GameToolbox {
-	std::string getTextureString(std::string);
-}
 
 bool AlertLayer::init(std::string_view title, std::string_view desc, std::string_view btn1Str, std::string_view btn2Str, float width, std::function<void(Node*)> btn1Callback, std::function<void(Node*)> btn2Callback)
 {

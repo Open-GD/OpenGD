@@ -18,5 +18,6 @@ public:
 	void keyBackClicked();
 
 	virtual void show(Transitions = kScaleUp);
+	virtual void showOnLayer(ax::Node*, Transitions = kScaleUp);
 	virtual void close();
 };

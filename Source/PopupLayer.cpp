@@ -52,6 +52,13 @@ bool PopupLayer::init()
 	return true;
 }
 
+void PopupLayer::showOnLayer(ax::Node* node, Transitions transition)
+{
+	removeFromParent();
+	node->addChild(this);
+	show(transition);
+}
+
 
 void PopupLayer::keyBackClicked() {
 	this->close();

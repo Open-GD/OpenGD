@@ -4,7 +4,8 @@
 #include "2d/CCLabel.h"
 #include "base/CCDirector.h"
 #include "CCApplication.h"
-#include "GameToolbox.h"
+
+#include "GameToolbox/getTextureString.h"
 
 MoreGamesLayer* MoreGamesLayer::create(){
 	auto pRet = new(std::nothrow) MoreGamesLayer();

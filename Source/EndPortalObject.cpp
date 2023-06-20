@@ -1,5 +1,4 @@
 #include "EndPortalObject.h"
-#include "GameToolbox.h"
 #include "base/CCDirector.h"
 
 USING_NS_AX;
@@ -25,5 +24,5 @@ bool EndPortalObject::init()
 	
 	auto winSize = Director::getInstance()->getWinSize();
 	_gradientBar = Sprite::createWithSpriteFrameName("gradientBar.png");
-	
+	return true;
 }

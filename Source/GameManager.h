@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-enum class IconType : int;
+#include "GameToolbox/enums.h"
 
 class GameManager
 {

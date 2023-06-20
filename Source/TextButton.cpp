@@ -1,7 +1,8 @@
 #include "TextButton.h"
 #include <ui/CocosGUI.h>
-#include "GameToolbox.h"
+
 #include "2d/CCActionEase.h"
+#include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;
 

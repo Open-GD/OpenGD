@@ -1,6 +1,6 @@
 #include "UILayer.h"
 #include "PlayLayer.h"
-#include "GameToolbox.h"
+
 #include "CCEventListenerTouch.h"
 #include "CCEventDispatcher.h"
 #include "base/CCDirector.h"
@@ -42,7 +42,6 @@ bool UILayer::init()
 
 bool UILayer::onTouchBegan(ax::Touch* touch, ax::Event* event)
 {
-	GameToolbox::log("as-fsaf");
 	auto pl = PlayLayer::getInstance();
 	pl->_player1->pushButton();
 	if (pl->_isDualMode) pl->_player2->pushButton();

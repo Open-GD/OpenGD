@@ -1,10 +1,11 @@
+#include "GameToolbox/enums.h"
 #include "GameManager.h"
 #include "external/hps/hps.h"
-#include "GameToolbox.h"
 #include "ResourcesLoadingLayer.h"
 #include "AppDelegate.h"
-
+#include "GameToolbox/log.h"
 #include <platform/CCFileUtils.h>
+
 
 struct SaveObject
 {

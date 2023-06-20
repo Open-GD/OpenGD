@@ -1,5 +1,4 @@
 #include "GarageLayer.h"
-#include "GameToolbox.h"
 #include "MenuItemSpriteExtra.h"
 #include "MenuLayer.h"
 #include "SimplePlayer.h"
@@ -12,6 +11,10 @@
 #include "CCEventListenerKeyboard.h"
 #include "ui/UIScale9Sprite.h"
 #include "base/CCDirector.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/nodes.h"
 
 USING_NS_AX;
 
@@ -82,7 +85,7 @@ bool GarageLayer::init()
 
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [=](Node*) {
 		if (_popSceneWithTransition) 
-			GameToolbox::popSceneWithTransition(0.5f, kTransitionShop);
+			GameToolbox::popSceneWithTransition(0.5f, popTransition::kTransitionShop);
 		else
 			director->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 	});
@@ -124,7 +127,7 @@ bool GarageLayer::init()
 	auto listener = ax::EventListenerKeyboard::create();
 	listener->onKeyPressed = [=](ax::EventKeyboard::KeyCode key, ax::Event*) {
 		if (key == ax::EventKeyboard::KeyCode::KEY_ESCAPE) {
-			if (_popSceneWithTransition) GameToolbox::popSceneWithTransition(0.5f, kTransitionShop);
+			if (_popSceneWithTransition) GameToolbox::popSceneWithTransition(0.5f, popTransition::kTransitionShop);
 			else Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 		}
 	};

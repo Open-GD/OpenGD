@@ -8,7 +8,7 @@
 #include "AlertLayer.h"
 #include "GarageLayer.h"
 #include "CCDirector.h"
-#include "GameToolbox.h"
+
 #include "2d/CCMenu.h"
 #include "network/HttpResponse.h"
 #include "GJGameLevel.h"
@@ -20,6 +20,11 @@
 #include "CCEventListenerKeyboard.h"
 #include "network/HttpClient.h"
 #include "ccUTF8.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/network.h"
+#include "GameToolbox/nodes.h"
+#include "GameToolbox/conv.h"
 
 USING_NS_AX;
 
@@ -122,7 +127,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	timeIcon->setPosition({ downIcon->getPositionX(), likeIcon->getPositionY() - 28});
 	this->addChild(timeIcon);
 
-	auto lenght = GameToolbox::createBMFont(GameToolbox::lengthString(level->_length), "bigFont.fnt");
+	auto lenght = GameToolbox::createBMFont(GameToolbox::levelLengthString(level->_length), "bigFont.fnt");
 	GameToolbox::limitLabelWidth(lenght, 60, 0.5f);
 	lenght->setAnchorPoint(downCount->getAnchorPoint());
 	lenght->setPosition({ downCount->getPositionX(), timeIcon->getPositionY()});

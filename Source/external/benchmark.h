@@ -15,7 +15,7 @@
 #pragma once
 
 #include <chrono>
-#include "GameToolbox.h"
+#include <GameToolbox/log.h>
 
 class BenchmarkTimer
 {

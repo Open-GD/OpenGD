@@ -1,12 +1,13 @@
 #include "RateLevelLayer.h"
 
 #include <MenuItemSpriteExtra.h>
-#include "GameToolbox.h"
+
 #include <ui/CocosGUI.h>
 #include "ButtonSprite.h"
 #include "2d/CCMenu.h"
 #include "ccUTF8.h"
 #include "base/CCDirector.h"
+#include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;
 

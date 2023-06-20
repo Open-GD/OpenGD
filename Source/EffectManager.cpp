@@ -1,5 +1,4 @@
 #include "EffectManager.h"
-#include "GameToolbox.h"
 
 EffectManager* EffectManager::create()
 {

@@ -5,6 +5,7 @@
 #include "CreatorLayer.h"
 #include "external/constants.h"
 #include "CocosExplorer.h"
+#include "GameToolbox/getTextureString.h"
 
 ax::Scene* LevelEditorLayer::scene(GJGameLevel* level) {
 	auto scene = new ax::Scene();

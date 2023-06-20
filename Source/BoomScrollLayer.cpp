@@ -2,10 +2,10 @@
 #include "GJGameLevel.h"
 #include "MenuItemSpriteExtra.h"
 #include "AudioEngine.h"
-#include "GameToolbox.h"
 #include "2d/CCActionEase.h"
 #include "CCDirector.h"
 #include "CCEventDispatcher.h"
+#include "GameToolbox/log.h"
 
 USING_NS_AX;
 

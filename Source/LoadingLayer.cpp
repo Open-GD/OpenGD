@@ -1,5 +1,5 @@
 #include "LoadingLayer.h"
-#include "GameToolbox.h"
+
 #include "MenuLayer.h"
 #include "CocosExplorer.h"
 #include "GameManager.h"
@@ -13,6 +13,9 @@
 #include "SimpleProgressBar.h"
 #include "2d/CCActionInterval.h"
 #include "2d/CCActionInstant.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/rand.h"
 
 USING_NS_AX;
 

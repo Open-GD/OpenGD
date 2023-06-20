@@ -7,7 +7,7 @@
 #include "AlertLayer.h"
 #include "AudioEngine.h"
 #include "MenuItemSpriteExtra.h"
-#include "GameToolbox.h"
+
 #include "PlayLayer.h"
 #include "LoadingCircle.h"
 #include "SimpleProgressBar.h"
@@ -26,6 +26,8 @@
 #include "CCEventListenerKeyboard.h"
 #include "ProfilePage.h"
 #include "RewardsLayer.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
 
 /*
 #include "ColoursPalette.h"

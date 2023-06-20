@@ -5,7 +5,6 @@
 #include "CCDirector.h"
 #include "LoadingCircle.h"
 #include "2d/CCMenu.h"
-#include "GameToolbox.h"
 #include "GJGameLevel.h"
 #include "GJSearchObject.h"
 #include "MenuItemSpriteExtra.h"
@@ -14,6 +13,11 @@
 #include "2d/CCLabel.h"
 #include "ListLayer.h"
 #include "CCEventListenerKeyboard.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/network.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/nodes.h"
 
 
 //TODO: rewrite cached levels + handle delete levels
@@ -58,7 +62,7 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 
 	auto backBtnMenu = ax::Menu::create();
 	auto backBtn =
-		MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) { GameToolbox::popSceneWithTransition(0.5f, kTransitionFade); });
+		MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) { GameToolbox::popSceneWithTransition(0.5f, popTransition::kTransitionFade); });
 	backBtnMenu->addChild(backBtn);
 	backBtnMenu->setPosition({24.0, winSize.height - 23.0f});
 	this->addChild(backBtnMenu, 5);

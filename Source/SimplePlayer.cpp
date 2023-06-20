@@ -1,7 +1,11 @@
+#include "GameToolbox/enums.h"
 #include "SimplePlayer.h"
-#include "GameToolbox.h"
+
 #include "ccUTF8.h"
 #include "base/CCDirector.h"
+
+#include "GameToolbox/math.h"
+#include "GameToolbox/conv.h"
 
 USING_NS_AX;
 

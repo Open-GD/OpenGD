@@ -1,6 +1,6 @@
 #include "SongInfoLayer.h"
 #include <ui/UIScale9Sprite.h>
-#include "GameToolbox.h"
+
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
 #include "ButtonSprite.h"
@@ -8,6 +8,9 @@
 #include "CCApplication.h"
 #include "2d/CCMenu.h"
 #include "base/CCDirector.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/nodes.h"
+#include "fmt/format.h"
 
 USING_NS_AX;
 

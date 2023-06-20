@@ -1,3 +1,5 @@
+/*
+!! WILL BE REWRITTEN !!
 #pragma once
 #include <functional>
 #include <string_view>
@@ -27,3 +29,5 @@ public:
 	static Checkbox* create(std::string_view text, bool toggled, CheckboxCallback);
 	static Checkbox* create(std::string_view text, CheckboxCallback);
 };
+
+*/

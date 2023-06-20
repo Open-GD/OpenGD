@@ -2,7 +2,7 @@
 #include "2d/CCMenu.h"
 #include "2d/CCTransition.h"
 #include <AudioEngine.h>
-#include "GameToolbox.h"
+#
 #include "CCDirector.h"
 #include "CCEventListenerKeyboard.h"
 #include "CCEventDispatcher.h"

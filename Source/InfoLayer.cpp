@@ -7,11 +7,11 @@
 #include "external/base64.h"
 #include "ButtonSprite.h"
 #include "CCDirector.h"
-#include "GameToolbox.h"
 #include "2d/CCMenu.h"
 #include "GJGameLevel.h"
 #include "ccUTF8.h"
-
+#include "GameToolbox/getTextureString.h"
+#include <fmt/format.h>
 USING_NS_AX;
 
 InfoLayer* InfoLayer::create(GJGameLevel* level)

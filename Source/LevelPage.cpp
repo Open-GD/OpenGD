@@ -4,13 +4,16 @@
 #include "PlayLayer.h"
 #include "LevelDebugLayer.h"
 #include <AudioEngine.h>
-#include "GameToolbox.h"
+
 #include "2d/CCLabel.h"
 #include "2d/CCMenu.h"
 #include "2d/CCTransition.h"
 #include "MenuLayer.h"
 #include "GJGameLevel.h"
 #include "base/CCDirector.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/rand.h"
 
 bool LevelPage::replacingScene = false;
 

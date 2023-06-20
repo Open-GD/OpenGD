@@ -2,7 +2,6 @@
 #include <AudioEngine.h>
 #include "LevelPage.h"
 #include "GJGameLevel.h"
-#include "GameToolbox.h"
 #include "LevelBrowserLayer.h"
 #include "LevelEditorLayer.h"
 #include "LevelInfoLayer.h"
@@ -19,7 +18,12 @@
 #include "GJSearchObject.h"
 #include "SecretLayer2.h"
 
+#include "GameToolbox/log.h"
+#include "GameToolbox/nodes.h"
+
+
 USING_NS_AX;
+
 using namespace ax::network;
 
 Scene* CreatorLayer::scene() {

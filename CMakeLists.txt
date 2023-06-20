@@ -26,8 +26,8 @@
 cmake_minimum_required(VERSION 3.10)
 set(APP_NAME OpenGD)
 
-
 project(${APP_NAME})
+
 
 SET(AX_ENABLE_EXT_IMGUI ON)
 SET(AX_ENABLE_EXT_GUI ON)
@@ -190,7 +190,6 @@ if (AX_WITH_YAML_CPP)
 endif()
 
 target_include_directories(${APP_NAME} PRIVATE ${GAME_INC_DIRS})
-target_compile_options(${APP_NAME} PRIVATE -w)
 
 
 # mark app resources, resource will be copy auto after mark
@@ -244,3 +243,6 @@ endif()
 if (NOT DEFINED BUILD_ENGINE_DONE)
     ax_uwp_set_all_targets_deploy_min_version()
 endif()
+
+#remove this if it causes issues (fmt doesnt link for me atm)
+target_compile_definitions(${APP_NAME} PUBLIC FMT_HEADER_ONLY)

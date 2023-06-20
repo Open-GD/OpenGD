@@ -1,9 +1,9 @@
 #include "EffectGameObject.h"
 #include "BaseGameLayer.h"
 #include "ColorAction.h"
-#include "GameToolbox.h"
 #include "PlayLayer.h"
 #include "2d/CCActionEase.h"
+#include "GameToolbox/conv.h"
 
 USING_NS_AX;
 
@@ -259,15 +259,15 @@ void EffectGameObject::updateTweenAction(float value, std::string_view key)
 
 	if (key == "col1")
 	{
-		_bgl->_colorChannels.at(_targetColorId)._color.r = value;
+		_bgl->_colorChannels.at(_targetColorId)._color.r = static_cast<uint8_t>(value);
 	}
 	else if (key == "col2")
 	{
-		_bgl->_colorChannels.at(_targetColorId)._color.g = value;
+		_bgl->_colorChannels.at(_targetColorId)._color.g = static_cast<uint8_t>(value);
 	}
 	else if (key == "col3")
 	{
-		_bgl->_colorChannels.at(_targetColorId)._color.b = value;
+		_bgl->_colorChannels.at(_targetColorId)._color.b = static_cast<uint8_t>(value);
 	}
 	else if (key == "col4")
 	{
@@ -275,19 +275,19 @@ void EffectGameObject::updateTweenAction(float value, std::string_view key)
 	}
 	else if (key == "pul1")
 	{
-		_bgl->_colorChannels.at(_targetGroupId)._color.r = value;
+		_bgl->_colorChannels.at(_targetGroupId)._color.r = static_cast<uint8_t>(value);
 	}
 	else if (key == "pul2")
 	{
-		_bgl->_colorChannels.at(_targetGroupId)._color.g = value;
+		_bgl->_colorChannels.at(_targetGroupId)._color.g = static_cast<uint8_t>(value);
 	}
 	else if (key == "pul3")
 	{
-		_bgl->_colorChannels.at(_targetGroupId)._color.b = value;
+		_bgl->_colorChannels.at(_targetGroupId)._color.b = static_cast<uint8_t>(value);
 	}
 	else if (key == "fade")
 	{
-		_bgl->_groups[_targetGroupId]._alpha = value;
+		_bgl->_groups[_targetGroupId]._alpha = static_cast<uint8_t>(value);
 	}
 }
 

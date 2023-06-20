@@ -45,6 +45,6 @@ private:
 
 public:
 	void triggerActivated(float);
-	static EffectGameObject *create(std::string_view frame);
+	static EffectGameObject* create(std::string_view frame);
 	static ax::Action* actionEasing(ax::ActionInterval* ac, int ease, float rate);
 };

@@ -1,13 +1,13 @@
 #include "ButtonSprite.h"
-#include "GameToolbox.h"
 #include "MenuItemSpriteExtra.h"
 #include "2d/CCLabel.h"
 #include "ui/UIScale9Sprite.h"
 #include "CCDirector.h"
 #include "renderer/CCTextureCache.h"
+#include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;
-
+//cmake --build build --config RelWithDebInfo --target OpenGD
 ButtonSprite* ButtonSprite::create(std::string_view caption, int width, int minWidth, float scale, bool absoluteWidth, std::string_view font, std::string_view texture, float height)
 {
 	ButtonSprite* ret = new ButtonSprite();
@@ -38,7 +38,7 @@ ButtonSprite* ButtonSprite::create(Sprite* iconSprite, int width, int minWidth, 
 
 ButtonSprite* ButtonSprite::create(std::string_view caption, int width, float minWidth, float scale)
 {
-	return ButtonSprite::create(caption, width, minWidth, scale, false, GameToolbox::getTextureString("goldFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), false);
+	return ButtonSprite::create(caption, width, static_cast<int>(minWidth), scale, false, GameToolbox::getTextureString("goldFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), false);
 }
 
 ButtonSprite* ButtonSprite::create(std::string_view caption)
@@ -53,10 +53,10 @@ bool ButtonSprite::initWithText(std::string_view caption, int width, int minWidt
 
 	_hasTextProvided = true;
 	_scale = scale;
-	_width = width;
+	_width = static_cast<float>(width);
 	_absoluteWidth = absoluteWidth;
 	_height = height;
-	_minWidth = minWidth;
+	_minWidth = static_cast<float>(minWidth);
 
 	_spriteOffset = { 0, 2 };
 
@@ -83,9 +83,9 @@ bool ButtonSprite::initWithSprite(Sprite* iconSprite, int width, int minWidth, f
 	_subSprite = iconSprite;
 	_hasTextProvided = false;
 	_scale = scale;
-	_width = width;
+	_width = static_cast<float>(width);
 	_absoluteWidth = absoluteWidth;
-	_minWidth = minWidth;
+	_minWidth = static_cast<float>(minWidth);
 
 	this->addChild(_subSprite, 1);
 

@@ -3,7 +3,7 @@
 #include "CreatorLayer.h"
 #include "EffectGameObject.h"
 #include "EndLevelLayer.h"
-#include "GameToolbox.h"
+
 #include "LevelInfoLayer.h"
 #include "LevelPage.h"
 #include "LevelSelectLayer.h"
@@ -27,6 +27,12 @@
 #include "GroundLayer.h"
 #include "SimpleProgressBar.h"
 #include "CircleWave.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/rand.h"
+#include "GameToolbox/math.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/nodes.h"
 
 
 USING_NS_AX;
@@ -620,7 +626,7 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	if (levelStr.empty())
 	{
-		nlohmann::json file = nlohmann::json::parse(GameToolbox::getFileContentsResources("Custom/mainLevels.json"));
+		nlohmann::json file = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
 		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)]);
 	}
 

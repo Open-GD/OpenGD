@@ -1,7 +1,6 @@
 #include "GameObject.h"
 #include "BaseGameLayer.h"
 #include "EffectGameObject.h"
-#include "GameToolbox.h"
 #include "PlayLayer.h"
 #include "PlayerObject.h"
 #include "external/json.hpp"
@@ -9,6 +8,7 @@
 #include <fstream>
 #include "2d/CCParticleSystemQuad.h"
 #include "platform/CCFileUtils.h"
+#include "GameToolbox/conv.h"
 
 USING_NS_AX;
 

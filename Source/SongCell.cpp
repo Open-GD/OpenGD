@@ -1,5 +1,5 @@
 #include "SongCell.h"
-#include "GameToolbox.h"
+
 #include "ButtonSprite.h"
 #include "LevelTools.h"
 #include "ui/UIScale9Sprite.h"
@@ -9,6 +9,8 @@
 #include "2d/CCLabel.h"
 #include "2d/CCMenu.h"
 #include "base/CCDirector.h"
+#include "GameToolbox/getTextureString.h"
+#include "fmt/format.h"
 
 USING_NS_AX;
 

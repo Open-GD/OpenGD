@@ -3,7 +3,6 @@
 #include "CocosExplorer.h"
 #include "EffectGameObject.h"
 #include "GJGameLevel.h"
-#include "GameToolbox.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
 #include "LevelSearchLayer.h"
@@ -12,6 +11,10 @@
 #include "format.h"
 #include <AudioEngine.h>
 #include <ccMacros.h>
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/nodes.h"
+#include "GameToolbox/network.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;

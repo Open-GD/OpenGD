@@ -1,5 +1,6 @@
 #include "SimpleProgressBar.h"
-#include "GameToolbox.h"
+
+#include "GameToolbox/getTextureString.h"
 
 bool SimpleProgressBar::init() 
 {

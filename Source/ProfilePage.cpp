@@ -1,9 +1,11 @@
+#include "GameToolbox/enums.h"
+
 #include "ProfilePage.h"
 
 #include <MenuItemSpriteExtra.h>
-#include "GameToolbox.h"
+
 #include "GameManager.h"
-#include <ui/CocosGUI.h>
+#include "ui/UIScale9Sprite.h"
 #include "ButtonSprite.h"
 #include "2d/CCMenu.h"
 #include "ccUTF8.h"
@@ -14,6 +16,12 @@
 #include "GJUserScore.h"
 #include "network/HttpResponse.h"
 #include "network/HttpClient.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/network.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/nodes.h"
+#include "2d/CCLabel.h"
 
 USING_NS_AX;
 
@@ -45,7 +53,8 @@ bool ProfilePage::init(int accountID, bool mainMenuProfile)
 	_mainLayer->addChild(bg);
 
 	auto playerName = Label::createWithBMFont(GameToolbox::getTextureString("bigFont.fnt"), "Hello World");
-	playerName->setPosition({ winSize.width / 2, ((winSize.height / 2) + 145.0f) - 20.0f});
+	ax::Vec2 playerNamePos { winSize.width / 2, ((winSize.height / 2) + 145.0f) - 20.0f};
+	playerName->setPosition(playerNamePos);
 	GameToolbox::limitLabelWidth(playerName, 185.0f, 0.9f, 0.0f);
 
 	_mainLayer->addChild(playerName);
@@ -53,7 +62,8 @@ bool ProfilePage::init(int accountID, bool mainMenuProfile)
 	auto floorLine = Sprite::createWithSpriteFrameName("floorLine_001.png");
 	floorLine->setOpacity(100);
 	floorLine->setScaleX(0.8f);
-	floorLine->setPosition({ winSize.width / 2, bg->getPositionY() + 100.0f});
+	playerNamePos.y -= 21.0f;
+	floorLine->setPosition(playerNamePos);
 
 	_mainLayer->addChild(floorLine);
 
@@ -215,14 +225,33 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 		initialPos = statSpritePos;
 
 		float labelContentSizeX = statLabel->getContentSize().x;
-		//float v27 = v16 + ((labelContentSizeX * statLabel->getScale()) + 14.0);
-		//float v28 = i == 1 ? 20.0f : 10.0f;
-		//v16 = v27 + v28;
+		float v27 = v16 + ((labelContentSizeX * statLabel->getScale()) + 14.0);
+		float v28 = i == 1 ? 20.0f : 10.0f;
+		v16 = v27 + v28;
 	}
 
-	//TODO: scale and position of playerState
-	float offset = 420;
-	playerStatsNode->setPosition((winSize.width / 2) - (offset / 2), winSize.height / 2 + 85);
+	//no idea but i guess its the length
+	size_t youtubeLen = score->_youTube.length(); 
+	size_t twitterLen = score->_twitter.length();
+	float offset = 340.0f;
+	bool twitterIsNotEmpty = twitterLen != 0;
+	int v35 = youtubeLen ? twitterIsNotEmpty + 1 : twitterIsNotEmpty;
+
+	size_t twitchLen = score->_twitch.length();
+	if(twitchLen) {
+		v35++;
+	}
+	if(v35 <= 1) {
+		offset = 420.0f;
+	}
+	if(v16 > offset)
+	{
+		float v37 = offset / v16;
+		v16 = offset;
+		playerStatsNode->setScale(v37);
+	}
+	
+	playerStatsNode->setPosition((winSize.x / 2) - (v16 / 2), winSize.y / 2 + 85);
 	_mainLayer->addChild(playerStatsNode);
 
 	IconType gamemode;
@@ -265,10 +294,14 @@ void ProfilePage::loadPageFromUserInfo(GJUserScore* score) // replace with 'GJUs
 		SimplePlayer* iconSprite = SimplePlayer::create(iconID);
 		iconSprite->updateGamemode(iconID, gamemode);
 		ax::Vec2 iconPos = {i * 48.0f - 144.0f, 0.0f};
-		iconSprite->setPosition(iconPos.operator+({winSize.width / 2, winSize.height / 2 + 40.0f}));
+		iconPos += {winSize.width / 2, winSize.height / 2 + 40.0f};
+		iconSprite->setPosition(iconPos);
 		iconSprite->setMainColor(GameToolbox::colorForIdx(score->_playerColor));
 		iconSprite->setSecondaryColor(GameToolbox::colorForIdx(score->_playerColor2));
-		if (score->_accGlow){iconSprite->setGlow(true);iconSprite->setGlowColor(GameToolbox::colorForIdx(score->_playerColor2));}
+		if (score->_accGlow) {
+			iconSprite->setGlow(true);
+			iconSprite->setGlowColor(GameToolbox::colorForIdx(score->_playerColor2));
+		}
 		_mainLayer->addChild(iconSprite);
 		_loadingcircle->setVisible(false);
 	}
@@ -289,6 +322,7 @@ void ProfilePage::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::ne
 
 	}
 	else {
-		_errorMsg->setVisible(false);
+		_loadingcircle->setVisible(false);
+		_errorMsg->setVisible(true);
 	}
 }

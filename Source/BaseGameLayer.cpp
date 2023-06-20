@@ -1,11 +1,14 @@
 #include "BaseGameLayer.h"
 #include "EffectGameObject.h"
 #include "GJGameLevel.h"
-#include "GameToolbox.h"
 #include "external/benchmark.h"
 #include "external/json.hpp"
+#include "GameToolbox/log.h"
+#include "GameToolbox/conv.h"
 
 #include <2d/CCSpriteBatchNode.h>
+#include "GameToolbox/getTextureString.h"
+#include "platform/CCFileUtils.h"
 
 USING_NS_AX;
 
@@ -54,7 +57,7 @@ void BaseGameLayer::loadLevel()
 	std::string levelStr = _level->_levelString;
 	if (levelStr.empty())
 	{
-		nlohmann::json file = nlohmann::json::parse(GameToolbox::getFileContentsResources("Custom/mainLevels.json"));
+		nlohmann::json file = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
 		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(_level->_levelID)]);
 	}
 	levelStr = GJGameLevel::decompressLvlStr(levelStr);

@@ -1,8 +1,13 @@
+/*---------------------------
+!! WILL BE REWRITTEN !!
+
+
 #pragma once
 #include "Checkbox.h"
-#include "GameToolbox.h"
+
 
 #include <2d/CCSprite.h>
+#include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;
 
@@ -55,3 +60,5 @@ void Checkbox::activate()
 	dynamic_cast<Sprite*>(getSprite())->setSpriteFrame(_toggled ? _onSpr : _offSpr);
 	_callback(this, _toggled);
 }
+
+*/

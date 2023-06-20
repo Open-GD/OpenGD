@@ -1,11 +1,13 @@
 #include "MenuGameLayer.h"
-#include "GameToolbox.h"
+
 #include "GroundLayer.h"
 #include "2d/CCMenu.h"
 #include "PlayerObject.h"
 #include "base/CCDirector.h"
 #include "CCEventListenerTouch.h"
 #include "CCEventDispatcher.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/rand.h"
 
 USING_NS_AX;
 
