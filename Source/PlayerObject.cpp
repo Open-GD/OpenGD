@@ -115,7 +115,7 @@ bool PlayerObject::init(int playerFrame, Layer* gameLayer_)
 
 	// particles
 	auto image = new Image();
-	image->initWithImageFile("Resources/square.png");
+	image->initWithImageFile("square.png");
 	auto texture = new Texture2D();
 	texture->initWithImage(image);
 

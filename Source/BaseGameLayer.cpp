@@ -58,7 +58,11 @@ void BaseGameLayer::loadLevel()
 	if (levelStr.empty())
 	{
 		nlohmann::json file = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
-		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(_level->_levelID)]);
+		std::string levelID = std::to_string(_level->_levelID);
+
+		if (!file.contains(levelID)) return; // check if our level actually exists in mainlevels list before doing anything
+
+		levelStr = fmt::format("H4sIAAAAAAAAA{}", file.at(levelID).get<std::string>());
 	}
 	levelStr = GJGameLevel::decompressLvlStr(levelStr);
 	{
