@@ -8,6 +8,7 @@
 #include "2d/CCActionInterval.h"
 #include "2d/CCActionEase.h"
 #include "2d/CCActionInstant.h"
+#include "GameToolbox/keyboard.h"
 
 USING_NS_AX;
 
@@ -71,7 +72,7 @@ bool DropDownLayer::init(Node* scrollLayer, const char* label)
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->setEnabled(true);
 	listener->setSwallowTouches(true);
-	listener->onTouchBegan = [=](Touch*, Event*) -> bool {
+	listener->onTouchBegan = [](Touch*, Event*) -> bool {
 		return true;
 	};
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
@@ -90,13 +91,20 @@ void DropDownLayer::showLayer(bool attachToScene, bool bounce)
 	if (attachToScene)
 	{
 		auto scene = Director::getInstance()->getRunningScene();
-		scene->addChild(this, 1024);
+		scene->addChild(this, 100);
 	}
+	
+	GameToolbox::onKeyDown(true, this, [this](ax::EventKeyboard::KeyCode, ax::Event*)
+	{
+		hideLayer();
+	});
 }
 
-void DropDownLayer::hideLayer(){
-	const auto& winSize = Director::getInstance()->getWinSize();
-
+void DropDownLayer::hideLayer()
+{
+	//const auto& winSize = Director::getInstance()->getWinSize();
+	if(!this) return;
+	
 	this->runAction(FadeTo::create(0.5, 0));
 	this->_dropLayer->runAction(
 		Sequence::create(

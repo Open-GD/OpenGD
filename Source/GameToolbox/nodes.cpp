@@ -204,3 +204,16 @@ void GameToolbox::alignItemsVerticallyWithPadding(ax::Vector<ax::Node*> _childre
 		y -= child->getContentSize().height * child->getScaleY() + padding;
 	}
 }
+
+int GameToolbox::getHighestChildZ(ax::Node* node)
+{
+	const auto& children = node->getChildren();
+	int highestZ = 0;
+	for(const auto& child : children)
+	{
+		if(int z = child->getLocalZOrder(); z > highestZ) {
+			highestZ = z;
+		}
+	}
+	return highestZ;
+}
