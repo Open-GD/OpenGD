@@ -1,3 +1,21 @@
+/*************************************************************************
+    OpenGD - Open source Geometry Dash.
+    Copyright (C) 2023  OpenGD Team
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License    
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*************************************************************************/
+
 #include "RewardUnlockLayer.h"
 
 #include <MenuItemSpriteExtra.h>
@@ -158,7 +176,7 @@ bool RewardUnlockLayer::init(int chestID)
 	return true;
 }
 
-void RewardUnlockLayer::playRewardEffect(getGJRewards* rewards)
+void RewardUnlockLayer::playRewardEffect(GetGJRewards* rewards)
 {
 	std::map<int, int> array;
 	if (rewards->orbs > 0) array[1] = rewards->orbs;
@@ -297,7 +315,7 @@ void RewardUnlockLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 	{
 		std::string_view strResp {*str};
 
-		getGJRewards* rewards = getGJRewards::create();
+		GetGJRewards* rewards = GetGJRewards::create();
 
 		auto decodedResponse = GameToolbox::xorCipher(base64_decode(fmt::format("{}", strResp.substr(5))), "59182");
 		auto data = GameToolbox::splitByDelim(decodedResponse, ':');

@@ -17,37 +17,17 @@
 *************************************************************************/
 
 #pragma once
+#include <string>
+#include <string_view>
 
-#include "2d/CCMotionStreak.h"
+class GetGJRewards;
 
-namespace ax 
-{ 
-	class Texture2D;
-	struct Color3B; 
-}
-
-
-class MotionTrail : public ax::MotionStreak
-{
+class GetGJRewards { 
 public:
-	MotionTrail();
-	virtual ~MotionTrail();
+	int orbs = 0;
+	int stars = 0;
+	int diamonds = 0;
+	bool key = 0;
 
-	static MotionTrail* create(float timeToFade,
-		float minSeg,
-		float strokeWidth,
-		const ax::Color3B& strokeColor,
-		std::string_view imagePath);
-
-	static MotionTrail* create(float timeToFade,
-		float minSeg,
-		float strokeWidth,
-		const ax::Color3B& strokeColor,
-		ax::Texture2D* texture);
-
-	virtual void update(float delta) override;
-
-	bool _appendNewPoints = true;
-	void resumeStroke();
-	void stopStroke();
+	static GetGJRewards *create();
 };

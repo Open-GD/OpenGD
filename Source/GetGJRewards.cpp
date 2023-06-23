@@ -16,38 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
-#pragma once
+#include "GetGJRewards.h"
 
-#include "2d/CCMotionStreak.h"
+#include "external/base64.h"
 
-namespace ax 
-{ 
-	class Texture2D;
-	struct Color3B; 
-}
-
-
-class MotionTrail : public ax::MotionStreak
+GetGJRewards* GetGJRewards::create() 
 {
-public:
-	MotionTrail();
-	virtual ~MotionTrail();
-
-	static MotionTrail* create(float timeToFade,
-		float minSeg,
-		float strokeWidth,
-		const ax::Color3B& strokeColor,
-		std::string_view imagePath);
-
-	static MotionTrail* create(float timeToFade,
-		float minSeg,
-		float strokeWidth,
-		const ax::Color3B& strokeColor,
-		ax::Texture2D* texture);
-
-	virtual void update(float delta) override;
-
-	bool _appendNewPoints = true;
-	void resumeStroke();
-	void stopStroke();
-};
+	GetGJRewards* rewards = new GetGJRewards;
+	return rewards;
+}
