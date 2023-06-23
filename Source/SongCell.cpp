@@ -100,7 +100,7 @@ bool SongCell::init(SongObject* songInfo)
 
 	auto button = MenuItemSpriteExtra::create(buttonSprite, [sID](Node* btn)
 	{
-			SongInfoLayer::create(sID)->show();
+		SongInfoLayer::create(sID)->show();
 	});
 
 	auto viewBtnMenu = Menu::create();

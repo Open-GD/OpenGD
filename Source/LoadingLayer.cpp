@@ -144,7 +144,6 @@ Scene* LoadingLayer::scene() {
 bool LoadingLayer::init() {
 	if (!Layer::init()) return false;
 	
-	
 	auto dir = Director::getInstance();
 
 	_sprFrameCache = SpriteFrameCache::getInstance();
@@ -192,13 +191,13 @@ bool LoadingLayer::init() {
 	_pBar->setPosition({ winSize.width / 2, splashText->getPosition().height + 40 });
 	this->addChild(_pBar);
 	
-	this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([&]() { this->loadAssets(); }), nullptr));
+	this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([this]() { this->loadAssets(); }), nullptr));
 	
 #if SHOW_IMGUI == true
 	CocosExplorer::openForever();
 #endif
 	
-	
+
 	GameToolbox::log("quality medium: {}, scale factor {}", GameManager::getInstance()->isMedium(), dir->getContentScaleFactor());
 	
 	return true;

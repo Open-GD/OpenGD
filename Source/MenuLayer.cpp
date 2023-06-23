@@ -45,6 +45,7 @@
 #include "RewardsLayer.h"
 #include "GameToolbox/log.h"
 #include "GameToolbox/getTextureString.h"
+#include "GameToolbox/keyboard.h"
 
 /*
 #include "ColoursPalette.h"
@@ -179,8 +180,6 @@ bool MenuLayer::init()
 		//AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
 		//auto dropdownlayer = DropDownLayer::create(nullptr, "Achievements");
 		//dropdownlayer->showLayer();
-		GameManager::getInstance()->save();
-		Director::getInstance()->end();
 	});
 	achievementsBtn->setScale(1.f);
 	//static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
@@ -246,44 +245,24 @@ bool MenuLayer::init()
 	dailyRewardBtn->setPosition(bottomMenu->convertToNodeSpace({winSize.width - 40.0f, winSize.height / 2 + 20.0f}));
 	bottomMenu->addChild(dailyRewardBtn);
 
-	auto listener = EventListenerKeyboard::create();
-
-	listener->onKeyPressed = [&](EventKeyboard::KeyCode code, Event*) {
-		if (code == EventKeyboard::KeyCode::KEY_SPACE) {
+	GameToolbox::onKeyDown(true, this, [&](EventKeyboard::KeyCode code, Event*)
+	{
+		if (code == EventKeyboard::KeyCode::KEY_SPACE)
+		{
 			auto scene = LevelSelectLayer::scene(0);
 			Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
-		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE) {
-			static AlertLayer* closeAlert;
-			
-			auto closeAndNull = [&]() -> void
+		} else if (code == EventKeyboard::KeyCode::KEY_ESCAPE)
+		{
+			auto alert = AlertLayer::create("Quit Game", "Are you sure you want to Quit?", "Cancel", "Yes", nullptr, nullptr);
+			alert->setBtn2Callback([](Node*)
 			{
-				closeAlert->close();
-				closeAlert = nullptr;
-			};
-			
-			//allows to spam esc and works as expected
-			if(closeAlert)
-			{
-				closeAndNull();
-				return;
-			}
-			
-			closeAlert = AlertLayer::create("Quit Game", "Are you sure you want to Quit?", "Cancel", "Yes", NULL, NULL);
-			
-			closeAlert->setBtn1Callback([=](Node*){
-				closeAndNull();
-			});
-
-			closeAlert->setBtn2Callback([](Node*){
 				GameManager::getInstance()->save();
 				Director::getInstance()->end();
 			});
-
-			closeAlert->show();
+			alert->show();
 		}
-	};
+	});
 
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 	return true;
 }

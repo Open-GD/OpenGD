@@ -45,10 +45,8 @@ bool OptionsLayer::init()
 	
 	auto scrollLayer = Layer::create();
 
-	auto accountBtn = MenuItemSpriteExtra::create(ButtonSprite::create("Account"), [scrollLayer](Node*) {
-		//auto all = AccountLoginLayer::create();
-		//scrollLayer->addChild(all, 99999);
-		//all->show();
+	auto accountBtn = MenuItemSpriteExtra::create(ButtonSprite::create("Account"), [](Node*) {
+		AccountLoginLayer::create()->show();
 	});
 	auto howToPlayBtn = MenuItemSpriteExtra::create(ButtonSprite::create("How to Play"), [this](Node*) {
 	//	GameManager::getInstance()->setQualityHigh();

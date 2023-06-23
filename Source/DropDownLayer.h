@@ -38,4 +38,5 @@ public:
 	void showLayer(bool attachToScene, bool bounce);
 	void hideLayer();
 	virtual void hideBackButton();
+	void keyBackClicked();
 };

@@ -46,4 +46,6 @@ namespace GameToolbox
 	void createBG(ax::Node* layer);
 	void createCorners(ax::Node* layer, bool topRight, bool topLeft, bool botLeft, bool botRight);
 	inline void createAllCorners(ax::Node* self) { return createCorners(self, true, true, true, true); }
+	
+	int getHighestChildZ(ax::Node* node);
 }
