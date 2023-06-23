@@ -1,14 +1,14 @@
 #include "BaseGameLayer.h"
 #include "EffectGameObject.h"
 #include "GJGameLevel.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/log.h"
 #include "external/benchmark.h"
 #include "external/json.hpp"
-#include "GameToolbox/log.h"
-#include "GameToolbox/conv.h"
 
-#include <2d/CCSpriteBatchNode.h>
 #include "GameToolbox/getTextureString.h"
 #include "platform/CCFileUtils.h"
+#include <2d/CCSpriteBatchNode.h>
 
 USING_NS_AX;
 
@@ -57,10 +57,12 @@ void BaseGameLayer::loadLevel()
 	std::string levelStr = _level->_levelString;
 	if (levelStr.empty())
 	{
-		nlohmann::json file = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
+		nlohmann::json file =
+			nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
 		std::string levelID = std::to_string(_level->_levelID);
 
-		if (!file.contains(levelID)) return; // check if our level actually exists in mainlevels list before doing anything
+		if (!file.contains(levelID))
+			return; // check if our level actually exists in mainlevels list before doing anything
 
 		levelStr = fmt::format("H4sIAAAAAAAAA{}", file.at(levelID).get<std::string>());
 	}
@@ -106,58 +108,74 @@ void BaseGameLayer::initBatchNodes()
 	_blendingBatchNodeB4 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_blendingBatchNodeB4, -23);
 	_blendingBatchNodeB4->setBlendFunc(GameToolbox::getBlending());
+	_blendingBatchNodeB4->setName("_blendingBatchNodeB4");
 
 	_mainBatchNodeB4 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_mainBatchNodeB4, -22);
+	_mainBatchNodeB4->setName("_mainBatchNodeB4");
 
 	_blendingBatchNodeB3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_blendingBatchNodeB3, -16);
 	_blendingBatchNodeB3->setBlendFunc(GameToolbox::getBlending());
+	_blendingBatchNodeB3->setName("_blendingBatchNodeB3");
 
 	_mainBatchNodeB3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_mainBatchNodeB3, -15);
+	_mainBatchNodeB3->setName("_mainBatchNodeB3");
 
 	_blendingBatchNodeB2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_blendingBatchNodeB2, -9);
 	_blendingBatchNodeB2->setBlendFunc(GameToolbox::getBlending());
+	_blendingBatchNodeB2->setName("_blendingBatchNodeB2");
 
 	_mainBatchNodeB2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_mainBatchNodeB2, -8);
+	_mainBatchNodeB2->setName("_mainBatchNodeB2");
 
 	_blendingBatchNodeB1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_blendingBatchNodeB1, -2);
 	_blendingBatchNodeB1->setBlendFunc(GameToolbox::getBlending());
+	_blendingBatchNodeB1->setName("_blendingBatchNodeB1");
 
 	_mainBatchNodeB1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_mainBatchNodeB1, -1);
+	_mainBatchNodeB1->setName("_mainBatchNodeB1");
 
 	_blendingBatchNodeT1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_blendingBatchNodeT1, 2);
 	_blendingBatchNodeT1->setBlendFunc(GameToolbox::getBlending());
+	_blendingBatchNodeT1->setName("_blendingBatchNodeT1");
 
 	_mainBatchNodeT1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_mainBatchNodeT1, 3);
+	_mainBatchNodeT1->setName("_mainBatchNodeT1");
 
 	_blendingBatchNodeT2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_blendingBatchNodeT2, 9);
 	_blendingBatchNodeT2->setBlendFunc(GameToolbox::getBlending());
+	_blendingBatchNodeT2->setName("_blendingBatchNodeT2");
 
 	_mainBatchNodeT2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_mainBatchNodeT2, 10);
+	_mainBatchNodeT2->setName("_mainBatchNodeT2");
 
 	_blendingBatchNodeT3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_blendingBatchNodeT3, 24);
 	_blendingBatchNodeT3->setBlendFunc(GameToolbox::getBlending());
+	_blendingBatchNodeT3->setName("_blendingBatchNodeT3");
 
 	_mainBatchNodeT3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
 	this->addChild(_mainBatchNodeT3, 25);
+	_mainBatchNodeT3->setName("_mainBatchNodeT3");
 
 	_glowBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString("GJ_GameSheetGlow.png"), 150);
 	this->addChild(_glowBatchNode);
 	_glowBatchNode->setBlendFunc(GameToolbox::getBlending());
+	_glowBatchNode->setName("_glowBatchNode");
 
 	_main2BatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_main2BatchNodeTexture), 150);
 	this->addChild(_main2BatchNode);
+	_main2BatchNode->setName("_main2BatchNode");
 
 	//_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
 	// addChild(_particleBatchNode);
@@ -379,16 +397,6 @@ void BaseGameLayer::fillColorChannel(std::span<std::string_view> colorString, in
 			break;
 		}
 	}
-}
-
-bool BaseGameLayer::isObjectBlending(GameObject* obj)
-{
-	return _colorChannels.contains(obj->_mainColorChannel) && _colorChannels[obj->_mainColorChannel]._blending &&
-			   _colorChannels.contains(obj->_secColorChannel) && _colorChannels[obj->_secColorChannel]._blending ||
-		   !_colorChannels.contains(obj->_mainColorChannel) && _colorChannels.contains(obj->_secColorChannel) &&
-			   _colorChannels[obj->_secColorChannel]._blending ||
-		   !_colorChannels.contains(obj->_secColorChannel) && _colorChannels.contains(obj->_mainColorChannel) &&
-			   _colorChannels[obj->_mainColorChannel]._blending;
 }
 
 int BaseGameLayer::sectionForPos(float x)

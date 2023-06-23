@@ -10,6 +10,7 @@
 #include "math/Rect.h"
 #include "math/Vec2.h"
 #include "SpriteColor.h"
+#include "external/json.hpp"
 
 class PlayerObject;
 namespace ax 
@@ -86,7 +87,8 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	virtual void updateTweenAction(float value, std::string_view key) override;
 
   public:
-	std::vector<ax::Sprite*> _detailSprites;
+	std::vector<ax::Sprite*> _childSprites;
+	std::vector<size_t> _childSpritesChannel;
 	std::string _texturePath;
 
 	ax::Vec2 _startPosition, _firstPosition, _startPosOffset;
@@ -145,7 +147,6 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
 	bool _hasGlow, _hasParticle;
 	bool _isTrigger;
-	bool _forceBlack, _forceBlackDetail, _hadBlending, _hadBlending2;
 
 	bool _toggledOn = true;
 
@@ -172,6 +173,8 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
 	void customSetup();
+	void addCustomSprites(nlohmann::json j);
+	void applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor const&col);
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);

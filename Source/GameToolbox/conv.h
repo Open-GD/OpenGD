@@ -4,6 +4,7 @@
 #include <string_view>
 #include <string>
 #include <vector>
+#include "2d/CCDrawNode.h"
 
 namespace GameToolbox
 {
@@ -18,5 +19,5 @@ namespace GameToolbox
 	std::vector<std::string_view> splitByDelimStringView(std::string_view str, char delim);
 	ax::BlendFunc getBlending();
 	std::string xorCipher(const std::string& message, const std::string& key);
-
+	void drawFromRect(ax::Rect const&rect, ax::Color4B color, ax::DrawNode* drawNode);
 }

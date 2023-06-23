@@ -700,7 +700,7 @@ bool PlayLayer::init(GJGameLevel* level)
 			if (m_pColorChannels.contains(object->_secColorChannel) &&
 				m_pColorChannels[object->_secColorChannel]._blending)
 			{
-				for (auto s : object->_detailSprites)
+				for (auto s : object->_childSprites)
 					s->setBlendFunc(GameToolbox::getBlending());
 			}
 			object->setCascadeOpacityEnabled(false);

@@ -1,9 +1,9 @@
 #include "EffectGameObject.h"
+#include "2d/CCActionEase.h"
 #include "BaseGameLayer.h"
 #include "ColorAction.h"
-#include "PlayLayer.h"
-#include "2d/CCActionEase.h"
 #include "GameToolbox/conv.h"
+#include "PlayLayer.h"
 
 USING_NS_AX;
 
@@ -71,7 +71,7 @@ Action* EffectGameObject::actionEasing(ActionInterval* ac, int ease, float rate)
 
 void EffectGameObject::triggerActivated(float)
 {
-	if (!_bgl)
+	if (!_bgl || (_wasTriggerActivated && !_spawnTriggered))
 		return;
 
 	auto pl = PlayLayer::getInstance();
@@ -247,6 +247,22 @@ void EffectGameObject::triggerActivated(float)
 				_bgl->_groups[_targetGroupId]._objects[i]->removeFromGameLayer();
 			}
 		}
+
+		break;
+	case 1268:
+		scheduleOnce(
+			[&](float dt) {
+				for (GameObject* gameObj : _bgl->_groups[_targetGroupId]._objects)
+				{
+					if (gameObj->_isTrigger)
+					{
+						EffectGameObject* trigger = static_cast<EffectGameObject*>(gameObj);
+						if (trigger->_spawnTriggered)
+							trigger->triggerActivated(dt);
+					}
+				}
+			},
+			_spawnDelay, "time");
 
 		break;
 	}

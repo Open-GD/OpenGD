@@ -100,6 +100,5 @@ public:
 	bool init(GJGameLevel*);
 	static int sectionForPos(float x);
 	static BaseGameLayer* getInstance() {return _instance;}
-	bool isObjectBlending(GameObject* obj);
 	void runMoveCommand(float duration, ax::Point offsetPos, int easeType, float easeAmt, int groupID);
 };

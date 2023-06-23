@@ -183,11 +183,18 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 		auto splits = GameToolbox::splitByDelimStringView((*str), '#');
 		auto levels = GameToolbox::splitByDelimStringView(splits[0], '|');
 		auto authorsStrings = GameToolbox::splitByDelimStringView(splits[1], '|');
+		auto songsStrings = GameToolbox::splitByDelimStringView(splits[2], ':');
 		
-		std::vector<std::vector<std::string_view>> authors;
+		std::vector<std::vector<std::string_view>> authors, songs;
 		authors.reserve(authorsStrings.size()); //pre-allocate enough memory
+		songs.reserve(songsStrings.size());
+		// songs.reserve(songsStrings.size());
 		for(const std::string_view aStr : authorsStrings) {
 			authors.push_back(std::move(GameToolbox::splitByDelimStringView(aStr, ':')));
+		}
+
+		for(const std::string_view aStr : songsStrings) {
+			songs.push_back(std::move(GameToolbox::splitByDelimStringView(aStr, '|')));
 		}
 		
 		auto getAuthor = [&](GJGameLevel* gjlevel) -> std::string_view
@@ -199,6 +206,17 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 			}
 			return "-";
 		};
+
+		auto getSong = [&](GJGameLevel* gjlevel) -> std::string_view
+		{
+			// for(const auto& song : songs)
+			// {
+			// 	// for(auto s : song) GameToolbox::log("\n{}", s);
+			// 	// if(GameToolbox::stoi(song[0]) == gjlevel->_playerID)
+			// 	// 	return song[1];
+			// }
+			return "Cool catchy song";
+		};
 		
 		std::vector<GJGameLevel*> toInsert;
 		toInsert.reserve(levels.size()); //pre-allocate enough memory
@@ -207,7 +225,7 @@ void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, 
 		{
 			auto gjlevel = GJGameLevel::createWithResponse(levels[i]);
 			gjlevel->_levelCreator = getAuthor(gjlevel);
-			gjlevel->_songName = "Cool catchy song";
+			gjlevel->_songName = getSong(gjlevel);
 			toInsert.push_back(gjlevel);
 		}
 

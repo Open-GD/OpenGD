@@ -32,6 +32,9 @@ public:
 	bool _mainOnly, _detailOnly;
 	bool _blending;
 	bool _activateGroup = false;
+	bool _spawnTriggered = false;
+	bool _multiTriggered = false;
+	float _spawnDelay = 0.f;
 
 	ax::Vec2 _offset;
 
