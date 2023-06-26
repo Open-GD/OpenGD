@@ -35,7 +35,7 @@ public:
 	ax::Layer* _dropLayer;
 
 	static DropDownLayer* create(ax::Node* scrollLayer, const char* label);
-	void showLayer(bool attachToScene, bool bounce);
+	void showLayer(bool attachToScene = true, bool bounce = false);
 	void hideLayer();
 	virtual void hideBackButton();
 	void keyBackClicked();

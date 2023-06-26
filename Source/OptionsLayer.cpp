@@ -87,6 +87,6 @@ bool OptionsLayer::init()
 	
 
 	auto dropdownlayer = DropDownLayer::create(scrollLayer, "Settings");
-	dropdownlayer->showLayer(true, false);
+	dropdownlayer->showLayer();
 	return true;
 }

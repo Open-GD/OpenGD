@@ -1,9 +1,28 @@
+/*************************************************************************
+    OpenGD - Open source Geometry Dash.
+    Copyright (C) 2023  OpenGD Team
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License    
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*************************************************************************/
+
 #include "TutorialLayer.h"
 #include <MenuItemSpriteExtra.h>
 #include "ccUTF8.h"
 #include <GameToolbox/getTextureString.h>
 #include "ui/UIScale9Sprite.h"
 #include "ButtonSprite.h"
+#include "2d/CCActionEase.h"
 
 USING_NS_AX;
 
@@ -86,6 +105,9 @@ bool TutorialLayer::init()
 	auto closeButtonMenu = Menu::createWithItem(closeButton);
 	closeButtonMenu->setPosition({ 93.000f, 285.750f });
 	layer1->addChild(closeButtonMenu);
+
+	layer1->setScale(0.f);
+	layer1->runAction(EaseElasticOut::create(ScaleTo::create(0.5f, 1.0f), 0.6f));
 
 	return true;
 }

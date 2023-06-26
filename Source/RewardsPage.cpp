@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
-#include "RewardsLayer.h"
+#include "RewardsPage.h"
 
 #include <MenuItemSpriteExtra.h>
 
@@ -40,9 +40,9 @@
 
 USING_NS_AX;
 
-RewardsLayer* RewardsLayer::create()
+RewardsPage* RewardsPage::create()
 {
-	RewardsLayer* pRet = new RewardsLayer();
+	RewardsPage* pRet = new RewardsPage();
 
 	if (pRet && pRet->init())
 	{
@@ -54,7 +54,7 @@ RewardsLayer* RewardsLayer::create()
 	return nullptr;
 }
 
-bool RewardsLayer::init()
+bool RewardsPage::init()
 {
 	if (!PopupLayer::init()) return false;
 	const auto& winSize = Director::getInstance()->getWinSize();
@@ -129,11 +129,14 @@ bool RewardsLayer::init()
 	_chestSprite1 = Sprite::createWithSpriteFrameName("chest_01_01_001.png");
 	auto chestObject1 = MenuItemSpriteExtra::create(_chestSprite1, [&](Node*) {onChestClicked(1);});
 	chestObject1->setPosition(menu->convertToNodeSpace(position.operator+({-70.0f, 14.0f - 10.05f})));
+	chestObject1->setScaleMultiplier(1.08f);
 	menu->addChild(chestObject1);
 
 	_chestSprite2 = Sprite::createWithSpriteFrameName("chest_02_01_001.png");
 	auto chestObject2 = MenuItemSpriteExtra::create(_chestSprite2, [&](Node*) {onChestClicked(2);});
+	chestObject2->setScaleMultiplier(1.08f);
 	chestObject2->setPosition(menu->convertToNodeSpace(position.operator+({70.0f, 14.0f})));
+
 	menu->addChild(chestObject2);
 
 	this->_mainLayer->addChild(menu);
@@ -143,7 +146,7 @@ bool RewardsLayer::init()
 	return true;
 }
 
-void RewardsLayer::onChestClicked(int chestID)
+void RewardsPage::onChestClicked(int chestID)
 {
 	if (_dailyChestTimer1->getString() == "00:00:00") return;
 
@@ -155,8 +158,8 @@ void RewardsLayer::onChestClicked(int chestID)
 		if (_dailyChestTimer1->getString() != "Open")
 		{
 			timer = _dailyChestTimer1;
-			unlockLayer = RewardUnlockLayer::create(chestID); // temp
-			unlockLayer->show(kNone);
+			// unlockLayer = RewardUnlockLayer::create(chestID); // temp
+			// unlockLayer->show(kNone);
 		}
 		else
 		{
@@ -170,8 +173,8 @@ void RewardsLayer::onChestClicked(int chestID)
 		if (_dailyChestTimer2->getString() != "Open")
 		{
 			timer = _dailyChestTimer2;
-			unlockLayer = RewardUnlockLayer::create(chestID); // temp
-			unlockLayer->show(kNone);
+			// unlockLayer = RewardUnlockLayer::create(chestID); // temp
+			// unlockLayer->show(kNone);
 		}
 		else
 		{
@@ -213,7 +216,7 @@ std::string formatSeconds(int seconds)
     return formattedTime;
 }
 
-void RewardsLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
+void RewardsPage::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	if (auto str = GameToolbox::getResponse(response))
 	{
@@ -250,7 +253,7 @@ void RewardsLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::n
 	}
 }
 
-void RewardsLayer::sendHttpRequest()
+void RewardsPage::sendHttpRequest()
 {
 	std::string postData = fmt::format("secret=Wmfd2893gb7&udid={}&chk={}&rewardType=0", "JUSTANORMALUDID", "5yQrSBA4DAQAH");
 	GameToolbox::log("postData: {}", postData);
@@ -260,7 +263,7 @@ void RewardsLayer::sendHttpRequest()
 	_request->setRequestType(ax::network::HttpRequest::Type::POST);
 	_request->setHeaders(std::vector<std::string>{"user-agent: "});
 	_request->setRequestData(postData.c_str(), postData.length());
-	_request->setResponseCallback(AX_CALLBACK_2(RewardsLayer::onHttpRequestCompleted, this));
+	_request->setResponseCallback(AX_CALLBACK_2(RewardsPage::onHttpRequestCompleted, this));
 	_request->setTag("valid");
 	ax::network::HttpClient::getInstance()->send(_request);
 	_request->release();

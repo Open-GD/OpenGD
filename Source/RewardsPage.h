@@ -19,10 +19,10 @@
 #pragma once
 
 #include "PopupLayer.h"
-#include "RewardsLayer.h"
+// #include "RewardsLayer.h"
 #include "RewardUnlockLayer.h"
 
-class RewardsLayer;
+class RewardsPage;
 
 namespace ax 
 { 
@@ -39,7 +39,7 @@ namespace ax
 	} 
 }
 
-class RewardsLayer : public PopupLayer
+class RewardsPage : public PopupLayer
 {
 private:
 	ax::Label* _dailyChestTimer1;
@@ -50,7 +50,7 @@ private:
 
 	RewardUnlockLayer* _unlockLayer;
 public:
-	static RewardsLayer* create();
+	static RewardsPage* create();
 
 	bool init();
 	void onChestClicked(int chestID);

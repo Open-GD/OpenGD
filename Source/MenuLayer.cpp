@@ -42,7 +42,7 @@
 #include "CCEventDispatcher.h"
 #include "CCEventListenerKeyboard.h"
 #include "ProfilePage.h"
-#include "RewardsLayer.h"
+#include "RewardsPage.h"
 #include "GameToolbox/log.h"
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/keyboard.h"
@@ -241,7 +241,7 @@ bool MenuLayer::init()
 		addChild(spr);
 	}
 	
-	auto dailyRewardBtn = MenuItemSpriteExtra::create("GJ_dailyRewardBtn_001.png", [](Node*){RewardsLayer::create()->show();});
+	auto dailyRewardBtn = MenuItemSpriteExtra::create("GJ_dailyRewardBtn_001.png", [](Node*){RewardsPage::create()->show();});
 	dailyRewardBtn->setPosition(bottomMenu->convertToNodeSpace({winSize.width - 40.0f, winSize.height / 2 + 20.0f}));
 	bottomMenu->addChild(dailyRewardBtn);
 
