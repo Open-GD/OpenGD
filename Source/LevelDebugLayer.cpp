@@ -331,6 +331,8 @@ void LevelDebugLayer::update(float delta)
 	cam->setPosition(cam->getPosition() + (_camInput * _camSpeed * delta));
 	_BG->setPosition({cam->getPosition().x, cam->getPosition().y - winSize.y / 2});
 
+	_colorChannels[1007]._color = getLightBG(_colorChannels[1000]._color, Color3B::MAGENTA);
+
 	const double delta60 = delta * 60.0;
 	const double delta240 = delta60 * 4.0;
 	const float newStepCount = delta240 < 0.0 ? ceil(delta240 - 0.5) : floor(delta240 + 0.5);
@@ -555,7 +557,7 @@ void LevelDebugLayer::updateVisibility()
 			if (section[j]->getParent() != nullptr)
 			{
 				EffectGameObject* trigger = static_cast<EffectGameObject*>(section[j]);
-				if (trigger && trigger->_spawnTriggered && trigger->_wasTriggerActivated && trigger->_multiTriggered)
+				if (trigger && trigger->_spawnTriggered)
 				{
 					trigger->setVisible(false);
 					continue;

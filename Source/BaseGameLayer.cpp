@@ -23,6 +23,7 @@
 #include "GameToolbox/log.h"
 #include "external/benchmark.h"
 #include "external/json.hpp"
+#include <fstream>
 
 #include "GameToolbox/getTextureString.h"
 #include "platform/CCFileUtils.h"
@@ -253,6 +254,14 @@ void BaseGameLayer::createObjectsFromSetup(std::string_view uncompressedLevelStr
 	// add the objects to batch nodes
 }
 
+ax::Color3B BaseGameLayer::getLightBG(ax::Color3B bg, ax::Color3B p1)
+{
+	ax::HSV hsv = ax::HSV(bg);
+	hsv.s -= 0.07843137255f;
+
+	return GameToolbox::hsvToRgb(hsv); GameToolbox::blendColor(p1, GameToolbox::hsvToRgb(hsv), hsv.v / 100);
+}
+
 void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 {
 	std::vector<std::string_view> levelData =
@@ -388,12 +397,13 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 	}
 
 	// change to get the player color not from player
-	//_colorChannels[1005]._color = _player1->getMainColor();
+	_colorChannels[1005]._color = Color3B::WHITE;
 	_colorChannels[1005]._blending = true;
-	//_colorChannels[1006]._color = _player1->getSecondaryColor();
+	_colorChannels[1006]._color = Color3B::WHITE;
 	_colorChannels[1006]._blending = true;
 	_colorChannels[1010]._color = Color3B::BLACK;
 	_colorChannels[1007]._color = _colorChannels[1000]._color;
+	_colorChannels[1007]._blending = true;
 
 	_originalColors = std::unordered_map<int, SpriteColor>(_colorChannels);
 }

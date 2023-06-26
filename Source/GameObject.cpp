@@ -144,6 +144,14 @@ void GameObject::customSetup()
 	if (objJson.contains("children"))
 		addCustomSprites(objJson["children"]);
 
+	_isOnlyDetail = true;
+
+	for (size_t type : _childSpritesChannel)
+	{
+		if (type == 0)
+			_isOnlyDetail = false;
+	}
+
 	_primaryInvisible = false;
 
 	// robtop made 3d parts have lines by default but then decided to make them invisible instead of removing them for
@@ -334,6 +342,34 @@ Color3B getChannelColor(SpriteColor colorChannel)
 	return colorChannel._color;
 }
 
+void GameObject::applyHSV(ax::Sprite* sprite, GDHSV const& hsv)
+{
+	ax::HSV objhsv = ax::HSV(sprite->getColor());
+	objhsv.h += hsv.h;
+	if (hsv.sChecked)
+		objhsv.s += hsv.s;
+	else
+		objhsv.s *= hsv.s;
+	if (hsv.vChecked)
+		objhsv.v += hsv.v;
+	else
+		objhsv.v *= hsv.v;
+
+	if (objhsv.s > 1)
+		objhsv.s = 1;
+	if (objhsv.v > 1)
+		objhsv.v = 1;
+	if (objhsv.s < 0)
+		objhsv.s = 0;
+	if (objhsv.v < 0)
+		objhsv.v = 0;
+
+	ax::Color3B col = GameToolbox::hsvToRgb(objhsv);
+
+	if (sprite->getColor() != col)
+		sprite->setColor(col);
+}
+
 void GameObject::applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor const& col)
 {
 	if (col._blending)
@@ -364,6 +400,9 @@ void GameObject::applyColorChannel(ax::Sprite* sprite, int channelType, float op
 
 	if (sprite->getColor() != finalColor)
 		sprite->setColor(finalColor);
+
+	if(col._applyHsv)
+		applyHSV(sprite, col._hsvModifier);
 }
 
 void GameObject::update()
@@ -383,9 +422,17 @@ void GameObject::update()
 
 	float opacityMultiplier = 1.f;
 
-	for (int i : _groups)
+	ax::Color3B groupColor;
+	GroupProperties::GroupState state = GroupProperties::GroupState::NOT_CHANGING;
+
+	for (int i : _groups | std::views::reverse)
 	{
 		opacityMultiplier *= bgl->_groups[i]._alpha;
+		if (bgl->_groups[i].groupState != GroupProperties::GroupState::NOT_CHANGING)
+		{
+			groupColor = bgl->_groups[i]._color;
+			state = bgl->_groups[i].groupState;
+		}
 	}
 
 	bool hasBase = bgl->_colorChannels.contains(_mainColorChannel),
@@ -395,12 +442,27 @@ void GameObject::update()
 	{
 	case 0:
 		applyColorChannel(this, 0, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
+
+		if (state == GroupProperties::GroupState::MAIN_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
+			setColor(groupColor);
+
+		if (_mainHSVEnabled)
+			applyHSV(this, _mainHSV);
 		break;
 	case 1:
-		applyColorChannel(this, hasDetail ? 1 : 0, opacityMultiplier,
-						  hasDetail ? bgl->_colorChannels[_secColorChannel] : bgl->_colorChannels[_mainColorChannel]);
+		if (hasDetail)
+			applyColorChannel(this, 1, opacityMultiplier, bgl->_colorChannels[_secColorChannel]);
+		else
+			applyColorChannel(this, 1, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
+
+		if (state == GroupProperties::GroupState::DETAIL_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
+			setColor(groupColor);
+
+		if (_secondaryHSVEnabled)
+			applyHSV(this, _secondaryHSV);
+		else if (_isOnlyDetail)
+			applyHSV(this, _mainHSV);
 		break;
-	default:
 	case 2:
 		applyColorChannel(this, 2, opacityMultiplier, bgl->_colorChannels[1010]);
 		break;
@@ -412,13 +474,27 @@ void GameObject::update()
 		{
 		case 0:
 			applyColorChannel(_childSprites[i], 0, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
+
+			if (state == GroupProperties::GroupState::MAIN_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
+				_childSprites[i]->setColor(groupColor);
+
+			if (_mainHSVEnabled)
+				applyHSV(_childSprites[i], _mainHSV);
 			break;
 		case 1:
-			applyColorChannel(_childSprites[i], hasDetail ? 1 : 0, opacityMultiplier,
-							  hasDetail ? bgl->_colorChannels[_secColorChannel]
-										: bgl->_colorChannels[_mainColorChannel]);
+			if (hasDetail)
+				applyColorChannel(_childSprites[i], 1, opacityMultiplier, bgl->_colorChannels[_secColorChannel]);
+			else
+				applyColorChannel(_childSprites[i], 1, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
+
+			if (state == GroupProperties::GroupState::DETAIL_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
+				_childSprites[i]->setColor(groupColor);
+
+			if (_secondaryHSVEnabled)
+				applyHSV(_childSprites[i], _secondaryHSV);
+			else if (_isOnlyDetail)
+				applyHSV(_childSprites[i], _mainHSV);
 			break;
-		default:
 		case 2:
 			applyColorChannel(_childSprites[i], 2, opacityMultiplier, bgl->_colorChannels[1010]);
 			break;
@@ -469,6 +545,8 @@ GameObject* GameObject::createFromString(std::string_view data)
 	obj->setActive(true);
 	obj->setID(objectID);
 	obj->customSetup();
+
+	auto bgl = BaseGameLayer::getInstance();
 	// TODO: set uniqueID in base layer
 
 	// iterate over every key
@@ -513,9 +591,19 @@ GameObject* GameObject::createFromString(std::string_view data)
 				dynamic_cast<EffectGameObject*>(obj)->_blending = GameToolbox::stoi(properties[i + 1]);
 		case 21:
 			obj->_mainColorChannel = GameToolbox::stoi(properties[i + 1]);
+			if (!bgl->_colorChannels.contains(obj->_mainColorChannel))
+			{
+				bgl->_colorChannels.insert({obj->_mainColorChannel, SpriteColor(Color3B::WHITE, 255, 0)});
+				bgl->_originalColors.insert({obj->_mainColorChannel, SpriteColor(Color3B::WHITE, 255, 0)});
+			}
 			break;
 		case 22:
 			obj->_secColorChannel = GameToolbox::stoi(properties[i + 1]);
+			if (!bgl->_colorChannels.contains(obj->_secColorChannel))
+			{
+				bgl->_colorChannels.insert({obj->_secColorChannel, SpriteColor(Color3B::WHITE, 255, 0)});
+				bgl->_originalColors.insert({obj->_secColorChannel, SpriteColor(Color3B::WHITE, 255, 0)});
+			}
 			break;
 		case 23:
 			if (obj->_isTrigger)
@@ -551,6 +639,30 @@ GameObject* GameObject::createFromString(std::string_view data)
 			if (obj->_isTrigger)
 				dynamic_cast<EffectGameObject*>(obj)->_opacity = GameToolbox::stof(properties[i + 1]);
 			break;
+		case 41:
+			obj->_mainHSVEnabled = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 42:
+			obj->_secondaryHSVEnabled = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 43: {
+			auto hsv = GameToolbox::splitByDelimStringView(properties[i + 1], 'a');
+			obj->_mainHSV.h = GameToolbox::stof(hsv[0]);
+			obj->_mainHSV.s = GameToolbox::stof(hsv[1]);
+			obj->_mainHSV.v = GameToolbox::stof(hsv[2]);
+			obj->_mainHSV.sChecked = GameToolbox::stoi(hsv[3]);
+			obj->_mainHSV.vChecked = GameToolbox::stoi(hsv[4]);
+		}
+		break;
+		case 44: {
+			auto hsv = GameToolbox::splitByDelimStringView(properties[i + 1], 'a');
+			obj->_secondaryHSV.h = GameToolbox::stof(hsv[0]);
+			obj->_secondaryHSV.s = GameToolbox::stof(hsv[1]);
+			obj->_secondaryHSV.v = GameToolbox::stof(hsv[2]);
+			obj->_secondaryHSV.sChecked = GameToolbox::stoi(hsv[3]);
+			obj->_secondaryHSV.vChecked = GameToolbox::stoi(hsv[4]);
+		}
+		break;
 		case 45:
 			if (obj->_isTrigger)
 				dynamic_cast<EffectGameObject*>(obj)->_fadeIn = GameToolbox::stof(properties[i + 1]);
@@ -575,9 +687,8 @@ GameObject* GameObject::createFromString(std::string_view data)
 				trigger->_hsv.h = GameToolbox::stof(hsv[0]);
 				trigger->_hsv.s = GameToolbox::stof(hsv[1]);
 				trigger->_hsv.v = GameToolbox::stof(hsv[2]);
-				// TODO: fix this
-				trigger->_saturationTicked = GameToolbox::stoi(hsv[3]);
-				trigger->_brightnessTicked = GameToolbox::stoi(hsv[4]);
+				trigger->_hsv.sChecked = GameToolbox::stoi(hsv[3]);
+				trigger->_hsv.vChecked = GameToolbox::stoi(hsv[4]);
 			}
 			break;
 		}
@@ -618,6 +729,14 @@ GameObject* GameObject::createFromString(std::string_view data)
 		case 63:
 			if (obj->_isTrigger)
 				dynamic_cast<EffectGameObject*>(obj)->_spawnDelay = GameToolbox::stof(properties[i + 1]);
+			break;
+		case 65:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_mainOnly = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 66:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_detailOnly = GameToolbox::stoi(properties[i + 1]);
 			break;
 		case 67: // dont enter
 		case 64: // dont exit

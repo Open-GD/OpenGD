@@ -21,6 +21,8 @@
 #include "BaseGameLayer.h"
 #include "ColorAction.h"
 #include "GameToolbox/conv.h"
+#include "GameToolbox/log.h"
+#include "GroupColorAction.h"
 #include "PlayLayer.h"
 
 USING_NS_AX;
@@ -114,24 +116,34 @@ void EffectGameObject::triggerActivated(float)
 	case 30:
 	case 29:
 	case 899: {
-		_bgl->_colorChannels.at(_targetColorId)._copyingColorID = -1;
+		_bgl->_colorChannels.at(_targetColorId)._applyHsv = false;
 		if (_copiedColorId > -1)
 		{
+			int cycles = 0;
+
 			if (!_bgl->_colorChannels.contains(_copiedColorId))
 			{
 				_bgl->_colorChannels.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
 				_bgl->_originalColors.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
 			}
-			_bgl->_colorChannels.at(_targetColorId)._copyingColorID = _copiedColorId;
-			_color = _bgl->_colorChannels.at(_copiedColorId)._color;
+
+			auto colorChannel = _bgl->_colorChannels.at(_copiedColorId);
+
+			while (colorChannel._copyingColorID != -1 && cycles < 3)
+			{
+				cycles++;
+				colorChannel = _bgl->_colorChannels[colorChannel._copyingColorID];
+			}
+
+			_color = colorChannel._color;
 
 			auto hsv = ax::HSV(_color);
 			hsv.h += _hsv.h;
-			if (_saturationTicked)
+			if (_hsv.sChecked)
 				hsv.s += _hsv.s;
 			else
 				hsv.s *= _hsv.s;
-			if (_brightnessTicked)
+			if (_hsv.vChecked)
 				hsv.v += _hsv.v;
 			else
 				hsv.v *= _hsv.v;
@@ -146,15 +158,15 @@ void EffectGameObject::triggerActivated(float)
 				hsv.v = 0;
 
 			_color = GameToolbox::hsvToRgb(hsv);
+			_bgl->_colorChannels.at(_targetColorId)._applyHsv = true;
 		}
 
-		_bgl->runAction(ColorAction::create(_duration, &_bgl->_colorChannels.at(_targetColorId),
-											_bgl->_colorChannels.at(_targetColorId)._color, _color,
-											_bgl->_colorChannels.at(_targetColorId)._opacity, _opacity));
+		_bgl->runAction(ColorAction::create(
+			_duration, &_bgl->_colorChannels.at(_targetColorId), _bgl->_colorChannels.at(_targetColorId)._color, _color,
+			_bgl->_colorChannels.at(_targetColorId)._opacity, _opacity * 255.0f, _copiedColorId, &_hsv));
 		_bgl->_colorChannels.at(_targetColorId)._blending = _blending;
-
-		break;
 	}
+	break;
 	case 22:
 		if (pl)
 			pl->_enterEffectID = 1;
@@ -191,9 +203,7 @@ void EffectGameObject::triggerActivated(float)
 		runAction(ActionTween::create(_duration, "fade", _bgl->_groups[_targetGroupId]._alpha, _opacity));
 		break;
 	case 1006: {
-		// TODO: somehow handle pulse for groups
-		if (_pulseType == 1)
-			break;
+
 		if (!_bgl->_colorChannels.contains(_targetGroupId))
 		{
 			_bgl->_colorChannels.insert({_targetGroupId, SpriteColor(Color3B::WHITE, 255, 0)});
@@ -203,7 +213,7 @@ void EffectGameObject::triggerActivated(float)
 
 		Color3B target = _color;
 
-		if (_pulseMode)
+		if (_pulseMode) // hsv
 		{
 			if (_copiedColorId == -1)
 				target = original;
@@ -214,7 +224,17 @@ void EffectGameObject::triggerActivated(float)
 					_bgl->_colorChannels.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
 					_bgl->_originalColors.insert({_copiedColorId, SpriteColor(Color3B::WHITE, 255, 0)});
 				}
-				target = _bgl->_colorChannels.at(_copiedColorId)._color;
+				int cycles = 0;
+
+				auto colorChannel = _bgl->_colorChannels.at(_targetGroupId);
+
+				while (colorChannel._copyingColorID != -1 && cycles < 3)
+				{
+					cycles++;
+					colorChannel = _bgl->_colorChannels[colorChannel._copyingColorID];
+				}
+
+				target = colorChannel._color;
 			}
 
 			auto hsv = ax::HSV(target);
@@ -240,11 +260,35 @@ void EffectGameObject::triggerActivated(float)
 			target = GameToolbox::hsvToRgb(hsv);
 		}
 
-		auto colPointer = &_bgl->_colorChannels.at(_targetGroupId);
+		ax::Sequence* seq;
 
-		auto seq = ax::Sequence::create({ColorAction::create(_fadeIn, colPointer, original, target),
-										 ColorAction::create(_hold, colPointer, target, target),
-										 ColorAction::create(_fadeOut, colPointer, target, original)});
+		if (_pulseType == 0)
+		{
+			auto colPointer = &_bgl->_colorChannels.at(_targetGroupId);
+			seq = ax::Sequence::create({ColorAction::create(_fadeIn, colPointer, original, target),
+										ColorAction::create(_hold, colPointer, target, target),
+										ColorAction::create(_fadeOut, colPointer, target, original)});
+		}
+		else
+		{
+			if (!_bgl->_groups.contains(_targetGroupId))
+			{
+				GroupProperties gp;
+				_bgl->_groups.insert({_targetGroupId, gp});
+			}
+			auto groupPointer = &_bgl->_groups.at(_targetGroupId);
+
+			if (!_mainOnly && !_detailOnly)
+				groupPointer->groupState = GroupProperties::GroupState::MAIN_DETAIL;
+			else if (_mainOnly)
+				groupPointer->groupState = GroupProperties::GroupState::MAIN_ONLY;
+			else
+				groupPointer->groupState = GroupProperties::GroupState::DETAIL_ONLY;
+
+			seq = ax::Sequence::create({GroupColorAction::create(_fadeIn, groupPointer, original, target, false),
+										GroupColorAction::create(_hold, groupPointer, target, target, false),
+										GroupColorAction::create(_fadeOut, groupPointer, target, original, true)});
+		}
 
 		_bgl->runAction(seq);
 		break;

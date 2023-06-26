@@ -245,14 +245,39 @@ void drawProperties()
 			groupText += fmt::format("{} ", i);
 			opacityMultiplier *= BaseGameLayer::getInstance()->_groups[i]._alpha;
 		}
-		ImGui::Text("Groups: %s", groupText.c_str());
-		ImGui::Text("Opacity Multiplier (groups): %f", opacityMultiplier);
+		ImGui::Text(fmt::format("Groups: {}", groupText).c_str());
+		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
+
+		float hsv1[3], hsv2[3];
+		hsv1[0] = gm->_mainHSV.h;
+		hsv1[1] = gm->_mainHSV.s;
+		hsv1[2] = gm->_mainHSV.v;
+		hsv2[0] = gm->_secondaryHSV.h;
+		hsv2[1] = gm->_secondaryHSV.s;
+		hsv2[2] = gm->_secondaryHSV.v;
+
+		ImGui::InputFloat3("HSV1", hsv1);
+		ImGui::InputFloat3("HSV2", hsv2);
+
+		gm->_mainHSV.h = hsv1[0];
+		gm->_mainHSV.s = hsv1[1];
+		gm->_mainHSV.v = hsv1[2];
+		gm->_secondaryHSV.h = hsv2[0];
+		gm->_secondaryHSV.s = hsv2[1];
+		gm->_secondaryHSV.v = hsv2[2];
 	}
 }
 
 static void generateTree(Node* node, unsigned int i = 0)
 {
 	std::string str = fmt::format("[{}] {} : {}", i, getNodeName(node), node->getName());
+
+	if (dynamic_cast<GameObject*>(node) != nullptr)
+	{
+		auto gm = dynamic_cast<GameObject*>(node);
+		str += fmt::format(" id {} uid {}", gm->getID(), gm->_uniqueID);
+	}
+
 	if (node->getTag() != -1)
 		str += fmt::format(" ({})", node->getTag());
 	const auto childrenCount = node->getChildrenCount();

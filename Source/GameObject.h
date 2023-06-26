@@ -29,6 +29,7 @@
 #include "math/Vec2.h"
 #include "SpriteColor.h"
 #include "external/json.hpp"
+#include "GDHSV.h"
 
 class PlayerObject;
 namespace ax 
@@ -168,6 +169,11 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
 	bool _toggledOn = true;
 
+	bool _isOnlyDetail = false;
+
+	bool _mainHSVEnabled, _secondaryHSVEnabled;
+	GDHSV _mainHSV, _secondaryHSV;
+
 	int _zLayer = 0;
 
 	int _uniqueID = -1;
@@ -193,6 +199,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	void customSetup();
 	void addCustomSprites(nlohmann::json j);
 	void applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor const&col);
+	void applyHSV(ax::Sprite* sprite, GDHSV const&hsv);
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);

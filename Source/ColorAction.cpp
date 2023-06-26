@@ -21,10 +21,10 @@
 #include "SpriteColor.h"
 
 ColorAction* ColorAction::create(float duration, SpriteColor* target, ax::Color3B from, ax::Color3B to, float afrom ,
-								 float ato)
+								 float ato, int copyColor, GDHSV* hsv)
 {
 	ColorAction* ret = new ColorAction();
-	if (ret->initWithDuration(duration, target, from, to))
+	if (ret->initWithDuration(duration, target, from, to, afrom, ato, copyColor, hsv))
 	{
 		ret->autorelease();
 		return ret;
@@ -35,10 +35,12 @@ ColorAction* ColorAction::create(float duration, SpriteColor* target, ax::Color3
 }
 
 bool ColorAction::initWithDuration(float duration, SpriteColor* target, ax::Color3B from, ax::Color3B to,
-								   float afrom, float ato)
+								   float afrom, float ato, int copyColor, GDHSV* hsv)
 {
 	if (ActionInterval::initWithDuration(duration))
 	{
+		_hsv = hsv;
+		_copyColorId = copyColor;
 		_target = target;
 		_to = to;
 		_from = from;
@@ -64,5 +66,12 @@ void ColorAction::update(float dt)
 	_target->_color.r = static_cast<uint8_t>(_to.r - _deltar * (1 - dt));
 	_target->_color.g = static_cast<uint8_t>(_to.g - _deltag * (1 - dt));
 	_target->_color.b = static_cast<uint8_t>(_to.b - _deltab * (1 - dt));
-	if(_ato >= 0) _target->_opacity = (_ato * 255.f) - _deltaa * (1 - dt);
+	if(_ato >= 0) _target->_opacity = _ato - _deltaa * (1 - dt);
+
+	if(_elapsed >= _duration && _copyColorId > -1)
+	{
+		_target->_copyingColorID = _copyColorId;
+		if(_target->_applyHsv)
+			_target->_hsvModifier = *_hsv;
+	}
 }

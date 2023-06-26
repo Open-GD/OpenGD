@@ -17,29 +17,31 @@
 *************************************************************************/
 
 #include "conv.h"
-#include "math/MathUtil.h"
 #include "external/fast_float.h"
-#include <cmath>
+#include "math/MathUtil.h"
 #include <charconv>
+#include <cmath>
 
 bool _showDebugImgui = true;
 
-
 USING_NS_AX;
 
-ax::BlendFunc GameToolbox::getBlending() {
+ax::BlendFunc GameToolbox::getBlending()
+{
 	return BlendFunc::ADDITIVE;
 }
 
-int GameToolbox::stoi(const std::string_view s) {
+int GameToolbox::stoi(const std::string_view s)
+{
 	int ret = 0;
-	std::from_chars(s.data(),s.data() + s.size(), ret);
+	std::from_chars(s.data(), s.data() + s.size(), ret);
 	return ret;
 }
 
-float GameToolbox::stof(const std::string_view s) {
+float GameToolbox::stof(const std::string_view s)
+{
 	float ret = 0.0f;
-	fast_float::from_chars(s.data(),s.data() + s.size(), ret);
+	fast_float::from_chars(s.data(), s.data() + s.size(), ret);
 	return ret;
 }
 
@@ -48,8 +50,8 @@ std::vector<std::string> GameToolbox::splitByDelim(const std::string& str, char 
 	std::vector<std::string> tokens;
 	size_t pos = 0;
 	size_t len = str.length();
-	tokens.reserve(len / 2);  // allocate memory for expected number of tokens
-	
+	tokens.reserve(len / 2); // allocate memory for expected number of tokens
+
 	while (pos < len)
 	{
 		size_t end = str.find_first_of(delim, pos);
@@ -65,16 +67,17 @@ std::vector<std::string> GameToolbox::splitByDelim(const std::string& str, char 
 	return tokens;
 }
 
-
 std::vector<std::string_view> GameToolbox::splitByDelimStringView(std::string_view str, char delim)
 {
 	std::vector<std::string_view> tokens;
 	size_t pos = 0;
 	size_t len = str.length();
 
-	while (pos < len) {
+	while (pos < len)
+	{
 		size_t end = str.find(delim, pos);
-		if (end == std::string_view::npos) {
+		if (end == std::string_view::npos)
+		{
 			tokens.emplace_back(str.substr(pos));
 			break;
 		}
@@ -85,8 +88,8 @@ std::vector<std::string_view> GameToolbox::splitByDelimStringView(std::string_vi
 	return tokens;
 }
 
-
-ax::Color3B GameToolbox::hsvToRgb(const ax::HSV& hsv) {
+ax::Color3B GameToolbox::hsvToRgb(const ax::HSV& hsv)
+{
 	float c = hsv.v * hsv.s;
 	float h_dash = hsv.h / 60.0f;
 	float x = c * (1.0f - std::fabs(std::fmod(h_dash, 2.0f) - 1.0f));
@@ -94,27 +97,38 @@ ax::Color3B GameToolbox::hsvToRgb(const ax::HSV& hsv) {
 
 	float r1, g1, b1;
 
-	if (h_dash >= 0.0f && h_dash < 1.0f) {
+	if (h_dash >= 0.0f && h_dash < 1.0f)
+	{
 		r1 = c;
 		g1 = x;
 		b1 = 0.0f;
-	} else if (h_dash >= 1.0f && h_dash < 2.0f) {
+	}
+	else if (h_dash >= 1.0f && h_dash < 2.0f)
+	{
 		r1 = x;
 		g1 = c;
 		b1 = 0.0f;
-	} else if (h_dash >= 2.0f && h_dash < 3.0f) {
+	}
+	else if (h_dash >= 2.0f && h_dash < 3.0f)
+	{
 		r1 = 0.0f;
 		g1 = c;
 		b1 = x;
-	} else if (h_dash >= 3.0f && h_dash < 4.0f) {
+	}
+	else if (h_dash >= 3.0f && h_dash < 4.0f)
+	{
 		r1 = 0.0f;
 		g1 = x;
 		b1 = c;
-	} else if (h_dash >= 4.0f && h_dash < 5.0f) {
+	}
+	else if (h_dash >= 4.0f && h_dash < 5.0f)
+	{
 		r1 = x;
 		g1 = 0.0f;
 		b1 = c;
-	} else {
+	}
+	else
+	{
 		r1 = c;
 		g1 = 0.0f;
 		b1 = x;
@@ -127,33 +141,53 @@ ax::Color3B GameToolbox::hsvToRgb(const ax::HSV& hsv) {
 	return Color3B(r, g, b);
 }
 
-
-const char* GameToolbox::levelLengthString(int len) {
-	switch (len) {
-	case 1: return "Short";
-	case 2: return "Medium";
-	case 3: return "Long";
-	case 4: return "XL";
-	case 5: return "Plat.";
-	default: return "Tiny";
+const char* GameToolbox::levelLengthString(int len)
+{
+	switch (len)
+	{
+	case 1:
+		return "Short";
+	case 2:
+		return "Medium";
+	case 3:
+		return "Long";
+	case 4:
+		return "XL";
+	case 5:
+		return "Plat.";
+	default:
+		return "Tiny";
 	}
 }
 
-std::string GameToolbox::xorCipher(const std::string& message, const std::string& key) {
-    std::string encryptedMessage;
-    for (size_t i = 0; i < message.size(); ++i) {
-        encryptedMessage += message[i] ^ key[i % key.size()];
-    }
-    return encryptedMessage;
+std::string GameToolbox::xorCipher(const std::string& message, const std::string& key)
+{
+	std::string encryptedMessage;
+	for (size_t i = 0; i < message.size(); ++i)
+	{
+		encryptedMessage += message[i] ^ key[i % key.size()];
+	}
+	return encryptedMessage;
 }
 
-void GameToolbox::drawFromRect(ax::Rect const&rect, ax::Color4B color, ax::DrawNode* drawNode)
+ax::Color3B GameToolbox::blendColor(const ax::Color3B& color1, const ax::Color3B& color2, float ratio)
+{
+	uint8_t r = color1.r * (1 - ratio) + color2.r * ratio;
+	uint8_t g = color1.g * (1 - ratio) + color2.g * ratio;
+	uint8_t b = color1.b * (1 - ratio) + color2.b * ratio;
+
+	return ax::Color3B(r, g, b);
+}
+
+void GameToolbox::drawFromRect(ax::Rect const& rect, ax::Color4B color, ax::DrawNode* drawNode)
 {
 	drawNode->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxX()}, color);
 }
 
-int GameToolbox::getValueForGamemode(IconType mode) {
-	switch (mode) {
+int GameToolbox::getValueForGamemode(IconType mode)
+{
+	switch (mode)
+	{
 	case kIconTypeCube:
 		return 142;
 	case kIconTypeShip:
@@ -177,31 +211,33 @@ int GameToolbox::getValueForGamemode(IconType mode) {
 		return 0;
 	}
 }
-const char* GameToolbox::getNameGamemode(IconType mode) {
-		switch (mode) {
-		case kIconTypeShip:
-			return "ship";
-		case kIconTypeBall:
-			return "player_ball";
-		case kIconTypeUfo:
-			return "bird";
-		case kIconTypeWave:
-			return "dart";
-		case kIconTypeRobot:
-			return "robot";
-		case kIconTypeSpider:
-			return "spider";
-		case kIconTypeSwing:
-			return "swing";
-		default:
-			return "player";
-		}
+const char* GameToolbox::getNameGamemode(IconType mode)
+{
+	switch (mode)
+	{
+	case kIconTypeShip:
+		return "ship";
+	case kIconTypeBall:
+		return "player_ball";
+	case kIconTypeUfo:
+		return "bird";
+	case kIconTypeWave:
+		return "dart";
+	case kIconTypeRobot:
+		return "robot";
+	case kIconTypeSpider:
+		return "spider";
+	case kIconTypeSwing:
+		return "swing";
+	default:
+		return "player";
+	}
 }
 
-
-
-Color3B GameToolbox::colorForIdx(int col) {
-	switch (col) {
+Color3B GameToolbox::colorForIdx(int col)
+{
+	switch (col)
+	{
 	case 0:
 		return {125, 255, 0};
 	case 1:
@@ -418,7 +454,6 @@ Color3B GameToolbox::colorForIdx(int col) {
 	case 106:
 		return {0x3F, 0x3F, 0x3F};
 	default:
-		return { 255, 255, 255 }; // blanco
+		return {255, 255, 255}; // blanco
 	}
 }
-

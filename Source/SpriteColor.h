@@ -19,6 +19,7 @@
 #pragma once
 
 #include "ccTypes.h"
+#include "GDHSV.h"
 
 class SpriteColor
 {
@@ -27,6 +28,8 @@ class SpriteColor
 	float _opacity = 255.f;
 	bool _blending;
 	int _copyingColorID = -1;
+	bool _applyHsv;
+	GDHSV _hsvModifier;
 
 	SpriteColor(ax::Color3B color, float opacity, bool blending) : _color(color), _opacity(opacity), _blending(blending) {}
 	SpriteColor() = default;

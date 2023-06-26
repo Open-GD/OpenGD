@@ -38,8 +38,8 @@ private:
 public:
 	float _duration;
 	ax::Color3B _color;
-	ax::HSV _hsv = {0.f, 1.f, 1.f, 1.f};
-	float _opacity;
+	GDHSV _hsv;
+	float _opacity = 1.0f;
 	int _targetColorId = 1, _targetGroupId = -1;
 	bool _wasTriggerActivated;
 	int _copiedColorId = -1;

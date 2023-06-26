@@ -38,4 +38,5 @@ namespace GameToolbox
 	ax::BlendFunc getBlending();
 	std::string xorCipher(const std::string& message, const std::string& key);
 	void drawFromRect(ax::Rect const&rect, ax::Color4B color, ax::DrawNode* drawNode);
+	ax::Color3B blendColor(const ax::Color3B& color1, const ax::Color3B& color2, float ratio);
 }

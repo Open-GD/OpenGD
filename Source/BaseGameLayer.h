@@ -55,8 +55,11 @@ struct LevelSettings
 
 struct GroupProperties
 {
+	enum GroupState { NOT_CHANGING, MAIN_DETAIL, MAIN_ONLY, DETAIL_ONLY };
 	std::vector<GameObject*> _objects;
 	float _alpha = 1.f;
+	ax::Color3B _color;
+	GroupState groupState = NOT_CHANGING;
 };
 
 class BaseGameLayer : public ax::Layer {
@@ -113,6 +116,7 @@ protected:
 	void fillColorChannel(std::span<std::string_view> colorString, int id);
 	void processMoveActionsStep(float dt);
 	void processMoveActions(float dt);
+	ax::Color3B getLightBG(ax::Color3B bg, ax::Color3B p1);
 public:
 	static BaseGameLayer* create(GJGameLevel*);
 	bool init(GJGameLevel*);
