@@ -75,6 +75,9 @@ For more details check out the [axmol](https://github.com/axmolengine/axmol) REA
 ## Linux Specific Notify
 
 **Also one thing that should be mentioned here.** After pull request for header optimization (removed all unused stuff from the code) being merged to `main` branch, **Linux support was entirely broken.** For anyone, who want to build OpenGD under this platform, please use `no-header-optimization` branch, where all related to HDO changes were reverted.
+<br>
+
+**UPD:** you don't need `no-header-optimization` branch anymore! This issue was fixed and now OpenGD compiles on Linux properly.
 
 
 <!-- LICENSE -->
