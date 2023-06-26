@@ -95,5 +95,7 @@ void SecretLayer2::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* e
 	case EventKeyboard::KeyCode::KEY_BACK:
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
 		break;
+	default:
+		break;
 	}
 }

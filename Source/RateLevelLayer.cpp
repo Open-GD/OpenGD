@@ -88,7 +88,7 @@ bool RateLevelLayer::init(int)
 
 	auto menu = Menu::create();
 
-	for (size_t i = 1; i < 6; i++)
+	for (unsigned int i = 1; i < 6; i++)
 	{
 		auto textureName = StringUtils::format("difficulty_%02d_btn_001.png", i);
 		auto diffSprite = Sprite::createWithSpriteFrameName(textureName);

@@ -216,8 +216,9 @@ void drawProperties()
 	{
 		auto labelNode = dynamic_cast<LabelProtocol*>(selected_node);
 		auto labelStr = labelNode->getString();
+		auto labelStr2 = std::string(labelStr);
 		char text[256];
-		auto clabel = std::string(labelStr).c_str();
+		auto clabel = labelStr2.c_str();
 		strcpy(text, clabel);
 		ImGui::InputText("Text", text, 256);
 		if (strcmp(text, clabel))
@@ -231,20 +232,21 @@ void drawProperties()
 	if (dynamic_cast<GameObject*>(selected_node) != nullptr)
 	{
 		auto gm = dynamic_cast<GameObject*>(selected_node);
-		ImGui::Text(fmt::format("Color channel 1: {}", gm->_mainColorChannel).c_str());
-		ImGui::Text(fmt::format("Color channel 2: {}", gm->_secColorChannel).c_str());
-		ImGui::Text(fmt::format("ID: {}", gm->getID()).c_str());
-		ImGui::Text(fmt::format("Z Layer: {}", gm->_zLayer).c_str());
+
+		ImGui::Text("Color channel 1: %d", gm->_mainColorChannel);
+		ImGui::Text("Color channel 2: %d", gm->_secColorChannel);
+		ImGui::Text("ID: %d", gm->getID());
+		ImGui::Text("Z Layer: %d", gm->_zLayer);
 		std::string groupText = "";
 		float opacityMultiplier = 1.f;
 
 		for (int i : gm->_groups)
 		{
-			groupText = fmt::format("{}{} ", groupText, i);
+			groupText += fmt::format("{} ", i);
 			opacityMultiplier *= BaseGameLayer::getInstance()->_groups[i]._alpha;
 		}
-		ImGui::Text(fmt::format("Groups: {}", groupText).c_str());
-		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
+		ImGui::Text("Groups: %s", groupText.c_str());
+		ImGui::Text("Opacity Multiplier (groups): %f", opacityMultiplier);
 	}
 }
 
@@ -266,7 +268,7 @@ static void generateTree(Node* node, unsigned int i = 0)
 	if (node->getChildrenCount() == 0)
 		flags |= ImGuiTreeNodeFlags_Leaf;
 
-	const bool is_open = ImGui::TreeNodeEx(node, flags, str.c_str());
+	const bool is_open = ImGui::TreeNodeEx(node, flags, "%s", str.c_str());
 
 	if (ImGui::IsItemClicked())
 	{

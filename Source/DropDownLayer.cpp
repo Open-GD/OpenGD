@@ -121,8 +121,7 @@ void DropDownLayer::showLayer(bool attachToScene, bool bounce)
 void DropDownLayer::hideLayer()
 {
 	//const auto& winSize = Director::getInstance()->getWinSize();
-	if(!this) return;
-	
+
 	this->runAction(FadeTo::create(0.5, 0));
 	this->_dropLayer->runAction(
 		Sequence::create(

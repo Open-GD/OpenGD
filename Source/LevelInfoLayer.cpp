@@ -198,7 +198,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	normalProgress->setScaleY(0.86f);
 
 	auto normalPercentage = Label::createWithBMFont(
-		GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", level->_normalPercent));
+		GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", (int)level->_normalPercent));
 	normalPercentage->setScale(0.5);
 	normalPercentage->setPosition(normalBar->getContentSize() / 2);
 
@@ -231,7 +231,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	practiceProgress->setScaleY(0.86f);
 
 	auto practicePercentage = Label::createWithBMFont(
-		GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", level->_normalPercent));
+		GameToolbox::getTextureString("bigFont.fnt"), StringUtils::format("%i%%", (int)level->_normalPercent));
 	practicePercentage->setScale(0.5);
 	practicePercentage->setPosition(normalBar->getContentSize() / 2);
 
@@ -296,6 +296,8 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 		case EventKeyboard::KeyCode::KEY_ESCAPE:
 			delete _level;
 			GameToolbox::popSceneWithTransition(0.5f);
+			break;
+		default:
 			break;
 		}
 	};

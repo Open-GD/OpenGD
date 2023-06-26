@@ -838,6 +838,8 @@ void PlayerObject::setGamemode(PlayerGamemode mode)
 			_ufoSprite->setVisible(true);
 			deactivateStreak();
 			break;
+		default:
+			break;
 		}
 
 		_currentGamemode = mode;

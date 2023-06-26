@@ -167,5 +167,7 @@ void CreatorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* e
 	case EventKeyboard::KeyCode::KEY_BACK:
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
 		break;
+	default:
+		break;
 	}
 }

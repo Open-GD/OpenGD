@@ -58,7 +58,7 @@ bool CurrencyRewardLayer::init(int orbs, int stars, int diamonds)
 		dropDownStats->addChild(sprite, 3);
 		sprite->setPosition(15.0f, -0.5 /* - local_68.height * 0.5*/);
 
-		auto sequence = Sequence::create(TintTo::create(0.3,0,255,255),TintTo::create(0.3,150,255,255),0);
+		auto sequence = Sequence::create(TintTo::create(0.3,0,255,255),TintTo::create(0.3,150,255,255), nullptr);
 		label->runAction(RepeatForever::create(sequence));
 	}
 

@@ -54,7 +54,7 @@ public:
 	void onExit() override;
 	bool init(GJGameLevel*);
 	void exit();
-	void update(float delta);
+	void update(float delta) override;
 	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
     void updateVisibility();

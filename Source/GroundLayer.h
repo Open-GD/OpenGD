@@ -41,7 +41,7 @@ private:
 
 public:
 	ax::Sprite* _sprite;
-	void update(float dt);
+	void update(float dt) override;
 	bool init(int groundID);
 	static GroundLayer* create(int groundID);
 };

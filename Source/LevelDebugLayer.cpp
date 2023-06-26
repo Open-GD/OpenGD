@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
+#include <core/platform/CCPlatformConfig.h>
 #include "LevelDebugLayer.h"
 #include "2d/CCTransition.h"
 #include "CocosExplorer.h"
@@ -31,7 +32,11 @@
 #include "LevelSearchLayer.h"
 #include "LevelSelectLayer.h"
 #include "MenuItemSpriteExtra.h"
+#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
 #include "ShlObj_core.h"
+#else
+#define HRESULT unsigned int
+#endif
 #include "format.h"
 #include <AudioEngine.h>
 #include <ccMacros.h>
@@ -70,6 +75,7 @@ int songid;
 
 HRESULT GetFolderLocation(int csidl, char* buffer)
 {
+	#if (AX_TARGET_PLATFORM == AX_PLATFORM_WIN32)
 	LPITEMIDLIST pidl = 0;
 	HRESULT result = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
 	*buffer = 0;
@@ -81,15 +87,21 @@ HRESULT GetFolderLocation(int csidl, char* buffer)
 	}
 
 	return result;
+
+	#endif
+
+	return 0;
 }
 
 void LevelDebugLayer::playMusic(float dt)
 {
+	#if (TARGET_PLATFORM == AX_PLATFORM_WIN32)
 	char appdata[256];
 	GetFolderLocation(CSIDL_LOCAL_APPDATA, appdata);
 	auto path = fmt::format("{}/GeometryDash/{}.mp3", appdata, songid);
 	audioId = AudioEngine::play2d(path, true, 0.2f);
 	scheduleOnce([&](float dt) { AudioEngine::setCurrentTime(audioId, offset); }, 1, "time");
+	#endif
 }
 
 bool LevelDebugLayer::init(GJGameLevel* level)
@@ -276,6 +288,8 @@ void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 			CocosExplorer::open();
 	}
 	break;
+	default:
+		break;
 	}
 }
 
@@ -304,6 +318,8 @@ void LevelDebugLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event
 			_camInput.y += 1.f;
 	}
 	break;
+	default:
+		break;
 	}
 }
 

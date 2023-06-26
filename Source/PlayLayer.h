@@ -140,7 +140,7 @@ public:
 	void showEndLayer();
 	void showCompleteText();
 
-	void update(float delta);
+	void update(float delta) override;
 	void updateCamera(float dt);
 	void updateVisibility();
 	void moveCameraToPos(ax::Vec2);

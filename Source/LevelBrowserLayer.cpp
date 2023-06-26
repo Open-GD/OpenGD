@@ -168,6 +168,8 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 		case ax::EventKeyboard::KeyCode::KEY_ESCAPE:
 			GameToolbox::popSceneWithTransition(0.5f);
 			break;
+		default:
+			break;
 		}
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);

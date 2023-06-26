@@ -38,7 +38,7 @@ TextInputNode::TextInputNode()
 	, _placeholderColor({ 120, 170, 240 })
 	, _textColor(Color3B::WHITE)
 	, _maxDisplayLabelScale(1.f)
-	, _placeholderScale(NULL)
+	, _placeholderScale(0.0f)
 	, _delegate(nullptr)
 	, _textField(nullptr)
 	, _displayedLabel(nullptr)
@@ -265,7 +265,7 @@ void TextInputNode::updateDisplayedLabelScale()
 	if (!_displayedLabel || !_cursor)
 		return;
 
-	if (_placeholderScale != NULL && _textField->getString().empty())
+	if (_placeholderScale != 0.0f && _textField->getString().empty())
 	{
 		_displayedLabel->setScale(_placeholderScale);
 	}
@@ -288,7 +288,7 @@ void TextInputNode::updateCursor()
 	if (!_displayedLabel || !_cursor)
 		return;
 
-	float scale = (_placeholderScale != NULL && _textField->getString().empty()) ? _placeholderScale : _displayedLabel->getScale();
+	float scale = (_placeholderScale != 0.0f && _textField->getString().empty()) ? _placeholderScale : _displayedLabel->getScale();
 
 	_cursor->setScale(scale);
 

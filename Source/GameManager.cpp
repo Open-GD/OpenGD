@@ -242,6 +242,7 @@ void GameManager::setSelectedIcon(IconType mode, int id) {
 		case IconType::kIconTypeSpider: _selectedSpider = id; break;
 		case IconType::kIconTypeSpecial: _selectedSpecial = id; break;
 		case IconType::kIconTypeDeathEffect: _selectedDeathEffect = id; break;
+		default: break;
 	}
 }
 

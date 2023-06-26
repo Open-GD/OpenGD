@@ -132,7 +132,7 @@ bool RewardUnlockLayer::init(int chestID)
 	this->_mainLayer->addChild(_chestObj);
 
 	_chestObj->runAction(EaseBounceOut::create(MoveTo::create(1.0, position.operator+({0.0, _chestObj->getChildren().front()->getContentSize().x / 2.5f})))); // these coords were hardcoded bc i couldnt figure them out
-	_chestObj->runAction(Sequence::create(DelayTime::create(0.36f), CallFunc::create([=]() {AudioEngine::play2d("chestLand.ogg", false, 0.5f);}), 0));
+	_chestObj->runAction(Sequence::create(DelayTime::create(0.36f), CallFunc::create([=]() {AudioEngine::play2d("chestLand.ogg", false, 0.5f);}), nullptr));
 	
 	auto shake0 = DelayTime::create(1.2f);
 	auto shake1 = MoveBy::create(0.05f, {-4.0f,0.0f});
@@ -148,7 +148,7 @@ bool RewardUnlockLayer::init(int chestID)
 		sendHttpRequest(chestID);
 		});
 	
-	_chestObj->runAction(Sequence::create(shake0, shake1, shake2, shake3, shake4, shake5, shake6, shake7, shake8, 0));
+	_chestObj->runAction(Sequence::create(shake0, shake1, shake2, shake3, shake4, shake5, shake6, shake7, shake8, nullptr));
 	
 	auto closeBtnSprite = Sprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
 	_closeBtn = MenuItemSpriteExtra::create(closeBtnSprite, [&](Node*) { this->close(); });
@@ -304,9 +304,9 @@ void RewardUnlockLayer::showEarnedCurrency(int currencyID, int currencyCount, fl
 	currencySprite->setPositionY(yoffset);
 	currencySprite->setScale(scale);
 
-    currencyNode->runAction(Sequence::create(DelayTime::create(delay), EaseBounceOut::create(ScaleTo::create(0.3f, 1.0f)), 0));
-    currencySprite->runAction(Sequence::create(DelayTime::create(delay), FadeIn::create(0.3f), 0));
-	label->runAction(Sequence::create(DelayTime::create(delay), FadeIn::create(0.3f), 0));
+    currencyNode->runAction(Sequence::create(DelayTime::create(delay), EaseBounceOut::create(ScaleTo::create(0.3f, 1.0f)), nullptr));
+    currencySprite->runAction(Sequence::create(DelayTime::create(delay), FadeIn::create(0.3f), nullptr));
+	label->runAction(Sequence::create(DelayTime::create(delay), FadeIn::create(0.3f), nullptr));
 }
 
 void RewardUnlockLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response, int chestID)

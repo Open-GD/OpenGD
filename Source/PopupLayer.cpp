@@ -63,6 +63,8 @@ void PopupLayer::show(Transitions transitions)
 		{
 			case EventKeyboard::KeyCode::KEY_BACK:
 				close();
+			default:
+				break;
 		}
 	});
 }

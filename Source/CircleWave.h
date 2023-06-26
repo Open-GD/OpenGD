@@ -35,7 +35,7 @@ private:
 	void draw(ax::Renderer *renderer, const ax::Mat4& transform, uint32_t flags) override;
 	virtual void updateTweenAction(float value, std::string_view key) override;
 	bool init(float duration, ax::Color4B color, float radiusMin, float radiusMax, bool easing, float lineWidth, bool filled);
-	void update(float dt);
+	void update(float dt) override;
 
 	ax::Color4F _color; // damn CC_SYNTHESIZE doesnt work with it :skull:
 	ax::Node* _followedNode;

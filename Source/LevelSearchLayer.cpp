@@ -246,7 +246,7 @@ bool LevelSearchLayer::init()
 	_difficultyMenu = Menu::create();
 	_difficultyMenu->setPosition(filtersPos);
 
-	for (size_t i = 0; i < 8; i++)
+	for (unsigned int i = 0; i < 8; i++)
 	{
 		auto texture_name = StringUtils::format("difficulty_%02d_btn_001.png", i);
 		if (i == 7)
@@ -329,6 +329,8 @@ bool LevelSearchLayer::init()
 		switch (key) {
 		case ax::EventKeyboard::KeyCode::KEY_ESCAPE:
 			GameToolbox::popSceneWithTransition(0.5f);
+			break;
+		default:
 			break;
 		}
 	};

@@ -312,6 +312,7 @@ const char* GarageLayer::getSpriteName(int id, bool actived)
 		case 7: return actived ? "gj_streakBtn_on_001.png" : "gj_streakBtn_off_001.png";
 		case 8: return actived ? "gj_explosionBtn_on_001.png" : "gj_explosionBtn_off_001.png";
 	}
+	return nullptr;
 }
 
 void GarageLayer::setupPage(IconType type, int page)

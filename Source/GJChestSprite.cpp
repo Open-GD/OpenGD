@@ -101,7 +101,7 @@ bool GJChestSprite::switchState(int state, bool idk)
 
 		auto glow1 = EaseInOut::create(FadeTo::create(1.0,175),2.0);
 		auto glow2 = EaseInOut::create(FadeTo::create(1.0,255),2.0);
-		chestGlow->runAction(RepeatForever::create(Sequence::create(glow1, glow2, 0)));
+		chestGlow->runAction(RepeatForever::create(Sequence::create(glow1, glow2, 0, nullptr)));
 
 		float offset = 1.0f;
 		if (_chestID == 1)

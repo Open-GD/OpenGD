@@ -132,17 +132,17 @@ void PlayLayer::showCompleteText()
 		scheduleOnce([=](float d) { spawnCircle(); }, 0.16f * i, "playlayer_circles");
 	}
 	scheduleOnce([=](float d) { showEndLayer(); }, 1.5f, "playlayer_levelend");
-}
+}			
 
 void PlayLayer::spawnCircle()
 {
 	auto size = Director::getInstance()->getWinSize();
-
+	
 	auto minArea = Vec2({40, 70});
 	auto maxArea = Vec2({size.width - 40, size.height - 70});
 
-	float x = ((float)rand() / RAND_MAX) * (maxArea.x - minArea.x) + minArea.x;
-	float y = ((float)rand() / RAND_MAX) * (maxArea.y - minArea.y) + minArea.y;
+	float x = ((float)rand() / (float)RAND_MAX) * (maxArea.x - minArea.x) + minArea.x;
+	float y = ((float)rand() / (float)RAND_MAX) * (maxArea.y - minArea.y) + minArea.y;
 
 	auto col1 = _player1->getMainColor();
 	auto cir = CircleWave::create(0.5f, {col1.r, col1.g, col1.b, 255}, 5.f, 50, true, false);
@@ -1286,6 +1286,8 @@ void PlayLayer::changeGameMode(GameObject* obj, PlayerObject* player, PlayerGame
 		tweenBottomGround(-38);
 		tweenCeiling(358);
 		break;
+	default:
+		break;
 	}
 
 	player->setRotation(0.f);
@@ -1591,7 +1593,7 @@ void PlayLayer::onDrawImGui()
 
 	ImGui::Begin("PlayLayer Debug");
 
-	ImGui::Text(std::to_string(_player1->_queuedHold).c_str());
+	ImGui::Text("%s", std::to_string(_player1->_queuedHold).c_str());
 
 	ImGui::Checkbox("Freeze Player", &m_freezePlayer);
 	ImGui::Checkbox("Platformer Mode (Basic)", &m_platformerMode);
@@ -1647,9 +1649,9 @@ void PlayLayer::onDrawImGui()
 	if (ImGui::InputFloat("FPS", &fps))
 		Director::getInstance()->setAnimationInterval(1.0f / fps);
 
-	ImGui::Text("Sections: %i", m_pSectionObjects.size());
+	ImGui::Text("Sections: %zu", m_pSectionObjects.size());
 	if (m_pSectionObjects.size() > 0 && sectionForPos(_player1->getPositionX()) - 1 < m_pSectionObjects.size())
-		ImGui::Text("Current Section Size: %i", m_pSectionObjects[sectionForPos(_player1->getPositionX()) <= 0
+		ImGui::Text("Current Section Size: %zu", m_pSectionObjects[sectionForPos(_player1->getPositionX()) <= 0
 																	  ? 0
 																	  : sectionForPos(_player1->getPositionX()) - 1]
 													.size());
@@ -1927,6 +1929,8 @@ void PlayLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 			_player2->releaseButton();
 		this->exit();
 	}
+	default:
+		break;
 	}
 	if (keyCode == EventKeyboard::KeyCode::KEY_A && _player1->m_bIsPlatformer)
 		_player1->direction = -1.f;
@@ -1955,6 +1959,8 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 		if (_isDualMode && _player2->m_bIsHolding)
 			_player2->releaseButton();
 	}
+	default:
+		break;
 	}
 }
 
