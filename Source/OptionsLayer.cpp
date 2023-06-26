@@ -6,6 +6,7 @@
 #include "base/CCDirector.h"
 #include "DropDownLayer.h"
 #include "AccountLoginLayer.h"
+#include "TutorialLayer.h"
 
 USING_NS_AX;
 
@@ -31,7 +32,7 @@ bool OptionsLayer::init()
 		AccountLoginLayer::create()->show();
 	});
 	auto howToPlayBtn = MenuItemSpriteExtra::create(ButtonSprite::create("How to Play"), [this](Node*) {
-	//	GameManager::getInstance()->setQualityHigh();
+		TutorialLayer::create()->show();
 	});
 	
 	
