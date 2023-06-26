@@ -21,22 +21,26 @@
 #include "CocosExplorer.h"
 #include "EffectGameObject.h"
 #include "GJGameLevel.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/getTextureString.h"
+#include "GameToolbox/log.h"
+#include "GameToolbox/network.h"
+#include "GameToolbox/nodes.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
 #include "LevelSearchLayer.h"
 #include "LevelSelectLayer.h"
 #include "MenuItemSpriteExtra.h"
+#include "ShlObj_core.h"
 #include "format.h"
 #include <AudioEngine.h>
 #include <ccMacros.h>
-#include "GameToolbox/log.h"
-#include "GameToolbox/getTextureString.h"
-#include "GameToolbox/nodes.h"
-#include "GameToolbox/network.h"
 
 USING_NS_AX;
 USING_NS_AX_EXT;
 using namespace ax::network;
+
+int audioId;
 
 LevelDebugLayer* LevelDebugLayer::create(GJGameLevel* level)
 {
@@ -60,6 +64,34 @@ ax::Scene* LevelDebugLayer::scene(GJGameLevel* level)
 	scene->addChild(LevelDebugLayer::create(level));
 	return scene;
 }
+
+float offset;
+int songid;
+
+HRESULT GetFolderLocation(int csidl, char* buffer)
+{
+	LPITEMIDLIST pidl = 0;
+	HRESULT result = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
+	*buffer = 0;
+
+	if (result == 0)
+	{
+		SHGetPathFromIDListA(pidl, buffer);
+		CoTaskMemFree(pidl);
+	}
+
+	return result;
+}
+
+void LevelDebugLayer::playMusic(float dt)
+{
+	char appdata[256];
+	GetFolderLocation(CSIDL_LOCAL_APPDATA, appdata);
+	auto path = fmt::format("{}/GeometryDash/{}.mp3", appdata, songid);
+	audioId = AudioEngine::play2d(path, true, 0.2f);
+	scheduleOnce([&](float dt) { AudioEngine::setCurrentTime(audioId, offset); }, 1, "time");
+}
+
 bool LevelDebugLayer::init(GJGameLevel* level)
 {
 	if (!BaseGameLayer::init(level))
@@ -89,6 +121,10 @@ bool LevelDebugLayer::init(GJGameLevel* level)
 	if (_colorChannels.contains(1000))
 		_BG->setColor(_colorChannels.at(1000)._color);
 
+	offset = this->_levelSettings.songOffset;
+	songid = level->_songID;
+
+	scheduleOnce(AX_SCHEDULE_SELECTOR(LevelDebugLayer::playMusic), 0);
 	scheduleUpdate();
 
 	return true;
@@ -311,7 +347,7 @@ void LevelDebugLayer::updateTriggers(float dt)
 {
 	int current_section = sectionForPos(Camera::getDefaultCamera()->getPositionX());
 
-	for (int i = current_section - 2; i < current_section + 1; i++)
+	for (int i = current_section - 3; i < current_section + 1; i++)
 	{
 		if (i < _sectionObjects.size() && i >= 0)
 		{
@@ -320,21 +356,104 @@ void LevelDebugLayer::updateTriggers(float dt)
 			for (int j = 0; j < section.size(); j++)
 			{
 				GameObject* obj = section[j];
-
-				if (obj->isActive())
+				if (obj->isActive() && obj->_isTrigger)
 				{
-					if (obj->_isTrigger)
+					auto trigger = dynamic_cast<EffectGameObject*>(obj);
+					if (!trigger->_spawnTriggered &&
+						trigger->getPositionX() <= Camera::getDefaultCamera()->getPositionX())
 					{
-						auto trigger = dynamic_cast<EffectGameObject*>(obj);
-						if (!trigger->_wasTriggerActivated &&
-							trigger->getPositionX() <= Camera::getDefaultCamera()->getPositionX())
-						{
-							trigger->triggerActivated(dt);
-						}
+						trigger->triggerActivated(dt);
 					}
 				}
 			}
 		}
+	}
+}
+
+void LevelDebugLayer::reorderLayering(GameObject* parentObj, ax::Sprite* child)
+{
+	ax::Sprite* obj;
+
+	if (child == nullptr)
+		obj = parentObj;
+	else
+	{
+		obj = child;
+		if (child->getParent() != nullptr)
+		{
+			AX_SAFE_RETAIN(child);
+			child->removeFromParentAndCleanup(true);
+		}
+		if (child->getBlendFunc() == parentObj->getBlendFunc())
+		{
+			parentObj->addChild(child);
+			AX_SAFE_RELEASE(obj);
+			return;
+		}
+	}
+
+	if (obj->getBlendFunc() == GameToolbox::getBlending())
+	{
+		switch (parentObj->_zLayer)
+		{
+		case -3:
+			_blendingBatchNodeB4->addChild(obj);
+			break;
+		case -1:
+			_blendingBatchNodeB3->addChild(obj);
+			break;
+		case 1:
+			_blendingBatchNodeB2->addChild(obj);
+			break;
+		case 3:
+			_blendingBatchNodeB1->addChild(obj);
+			break;
+		default:
+		case 5:
+			_blendingBatchNodeT1->addChild(obj);
+			break;
+		case 7:
+			_blendingBatchNodeT2->addChild(obj);
+			break;
+		case 9:
+			_blendingBatchNodeT3->addChild(obj);
+			break;
+		}
+	}
+	else
+	{
+		if (parentObj->_texturePath == _mainBatchNodeTexture)
+		{
+			switch (parentObj->_zLayer)
+			{
+			case -3:
+				_mainBatchNodeB4->addChild(obj);
+				break;
+			case -1:
+				_mainBatchNodeB3->addChild(obj);
+				break;
+			case 1:
+				_mainBatchNodeB2->addChild(obj);
+				break;
+			case 3:
+				_mainBatchNodeB1->addChild(obj);
+				break;
+			default:
+			case 5:
+				_mainBatchNodeT1->addChild(obj);
+				break;
+			case 7:
+				_mainBatchNodeT2->addChild(obj);
+				break;
+			case 9:
+				_mainBatchNodeT3->addChild(obj);
+				break;
+			}
+		}
+		else if (parentObj->_texturePath == _main2BatchNodeTexture)
+			_main2BatchNode->addChild(obj);
+
+		AX_SAFE_RELEASE(obj);
 	}
 }
 
@@ -345,7 +464,7 @@ void LevelDebugLayer::updateVisibility()
 
 	float unk = 70.0f;
 
-	int prevSection = floorf((camPos.x - (winSize.width / 2)) / 100) - 1.0f;
+	int prevSection = floorf((camPos.x - (winSize.width / 2)) / 100) - 1;
 	int nextSection = ceilf((camPos.x) / 100) + 2.0f;
 
 	for (int i = prevSection; i < nextSection; i++)
@@ -374,71 +493,16 @@ void LevelDebugLayer::updateVisibility()
 							AX_SAFE_RELEASE(obj->_glowSprite);
 						}
 
-						if (isObjectBlending(obj))
+						reorderLayering(obj, nullptr);
+
+						for (ax::Sprite* child : obj->_childSprites)
 						{
-							switch (obj->_zLayer)
-							{
-							case -3:
-								_blendingBatchNodeB4->addChild(obj);
-								break;
-							case -1:
-								_blendingBatchNodeB3->addChild(obj);
-								break;
-							case 1:
-								_blendingBatchNodeB2->addChild(obj);
-								break;
-							case 3:
-								_blendingBatchNodeB1->addChild(obj);
-								break;
-							default:
-							case 5:
-								_blendingBatchNodeT1->addChild(obj);
-								break;
-							case 7:
-								_blendingBatchNodeT2->addChild(obj);
-								break;
-							case 9:
-								_blendingBatchNodeT3->addChild(obj);
-								break;
-							}
+							reorderLayering(obj, child);
 						}
-						else
-						{
-							if (obj->_texturePath == _mainBatchNodeTexture)
-							{
-								switch (obj->_zLayer)
-								{
-								case -3:
-									_mainBatchNodeB4->addChild(obj);
-									break;
-								case -1:
-									_mainBatchNodeB3->addChild(obj);
-									break;
-								case 1:
-									_mainBatchNodeB2->addChild(obj);
-									break;
-								case 3:
-									_mainBatchNodeB1->addChild(obj);
-									break;
-								default:
-								case 5:
-									_mainBatchNodeT1->addChild(obj);
-									break;
-								case 7:
-									_mainBatchNodeT2->addChild(obj);
-									break;
-								case 9:
-									_mainBatchNodeT3->addChild(obj);
-									break;
-								}
-							}
-							else if (obj->_texturePath == _main2BatchNodeTexture)
-								_main2BatchNode->addChild(obj);
-						}
-						AX_SAFE_RELEASE(obj);
 					}
 
 					obj->setActive(true);
+					obj->setVisible(true);
 					obj->update();
 				}
 			}
@@ -452,6 +516,16 @@ void LevelDebugLayer::updateVisibility()
 		{
 			if (section[j]->getParent() != nullptr)
 			{
+				if (section[j]->_isTrigger)
+				{
+					EffectGameObject* trigger = static_cast<EffectGameObject*>(section[j]);
+					if (trigger && trigger->_spawnTriggered && trigger->_wasTriggerActivated &&
+						trigger->_multiTriggered)
+					{
+						trigger->setVisible(false);
+						continue;
+					}
+				}
 				section[j]->removeFromGameLayer();
 			}
 		}
@@ -464,6 +538,12 @@ void LevelDebugLayer::updateVisibility()
 		{
 			if (section[j]->getParent() != nullptr)
 			{
+				EffectGameObject* trigger = static_cast<EffectGameObject*>(section[j]);
+				if (trigger && trigger->_spawnTriggered && trigger->_wasTriggerActivated && trigger->_multiTriggered)
+				{
+					trigger->setVisible(false);
+					continue;
+				}
 				section[j]->removeFromGameLayer();
 			}
 		}

@@ -96,6 +96,7 @@ Distributed under the GPL v3 License . See `LICENSE` for more information.
 * [GD Physics decomps](https://github.com/camila314/gdp) by Camila
 * [GD 2.1 decomps](https://github.com/matcool/gd-decomps) by mat
 * [hps](https://github.com/jl2922/hps) high performance C++11 serialization library
+* [gdclone](https://github.com/opstic/gdclone) another gd reconstruction project
 
 ### Contributors
 This project exists thanks to all the people who have contributed:

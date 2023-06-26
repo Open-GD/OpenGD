@@ -17,11 +17,12 @@
 *************************************************************************/
 
 #include "CocosExplorer.h"
+#include "BaseGameLayer.h"
 #include "GameObject.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
-#include "BaseGameLayer.h"
 #include "NodeSerializer.h"
+#include "math/Mat4.h"
 
 #include <fmt/format.h>
 #include <mutex>
@@ -50,7 +51,40 @@ static const char* getNodeName(Node* node)
 	return name;
 }
 
-static void drawProperties()
+ImVec2 cocos_to_vec2(const ax::Point& a)
+{
+	const auto size = ImGui::GetMainViewport()->Size;
+	const auto win_size = ax::Director::getInstance()->getWinSize();
+	return {a.x / win_size.width * size.x, (1.f - a.y / win_size.height) * size.y};
+}
+
+void highlight(ax::Node* node, bool selected)
+{
+	ax::Point bb_min(node->getBoundingBox().getMinX(), node->getBoundingBox().getMinY());
+	ax::Point bb_max(node->getBoundingBox().getMaxX(), node->getBoundingBox().getMaxY());
+	auto& foreground = *ImGui::GetForegroundDrawList();
+	auto parent = node->getParent();
+
+	auto camera_parent = node;
+	while (camera_parent)
+	{
+		auto camera = Camera::getDefaultCamera();
+
+		const ax::Mat4& viewMatrix = camera->getViewMatrix();
+		const ax::Point offset(viewMatrix.m[3], viewMatrix.m[7]);
+		bb_min -= offset;
+		bb_max -= offset;
+
+		camera_parent = camera_parent->getParent();
+	}
+
+	auto min = cocos_to_vec2(parent ? parent->convertToWorldSpace(bb_min) : bb_min);
+	auto max = cocos_to_vec2(parent ? parent->convertToWorldSpace(bb_max) : bb_max);
+
+	foreground.AddRectFilled(min, max, selected ? IM_COL32(200, 200, 255, 60) : IM_COL32(255, 255, 255, 70));
+}
+
+void drawProperties()
 {
 
 	if (selected_node == nullptr)
@@ -211,14 +245,12 @@ static void drawProperties()
 		}
 		ImGui::Text(fmt::format("Groups: {}", groupText).c_str());
 		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
-		ImGui::Text(fmt::format("Blending: {}", BaseGameLayer::getInstance()->isObjectBlending(gm)).c_str());
 	}
 }
 
 static void generateTree(Node* node, unsigned int i = 0)
 {
-
-	std::string str = fmt::format("[{}] {}", i, getNodeName(node));
+	std::string str = fmt::format("[{}] {} : {}", i, getNodeName(node), node->getName());
 	if (node->getTag() != -1)
 		str += fmt::format(" ({})", node->getTag());
 	const auto childrenCount = node->getChildrenCount();
@@ -252,6 +284,9 @@ static void generateTree(Node* node, unsigned int i = 0)
 
 	const auto children_count = node->getChildrenCount();
 
+	if (ImGui::IsItemHovered())
+		hovered_node = node;
+
 	if (is_open)
 	{
 		auto children = node->getChildren();
@@ -264,11 +299,13 @@ static void generateTree(Node* node, unsigned int i = 0)
 	}
 }
 
-static void draw()
+void draw()
 {
 	extern bool _showDebugImgui;
 	if (!_showDebugImgui)
 		return;
+
+	hovered_node = nullptr;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 300));
 
@@ -294,6 +331,11 @@ static void draw()
 
 	ImGui::End();
 	ImGui::PopStyleVar();
+
+	if (selected_node)
+		highlight(selected_node, true);
+	if (hovered_node)
+		highlight(hovered_node, false);
 }
 
 void CocosExplorer::openForever()

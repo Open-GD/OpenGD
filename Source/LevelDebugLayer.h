@@ -57,7 +57,9 @@ public:
 	void update(float delta);
 	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
-	void updateVisibility();
-	void updateTriggers(float dt);
-	void onDrawImgui();
+    void updateVisibility();
+    void updateTriggers(float dt);
+    void onDrawImgui();
+    void playMusic(float dt);
+    void reorderLayering(GameObject* parentObj, ax::Sprite* child);
 };

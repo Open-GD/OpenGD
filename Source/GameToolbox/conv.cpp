@@ -147,6 +147,11 @@ std::string GameToolbox::xorCipher(const std::string& message, const std::string
     return encryptedMessage;
 }
 
+void GameToolbox::drawFromRect(ax::Rect const&rect, ax::Color4B color, ax::DrawNode* drawNode)
+{
+	drawNode->drawSolidRect({rect.getMinX(), rect.getMinY()}, {rect.getMaxX(), rect.getMaxX()}, color);
+}
+
 int GameToolbox::getValueForGamemode(IconType mode) {
 	switch (mode) {
 	case kIconTypeCube:

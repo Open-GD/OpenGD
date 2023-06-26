@@ -17,16 +17,16 @@
 *************************************************************************/
 
 #include "GameObject.h"
+#include "2d/CCParticleSystemQuad.h"
 #include "BaseGameLayer.h"
 #include "EffectGameObject.h"
+#include "GameToolbox/conv.h"
+#include "GameToolbox/log.h"
 #include "PlayLayer.h"
 #include "PlayerObject.h"
-#include "external/json.hpp"
+#include "platform/CCFileUtils.h"
 #include <fmt/format.h>
 #include <fstream>
-#include "2d/CCParticleSystemQuad.h"
-#include "platform/CCFileUtils.h"
-#include "GameToolbox/conv.h"
 
 USING_NS_AX;
 
@@ -60,33 +60,17 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	}
 	_texturePath = getTexture()->getPath();
 
+	setCascadeColorEnabled(false);
+	setCascadeOpacityEnabled(true);
+
 	return true;
 }
 
-void GameObject::customSetup()
+void GameObject::addCustomSprites(nlohmann::json j)
 {
-	static nlohmann::json childJson;
-
-	if (childJson.empty())
+	for (nlohmann::json jsonObj : j)
 	{
-		childJson = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/object.json"));
-	}
-
-	if (childJson[std::to_string(getID())].contains("default_z_order"))
-		setGlobalZOrder((int)childJson[std::to_string(getID())]["default_z_order"]);
-	if (childJson[std::to_string(getID())].contains("default_z_layer"))
-		_zLayer = (int)childJson[std::to_string(getID())]["default_z_layer"];
-	if (childJson[std::to_string(getID())].contains("default_primary_channel"))
-		_mainColorChannel = (int)childJson[std::to_string(getID())]["default_primary_channel"];
-	if (childJson[std::to_string(getID())].contains("default_secondary_channel"))
-		_secColorChannel = (int)childJson[std::to_string(getID())]["default_secondary_channel"];
-
-	if (childJson[std::to_string(getID())].contains("object_type"))
-		setGameObjectType((GameObjectType)childJson[std::to_string(getID())]["object_type"]);
-
-	for (nlohmann::json jsonObj : childJson[std::to_string(getID())]["childrens"])
-	{
-		ax::Sprite* s = ax::Sprite::createWithSpriteFrameName(static_cast<std::string>(jsonObj["texture_name"]));
+		ax::Sprite* s = ax::Sprite::createWithSpriteFrameName(jsonObj["texture_name"].get<std::string>());
 		if (!s)
 			continue;
 		s->setStretchEnabled(false);
@@ -98,28 +82,67 @@ void GameObject::customSetup()
 		s->setRotation(static_cast<float>(jsonObj["rot"]));
 		s->setScaleX(static_cast<float>(jsonObj["scale_x"]));
 		s->setScaleY(static_cast<float>(jsonObj["scale_y"]));
-		s->setContentSize({static_cast<float>(jsonObj["content_x"]), static_cast<float>(jsonObj["content_y"])});
-		_detailSprites.push_back(s);
+		if (jsonObj.contains("content_x"))
+			s->setContentSize({static_cast<float>(jsonObj["content_x"]), static_cast<float>(jsonObj["content_y"])});
+		s->setCascadeColorEnabled(false);
+		s->setCascadeOpacityEnabled(true);
+		if (jsonObj.contains("color_channel"))
+		{
+			if (jsonObj["color_channel"] == "base")
+				_childSpritesChannel.push_back(0);
+			else if (jsonObj["color_channel"] == "detail")
+				_childSpritesChannel.push_back(1);
+			else if (jsonObj["color_channel"] == "black")
+				_childSpritesChannel.push_back(2);
+		}
+		else
+			_childSpritesChannel.push_back(404);
+
+		_childSprites.push_back(s);
 		addChild(s);
+
+		if (jsonObj.contains("children"))
+			addCustomSprites(jsonObj["children"]);
+	}
+}
+
+void GameObject::customSetup()
+{
+	static nlohmann::json childJson;
+
+	if (childJson.empty())
+	{
+		childJson = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/object.json"));
 	}
 
-	if (childJson[std::to_string(getID())].contains("black"))
+	auto objJson = childJson[std::to_string(getID())];
+
+	if (objJson.contains("default_z_order"))
+		setGlobalZOrder((int)objJson["default_z_order"]);
+	if (objJson.contains("default_z_layer"))
+		_zLayer = (int)objJson["default_z_layer"];
+	if (objJson.contains("default_primary_channel"))
+		_mainColorChannel = (int)objJson["default_primary_channel"];
+	if (objJson.contains("default_secondary_channel"))
+		_secColorChannel = (int)objJson["default_secondary_channel"];
+
+	if (objJson.contains("color_channel"))
 	{
-		_forceBlack = true;
-		setColor(ax::Color3B::BLACK);
-		for (auto sp : _detailSprites)
-		{
-			sp->setColor(ax::Color3B::BLACK);
-		}
+		if (objJson["color_channel"] == "base")
+			_childSpritesChannel.push_back(0);
+		else if (objJson["color_channel"] == "detail")
+			_childSpritesChannel.push_back(1);
+		else if (objJson["color_channel"] == "black")
+			_childSpritesChannel.push_back(2);
 	}
-	else if (childJson[std::to_string(getID())].contains("black_detail"))
-	{
-		_forceBlackDetail = true;
-		for (auto sp : _detailSprites)
-		{
-			sp->setColor(ax::Color3B::BLACK);
-		}
-	}
+	else
+		_childSpritesChannel.push_back(404);
+
+	if (objJson.contains("object_type"))
+		setGameObjectType((GameObjectType)objJson["object_type"]);
+
+	if (objJson.contains("children"))
+		addCustomSprites(objJson["children"]);
 
 	_primaryInvisible = false;
 
@@ -237,49 +260,117 @@ GameObject* GameObject::create(std::string_view frame, std::string_view glowFram
 void GameObject::setPosition(const ax::Vec2& pos)
 {
 	Sprite::setPosition(pos);
-	if(_hasGlow)
+	for (auto sprite : _childSprites)
+	{
+		if (sprite->getParent() != this)
+			sprite->setPosition(pos);
+	}
+
+	if (_hasGlow)
 		_glowSprite->setPosition(pos);
-	if(_hasParticle)
+	if (_hasParticle)
 		_particle->setPosition(pos);
 }
 void GameObject::setRotation(float rotation)
 {
 	Sprite::setRotation(rotation);
-	if(_hasGlow)
+	for (auto sprite : _childSprites)
+	{
+		if (sprite->getParent() != this)
+			sprite->setRotation(rotation);
+	}
+	if (_hasGlow)
 		_glowSprite->setRotation(rotation);
-	if(_hasParticle)
+	if (_hasParticle)
 		_particle->setRotation(rotation);
 }
 void GameObject::setScaleX(float scalex)
 {
 	Sprite::setScaleX(scalex);
-	if(_hasGlow)
+	for (auto sprite : _childSprites)
+	{
+		if (sprite->getParent() != this)
+			sprite->setScaleX(scalex);
+	}
+	if (_hasGlow)
 		_glowSprite->setScaleX(scalex);
-	if(_hasParticle)
+	if (_hasParticle)
 		_particle->setRotation(scalex * (isFlippedX() ? -1.f : 1.f));
 }
 void GameObject::setScaleY(float scaley)
 {
 	Sprite::setScaleY(scaley);
-	if(_hasGlow)
+	for (auto sprite : _childSprites)
+	{
+		if (sprite->getParent() != this)
+			sprite->setScaleY(scaley);
+	}
+	if (_hasGlow)
 		_glowSprite->setScaleY(scaley);
-	if(_hasParticle)
+	if (_hasParticle)
 		_particle->setScaleY(scaley * (isFlippedX() ? -1.f : 1.f));
 }
 void GameObject::setOpacity(uint8_t opacity)
 {
 	Sprite::setOpacity(opacity);
-	if(_hasGlow)
+	if (_hasGlow)
 		_glowSprite->setOpacity(opacity);
-	if(_hasParticle)
+	if (_hasParticle)
 		_particle->setOpacity(opacity);
+}
+
+Color3B getChannelColor(SpriteColor colorChannel)
+{
+	auto bgl = BaseGameLayer::getInstance();
+
+	int cycles = 0;
+
+	while (colorChannel._copyingColorID != -1 && cycles < 3)
+	{
+		cycles++;
+		colorChannel = bgl->_colorChannels[colorChannel._copyingColorID];
+	}
+
+	return colorChannel._color;
+}
+
+void GameObject::applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor const& col)
+{
+	if (col._blending)
+		setBlendFunc(GameToolbox::getBlending());
+	else
+		setBlendFunc(BlendFunc::DISABLE);
+
+	float op = col._opacity * opacityMultiplier * _effectOpacityMultipler;
+
+	switch (channelType)
+	{
+	case 0:
+		sprite->setOpacity(_primaryInvisible ? 0 : op);
+		if ((sprite->getBlendFunc() == GameToolbox::getBlending()) != col._blending)
+			removeFromGameLayer();
+		break;
+	case 1:
+		sprite->setOpacity(op);
+		if ((sprite->getBlendFunc() == GameToolbox::getBlending()) != col._blending)
+			removeFromGameLayer();
+		break;
+	default:
+		sprite->setOpacity(op);
+		break;
+	}
+
+	Color3B finalColor = getChannelColor(col);
+
+	if (sprite->getColor() != finalColor)
+		sprite->setColor(finalColor);
 }
 
 void GameObject::update()
 {
 	if (getEnterEffectID() == 0)
 	{
-		//setPosition(_startPosition);
+		// setPosition(_startPosition);
 		setScaleX(_startScale.x);
 		setScaleY(_startScale.y);
 	}
@@ -297,109 +388,40 @@ void GameObject::update()
 		opacityMultiplier *= bgl->_groups[i]._alpha;
 	}
 
-	if (bgl->_colorChannels.contains(_mainColorChannel))
+	bool hasBase = bgl->_colorChannels.contains(_mainColorChannel),
+		 hasDetail = bgl->_colorChannels.contains(_secColorChannel);
+
+	switch (_childSpritesChannel[0])
 	{
-		auto sp1 = bgl->_colorChannels[_mainColorChannel];
-
-		if (sp1._blending)
-			setBlendFunc(GameToolbox::getBlending());
-		else
-			setBlendFunc(BlendFunc::DISABLE);
-
-		if (_hadBlending != sp1._blending)
-			removeFromGameLayer();
-
-		_hadBlending = sp1._blending;
-
-		if (sp1._copyingColorID != -1)
-			sp1 = bgl->_colorChannels[sp1._copyingColorID];
-
-		if (!_forceBlack && getColor() != sp1._color)
-			setColor(sp1._color);
-
-		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
-
-		if (getOpacity() != op)
-			setOpacity(_primaryInvisible ? 0 : op);
-
-		if (!_forceBlackDetail)
-		{
-			if (bgl->_colorChannels.contains(_secColorChannel))
-			{
-				auto sp2 = bgl->_colorChannels[_secColorChannel];
-
-				if (_hadBlending2 != sp2._blending)
-					removeFromGameLayer();
-				_hadBlending = sp1._blending;
-				if (sp2._copyingColorID != -1)
-					sp2 = bgl->_colorChannels[sp2._copyingColorID];
-				for (auto sp : _detailSprites)
-				{
-					if (sp2._blending)
-						sp->setBlendFunc(GameToolbox::getBlending());
-					else
-						sp->setBlendFunc(BlendFunc::DISABLE);
-					if (!_forceBlack && sp->getColor() != sp2._color)
-						sp->setColor(sp2._color);
-					op = sp2._opacity * opacityMultiplier * _effectOpacityMultipler;
-					if (sp->getOpacity() != op)
-						sp->setOpacity(op);
-				}
-			}
-			else
-			{
-				for (auto sp : _detailSprites)
-				{
-					if (sp1._blending)
-						sp->setBlendFunc(GameToolbox::getBlending());
-					else
-						sp->setBlendFunc(BlendFunc::DISABLE);
-					if (!_forceBlack && sp->getColor() != sp1._color)
-						sp->setColor(sp1._color);
-					float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
-					if (sp->getOpacity() != op)
-						sp->setOpacity(op);
-				}
-			}
-		}
+	case 0:
+		applyColorChannel(this, 0, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
+		break;
+	case 1:
+		applyColorChannel(this, hasDetail ? 1 : 0, opacityMultiplier,
+						  hasDetail ? bgl->_colorChannels[_secColorChannel] : bgl->_colorChannels[_mainColorChannel]);
+		break;
+	default:
+	case 2:
+		applyColorChannel(this, 2, opacityMultiplier, bgl->_colorChannels[1010]);
+		break;
 	}
-	else if (bgl->_colorChannels.contains(_secColorChannel))
+
+	for (size_t i = 0; i < _childSprites.size(); i++)
 	{
-		auto sp1 = bgl->_colorChannels[_mainColorChannel];
-
-		if (sp1._blending)
-			setBlendFunc(GameToolbox::getBlending());
-		else
-			setBlendFunc(BlendFunc::DISABLE);
-
-		if (sp1._copyingColorID != -1)
-			sp1 = bgl->_colorChannels[sp1._copyingColorID];
-		auto sp2 = bgl->_colorChannels[_secColorChannel];
-		if (sp2._copyingColorID != -1)
-			sp2 = bgl->_colorChannels[sp2._copyingColorID];
-		if (_hadBlending != sp1._blending)
-			removeFromGameLayer();
-		if (_hadBlending2 != sp2._blending)
-			removeFromGameLayer();
-		if (!_forceBlack && getColor() != sp1._color)
-			setColor(sp1._color);
-		float op = sp1._opacity * opacityMultiplier * _effectOpacityMultipler;
-		if (getOpacity() != op)
-			setOpacity(_primaryInvisible ? 0 : op);
-
-		if (_forceBlackDetail)
-			return;
-		for (auto sp : _detailSprites)
+		switch (_childSpritesChannel[i + 1])
 		{
-			if (sp2._blending)
-				sp->setBlendFunc(GameToolbox::getBlending());
-			else
-				sp->setBlendFunc(BlendFunc::DISABLE);
-			if (sp->getColor() != sp2._color)
-				sp->setColor(sp2._color);
-			op = sp2._opacity * opacityMultiplier * _effectOpacityMultipler;
-			if (sp->getOpacity() != op)
-				sp->setOpacity(op);
+		case 0:
+			applyColorChannel(_childSprites[i], 0, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
+			break;
+		case 1:
+			applyColorChannel(_childSprites[i], hasDetail ? 1 : 0, opacityMultiplier,
+							  hasDetail ? bgl->_colorChannels[_secColorChannel]
+										: bgl->_colorChannels[_mainColorChannel]);
+			break;
+		default:
+		case 2:
+			applyColorChannel(_childSprites[i], 2, opacityMultiplier, bgl->_colorChannels[1010]);
+			break;
 		}
 	}
 }
@@ -421,7 +443,8 @@ GameObject* GameObject::createFromString(std::string_view data)
 	std::string_view frame = GameObject::_pBlocks.at(objectID);
 
 	// actually create the object
-	if (objectID != 1 && std::find(GameObject::_pTriggers.begin(), GameObject::_pTriggers.end(), objectID) != GameObject::_pTriggers.end())
+	if (objectID != 1 && std::find(GameObject::_pTriggers.begin(), GameObject::_pTriggers.end(), objectID) !=
+							 GameObject::_pTriggers.end())
 	{
 		// mylock.lock();
 		obj = EffectGameObject::create(frame);
@@ -588,9 +611,21 @@ GameObject* GameObject::createFromString(std::string_view data)
 			}
 			break;
 		}
+		case 62:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_spawnTriggered = GameToolbox::stoi(properties[i + 1]);
+			break;
+		case 63:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_spawnDelay = GameToolbox::stof(properties[i + 1]);
+			break;
 		case 67: // dont enter
 		case 64: // dont exit
 			obj->setDontTransform(true);
+			break;
+		case 87:
+			if (obj->_isTrigger)
+				dynamic_cast<EffectGameObject*>(obj)->_multiTriggered = GameToolbox::stoi(properties[i + 1]);
 			break;
 		} // switch end
 	}	  // for end
@@ -636,6 +671,18 @@ GameObject* GameObject::createFromString(std::string_view data)
 void GameObject::removeFromGameLayer()
 {
 	setActive(false);
+
+	for (auto sprite : _childSprites)
+	{
+		if (sprite->getParent() != this)
+		{
+			AX_SAFE_RETAIN(sprite);
+			sprite->removeFromParentAndCleanup(true);
+			addChild(sprite);
+			AX_SAFE_RELEASE(sprite);
+		}
+	}
+
 	AX_SAFE_RETAIN(this);
 	if (_particle)
 	{
@@ -647,7 +694,7 @@ void GameObject::removeFromGameLayer()
 		AX_SAFE_RETAIN(_glowSprite);
 		_glowSprite->removeFromParentAndCleanup(true);
 	}
-	//_mainBatchNode->removeChild(section[j], true);
+
 	removeFromParentAndCleanup(true);
 }
 
