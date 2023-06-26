@@ -17,7 +17,6 @@ private:
 	ax::Label* hold_label;
 public:
 	bool init();
-	void onClose();
 	void onNext();
 	static TutorialLayer* create();
 };
