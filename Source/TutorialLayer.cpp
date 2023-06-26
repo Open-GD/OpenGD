@@ -98,7 +98,7 @@ void TutorialLayer::onNext()
 
 	if (fileName == "tutorial_02.png")
 	{
-		tap_label->setString("Hold to fly up.");
+		tap_label->setString("Hold to fly up.\n");
 		hold_label->setString("Release to fly down.");
 	}
 	if (fileName == "tutorial_03.png")
@@ -152,9 +152,4 @@ void TutorialLayer::onNext()
 			layer1->addChild(imageSprite);
 		}
 	}
-}
-
-void TutorialLayer::onClose()
-{
-	
 }
