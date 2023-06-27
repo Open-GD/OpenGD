@@ -197,7 +197,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	bool init(std::string_view frame, std::string_view glowFrame = "");
 
 	void customSetup();
-	void addCustomSprites(nlohmann::json j);
+	void addCustomSprites(nlohmann::json j, ax::Sprite* parent);
 	void applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor const&col);
 	void applyHSV(ax::Sprite* sprite, GDHSV const&hsv);
 

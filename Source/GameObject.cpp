@@ -1,19 +1,19 @@
 /*************************************************************************
-    OpenGD - Open source Geometry Dash.
-    Copyright (C) 2023  OpenGD Team
+	OpenGD - Open source Geometry Dash.
+	Copyright (C) 2023  OpenGD Team
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License    
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
 #include "GameObject.h"
@@ -66,13 +66,14 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	return true;
 }
 
-void GameObject::addCustomSprites(nlohmann::json j)
+void GameObject::addCustomSprites(nlohmann::json j, ax::Sprite* parent)
 {
 	for (nlohmann::json jsonObj : j)
 	{
 		ax::Sprite* s = ax::Sprite::createWithSpriteFrameName(jsonObj["texture_name"].get<std::string>());
 		if (!s)
 			continue;
+		parent->addChild(s);
 		s->setStretchEnabled(false);
 		s->setAnchorPoint({static_cast<float>(jsonObj["anchor_x"]), static_cast<float>(jsonObj["anchor_y"])});
 		s->setFlippedX(static_cast<bool>(jsonObj["flip_x"]));
@@ -99,10 +100,9 @@ void GameObject::addCustomSprites(nlohmann::json j)
 			_childSpritesChannel.push_back(404);
 
 		_childSprites.push_back(s);
-		addChild(s);
 
 		if (jsonObj.contains("children"))
-			addCustomSprites(jsonObj["children"]);
+			addCustomSprites(jsonObj["children"], s);
 	}
 }
 
@@ -142,7 +142,7 @@ void GameObject::customSetup()
 		setGameObjectType((GameObjectType)objJson["object_type"]);
 
 	if (objJson.contains("children"))
-		addCustomSprites(objJson["children"]);
+		addCustomSprites(objJson["children"], this);
 
 	_isOnlyDetail = true;
 
@@ -281,11 +281,11 @@ void GameObject::setPosition(const ax::Vec2& pos)
 }
 void GameObject::setRotation(float rotation)
 {
+	float delta = rotation - this->getRotation();
 	Sprite::setRotation(rotation);
 	for (auto sprite : _childSprites)
 	{
-		if (sprite->getParent() != this)
-			sprite->setRotation(rotation);
+		sprite->setRotation(sprite->getRotation() + delta);
 	}
 	if (_hasGlow)
 		_glowSprite->setRotation(rotation);
@@ -297,8 +297,11 @@ void GameObject::setScaleX(float scalex)
 	Sprite::setScaleX(scalex);
 	for (auto sprite : _childSprites)
 	{
-		if (sprite->getParent() != this)
+		if (sprite->getParent() != this && sprite->getScaleX() != scalex)
+		{
 			sprite->setScaleX(scalex);
+			sprite->setRotation(sprite->getRotation() * -1);
+		}
 	}
 	if (_hasGlow)
 		_glowSprite->setScaleX(scalex);
@@ -307,11 +310,15 @@ void GameObject::setScaleX(float scalex)
 }
 void GameObject::setScaleY(float scaley)
 {
+	float delta = scaley - getScaleY();
 	Sprite::setScaleY(scaley);
 	for (auto sprite : _childSprites)
 	{
-		if (sprite->getParent() != this)
+		if (sprite->getParent() != this && sprite->getScaleY() != scaley)
+		{
 			sprite->setScaleY(scaley);
+			sprite->setRotation(sprite->getRotation() * -1);
+		}
 	}
 	if (_hasGlow)
 		_glowSprite->setScaleY(scaley);
@@ -401,7 +408,7 @@ void GameObject::applyColorChannel(ax::Sprite* sprite, int channelType, float op
 	if (sprite->getColor() != finalColor)
 		sprite->setColor(finalColor);
 
-	if(col._applyHsv)
+	if (col._applyHsv)
 		applyHSV(sprite, col._hsvModifier);
 }
 
@@ -418,7 +425,8 @@ void GameObject::update()
 	if (!bgl)
 		return;
 
-	this->setPosition(this->_startPosition + this->_startPosOffset);
+	if (!_isTrigger)
+		this->setPosition(this->_startPosition + this->_startPosOffset);
 
 	float opacityMultiplier = 1.f;
 

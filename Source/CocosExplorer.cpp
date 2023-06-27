@@ -229,6 +229,15 @@ void drawProperties()
 		}
 	}
 
+	if (dynamic_cast<ax::Sprite*>(selected_node) != nullptr)
+	{
+		auto gm = dynamic_cast<ax::Sprite*>(selected_node);
+		bool flipx = gm->isFlippedX(), flipy = gm->isFlippedY();
+		ImGui::Checkbox("FlipX", &flipx);
+		ImGui::Checkbox("FlipY", &flipy);
+	}
+
+
 	if (dynamic_cast<GameObject*>(selected_node) != nullptr)
 	{
 		auto gm = dynamic_cast<GameObject*>(selected_node);
