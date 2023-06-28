@@ -205,41 +205,22 @@ void BaseGameLayer::initBatchNodes()
 
 void BaseGameLayer::createObjectsFromSetup(std::string_view uncompressedLevelString)
 {
-	// level string = leveldata;objects;something else
-	// split the entire thing
+	//TODO: this function should only recieve vector of game object strings
+	
 	std::vector<std::string_view> objData = GameToolbox::splitByDelimStringView(uncompressedLevelString, ';');
-	// loadLevelData(objData[0]);
 
-	// pre-allocate
 	_allObjects.reserve(objData.size());
 
-	// erase the first element (level data), we are left with all the objects
 	objData.erase(objData.begin());
 
-	// erase whatever the last thing is
-	objData.pop_back();
+	//theres prob a better way to do this but this works for now
+	if(const auto& last = objData.back(); last.front() != '1' || last[1] != ',')
+	{
+		objData.pop_back();
+	}
+	
 	GameToolbox::log("creating & pushing");
 
-#ifdef USE_MULTITHREADING
-	auto loadObjectsInRange = [this](std::span<std::string_view> span) {
-		for (auto& objectDataSpecific : span)
-		{
-			GameObject* obj = GameObject::createFromString(objectDataSpecific);
-			if (obj)
-			{
-				obj->_uniqueID = static_cast<int>(_allObjects.size());
-				_allObjects.push_back(obj);
-			}
-		}
-	};
-
-	auto mid = objData.begin() + objData.size() / 2;
-	std::thread firstPart(loadObjectsInRange, std::span<std::string_view>(objData.begin(), mid));
-	std::thread secondPart(loadObjectsInRange, std::span<std::string_view>(mid, objData.end()));
-
-	firstPart.join();
-	secondPart.join();
-#else
 	for (const auto& objectDataSpecific : objData)
 	{
 		GameObject* obj = GameObject::createFromString(objectDataSpecific);
@@ -249,7 +230,6 @@ void BaseGameLayer::createObjectsFromSetup(std::string_view uncompressedLevelStr
 			_allObjects.push_back(obj);
 		}
 	}
-#endif
 
 	// add the objects to batch nodes
 }
