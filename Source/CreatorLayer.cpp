@@ -38,6 +38,9 @@
 
 #include "GameToolbox/log.h"
 #include "GameToolbox/nodes.h"
+#include "GameToolbox/conv.h"
+#include "platform/CCFileUtils.h"
+#include <filesystem>
 
 
 USING_NS_AX;
@@ -113,11 +116,39 @@ bool CreatorLayer::init()
 		GameToolbox::log("tag: {}", btn->getTag());
 		switch (btn->getTag())
 		{
-			// case 0:
-			// {
-				// auto scene = LevelEditorLayer::scene(GJGameLevel::createWithMinimumData("Unnamed 0", "partur", 5));
-				// return Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
-			// }
+			case 0:
+			{
+				#ifdef _WIN32
+				auto fu = ax::FileUtils::getInstance();
+				std::filesystem::path appdata(fu->getWritablePath());
+				appdata = appdata.append("../GeometryDash/CCLocalLevels.dat");
+				GameToolbox::log("gd save file: {}", appdata.string());
+				
+				if(!std::filesystem::exists(appdata)) return;
+				
+				std::string data = fu->getStringFromFile(appdata.string());
+				if(data.empty()) return;
+				data = GJGameLevel::decompressLvlStr(GameToolbox::xorFunction(data, 11));
+				//GameToolbox::log("{}", data);
+				
+				//best xml parser ever made
+				size_t pos = data.find("opengd");
+				if(pos == std::string::npos) return;
+				
+				size_t startPos = data.find("H4sIAAAAAAAA", pos);
+				if(startPos == std::string::npos) return;
+				
+				size_t endPos = data.find("</s>");
+				if(endPos == std::string::npos) return;
+				
+				auto level = GJGameLevel::createWithMinimumData("OpenGD", "creator", 33);
+				level->_levelString = data.substr(startPos, endPos - startPos);
+				
+				Director::getInstance()->pushScene(ax::TransitionFade::create(0.5f, PlayLayer::scene(level)));
+
+				#endif
+				return;
+			}
 			case 7: return  Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(GJSearchObject::create(kGJSearchTypeFeatured))));
 			case 8: return  Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelBrowserLayer::scene(GJSearchObject::create(kGJSearchTypeHallOfFame))));
 			case 10: return Director::getInstance()->pushScene(TransitionFade::create(0.5f, LevelSearchLayer::scene()));

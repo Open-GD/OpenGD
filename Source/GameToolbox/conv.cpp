@@ -31,6 +31,17 @@ ax::BlendFunc GameToolbox::getBlending()
 	return BlendFunc::ADDITIVE;
 }
 
+std::string GameToolbox::xorFunction(const std::string& str, int key) {
+    std::string result;
+    result.reserve(str.length());
+
+    for (char c : str) {
+        result += c ^ key;
+    }
+
+    return result;
+}
+
 int GameToolbox::stoi(const std::string_view s)
 {
 	int ret = 0;
