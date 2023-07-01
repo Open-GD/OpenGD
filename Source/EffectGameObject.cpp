@@ -116,6 +116,7 @@ void EffectGameObject::triggerActivated(float)
 	case 30:
 	case 29:
 	case 899: {
+
 		_bgl->_colorChannels.at(_targetColorId)._applyHsv = false;
 		if (_copiedColorId > -1)
 		{
@@ -137,27 +138,8 @@ void EffectGameObject::triggerActivated(float)
 
 			_color = colorChannel._color;
 
-			auto hsv = ax::HSV(_color);
-			hsv.h += _hsv.h;
-			if (_hsv.sChecked)
-				hsv.s += _hsv.s;
-			else
-				hsv.s *= _hsv.s;
-			if (_hsv.vChecked)
-				hsv.v += _hsv.v;
-			else
-				hsv.v *= _hsv.v;
+			GameToolbox::applyHSV(_hsv, &_color);
 
-			if (hsv.s > 1)
-				hsv.s = 1;
-			if (hsv.v > 1)
-				hsv.v = 1;
-			if (hsv.s < 0)
-				hsv.s = 0;
-			if (hsv.v < 0)
-				hsv.v = 0;
-
-			_color = GameToolbox::hsvToRgb(hsv);
 			_bgl->_colorChannels.at(_targetColorId)._applyHsv = true;
 		}
 
@@ -237,27 +219,7 @@ void EffectGameObject::triggerActivated(float)
 				target = colorChannel._color;
 			}
 
-			auto hsv = ax::HSV(target);
-			hsv.h += _hsv.h;
-			if (_saturationTicked)
-				hsv.s += _hsv.s;
-			else
-				hsv.s *= _hsv.s;
-			if (_brightnessTicked)
-				hsv.v += _hsv.v;
-			else
-				hsv.v *= _hsv.v;
-
-			if (hsv.s > 1)
-				hsv.s = 1;
-			if (hsv.v > 1)
-				hsv.v = 1;
-			if (hsv.s < 0)
-				hsv.s = 0;
-			if (hsv.v < 0)
-				hsv.v = 0;
-
-			target = GameToolbox::hsvToRgb(hsv);
+			GameToolbox::applyHSV(_hsv, &target);
 		}
 
 		ax::Sequence* seq;

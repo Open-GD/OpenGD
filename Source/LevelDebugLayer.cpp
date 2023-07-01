@@ -160,6 +160,8 @@ void LevelDebugLayer::onExit()
 {
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
+	this->unscheduleUpdate();
+
 	Layer::onExit();
 }
 
@@ -254,7 +256,6 @@ void LevelDebugLayer::onDrawImgui()
 
 void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	GameToolbox::log("Key with keycode {} pressed", static_cast<int>(keyCode));
 	switch (keyCode)
 	{
 	case EventKeyboard::KeyCode::KEY_A: {
@@ -295,7 +296,6 @@ void LevelDebugLayer::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 
 void LevelDebugLayer::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	GameToolbox::log("Key with keycode {} released", static_cast<int>(keyCode));
 	switch (keyCode)
 	{
 	case EventKeyboard::KeyCode::KEY_A: {
@@ -402,12 +402,13 @@ void LevelDebugLayer::reorderLayering(GameObject* parentObj, ax::Sprite* child)
 			AX_SAFE_RETAIN(child);
 			child->removeFromParentAndCleanup(true);
 		}
-		if (child->getBlendFunc() == parentObj->getBlendFunc())
+		/*if (child->getBlendFunc() == parentObj->getBlendFunc())
 		{
+			GameToolbox::log("opi[jfeawsjpiosfzdihjopsdzipojds");
 			parentObj->addChild(child);
 			AX_SAFE_RELEASE(obj);
 			return;
-		}
+		}*/
 	}
 
 	if (obj->getBlendFunc() == GameToolbox::getBlending())
@@ -577,6 +578,39 @@ void LevelDebugLayer::exit()
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
 	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+
+	unscheduleUpdate();
+
+	int size = _allObjects.size();
+	for (int i = 0; i < size; i++)
+	{
+		GameObject* obj = _allObjects.at(i);
+		if (obj && !obj->getParent())
+		{
+			for (auto sprite : obj->_childSprites)
+			{
+				if (!sprite->getParent())
+				{
+					sprite->onExit();
+					AX_SAFE_RELEASE_NULL(sprite);
+				}
+			}
+			if (obj->_particle)
+			{
+				obj->_particle->onExit();
+				AX_SAFE_RELEASE_NULL(obj->_particle);
+			}
+			if (obj->_glowSprite)
+			{
+				obj->_glowSprite->onExit();
+				AX_SAFE_RELEASE_NULL(obj->_glowSprite);
+			}
+			obj->unscheduleAllCallbacks();
+			obj->onExit();
+			obj->setActive(false);
+			AX_SAFE_RELEASE(obj);
+		}
+	}
 
 	int id = _level->_levelID;
 	if (id <= 0 || id > 22)

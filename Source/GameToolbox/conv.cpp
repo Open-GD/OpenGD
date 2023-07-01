@@ -21,6 +21,7 @@
 #include "math/MathUtil.h"
 #include <charconv>
 #include <cmath>
+#include "log.h"
 
 bool _showDebugImgui = true;
 
@@ -99,57 +100,58 @@ std::vector<std::string_view> GameToolbox::splitByDelimStringView(std::string_vi
 	return tokens;
 }
 
+void GameToolbox::applyHSV(GDHSV const& hsv, Color3B* color)
+{
+	ax::HSV objhsv = ax::HSV(*color);
+	objhsv.h += hsv.h;
+	if (hsv.sChecked)
+		objhsv.s += hsv.s;
+	else
+		objhsv.s *= hsv.s;
+	if (hsv.vChecked)
+		objhsv.v += hsv.v;
+	else
+		objhsv.v *= hsv.v;
+
+	*color = GameToolbox::hsvToRgb(objhsv);
+}
+
 ax::Color3B GameToolbox::hsvToRgb(const ax::HSV& hsv)
 {
-	float c = hsv.v * hsv.s;
-	float h_dash = hsv.h / 60.0f;
-	float x = c * (1.0f - std::fabs(std::fmod(h_dash, 2.0f) - 1.0f));
-	float m = hsv.v - c;
+	float h, s, v;
+	h = hsv.h;
+	s = hsv.s;
+	v = hsv.v;
 
-	float r1, g1, b1;
-
-	if (h_dash >= 0.0f && h_dash < 1.0f)
-	{
-		r1 = c;
-		g1 = x;
-		b1 = 0.0f;
-	}
-	else if (h_dash >= 1.0f && h_dash < 2.0f)
-	{
-		r1 = x;
-		g1 = c;
-		b1 = 0.0f;
-	}
-	else if (h_dash >= 2.0f && h_dash < 3.0f)
-	{
-		r1 = 0.0f;
-		g1 = c;
-		b1 = x;
-	}
-	else if (h_dash >= 3.0f && h_dash < 4.0f)
-	{
-		r1 = 0.0f;
-		g1 = x;
-		b1 = c;
-	}
-	else if (h_dash >= 4.0f && h_dash < 5.0f)
-	{
-		r1 = x;
-		g1 = 0.0f;
-		b1 = c;
-	}
-	else
-	{
-		r1 = c;
-		g1 = 0.0f;
-		b1 = x;
+	if (std::isnan(h)) {
+		return { (uint8_t)(v * 255.0f), (uint8_t)(v * 255.0f), (uint8_t)(v * 255.0f) };
 	}
 
-	uint8_t r = static_cast<uint8_t>((r1 + m) * 255.0f);
-	uint8_t g = static_cast<uint8_t>((g1 + m) * 255.0f);
-	uint8_t b = static_cast<uint8_t>((b1 + m) * 255.0f);
+	h = std::fmod((360.0f + std::fmod(h, 360)), 360.0f);
+	s = std::clamp(s, 0.0f, 1.0f);
+	v = std::clamp(v, 0.0f, 1.0f);
 
-	return Color3B(r, g, b);
+	h /= 60.0;
+	float p = v * (1.0f - s);
+	float q = v * (1.0f - (s * std::fmod(h, 1.0f)));
+	float t = v * (1.0f - (s * (1.0f - std::fmod(h, 1.0f))));
+
+	switch (static_cast<int>(std::floor(h)) % 6) {
+	case 0:
+		return { (uint8_t)(v * 255.0f), (uint8_t)(t * 255.0f), (uint8_t)(p * 255.0f) };
+	case 1:
+		return { (uint8_t)(q * 255.0f), (uint8_t)(v * 255.0f), (uint8_t)(p * 255.0f) };
+	case 2:
+		return { (uint8_t)(p * 255.0f), (uint8_t)(v * 255.0f), (uint8_t)(t * 255.0f) };
+	case 3:
+		return { (uint8_t)(p * 255.0f), (uint8_t)(q * 255.0f), (uint8_t)(v * 255.0f) };
+	case 4:
+		return { (uint8_t)(t * 255.0f), (uint8_t)(p * 255.0f), (uint8_t)(v * 255.0f) };
+	case 5:
+		return { (uint8_t)(v * 255.0f), (uint8_t)(p * 255.0f), (uint8_t)(q * 255.0f) };
+	default:
+		throw std::logic_error("Unreachable!");
+	}
 }
 
 const char* GameToolbox::levelLengthString(int len)

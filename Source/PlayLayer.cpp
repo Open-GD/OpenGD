@@ -349,7 +349,7 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 	m_pColorChannels[1010]._color = Color3B::BLACK;
 	m_pColorChannels[1007]._color = getLightBG();
 
-	_originalColors = std::unordered_map<int, SpriteColor>(m_pColorChannels);
+	_originalColors = std::unordered_map<int, SpriteColor, my_string_hash>(m_pColorChannels);
 
 	for (std::string_view data : objData)
 	{
@@ -476,8 +476,8 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 				trigger->_hsv.h = GameToolbox::stof(hsv[0]);
 				trigger->_hsv.s = GameToolbox::stof(hsv[1]);
 				trigger->_hsv.v = GameToolbox::stof(hsv[2]);
-				trigger->_saturationTicked = GameToolbox::stof(hsv[3]);
-				trigger->_brightnessTicked = GameToolbox::stof(hsv[4]);
+				trigger->_hsv.sChecked = GameToolbox::stof(hsv[3]);
+				trigger->_hsv.vChecked = GameToolbox::stof(hsv[4]);
 			}
 			break;
 			case 50:
@@ -1785,7 +1785,7 @@ void PlayLayer::resetLevel()
 
 	dir->getActionManager()->removeAllActions();
 
-	m_pColorChannels = std::unordered_map<int, SpriteColor>(_originalColors);
+	m_pColorChannels = std::unordered_map<int, SpriteColor, my_string_hash>(_originalColors);
 
 	_prevSection = -1;
 	_nextSection = -1;

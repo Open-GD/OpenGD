@@ -27,6 +27,7 @@
 #include "SpriteColor.h"
 #include "CCPlatformMacros.h"
 #include "ccTypes.h"
+#include "GameToolbox/conv.h"
 
 enum PlayerGamemode;
 
@@ -127,8 +128,8 @@ public:
 	ax::SpriteBatchNode* _glowBatchNode;
 	ax::ParticleBatchNode* _particleBatchNode;
 
-	std::unordered_map<int, SpriteColor> m_pColorChannels, _originalColors;
-	std::unordered_map<int, GroupProperties> _groups;
+	std::unordered_map<int, SpriteColor, my_string_hash> m_pColorChannels, _originalColors;
+	std::unordered_map<int, GroupProperties, my_string_hash> _groups;
 
 	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
 

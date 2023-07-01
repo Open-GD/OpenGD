@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "2d/CCLayer.h"
+#include "GameToolbox/conv.h"
 
 class GJSearchObject;
 class LoadingCircle;

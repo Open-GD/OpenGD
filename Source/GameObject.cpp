@@ -30,6 +30,8 @@
 
 USING_NS_AX;
 
+ax::Color3B _tempColor;
+
 bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 {
 	if (frame.find("player") != std::string::npos)
@@ -61,7 +63,7 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 	_texturePath = getTexture()->getPath();
 
 	setCascadeColorEnabled(false);
-	setCascadeOpacityEnabled(true);
+	setCascadeOpacityEnabled(false);
 
 	return true;
 }
@@ -86,7 +88,7 @@ void GameObject::addCustomSprites(nlohmann::json j, ax::Sprite* parent)
 		if (jsonObj.contains("content_x"))
 			s->setContentSize({static_cast<float>(jsonObj["content_x"]), static_cast<float>(jsonObj["content_y"])});
 		s->setCascadeColorEnabled(false);
-		s->setCascadeOpacityEnabled(true);
+		s->setCascadeOpacityEnabled(false);
 		if (jsonObj.contains("color_channel"))
 		{
 			if (jsonObj["color_channel"] == "base")
@@ -144,6 +146,9 @@ void GameObject::customSetup()
 	if (objJson.contains("children"))
 		addCustomSprites(objJson["children"], this);
 
+	for (auto obj : _childSprites)
+		obj->setAdditionalTransform(&_parentMatrix);
+
 	_isOnlyDetail = true;
 
 	for (size_t type : _childSpritesChannel)
@@ -157,7 +162,10 @@ void GameObject::customSetup()
 	// robtop made 3d parts have lines by default but then decided to make them invisible instead of removing them for
 	// whatever reason
 	if (getID() >= 515 && getID() <= 640)
+	{
 		_primaryInvisible = true;
+		setOpacity(0);
+	}
 
 	switch (getID())
 	{
@@ -268,12 +276,7 @@ GameObject* GameObject::create(std::string_view frame, std::string_view glowFram
 void GameObject::setPosition(const ax::Vec2& pos)
 {
 	Sprite::setPosition(pos);
-	for (auto sprite : _childSprites)
-	{
-		if (sprite->getParent() != this)
-			sprite->setPosition(pos);
-	}
-
+	_parentMatrix = getNodeToParentTransform();
 	if (_hasGlow)
 		_glowSprite->setPosition(pos);
 	if (_hasParticle)
@@ -281,12 +284,8 @@ void GameObject::setPosition(const ax::Vec2& pos)
 }
 void GameObject::setRotation(float rotation)
 {
-	float delta = rotation - this->getRotation();
 	Sprite::setRotation(rotation);
-	for (auto sprite : _childSprites)
-	{
-		sprite->setRotation(sprite->getRotation() + delta);
-	}
+	_parentMatrix = getNodeToParentTransform();
 	if (_hasGlow)
 		_glowSprite->setRotation(rotation);
 	if (_hasParticle)
@@ -295,14 +294,7 @@ void GameObject::setRotation(float rotation)
 void GameObject::setScaleX(float scalex)
 {
 	Sprite::setScaleX(scalex);
-	for (auto sprite : _childSprites)
-	{
-		if (sprite->getParent() != this && sprite->getScaleX() != scalex)
-		{
-			sprite->setScaleX(scalex);
-			sprite->setRotation(sprite->getRotation() * -1);
-		}
-	}
+	_parentMatrix = getNodeToParentTransform();
 	if (_hasGlow)
 		_glowSprite->setScaleX(scalex);
 	if (_hasParticle)
@@ -310,16 +302,8 @@ void GameObject::setScaleX(float scalex)
 }
 void GameObject::setScaleY(float scaley)
 {
-	float delta = scaley - getScaleY();
 	Sprite::setScaleY(scaley);
-	for (auto sprite : _childSprites)
-	{
-		if (sprite->getParent() != this && sprite->getScaleY() != scaley)
-		{
-			sprite->setScaleY(scaley);
-			sprite->setRotation(sprite->getRotation() * -1);
-		}
-	}
+	_parentMatrix = getNodeToParentTransform();
 	if (_hasGlow)
 		_glowSprite->setScaleY(scaley);
 	if (_hasParticle)
@@ -327,6 +311,7 @@ void GameObject::setScaleY(float scaley)
 }
 void GameObject::setOpacity(uint8_t opacity)
 {
+	if (_primaryInvisible) opacity = 0;
 	Sprite::setOpacity(opacity);
 	if (_hasGlow)
 		_glowSprite->setOpacity(opacity);
@@ -334,82 +319,57 @@ void GameObject::setOpacity(uint8_t opacity)
 		_particle->setOpacity(opacity);
 }
 
-Color3B getChannelColor(SpriteColor colorChannel)
+Color3B GameObject::getChannelColor(SpriteColor *colorChannel)
 {
 	auto bgl = BaseGameLayer::getInstance();
 
-	int cycles = 0;
+	Color3B returnCol;
 
-	while (colorChannel._copyingColorID != -1 && cycles < 3)
-	{
-		cycles++;
-		colorChannel = bgl->_colorChannels[colorChannel._copyingColorID];
-	}
+	if (colorChannel->_copyingColorID != -1)
+		returnCol = getChannelColor(&bgl->_colorChannels[colorChannel->_copyingColorID]);
+	else 
+		returnCol = colorChannel->_color;
 
-	return colorChannel._color;
+	GameToolbox::applyHSV(colorChannel->_hsvModifier, &returnCol);
+
+	return returnCol;
 }
 
-void GameObject::applyHSV(ax::Sprite* sprite, GDHSV const& hsv)
+
+
+void GameObject::applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor* col)
 {
-	ax::HSV objhsv = ax::HSV(sprite->getColor());
-	objhsv.h += hsv.h;
-	if (hsv.sChecked)
-		objhsv.s += hsv.s;
-	else
-		objhsv.s *= hsv.s;
-	if (hsv.vChecked)
-		objhsv.v += hsv.v;
-	else
-		objhsv.v *= hsv.v;
 
-	if (objhsv.s > 1)
-		objhsv.s = 1;
-	if (objhsv.v > 1)
-		objhsv.v = 1;
-	if (objhsv.s < 0)
-		objhsv.s = 0;
-	if (objhsv.v < 0)
-		objhsv.v = 0;
-
-	ax::Color3B col = GameToolbox::hsvToRgb(objhsv);
-
-	if (sprite->getColor() != col)
-		sprite->setColor(col);
-}
-
-void GameObject::applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor const& col)
-{
-	if (col._blending)
-		setBlendFunc(GameToolbox::getBlending());
-	else
-		setBlendFunc(BlendFunc::DISABLE);
-
-	float op = col._opacity * opacityMultiplier * _effectOpacityMultipler;
+	float op = col->_opacity * opacityMultiplier * _effectOpacityMultipler;
 
 	switch (channelType)
 	{
 	case 0:
-		sprite->setOpacity(_primaryInvisible ? 0 : op);
-		if ((sprite->getBlendFunc() == GameToolbox::getBlending()) != col._blending)
+		if(getOpacity() != op)
+			sprite->setOpacity(op);
+		if ((sprite->getBlendFunc() == GameToolbox::getBlending()) != col->_blending)
 			removeFromGameLayer();
 		break;
 	case 1:
-		sprite->setOpacity(op);
-		if ((sprite->getBlendFunc() == GameToolbox::getBlending()) != col._blending)
+		if (getOpacity() != op)
+			sprite->setOpacity(op);
+		if ((sprite->getBlendFunc() == GameToolbox::getBlending()) != col->_blending)
 			removeFromGameLayer();
 		break;
 	default:
-		sprite->setOpacity(op);
+		if (getOpacity() != op)
+			sprite->setOpacity(op);
 		break;
 	}
 
+	if (col->_blending)
+		sprite->setBlendFunc(GameToolbox::getBlending());
+	else
+		sprite->setBlendFunc(BlendFunc::DISABLE);
+
 	Color3B finalColor = getChannelColor(col);
 
-	if (sprite->getColor() != finalColor)
-		sprite->setColor(finalColor);
-
-	if (col._applyHsv)
-		applyHSV(sprite, col._hsvModifier);
+	_tempColor = finalColor;
 }
 
 void GameObject::update()
@@ -443,36 +403,45 @@ void GameObject::update()
 		}
 	}
 
-	bool hasBase = bgl->_colorChannels.contains(_mainColorChannel),
-		 hasDetail = bgl->_colorChannels.contains(_secColorChannel);
+	if(!_mainColor) _mainColor = bgl->_colorChannels.contains(_mainColorChannel) ? &bgl->_colorChannels[_mainColorChannel] : nullptr;
+	if(!_secColor) _secColor = bgl->_colorChannels.contains(_secColorChannel) ? &bgl->_colorChannels[_secColorChannel] : nullptr;
 
 	switch (_childSpritesChannel[0])
 	{
 	case 0:
-		applyColorChannel(this, 0, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
 
 		if (state == GroupProperties::GroupState::MAIN_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
-			setColor(groupColor);
+			_tempColor = groupColor;
+		else
+			applyColorChannel(this, 0, opacityMultiplier, _mainColor);
 
 		if (_mainHSVEnabled)
-			applyHSV(this, _mainHSV);
+			GameToolbox::applyHSV(_mainHSV, &_tempColor);
+
+		if (getColor() != _tempColor)
+			setColor(_tempColor);
 		break;
 	case 1:
-		if (hasDetail)
-			applyColorChannel(this, 1, opacityMultiplier, bgl->_colorChannels[_secColorChannel]);
-		else
-			applyColorChannel(this, 1, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
 
 		if (state == GroupProperties::GroupState::DETAIL_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
-			setColor(groupColor);
+			_tempColor = groupColor;
+		else if (_secColor)
+			applyColorChannel(this, 1, opacityMultiplier, _secColor);
+		else
+			applyColorChannel(this, 1, opacityMultiplier, _mainColor);
 
 		if (_secondaryHSVEnabled)
-			applyHSV(this, _secondaryHSV);
+			GameToolbox::applyHSV(_secondaryHSV, &_tempColor);
 		else if (_isOnlyDetail)
-			applyHSV(this, _mainHSV);
+			GameToolbox::applyHSV(_mainHSV, &_tempColor);
+
+		if (getColor() != _tempColor)
+			setColor(_tempColor);
 		break;
 	case 2:
-		applyColorChannel(this, 2, opacityMultiplier, bgl->_colorChannels[1010]);
+		applyColorChannel(this, 2, opacityMultiplier, &bgl->_colorChannels[1010]);
+		if (getColor() != _tempColor)
+			setColor(_tempColor);
 		break;
 	}
 
@@ -481,30 +450,37 @@ void GameObject::update()
 		switch (_childSpritesChannel[i + 1])
 		{
 		case 0:
-			applyColorChannel(_childSprites[i], 0, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
 
 			if (state == GroupProperties::GroupState::MAIN_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
-				_childSprites[i]->setColor(groupColor);
+				_tempColor = groupColor;
+			else
+				applyColorChannel(_childSprites[i], 0, opacityMultiplier, _mainColor);
 
 			if (_mainHSVEnabled)
-				applyHSV(_childSprites[i], _mainHSV);
+				GameToolbox::applyHSV(_mainHSV, &_tempColor);
+			if (_childSprites[i]->getColor() != _tempColor)
+				_childSprites[i]->setColor(_tempColor);
 			break;
 		case 1:
-			if (hasDetail)
-				applyColorChannel(_childSprites[i], 1, opacityMultiplier, bgl->_colorChannels[_secColorChannel]);
-			else
-				applyColorChannel(_childSprites[i], 1, opacityMultiplier, bgl->_colorChannels[_mainColorChannel]);
 
 			if (state == GroupProperties::GroupState::DETAIL_ONLY || state == GroupProperties::GroupState::MAIN_DETAIL)
-				_childSprites[i]->setColor(groupColor);
+				_tempColor = groupColor;
+			else if (_secColor)
+				applyColorChannel(_childSprites[i], 1, opacityMultiplier, _secColor);
+			else
+				applyColorChannel(_childSprites[i], 1, opacityMultiplier, _mainColor);
 
 			if (_secondaryHSVEnabled)
-				applyHSV(_childSprites[i], _secondaryHSV);
+				GameToolbox::applyHSV(_secondaryHSV, &_tempColor);
 			else if (_isOnlyDetail)
-				applyHSV(_childSprites[i], _mainHSV);
+				GameToolbox::applyHSV(_mainHSV, &_tempColor);
+			if (_childSprites[i]->getColor() != _tempColor)
+				_childSprites[i]->setColor(_tempColor);
 			break;
 		case 2:
-			applyColorChannel(_childSprites[i], 2, opacityMultiplier, bgl->_colorChannels[1010]);
+			applyColorChannel(_childSprites[i], 2, opacityMultiplier, &bgl->_colorChannels[1010]);
+			if (_childSprites[i]->getColor() != _tempColor)
+				_childSprites[i]->setColor(_tempColor);
 			break;
 		}
 	}
@@ -597,6 +573,9 @@ GameObject* GameObject::createFromString(std::string_view data)
 		case 17:
 			if (obj->_isTrigger)
 				dynamic_cast<EffectGameObject*>(obj)->_blending = GameToolbox::stoi(properties[i + 1]);
+		case 20:
+			obj->_editorLayer = GameToolbox::stoi(properties[i + 1]);
+			break;
 		case 21:
 			obj->_mainColorChannel = GameToolbox::stoi(properties[i + 1]);
 			if (!bgl->_colorChannels.contains(obj->_mainColorChannel))
@@ -801,12 +780,12 @@ void GameObject::removeFromGameLayer()
 
 	for (auto sprite : _childSprites)
 	{
-		if (sprite->getParent() != this)
+		if (sprite->getBlendFunc() != getBlendFunc())
 		{
 			AX_SAFE_RETAIN(sprite);
 			sprite->removeFromParentAndCleanup(true);
-			addChild(sprite);
-			AX_SAFE_RELEASE(sprite);
+			/*addChild(sprite);
+			AX_SAFE_RELEASE(sprite);*/
 		}
 	}
 

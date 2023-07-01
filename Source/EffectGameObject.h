@@ -43,7 +43,6 @@ public:
 	int _targetColorId = 1, _targetGroupId = -1;
 	bool _wasTriggerActivated;
 	int _copiedColorId = -1;
-	bool _saturationTicked, _brightnessTicked;
 
 	float _fadeIn, _hold, _fadeOut;
 	int _pulseMode, _pulseType;

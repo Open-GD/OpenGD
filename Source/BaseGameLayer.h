@@ -27,6 +27,7 @@
 #include "SpriteColor.h"
 #include "2d/CCLayer.h"
 #include "EffectManager.h"
+#include "GameToolbox/conv.h"
 
 class GameObject;
 class BaseGameLayer;
@@ -101,8 +102,8 @@ public:
 	GJGameLevel* _level;
 	std::vector<GameObject*> _allObjects;
 	std::vector<std::vector<GameObject*>> _sectionObjects;
-	std::unordered_map<int, SpriteColor> _colorChannels, _originalColors;
-	std::unordered_map<int, GroupProperties> _groups;
+	std::unordered_map<int, SpriteColor, my_string_hash> _colorChannels, _originalColors;
+	std::unordered_map<int, GroupProperties, my_string_hash> _groups;
 
 	PlayerObject* _player1, _player2;
 

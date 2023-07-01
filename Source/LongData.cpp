@@ -17,9 +17,10 @@
 *************************************************************************/
 
 #include "GameObject.h"
+#include "GameToolbox/conv.h"
 
 
-const std::unordered_map<int, Hitbox> GameObject::_pHitboxes = std::unordered_map<int, Hitbox>{{0, {30, 30, -15, -15}},
+const std::unordered_map<int, Hitbox, my_string_hash> GameObject::_pHitboxes = std::unordered_map<int, Hitbox, my_string_hash>{{0, {30, 30, -15, -15}},
 																		   {1, {30, 30, -15, -15}},
 																		   {2, {30, 30, -15, -15}},
 																		   {3, {30, 30, -15, -15}},
@@ -457,14 +458,14 @@ const std::unordered_map<int, Hitbox> GameObject::_pHitboxes = std::unordered_ma
 
 
 
-const std::unordered_map<int, float> GameObject::_pHitboxRadius = std::unordered_map<int, float>{
+const std::unordered_map<int, float, my_string_hash> GameObject::_pHitboxRadius = std::unordered_map<int, float, my_string_hash>{
 	{88, 32.3},	  {89, 21.6},	{98, 12},	  {183, 15.48}, {184, 20.4},   {185, 3},	 {186, 32.3},  {187, 21.96},
 	{188, 12.6},  {397, 28.9},	{398, 17.6},  {399, 12.9},	{675, 32},	   {676, 17.68}, {677, 12.48}, {678, 30.4},
 	{679, 18.72}, {680, 10.8},	{740, 32.3},  {741, 21.96}, {742, 12.6},   {918, 24},	 {1582, 4},	   {1583, 4},
 	{1619, 25},	  {1620, 15},	{1701, 6},	  {1702, 6},	{1703, 6},	   {1705, 32.3}, {1706, 21.6}, {1707, 12},
 	{1708, 28.9}, {1709, 17.6}, {1710, 12.9}, {1734, 32},	{1735, 17.68}, {1736, 12.48}};
 
-const std::unordered_map<int, const char*> GameObject::_pBlocks = std::unordered_map<int, const char*>{
+const std::unordered_map<int, const char*, my_string_hash> GameObject::_pBlocks = std::unordered_map<int, const char*, my_string_hash>{
 	
 	{44, "checkpoint_01_001.png"}, // not setup in ObjectToolbox::init(), only initialised when placing a checkpoint
 	{1, "square_01_001"},

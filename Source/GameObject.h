@@ -30,6 +30,7 @@
 #include "SpriteColor.h"
 #include "external/json.hpp"
 #include "GDHSV.h"
+#include "GameToolbox/conv.h"
 
 class PlayerObject;
 namespace ax 
@@ -107,7 +108,8 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
   public:
 	std::vector<ax::Sprite*> _childSprites;
-	std::vector<size_t> _childSpritesChannel;
+	std::vector<int8_t> _childSpritesChannel;
+	std::vector<ax::Vec2> _childSpritesScaling;
 	std::string _texturePath;
 
 	ax::Vec2 _startPosition, _firstPosition, _startPosOffset;
@@ -164,6 +166,8 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	bool _hasBeenActivatedP1, _hasBeenActivatedP2;
 	int _mainColorChannel = -1, _secColorChannel = -1;
 
+	SpriteColor* _mainColor, * _secColor;
+
 	bool _hasGlow, _hasParticle;
 	bool _isTrigger;
 
@@ -174,19 +178,21 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	bool _mainHSVEnabled, _secondaryHSVEnabled;
 	GDHSV _mainHSV, _secondaryHSV;
 
-	int _zLayer = 0;
+	int _zLayer = 0, _editorLayer = -1;
 
 	int _uniqueID = -1;
 	int _section = -1;
 
 	float _radius = -1;
 
+	ax::Mat4 _parentMatrix = ax::Mat4::IDENTITY;
+
 	ax::ParticleSystemQuad* _particle;
 
-	static const std::unordered_map<int, Hitbox> _pHitboxes;
-	static const std::unordered_map<int, float> _pHitboxRadius;
+	static const std::unordered_map<int, Hitbox, my_string_hash> _pHitboxes;
+	static const std::unordered_map<int, float, my_string_hash> _pHitboxRadius;
 	// from https://gist.github.com/absoIute/c8fa23c9b2cb39252755465345bc6e35
-	static const std::unordered_map<int, const char*> _pBlocks;
+	static const std::unordered_map<int, const char*, my_string_hash> _pBlocks;
 
 	static const std::vector<int> _pSolids;
 	static const std::vector<int> _pTriggers;
@@ -198,8 +204,8 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
 	void customSetup();
 	void addCustomSprites(nlohmann::json j, ax::Sprite* parent);
-	void applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor const&col);
-	void applyHSV(ax::Sprite* sprite, GDHSV const&hsv);
+	void applyColorChannel(ax::Sprite* sprite, int channelType, float opacityMultiplier, SpriteColor *col);
+	ax::Color3B getChannelColor(SpriteColor* colorChannel);
 
 	static std::string keyToFrame(int key);
 	static std::map<std::string, std::string> stringSetupToDict(std::string);

@@ -246,6 +246,7 @@ void drawProperties()
 		ImGui::Text("Color channel 2: %d", gm->_secColorChannel);
 		ImGui::Text("ID: %d", gm->getID());
 		ImGui::Text("Z Layer: %d", gm->_zLayer);
+		ImGui::Text("Editor Layer: %d", gm->_editorLayer);
 		std::string groupText = "";
 		float opacityMultiplier = 1.f;
 
@@ -258,22 +259,38 @@ void drawProperties()
 		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
 
 		float hsv1[3], hsv2[3];
+		bool check1, check2, check3, check4;
 		hsv1[0] = gm->_mainHSV.h;
 		hsv1[1] = gm->_mainHSV.s;
 		hsv1[2] = gm->_mainHSV.v;
+		check1 = gm->_mainHSV.sChecked;
+		check2 = gm->_mainHSV.vChecked;
 		hsv2[0] = gm->_secondaryHSV.h;
 		hsv2[1] = gm->_secondaryHSV.s;
 		hsv2[2] = gm->_secondaryHSV.v;
+		check3 = gm->_secondaryHSV.sChecked;
+		check4 = gm->_secondaryHSV.vChecked;
 
-		ImGui::InputFloat3("HSV1", hsv1);
+		ImGui::InputFloat3("HSV1", hsv1); 
+		ImGui::SameLine(); 
+		ImGui::Checkbox("Saturation Check##1", &check1);
+		ImGui::SameLine();
+		ImGui::Checkbox("Brightness Check##1", &check2);
 		ImGui::InputFloat3("HSV2", hsv2);
+		ImGui::Checkbox("Saturation Check##2", &check3);
+		ImGui::SameLine();
+		ImGui::Checkbox("Brightness Check##2", &check4);
 
 		gm->_mainHSV.h = hsv1[0];
 		gm->_mainHSV.s = hsv1[1];
 		gm->_mainHSV.v = hsv1[2];
+		gm->_mainHSV.sChecked = check1;
+		gm->_mainHSV.vChecked = check2;
 		gm->_secondaryHSV.h = hsv2[0];
 		gm->_secondaryHSV.s = hsv2[1];
 		gm->_secondaryHSV.v = hsv2[2];
+		gm->_secondaryHSV.sChecked = check3;
+		gm->_secondaryHSV.vChecked = check4;
 	}
 }
 

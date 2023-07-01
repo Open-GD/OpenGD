@@ -329,6 +329,18 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 					case 7:
 						col._opacity = GameToolbox::stof(innerData[j + 1]) * 255.f;
 						break;
+					case 9:
+						col._copyingColorID = GameToolbox::stoi(innerData[j + 1]);
+						break;
+					case 10:
+						auto hsv = GameToolbox::splitByDelimStringView(innerData[j + 1], 'a');
+						col._hsvModifier.h = GameToolbox::stof(hsv[0]);
+						col._hsvModifier.s = GameToolbox::stof(hsv[1]);
+						col._hsvModifier.v = GameToolbox::stof(hsv[2]);
+						col._hsvModifier.sChecked = GameToolbox::stoi(hsv[3]);
+						col._hsvModifier.vChecked = GameToolbox::stoi(hsv[4]);
+						col._applyHsv = true;
+						break;
 					}
 				}
 				_colorChannels.insert({key, col});
@@ -385,7 +397,7 @@ void BaseGameLayer::setupLevel(std::string_view uncompressedLevelString)
 	_colorChannels[1007]._color = _colorChannels[1000]._color;
 	_colorChannels[1007]._blending = true;
 
-	_originalColors = std::unordered_map<int, SpriteColor>(_colorChannels);
+	_originalColors = std::unordered_map<int, SpriteColor, my_string_hash>(_colorChannels);
 }
 
 void BaseGameLayer::fillColorChannel(std::span<std::string_view> colorString, int id)
