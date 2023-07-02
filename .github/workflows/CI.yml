@@ -38,7 +38,7 @@ jobs:
       with:
         # Optional. Commit message for the created commit.
         # Defaults to "Apply automatic changes"
-        commit_message: Automated Change
+        commit_message: Migrate to compile with axmol latest
 
         # Optional. Local and remote branch name where commit is going to be pushed
         #  to. Defaults to the current branch.
