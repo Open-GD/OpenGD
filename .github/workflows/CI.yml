@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [ "axmol-latest" ]
+  pull_request:
+    branches: [ "axmol-latest" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  win32:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure
+      shell: pwsh
+      run: |
+        git clone --depth=1 https://github.com/axmolengine/axmol $HOME/axmol
+        . $HOME/axmol/build.ps1 -xb '--config','Release','--target','sources-migrate'
+
+    - name: Build
+      # Build your program with the given configuration
+      shell: pwsh
+      run: echo ok
+
+
