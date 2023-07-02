@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "2d/CCLayer.h"
+#include "2d/Layer.h"
 #include "math/Vec2.h"
 
 class GameManager;

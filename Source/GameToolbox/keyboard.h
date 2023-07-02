@@ -17,9 +17,9 @@
 *************************************************************************/
 
 #pragma once
-#include "CCEventListenerKeyboard.h"
-#include "CCEventKeyboard.h"
-#include "2d/CCNode.h"
+#include "EventListenerKeyboard.h"
+#include "EventKeyboard.h"
+#include "2d/Node.h"
 
 namespace GameToolbox
 {

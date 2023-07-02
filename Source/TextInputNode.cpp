@@ -19,14 +19,14 @@
 #include "TextInputNode.h"
 
 #include <fmt/format.h>
-#include <CCEventListenerTouch.h>
-#include <CCEventListenerKeyboard.h>
-#include <CCDirector.h>
-#include <CCEventDispatcher.h>
+#include <EventListenerTouch.h>
+#include <EventListenerKeyboard.h>
+#include <Director.h>
+#include <EventDispatcher.h>
 #include <ui/UITextField.h>
 
 #ifdef AX_PLATFORM_PC
-#include <platform/desktop/CCGLViewImpl-desktop.h>
+#include <platform/desktop/GLViewImpl-desktop.h>
 #endif
 
 USING_NS_AX;

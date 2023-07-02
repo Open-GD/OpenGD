@@ -26,8 +26,8 @@
 #include <fstream>
 
 #include "GameToolbox/getTextureString.h"
-#include "platform/CCFileUtils.h"
-#include <2d/CCSpriteBatchNode.h>
+#include "platform/FileUtils.h"
+#include <2d/SpriteBatchNode.h>
 
 USING_NS_AX;
 

@@ -17,8 +17,8 @@
 *************************************************************************/
 
 #include "MenuItemSpriteExtra.h"
-#include "2d/CCSprite.h"
-#include "2d/CCActionEase.h"
+#include "2d/Sprite.h"
+#include "2d/ActionEase.h"
 
 USING_NS_AX;
 

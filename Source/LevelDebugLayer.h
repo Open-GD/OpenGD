@@ -19,7 +19,7 @@
 #pragma once
 #include "BaseGameLayer.h"
 #include "math/Vec2.h"
-#include "CCEventKeyboard.h"
+#include "EventKeyboard.h"
 
 class GJGameLevel;
 

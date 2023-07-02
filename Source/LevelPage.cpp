@@ -23,12 +23,12 @@
 #include "LevelDebugLayer.h"
 #include <AudioEngine.h>
 
-#include "2d/CCLabel.h"
-#include "2d/CCMenu.h"
-#include "2d/CCTransition.h"
+#include "2d/Label.h"
+#include "2d/Menu.h"
+#include "2d/Transition.h"
 #include "MenuLayer.h"
 #include "GJGameLevel.h"
-#include "base/CCDirector.h"
+#include "base/Director.h"
 #include "GameToolbox/log.h"
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/rand.h"

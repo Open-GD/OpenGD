@@ -1,10 +1,10 @@
 #pragma once
-#include "2d/CCLayer.h"
-#include "2d/CCNode.h"
-#include "2d/CCLayer.h"
-#include "CCDirector.h"
-#include "2d/CCLabel.h"
-#include "2d/CCMenu.h"
+#include "2d/Layer.h"
+#include "2d/Node.h"
+#include "2d/Layer.h"
+#include "Director.h"
+#include "2d/Label.h"
+#include "2d/Menu.h"
 
 #include "PopupLayer.h"
 

@@ -18,10 +18,10 @@
 
 #include "nodes.h"
 
-#include "2d/CCTransition.h"
-#include "2d/CCSprite.h"
-#include "2d/CCLabel.h"
-#include "2d/CCMenu.h"
+#include "2d/Transition.h"
+#include "2d/Sprite.h"
+#include "2d/Label.h"
+#include "2d/Menu.h"
 #include "AltDirector.h"
 
 #include "getTextureString.h"

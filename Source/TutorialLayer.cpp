@@ -18,11 +18,11 @@
 
 #include "TutorialLayer.h"
 #include <MenuItemSpriteExtra.h>
-#include "ccUTF8.h"
+#include "UTF8.h"
 #include <GameToolbox/getTextureString.h>
 #include "ui/UIScale9Sprite.h"
 #include "ButtonSprite.h"
-#include "2d/CCActionEase.h"
+#include "2d/ActionEase.h"
 
 USING_NS_AX;
 

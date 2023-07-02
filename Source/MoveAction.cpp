@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #include "MoveAction.h"
-#include "2d/CCActionInterval.h"
+#include "2d/ActionInterval.h"
 #include "BaseGameLayer.h"
 
 #include "GameToolbox/log.h"

@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #pragma once
-#include "2d/CCDrawNode.h"
+#include "2d/DrawNode.h"
 
 namespace CocosExplorer {
 	void open();

@@ -17,8 +17,8 @@
 *************************************************************************/
 
 #pragma once
-#include "2d/CCDrawNode.h"
-#include "ccTypes.h"
+#include "2d/DrawNode.h"
+#include "Types.h"
 #include "enums.h"
 #include <string>
 #include <string_view>

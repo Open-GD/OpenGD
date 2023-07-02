@@ -25,9 +25,9 @@
 #include "GameManager.h"
 #include "ui/UIScale9Sprite.h"
 #include "ButtonSprite.h"
-#include "2d/CCMenu.h"
-#include "ccUTF8.h"
-#include "base/CCDirector.h"
+#include "2d/Menu.h"
+#include "UTF8.h"
+#include "base/Director.h"
 #include "LoadingCircle.h"
 #include "SimplePlayer.h"
 #include "GameManager.h"
@@ -39,7 +39,7 @@
 #include "GameToolbox/network.h"
 #include "GameToolbox/conv.h"
 #include "GameToolbox/nodes.h"
-#include "2d/CCLabel.h"
+#include "2d/Label.h"
 
 USING_NS_AX;
 

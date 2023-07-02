@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "2d/CCActionInterval.h"
+#include "2d/ActionInterval.h"
 
 struct GroupProperties;
 namespace ax 

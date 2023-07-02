@@ -17,9 +17,9 @@
 *************************************************************************/
 
 #pragma once
-#include "ccTypes.h"
+#include "Types.h"
 #include "enums.h"
-#include "CCVector.h"
+#include "Vector.h"
 
 namespace ax
 {

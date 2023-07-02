@@ -20,9 +20,9 @@
 
 #include <string_view>
 
-#include "2d/CCSprite.h"
+#include "2d/Sprite.h"
 #include "math/Vec2.h"
-#include "ccTypes.h"
+#include "Types.h"
 
 namespace ax 
 { 

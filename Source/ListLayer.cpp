@@ -19,8 +19,8 @@
 #include "ListLayer.h"
 
 
-#include "CCDirector.h"
-#include "2d/CCLabel.h"
+#include "Director.h"
+#include "2d/Label.h"
 #include "GameToolbox/getTextureString.h"
 
 ListLayer* ListLayer::create(ax::Node* scrollLayer, const char* label, ax::Color4B color, ax::Vec2 size){

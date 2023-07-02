@@ -20,7 +20,7 @@
 #include <string_view>
 
 #include "GameObject.h"
-#include "ccTypes.h"
+#include "Types.h"
 #include "math/Vec2.h"
 
 class BaseGameLayer;

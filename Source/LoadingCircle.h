@@ -17,8 +17,8 @@
 *************************************************************************/
 
 #pragma once
-#include "2d/CCLayer.h"
-#include "CCPlatformMacros.h"
+#include "2d/Layer.h"
+#include "PlatformMacros.h"
 
 namespace ax 
 { 

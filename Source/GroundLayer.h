@@ -20,9 +20,9 @@
 
 #include <string_view>
 
-#include "2d/CCLayer.h"
-#include "2d/CCActionTween.h"
-#include "2d/CCAction.h"
+#include "2d/Layer.h"
+#include "2d/ActionTween.h"
+#include "2d/Action.h"
 
 namespace ax 
 { 

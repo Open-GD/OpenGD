@@ -28,7 +28,7 @@
 #include <mutex>
 #include <queue>
 
-#include <2d/CCSprite.h>
+#include <2d/Sprite.h>
 
 USING_NS_AX;
 USING_NS_AX_EXT;

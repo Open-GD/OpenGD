@@ -20,9 +20,9 @@
 #include "GJGameLevel.h"
 #include "MenuItemSpriteExtra.h"
 #include "AudioEngine.h"
-#include "2d/CCActionEase.h"
-#include "CCDirector.h"
-#include "CCEventDispatcher.h"
+#include "2d/ActionEase.h"
+#include "Director.h"
+#include "EventDispatcher.h"
 #include "GameToolbox/log.h"
 
 USING_NS_AX;

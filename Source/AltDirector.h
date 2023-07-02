@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #pragma once
-#include "base/CCDirector.h"
+#include "base/Director.h"
 
 	
 class AltDirector : public ax::Director { 

@@ -26,7 +26,7 @@
 #ifndef _APP_DELEGATE_H_
 #define _APP_DELEGATE_H_
 
-#include "platform/CCApplication.h"
+#include "platform/Application.h"
 
 /**
 @brief	The axmol Application.

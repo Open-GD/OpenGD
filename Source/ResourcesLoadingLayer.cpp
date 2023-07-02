@@ -20,12 +20,12 @@
 #include "ResourcesLoadingLayer.h"
 #include "LoadingLayer.h"
 
-#include <2d/CCScene.h>
-#include <2d/CCLabel.h>
-#include <2d/CCActionInterval.h>
-#include <2d/CCActionInstant.h>
-#include <platform/CCFileUtils.h>
-#include <base/CCDirector.h>
+#include <2d/Scene.h>
+#include <2d/Label.h>
+#include <2d/ActionInterval.h>
+#include <2d/ActionInstant.h>
+#include <platform/FileUtils.h>
+#include <base/Director.h>
 #include "GameToolbox/log.h"
 
 USING_NS_AX;

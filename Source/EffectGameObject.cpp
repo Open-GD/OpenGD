@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #include "EffectGameObject.h"
-#include "2d/CCActionEase.h"
+#include "2d/ActionEase.h"
 #include "BaseGameLayer.h"
 #include "ColorAction.h"
 #include "GameToolbox/conv.h"

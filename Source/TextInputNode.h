@@ -21,8 +21,8 @@
 #include <string>
 #include <string_view>
 
-#include "2d/CCLayer.h"
-#include "ccTypes.h"
+#include "2d/Layer.h"
+#include "Types.h"
 
 enum class KeyCode;
 

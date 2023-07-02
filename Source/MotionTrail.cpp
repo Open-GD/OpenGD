@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #include "MotionTrail.h"
-#include "math/CCVertex.h"
+#include "math/Vertex.h"
 
 USING_NS_AX;
 

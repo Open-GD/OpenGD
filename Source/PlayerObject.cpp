@@ -20,12 +20,12 @@
 #include "AudioEngine.h"
 
 #include "PlayLayer.h"
-#include "2d/CCParticleSystem.h"
-#include "2d/CCParticleSystemQuad.h"
-#include "2d/CCActionInstant.h"
-#include "2d/CCActionEase.h"
+#include "2d/ParticleSystem.h"
+#include "2d/ParticleSystemQuad.h"
+#include "2d/ActionInstant.h"
+#include "2d/ActionEase.h"
 #include "CircleWave.h"
-#include "ccUTF8.h"
+#include "UTF8.h"
 #include "GameToolbox/log.h"
 #include "GameToolbox/math.h"
 

@@ -17,9 +17,9 @@
 *************************************************************************/
 
 #pragma once
-#include "2d/CCLayer.h"
+#include "2d/Layer.h"
 #include "math/Vec2.h"
-#include "CCPlatformMacros.h"
+#include "PlatformMacros.h"
 
 class PlayerObject;
 class GroundLayer;

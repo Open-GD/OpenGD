@@ -19,7 +19,7 @@
 #pragma once
 #include <array>
 
-#include "2d/CCScene.h"
+#include "2d/Scene.h"
 
 #include "GameToolbox/enums.h"
 class SimplePlayer;

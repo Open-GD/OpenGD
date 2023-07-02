@@ -19,7 +19,7 @@
 #include "TextButton.h"
 #include <ui/CocosGUI.h>
 
-#include "2d/CCActionEase.h"
+#include "2d/ActionEase.h"
 #include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;

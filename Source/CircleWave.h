@@ -19,9 +19,9 @@
 #pragma once
 #include <string_view>
 
-#include "2d/CCDrawNode.h"
-#include "2d/CCActionTween.h"
-#include "CCPlatformMacros.h"
+#include "2d/DrawNode.h"
+#include "2d/ActionTween.h"
+#include "PlatformMacros.h"
 
 namespace ax 
 {

@@ -22,9 +22,9 @@
 
 #include <ui/CocosGUI.h>
 #include "ButtonSprite.h"
-#include "2d/CCMenu.h"
-#include "ccUTF8.h"
-#include "base/CCDirector.h"
+#include "2d/Menu.h"
+#include "UTF8.h"
+#include "base/Director.h"
 #include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;

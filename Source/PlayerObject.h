@@ -18,7 +18,7 @@
 
 #pragma once
 #include "GameObject.h"
-#include "ccTypes.h"
+#include "Types.h"
 #include "math/Vec2.h"
 
 class GameObject;

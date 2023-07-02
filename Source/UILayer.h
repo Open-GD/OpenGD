@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "2d/CCLayer.h"
+#include "2d/Layer.h"
 
 namespace ax 
 { 

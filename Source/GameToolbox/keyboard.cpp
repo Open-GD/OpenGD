@@ -22,8 +22,8 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
-#include <CCDirector.h>
-#include <CCEventDispatcher.h>
+#include <Director.h>
+#include <EventDispatcher.h>
 
 USING_NS_AX;
 

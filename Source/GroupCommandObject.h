@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "2d/CCActionEase.h"
-#include "2d/CCActionTween.h"
+#include "2d/ActionEase.h"
+#include "2d/ActionTween.h"
 
 class GroupCommandObject : public ax::Node, public ax::ActionTweenDelegate
 {

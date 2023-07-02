@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "2d/CCActionInterval.h"
-#include "ccTypes.h"
+#include "2d/ActionInterval.h"
+#include "Types.h"
 #include "GDHSV.h"
 
 class SpriteColor;

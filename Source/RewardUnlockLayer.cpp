@@ -22,14 +22,14 @@
 
 #include <ui/CocosGUI.h>
 #include "ButtonSprite.h"
-#include "2d/CCMenu.h"
-#include "ccUTF8.h"
-#include "base/CCDirector.h"
+#include "2d/Menu.h"
+#include "UTF8.h"
+#include "base/Director.h"
 #include "GameManager.h"
 #include "GJUserScore.h"
-#include "2d/CCActionInterval.h"
-#include <2d/CCActionEase.h>
-#include "2d/CCActionInstant.h"
+#include "2d/ActionInterval.h"
+#include <2d/ActionEase.h>
+#include "2d/ActionInstant.h"
 #include "AudioEngine.h"
 #include "external/base64.h"
 #include "network/HttpResponse.h"

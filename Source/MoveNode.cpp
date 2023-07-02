@@ -16,15 +16,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
-#pragma once
+#include "MoveNode.h"
 
-#include "2d/CCNode.h"
-
-class CCMoveNode : public ax::Node
+CCMoveNode* CCMoveNode::create()
 {
-  public:
-	ax::Point _newPosStatic, _newPosOptimized, _oldPos;
-  float _delta1;
-
-	static CCMoveNode* create();
-};
+	CCMoveNode* ret = new CCMoveNode();
+	if (ret->init())
+	{
+		ret->autorelease();
+		return ret;
+	}
+	else
+	{
+		delete ret;
+		ret = nullptr;
+		return nullptr;
+	}
+}

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "ccTypes.h"
+#include "Types.h"
 #include "GDHSV.h"
 
 class SpriteColor
