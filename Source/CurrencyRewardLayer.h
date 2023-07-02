@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "2d/CCLayer.h"
+#include "2d/Layer.h"
 
 
 class CurrencyRewardLayer : public ax::Layer {

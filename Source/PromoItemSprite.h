@@ -19,7 +19,7 @@
 #pragma once
 #include <functional>
 
-#include "2d/CCMenuItem.h"
+#include "2d/MenuItem.h"
 
 namespace ax 
 { 

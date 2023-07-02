@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "2d/CCNode.h"
+#include "2d/Node.h"
 
 
 class SongObject : ax::Node

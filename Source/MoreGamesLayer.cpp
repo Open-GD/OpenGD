@@ -18,10 +18,10 @@
 
 #include "MoreGamesLayer.h"
 #include "DropDownLayer.h"
-#include "2d/CCMenu.h"
-#include "2d/CCLabel.h"
-#include "base/CCDirector.h"
-#include "CCApplication.h"
+#include "2d/Menu.h"
+#include "2d/Label.h"
+#include "base/Director.h"
+#include "Application.h"
 
 #include "GameToolbox/getTextureString.h"
 

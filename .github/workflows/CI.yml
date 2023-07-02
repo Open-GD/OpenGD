@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ "axmol-latest" ]
+  pull_request:
+    branches: [ "axmol-latest" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  win32:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: windows-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build sources-migrate
+      shell: pwsh
+      run: |
+        git clone --depth=1 https://github.com/axmolengine/axmol $HOME/axmol
+        . $HOME/axmol/build.ps1 -d "$HOME/axmol" -xb '--config','Release','--target','sources-migrate'
+    - name: Migrate sources
+      run: |
+        git checkout main
+        . $HOME/axmol/build_x64/bin/Release/sources-migrate.exe "$(pwd)" --fuzzy
+        cp $HOME/axmol/build.ps1 ./build.ps1
+        git add ./build.ps1 -f
+      # Build your program with the given configuration
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        # Optional. Commit message for the created commit.
+        # Defaults to "Apply automatic changes"
+        commit_message: Migrate to compile with axmol latest
+
+        # Optional. Local and remote branch name where commit is going to be pushed
+        #  to. Defaults to the current branch.
+        #  You might need to set `create_branch: true` if the branch does not exist.
+        branch: migrate-to-axmol-latest
+        create_branch: true
+        push_options: '--force'
+
+

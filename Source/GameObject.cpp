@@ -17,14 +17,14 @@
 *************************************************************************/
 
 #include "GameObject.h"
-#include "2d/CCParticleSystemQuad.h"
+#include "2d/ParticleSystemQuad.h"
 #include "BaseGameLayer.h"
 #include "EffectGameObject.h"
 #include "GameToolbox/conv.h"
 #include "GameToolbox/log.h"
 #include "PlayLayer.h"
 #include "PlayerObject.h"
-#include "platform/CCFileUtils.h"
+#include "platform/FileUtils.h"
 #include <fmt/format.h>
 #include <fstream>
 

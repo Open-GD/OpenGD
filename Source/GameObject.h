@@ -23,8 +23,8 @@
 #include <unordered_map>
 #include <map>
 
-#include "2d/CCSprite.h"
-#include "2d/CCActionTween.h"
+#include "2d/Sprite.h"
+#include "2d/ActionTween.h"
 #include "math/Rect.h"
 #include "math/Vec2.h"
 #include "SpriteColor.h"

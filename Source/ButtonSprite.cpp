@@ -18,10 +18,10 @@
 
 #include "ButtonSprite.h"
 #include "MenuItemSpriteExtra.h"
-#include "2d/CCLabel.h"
+#include "2d/Label.h"
 #include "ui/UIScale9Sprite.h"
-#include "CCDirector.h"
-#include "renderer/CCTextureCache.h"
+#include "Director.h"
+#include "renderer/TextureCache.h"
 #include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;

@@ -16,9 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
-#include <core/platform/CCPlatformConfig.h>
+#include <core/platform/PlatformConfig.h>
 #include "LevelDebugLayer.h"
-#include "2d/CCTransition.h"
+#include "2d/Transition.h"
 #include "CocosExplorer.h"
 #include "EffectGameObject.h"
 #include "GJGameLevel.h"
@@ -39,7 +39,7 @@
 #endif
 #include "format.h"
 #include <AudioEngine.h>
-#include <ccMacros.h>
+#include <Macros.h>
 
 USING_NS_AX;
 USING_NS_AX_EXT;

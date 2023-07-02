@@ -20,7 +20,7 @@
 
 #include <string_view>
 
-#include "2d/CCLayer.h"
+#include "2d/Layer.h"
 
 class DropDownLayer;
 class PlayLayer;

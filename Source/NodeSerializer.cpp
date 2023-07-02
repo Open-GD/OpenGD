@@ -21,9 +21,9 @@
 #include <vector>
 #include "external/json.hpp"
 
-#include <2d/CCNode.h>
-#include <2d/CCSprite.h>
-#include <platform/CCFileUtils.h>
+#include <2d/Node.h>
+#include <2d/Sprite.h>
+#include <platform/FileUtils.h>
 
 using ordered_json = nlohmann::ordered_json;
 

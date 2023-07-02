@@ -21,7 +21,7 @@
 #include <string_view>
 #include <functional>
 
-#include "2d/CCMenuItem.h"
+#include "2d/MenuItem.h"
 #include "math/Vec2.h"
 
 namespace ax 

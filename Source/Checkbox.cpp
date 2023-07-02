@@ -24,7 +24,7 @@
 #include "Checkbox.h"
 
 
-#include <2d/CCSprite.h>
+#include <2d/Sprite.h>
 #include "GameToolbox/getTextureString.h"
 
 USING_NS_AX;

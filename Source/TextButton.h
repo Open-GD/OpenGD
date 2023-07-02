@@ -21,8 +21,8 @@
 #include <string_view>
 #include <functional>
 
-#include "2d/CCMenuItem.h"
-#include "CCPlatformMacros.h"
+#include "2d/MenuItem.h"
+#include "PlatformMacros.h"
 
 namespace ax 
 { 

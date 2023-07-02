@@ -17,12 +17,12 @@
 *************************************************************************/
 
 #include "CurrencyRewardLayer.h"
-#include "2d/CCLabel.h"
+#include "2d/Label.h"
 #include "format.h"
-#include "2d/CCActionInterval.h"
-#include <2d/CCActionEase.h>
-#include "2d/CCActionInstant.h"
-#include "base/CCDirector.h"
+#include "2d/ActionInterval.h"
+#include <2d/ActionEase.h>
+#include "2d/ActionInstant.h"
+#include "base/Director.h"
 
 USING_NS_AX;
 

@@ -19,8 +19,8 @@
 #include "GameToolbox/enums.h"
 #include "SimplePlayer.h"
 
-#include "ccUTF8.h"
-#include "base/CCDirector.h"
+#include "UTF8.h"
+#include "base/Director.h"
 
 #include "GameToolbox/math.h"
 #include "GameToolbox/conv.h"

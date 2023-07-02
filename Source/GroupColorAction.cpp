@@ -1,5 +1,5 @@
 #include "GroupColorAction.h"
-#include "2d/CCActionTween.h"
+#include "2d/ActionTween.h"
 
 GroupColorAction* GroupColorAction::create(float duration, GroupProperties* target, ax::Color3B from, ax::Color3B to, bool resetGroupState)
 {

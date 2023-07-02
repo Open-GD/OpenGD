@@ -28,18 +28,18 @@
 #include "MenuLayer.h"
 #include "PlayLayer.h"
 #include <network/HttpClient.h>
-#include "2d/CCMenu.h"
-#include "2d/CCTransition.h"
-#include "CCEventListenerKeyboard.h"
-#include "base/CCDirector.h"
-#include "CCEventDispatcher.h"
+#include "2d/Menu.h"
+#include "2d/Transition.h"
+#include "EventListenerKeyboard.h"
+#include "base/Director.h"
+#include "EventDispatcher.h"
 #include "GJSearchObject.h"
 #include "SecretLayer2.h"
 
 #include "GameToolbox/log.h"
 #include "GameToolbox/nodes.h"
 #include "GameToolbox/conv.h"
-#include "platform/CCFileUtils.h"
+#include "platform/FileUtils.h"
 #include <filesystem>
 
 

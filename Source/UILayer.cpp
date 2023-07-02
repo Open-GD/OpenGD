@@ -19,9 +19,9 @@
 #include "UILayer.h"
 #include "PlayLayer.h"
 
-#include "CCEventListenerTouch.h"
-#include "CCEventDispatcher.h"
-#include "base/CCDirector.h"
+#include "EventListenerTouch.h"
+#include "EventDispatcher.h"
+#include "base/Director.h"
 
 UILayer* UILayer::create()
 {

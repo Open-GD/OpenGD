@@ -18,7 +18,7 @@
 
 #include "GroundLayer.h"
 #include "PlayLayer.h"
-#include "base/CCDirector.h"
+#include "base/Director.h"
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/conv.h"
 #include "fmt/format.h"

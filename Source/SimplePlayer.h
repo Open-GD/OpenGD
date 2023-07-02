@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "2d/CCSprite.h"
-#include "ccTypes.h"
+#include "2d/Sprite.h"
+#include "Types.h"
 
 #include "GameToolbox/enums.h"
 

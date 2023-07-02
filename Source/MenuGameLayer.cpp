@@ -19,11 +19,11 @@
 #include "MenuGameLayer.h"
 
 #include "GroundLayer.h"
-#include "2d/CCMenu.h"
+#include "2d/Menu.h"
 #include "PlayerObject.h"
-#include "base/CCDirector.h"
-#include "CCEventListenerTouch.h"
-#include "CCEventDispatcher.h"
+#include "base/Director.h"
+#include "EventListenerTouch.h"
+#include "EventDispatcher.h"
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/rand.h"
 

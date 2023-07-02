@@ -17,8 +17,8 @@
 *************************************************************************/
 
 #pragma once
-#include "2d/CCLayer.h"
-#include "ccTypes.h"
+#include "2d/Layer.h"
+#include "Types.h"
 #include "math/Vec2.h"
 
 namespace ax 

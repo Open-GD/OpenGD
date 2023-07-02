@@ -18,18 +18,18 @@
 
 #include "PopupLayer.h"
 
-#include <2d/CCActionEase.h>
-#include <2d/CCActionInterval.h>
-#include <base/CCDirector.h>
-#include <base/CCEventDispatcher.h>
-#include <base/CCEventListenerTouch.h>
+#include <2d/ActionEase.h>
+#include <2d/ActionInterval.h>
+#include <base/Director.h>
+#include <base/EventDispatcher.h>
+#include <base/EventListenerTouch.h>
 #include "GameToolbox/nodes.h"
 #include "GameToolbox/log.h"
 #include "GameToolbox/keyboard.h"
-#include "CCEventListenerKeyboard.h"
-#include "2d/CCActionInterval.h"
-#include "2d/CCActionInstant.h"
-#include "CCEventKeyboard.h"
+#include "EventListenerKeyboard.h"
+#include "2d/ActionInterval.h"
+#include "2d/ActionInstant.h"
+#include "EventKeyboard.h"
 
 USING_NS_AX;
 

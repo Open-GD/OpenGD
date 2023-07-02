@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #pragma once
-#include "ccTypes.h"
+#include "Types.h"
 
 namespace GameToolbox
 {

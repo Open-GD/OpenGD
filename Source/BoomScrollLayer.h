@@ -21,8 +21,8 @@
 #include <string>
 #include <vector>
 
-#include "2d/CCLayer.h"
-#include "2d/CCActionTween.h"
+#include "2d/Layer.h"
+#include "2d/ActionTween.h"
 
 class BoomScrollLayer : public ax::Layer, public ax::ActionTweenDelegate {
 private:

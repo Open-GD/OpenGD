@@ -27,7 +27,7 @@
 #include "LevelSelectLayer.h"
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
-#include "ccRandom.h"
+#include "Random.h"
 
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"

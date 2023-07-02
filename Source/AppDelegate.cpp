@@ -30,19 +30,19 @@
 #include "external/constants.h"
 #include "GameToolbox/log.h"
 
-#include "platform/CCApplication.h"
-#include "platform/CCGLView.h"
-#include "base/CCDirector.h"
-#include "base/CCEventDispatcher.h"
+#include "platform/Application.h"
+#include "platform/GLView.h"
+#include "base/Director.h"
+#include "base/EventDispatcher.h"
 
 #ifdef AX_PLATFORM_PC
-	#include "platform/desktop/CCGLViewImpl-desktop.h"
+	#include "platform/desktop/GLViewImpl-desktop.h"
 #elif (AX_TARGET_PLATFORM == AX_PLATFORM_ANDROID)
-	#include "platform/android/CCGLViewImpl-android.h"
+	#include "platform/android/GLViewImpl-android.h"
 #elif (AX_TARGET_PLATFORM == AX_PLATFORM_IOS)
-	#include "platform/ios/CCGLViewImpl-ios.h"
+	#include "platform/ios/GLViewImpl-ios.h"
 #elif (AX_TARGET_PLATFORM == AX_PLATFORM_WINRT)
-	#include "platform/winrt/CCGLViewImpl-winrt.h"
+	#include "platform/winrt/GLViewImpl-winrt.h"
 #endif
 
 #define USE_AUDIO_ENGINE 1

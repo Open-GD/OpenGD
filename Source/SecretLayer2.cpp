@@ -17,17 +17,17 @@
 *************************************************************************/
 
 #include "SecretLayer2.h"
-#include "2d/CCMenu.h"
-#include "2d/CCTransition.h"
+#include "2d/Menu.h"
+#include "2d/Transition.h"
 #include <AudioEngine.h>
 
-#include "CCDirector.h"
-#include "CCEventListenerKeyboard.h"
-#include "CCEventDispatcher.h"
-#include "2d/CCMenu.h"
+#include "Director.h"
+#include "EventListenerKeyboard.h"
+#include "EventDispatcher.h"
+#include "2d/Menu.h"
 #include "MenuItemSpriteExtra.h"
-#include "2d/CCTransition.h"
-#include "2d/CCLabel.h"
+#include "2d/Transition.h"
+#include "2d/Label.h"
 #include "CreatorLayer.h"
 
 USING_NS_AX;

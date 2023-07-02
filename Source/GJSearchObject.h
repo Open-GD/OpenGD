@@ -20,7 +20,7 @@
 #include <string>
 #include <string_view>
 
-#include "2d/CCNode.h"
+#include "2d/Node.h"
 
 enum SearchType {
 	kGJSearchTypeLiked = 2,

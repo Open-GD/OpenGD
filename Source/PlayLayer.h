@@ -21,12 +21,12 @@
 #include <string_view>
 #include <vector>
 
-#include "2d/CCLayer.h"
-#include "CCEventKeyboard.h"
+#include "2d/Layer.h"
+#include "EventKeyboard.h"
 #include "BaseGameLayer.h"
 #include "SpriteColor.h"
-#include "CCPlatformMacros.h"
-#include "ccTypes.h"
+#include "PlatformMacros.h"
+#include "Types.h"
 #include "GameToolbox/conv.h"
 
 enum PlayerGamemode;

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "2d/CCMotionStreak.h"
+#include "2d/MotionStreak.h"
 
 namespace ax 
 { 

@@ -19,8 +19,8 @@
 #pragma once
 
 #include "GroupCommandObject.h"
-#include "CCMoveNode.h"
-#include "2d/CCNode.h"
+#include "MoveNode.h"
+#include "2d/Node.h"
 #include <deque>
 #include "GameToolbox/conv.h"
 

@@ -22,7 +22,7 @@
 #include "ResourcesLoadingLayer.h"
 #include "AppDelegate.h"
 #include "GameToolbox/log.h"
-#include <platform/CCFileUtils.h>
+#include <platform/FileUtils.h>
 
 
 struct SaveObject

@@ -17,11 +17,11 @@
 *************************************************************************/
 
 #include "CircleWave.h"
-#include "platform/CCGL.h"
-#include "CCDirector.h"
-#include "2d/CCActionInstant.h"
-#include "2d/CCActionManager.h"
-#include "2d/CCActionEase.h"
+#include "platform/GL.h"
+#include "Director.h"
+#include "2d/ActionInstant.h"
+#include "2d/ActionManager.h"
+#include "2d/ActionEase.h"
 
 USING_NS_AX;
 

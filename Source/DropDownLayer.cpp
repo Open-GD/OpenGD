@@ -17,15 +17,15 @@
 *************************************************************************/
 
 #include "DropDownLayer.h"
-#include "CCDirector.h"
-#include "2d/CCMenu.h"
+#include "Director.h"
+#include "2d/Menu.h"
 #include "MenuItemSpriteExtra.h"
 #include "ListLayer.h"
-#include "CCEventListenerTouch.h"
-#include "CCEventDispatcher.h"
-#include "2d/CCActionInterval.h"
-#include "2d/CCActionEase.h"
-#include "2d/CCActionInstant.h"
+#include "EventListenerTouch.h"
+#include "EventDispatcher.h"
+#include "2d/ActionInterval.h"
+#include "2d/ActionEase.h"
+#include "2d/ActionInstant.h"
 #include "GameToolbox/keyboard.h"
 
 USING_NS_AX;

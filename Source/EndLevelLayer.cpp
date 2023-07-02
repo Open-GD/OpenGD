@@ -22,9 +22,9 @@
 #include "MenuItemSpriteExtra.h"
 #include "UILayer.h"
 
-#include "2d/CCLabel.h"
-#include "2d/CCMenu.h"
-#include "base/CCDirector.h"
+#include "2d/Label.h"
+#include "2d/Menu.h"
+#include "base/Director.h"
 #include "AudioEngine.h"
 
 #include <fmt/chrono.h>

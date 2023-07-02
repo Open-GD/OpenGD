@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #include "EndPortalObject.h"
-#include "base/CCDirector.h"
+#include "base/Director.h"
 
 USING_NS_AX;
 

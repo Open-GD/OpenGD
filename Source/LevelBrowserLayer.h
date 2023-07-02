@@ -20,7 +20,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "2d/CCLayer.h"
+#include "2d/Layer.h"
 #include "GameToolbox/conv.h"
 
 class GJSearchObject;

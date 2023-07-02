@@ -17,8 +17,8 @@
 *************************************************************************/
 
 #pragma once
-#include "2d/CCScene.h"
-#include "CCEventKeyboard.h"
+#include "2d/Scene.h"
+#include "EventKeyboard.h"
 
 namespace ax 
 { 

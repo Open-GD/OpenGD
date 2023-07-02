@@ -20,10 +20,10 @@
 #include "ButtonSprite.h"
 #include "MenuItemSpriteExtra.h"
 
-#include "2d/CCMenu.h"
-#include "2d/CCLabel.h"
+#include "2d/Menu.h"
+#include "2d/Label.h"
 #include "ui/UIScale9Sprite.h"
-#include "base/CCDirector.h"
+#include "base/Director.h"
 
 #include <string>
 #include "GameToolbox/getTextureString.h"
