@@ -45,5 +45,6 @@ jobs:
         #  You might need to set `create_branch: true` if the branch does not exist.
         branch: migrate-to-axmol-latest
         create_branch: true
+        push_options: '--force'
 
 
