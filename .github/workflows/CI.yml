@@ -26,10 +26,22 @@ jobs:
         git clone --depth=1 https://github.com/axmolengine/axmol $HOME/axmol
         . $HOME/axmol/build.ps1 -d "$HOME/axmol" -xb '--config','Release','--target','sources-migrate'
     - name: Migrate sources
-      run: . $HOME/axmol/build_x64/bin/Release/sources-migrate.exe "$(pwd)" --fuzzy
-    - name: Build
+      run: |
+        git checkout main
+        . $HOME/axmol/build_x64/bin/Release/sources-migrate.exe "$(pwd)" --fuzzy
+        cp $HOME/axmol/build.ps1 ./build.ps1
+        git add ./build.ps1 -f
       # Build your program with the given configuration
-      shell: pwsh
-      run: . $HOME/axmol/build.ps1
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        # Optional. Commit message for the created commit.
+        # Defaults to "Apply automatic changes"
+        commit_message: Automated Change
+
+        # Optional. Local and remote branch name where commit is going to be pushed
+        #  to. Defaults to the current branch.
+        #  You might need to set `create_branch: true` if the branch does not exist.
+        branch: migrate-to-axmol-latest
+        create_branch: true
 
 
