@@ -20,15 +20,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Configure
+    - name: Build sources-migrate
       shell: pwsh
       run: |
         git clone --depth=1 https://github.com/axmolengine/axmol $HOME/axmol
-        . $HOME/axmol/build.ps1 -xb '--config','Release','--target','sources-migrate'
-
+        . $HOME/axmol/build.ps1 -d $HOME/axmol -xb '--config','Release','--target','sources-migrate'
+    - name: Migrate sources
+      run: . $HOME/axmol/build_x64/bin/Release/sources-migrate.exe "$(pwd)" --fuzzy
     - name: Build
       # Build your program with the given configuration
       shell: pwsh
-      run: echo ok
+      run: . $HOME/axmol/build.ps1
 
 
