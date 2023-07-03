@@ -6,8 +6,10 @@
 ![issues](https://img.shields.io/github/issues/Open-GD/OpenGD?style=for-the-badge&color=blue)
 ![forks](https://img.shields.io/github/forks/Open-GD/OpenGD?style=for-the-badge)
 ![stars](https://img.shields.io/github/stars/Open-GD/OpenGD?style=for-the-badge&color=blue)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Open-GD/OpenGD?style=for-the-badge&color=blue)
 ![LICENSE](https://img.shields.io/github/license/Open-GD/OpenGD?style=for-the-badge&color=blue)
+<a href="https://discord.gg/">
+<img src="https://dcbadge.vercel.app/api/server/gcbuuR4JWg">
+</a>
 </div>
 
 <!-- PROJECT LOGO -->
@@ -43,53 +45,72 @@
 
 OpenGD is an open-source implementation of the popular game Geometry Dash. Our main goal is to remake the gameplay 1:1, while also improving performance through new engine features and C++ enhancements. We also plan to implement multithreading in the future.
 
+## Status 
+
+We are currently rewriting the gameplay from the ground up, **levels are not playable at the moment**.
+
 ### Built With
 
 OpenGD is powered by [axmol](https://github.com/axmolengine/axmol), which is maintained a fork of cocos2dx 4.0 that adds many new features and improvements over the original cocos2dx. The original Geometry Dash is also made with cocos2dx, but with a much older version from 2014.
 
-## Build
+## Build instructions
+
+Required:
+- Python 3.7+
+- CMake
+- One of the major c++ compilers (MSVC, clang, gcc)
 
 
-Before building OpenGD, you need to install Python 3.7+ and axmol. To install axmol, clone the **release branch** and run `setup.py`. After it has finished, restart the console for environment variables to take effect.
+> **Warning**
+> OpenGD only builds with latest release branch of axmol, which is [6896f01](https://github.com/axmolengine/axmol/commit/6896f01d3e86a189c8e72ac420c8fdda739531fd) at the moment
+
+
+<details>
+
+  <summary>Windows</summary>
+
+Clone axmol, run setup.py and restart cmd for command line variables to update
 ```
 git clone --branch release https://github.com/axmolengine/axmol
 cd axmol
 python setup.py
 ```
 
-After installing axmol, you can build OpenGD as a CMake project.
+For windows, it is recommended to build axmol separately and link it dynamically to reduce rebuilds, compile time and link time.
+
+In the axmol folder, after running setup.py:
+```
+cmake -B build_x64 -A x64 -DAX_BUILD_TESTS=OFF
+cmake --build build_x64 --config RelWithDebInfo
+```
+
+After axmol finished building you can run 
 ```
 git clone https://github.com/Open-GD/OpenGD
 cd OpenGD
-cmake -B build
+cmake -B build -A x64 -DAX_PREBUILT_DIR=build_x64
 cmake --build build --config RelWithDebInfo
 ```
 
 > **Warning**
 > VS 2019 might not work on Windows, VS 2022 is recommended
 
-To actually run the executable you will need the resources from the 2.1 version of Geometry Dash, but game would still try to access them if it possible.
+</details>
 
-For more details check out the [axmol](https://github.com/axmolengine/axmol) README.
+<details>
 
-## Linux Specific Notify
+<summary>Other platforms</summary>
+  
+Check axmol [Dev setup](https://github.com/axmolengine/axmol/blob/dev/docs/DevSetup.md)
 
-**Also one thing that should be mentioned here.** After pull request for header optimization (removed all unused stuff from the code) being merged to `main` branch, **Linux support was entirely broken.** For anyone, who want to build OpenGD under this platform, please use `no-header-optimization` branch, where all related to HDO changes were reverted.
-<br>
+</details>
 
-**UPD:** you don't need `no-header-optimization` branch anymore! This issue was fixed and now OpenGD compiles on Linux properly.
-
+To actually run the game you will need the resources from the 2.1 version of Geometry Dash.
 
 <!-- LICENSE -->
 ## License
 
 Distributed under the GPL v3 License . See `LICENSE` for more information.
-
-<!-- CONTACT -->
-## Contact
-
-[Discord Server](https://discord.gg/gcbuuR4JWg)
-
 
 <!-- ACKNOWLEDGMENTS -->
 ## Credits
