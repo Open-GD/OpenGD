@@ -35,10 +35,11 @@ private:
 	int _jumps;
 	int _attempts;
 	int _time;
+    int _stars;
 	bool _everyplay_included;
 public:
-
 	static EndLevelLayer* create(PlayLayer *pl);
+    static EndLevelLayer* create(int attempts, int jumps, int time, bool everyplayIncluded, int stars);
 	static std::string_view getRandomEndingString();
 
 	bool init(PlayLayer *pl);

@@ -177,6 +177,8 @@ bool MenuLayer::init()
 
 
 	auto achievementsBtn = MenuItemSpriteExtra::create("GJ_achBtn_001.png", [&](Node* btn) {
+		auto endlevel = EndLevelLayer::create(2, 51, 10, false, 10);
+		addChild(endlevel);
 		//AlertLayer::create("coming soon", "this feature has not been added yet!")->show();
 		//auto dropdownlayer = DropDownLayer::create(nullptr, "Achievements");
 		//dropdownlayer->showLayer();

@@ -112,9 +112,9 @@ void DropDownLayer::showLayer(bool attachToScene, bool bounce)
 		scene->addChild(this, 100);
 	}
 	
-	GameToolbox::onKeyDown(true, this, [this](ax::EventKeyboard::KeyCode, ax::Event*)
+	GameToolbox::onKeyDown(true, this, [this](ax::EventKeyboard::KeyCode keyCode, ax::Event*)
 	{
-		hideLayer();
+		if (keyCode == ax::EventKeyboard::KeyCode::KEY_ESCAPE) hideLayer();
 	});
 }
 
