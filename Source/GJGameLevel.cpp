@@ -125,7 +125,11 @@ std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 	unsigned char* a = nullptr;
 	ssize_t deflatedLen = ax::ZipUtils::inflateMemory(data, decoded.length(), &a);
 
-	return std::string(reinterpret_cast<char*>(a));
+	std::string levelString = (char *)a;
+
+	free(a);
+
+	return levelString;
 }
 
 std::string GJGameLevel::getDifficultySprite(GJGameLevel* level, DifficultyType type)
