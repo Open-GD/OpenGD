@@ -255,8 +255,12 @@ void drawProperties()
 			groupText += fmt::format("{} ", i);
 			opacityMultiplier *= BaseGameLayer::getInstance()->_groups[i]._alpha;
 		}
-		ImGui::Text(fmt::format("Groups: {}", groupText).c_str());
-		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
+
+		std::string groups_string = fmt::format("Groups: {}", groupText);
+		std::string opacitymul_string = fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier);
+
+		ImGui::Text("%s", groups_string.c_str());
+		ImGui::Text("%s", opacitymul_string.c_str());
 
 		float hsv1[3], hsv2[3];
 		bool check1, check2, check3, check4;

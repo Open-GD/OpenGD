@@ -54,10 +54,12 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 
 	ax::AudioEngine::stopAll();
 
-	// auto bg = ax::Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
-	// bg->setStretchEnabled(false);
-	// bg->setPosition(winSize.x / 2, winSize.y / 2);
-	// addChild(bg, -100);
+	auto winSize = ax::Director::getInstance()->getWinSize();
+
+	auto bg = ax::Sprite::create(GameToolbox::getTextureString("game_bg_01_001.png"));
+	bg->setStretchEnabled(false);
+	bg->setPosition(winSize.x / 2, winSize.y / 2);
+	addChild(bg, -100);
 
 	// DrawGridLayer::create();
 	// LevelTools::getInstance()->getAudioString();

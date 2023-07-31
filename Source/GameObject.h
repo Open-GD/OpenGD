@@ -78,7 +78,7 @@ enum GameObjectType
 	kGameObjectTypeDashRing = 37,
 	kGameObjectTypeGravityDashRing = 38,
 	kGameObjectTypeCollisionObject = 39,
-	kGameObjectTypeSpecial = 40,
+	kGameObjectTypeSpecial = 40
 };
 
 struct Hitbox
@@ -108,7 +108,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 
   public:
 	std::vector<ax::Sprite*> _childSprites;
-	std::vector<int8_t> _childSpritesChannel;
+	std::vector<int16_t> _childSpritesChannel;
 	std::vector<ax::Vec2> _childSpritesScaling;
 	std::string _texturePath;
 
@@ -235,7 +235,7 @@ class GameObject : public ax::Sprite, public ax::ActionTweenDelegate
 	bool isActive() { return m_bActive; }
 
 	void triggerActivated(PlayerObject* player);
-	bool hasBeenActiavedByPlayer(PlayerObject* player);
+	bool hasBeenActivatedByPlayer(PlayerObject* player);
 
 	void update();
 

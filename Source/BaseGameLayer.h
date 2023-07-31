@@ -99,29 +99,33 @@ protected:
 
 public:
 
-	GJGameLevel* _level;
-	std::vector<GameObject*> _allObjects;
+    std::vector<GameObject*> _allObjects;
 	std::vector<std::vector<GameObject*>> _sectionObjects;
 	std::unordered_map<int, SpriteColor, my_string_hash> _colorChannels, _originalColors;
 	std::unordered_map<int, GroupProperties, my_string_hash> _groups;
 
-	PlayerObject* _player1, _player2;
+	PlayerObject* _player1, *_player2;
 
 protected:
-	void loadLevel();
-	void initBatchNodes();
-	void createObjectsFromSetup(std::string_view uncompressedLevelString);
-	void setupLevel(std::string_view uncompressedLevelString);
-	void addObject(GameObject* obj);
-	void loadLevelData(std::string_view data);
-	void fillColorChannel(std::span<std::string_view> colorString, int id);
-	void processMoveActionsStep(float dt);
-	void processMoveActions(float dt);
-	ax::Color3B getLightBG(ax::Color3B bg, ax::Color3B p1);
+    virtual void loadLevel();
+    virtual void initBatchNodes();
+    virtual void createObjectsFromSetup(std::string_view uncompressedLevelString);
+	virtual void setupLevel(std::string_view uncompressedLevelString);
+    virtual void addObject(GameObject* obj);
+    virtual void loadLevelData(std::string_view data);
+	virtual void fillColorChannel(std::span<std::string_view> colorString, int id);
 public:
-	static BaseGameLayer* create(GJGameLevel*);
-	bool init(GJGameLevel*);
+    AX_SYNTHESIZE(GJGameLevel*, _level, Level);
+
+    static BaseGameLayer* create(GJGameLevel*);
+    virtual bool init(GJGameLevel*);
 	static int sectionForPos(float x);
 	static BaseGameLayer* getInstance() {return _instance;}
+	virtual bool isObjectBlending(GameObject* obj);
+
+	void processMoveActions(float dt);
 	void runMoveCommand(float duration, ax::Point offsetPos, int easeType, float easeAmt, int groupID);
+	void processMoveActionsStep(float dt);
+
+	ax::Color3B getLightBG(ax::Color3B bg, ax::Color3B p1);
 };
