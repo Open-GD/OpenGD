@@ -49,14 +49,16 @@ namespace ax
 
 class PlayLayer : public BaseGameLayer
 {
-  private:
+protected:
 	bool init(GJGameLevel* level) override;
 	void onEnter() override;
 	void onExit() override;
 	void onDrawImGui();
-	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
-	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	virtual void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	virtual void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void createLevelEnd();
+
+	ax::Node* cameraFollow;
 
 	ax::Sprite* m_pBG;
 	GroundLayer *_bottomGround, *_ceiling;
@@ -106,20 +108,20 @@ public:
 
 	bool _isDualMode;
 
-	void destroyPlayer(PlayerObject* player);
+	virtual void destroyPlayer(PlayerObject* player);
 
 	void loadLevel(std::string_view levelStr);
 
 	void spawnCircle();
 	void showEndLayer();
-	void showCompleteText();
+	virtual void showCompleteText();
 
 	void update(float delta) override;
-	void updateCamera(float dt);
+	virtual void updateCamera(float dt);
 	void updateVisibility();
 	void moveCameraToPos(ax::Vec2);
 	void changeGameMode(GameObject* obj, PlayerObject* player, PlayerGamemode gameMode);
-	void resetLevel();
+	virtual void resetLevel();
 	void exit();
 
 	void tweenBottomGround(float y);

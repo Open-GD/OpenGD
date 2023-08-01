@@ -91,6 +91,7 @@ void GroundLayer::update(float dt)
 	this->_sprite->setPositionX(this->_sprite->getPositionX() - dt * this->m_fSpeed);
 
 	if (this->_sprite->getPositionX() <= -128.0f) this->_sprite->setPositionX(0);
+	if (this->_sprite->getPositionX() >= 64.0f) this->_sprite->setPositionX(-64);
 }
 
 GroundLayer* GroundLayer::create(int groundID)

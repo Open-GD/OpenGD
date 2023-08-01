@@ -96,7 +96,7 @@ void EffectGameObject::triggerActivated(float)
 
 	auto pl = PlayLayer::getInstance();
 
-	this->_wasTriggerActivated = true;
+	// this->_wasTriggerActivated = true;
 
 	auto id = getID();
 

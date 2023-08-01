@@ -70,10 +70,12 @@ void highlight(ax::Node* node, bool selected)
 	{
 		auto camera = Camera::getDefaultCamera();
 
-		const ax::Mat4& viewMatrix = camera->getViewMatrix();
-		const ax::Point offset(viewMatrix.m[3], viewMatrix.m[7]);
-		bb_min -= offset;
-		bb_max -= offset;
+		if (camera) {
+			const ax::Mat4& viewMatrix = camera->getViewMatrix();
+			const ax::Point offset(viewMatrix.m[3], viewMatrix.m[7]);
+			bb_min -= offset;
+			bb_max -= offset;
+		}
 
 		camera_parent = camera_parent->getParent();
 	}

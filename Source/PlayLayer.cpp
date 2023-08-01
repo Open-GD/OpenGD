@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU General Public License    
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*************************************************************************/
+*************************f************************************************/
 
 #include "PlayLayer.h"
 #include "AudioEngine.h"
@@ -64,8 +64,6 @@ bool fullscreen = false;
 int monitorN = 0;
 
 static PlayLayer* Instance = nullptr;
-
-ax::Node* cameraFollow;
 
 Scene* PlayLayer::scene(GJGameLevel* level)
 {
@@ -560,14 +558,18 @@ bool PlayLayer::init(GJGameLevel* level)
 	if (levelStr.empty())
 	{
 		nlohmann::json file = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
-		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)].get<std::string>());
+		if (file.contains(std::to_string(level->_levelID))) {
+			levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)].get<std::string>());
+		}
 	}
 
 	// scope based timer
 	{
 		auto s = BenchmarkTimer("load level");
-		levelStr = GJGameLevel::decompressLvlStr(levelStr);
-		loadLevel(levelStr);
+		if (!levelStr.empty()) {
+			levelStr = GJGameLevel::decompressLvlStr(levelStr);
+			loadLevel(levelStr);
+		}
 	}
 
 	this->_bottomGround = GroundLayer::create(_groundID);
@@ -728,8 +730,8 @@ void PlayLayer::update(float dt)
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	this->_colorChannels.at(1005)._color = this->_player1->getMainColor();
-	this->_colorChannels.at(1006)._color = this->_player1->getSecondaryColor();
+	if (this->_colorChannels.contains(1005)) this->_colorChannels.at(1005)._color = this->_player1->getMainColor();
+	if (this->_colorChannels.contains(1006)) this->_colorChannels.at(1006)._color = this->_player1->getSecondaryColor();
 
 	_colorChannels[1007]._color = getLightBG();
 
@@ -1706,6 +1708,10 @@ void PlayLayer::resetLevel()
 
 	if (this->_colorChannels.contains(1000))
 		this->m_pBG->setColor(this->_colorChannels.at(1000)._color);
+	else {
+		this->m_pBG->setColor(ax::Color3B::GRAY);
+		this->_colorChannels[1000]._color = ax::Color3B::GRAY;
+	}
 	this->_bottomGround->update(0);
 	this->_ceiling->update(0);
 

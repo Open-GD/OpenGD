@@ -18,19 +18,39 @@
 
 #pragma once
 
-#include "2d/Layer.h"
+#include "PlayLayer.h"
+#include "2d/Menu.h"
 
-class GJGameLevel;
-
-
-class LevelEditorLayer : public ax::Layer {
+class LevelEditorLayer : public PlayLayer {
 private:
 	bool init(GJGameLevel* level);
-	void exit();
 
-	AX_SYNTHESIZE(GJGameLevel*, _level, Level);
+    ax::Vec2 m_camDelta;
+
+    bool _inPlaybackMode = false;
+
+    ax::Menu *_button_playback;
 public:
+
 	static ax::Scene* scene(GJGameLevel* level);
 	static LevelEditorLayer* create(GJGameLevel* level);
+
+    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) override;
+	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) override;
+
+    void addObject(GameObject* obj) override;
+
+    void resetLevel() override;
+    void updateCamera(float dt) override;
+
+    void onEnter() override;
+    void update(float delta) override;
+
+    void destroyPlayer(PlayerObject* player) override;
+
+    void showCompleteText() override;
+
+    bool onTouchBegan(ax::Touch* touch, ax::Event* event);
+	void onTouchEnded(ax::Touch* touch, ax::Event* event);
 	// static LevelEditorLayer* getInstance();
 };
