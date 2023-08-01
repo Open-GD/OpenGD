@@ -262,7 +262,7 @@ void PlayerObject::update(float dt)
 			if (_particles1Activated && !getActionByTag(2))
 			{
 				Sequence* action = Sequence::create(
-					DelayTime::create(1.f / 15.f), CallFunc::create([&]() {
+					DelayTime::create(1.f / 16.5f), CallFunc::create([&]() {
 						if (_particles1Activated) dragEffect1->pauseEmissions();
 						_particles1Activated = false;
 					}),
