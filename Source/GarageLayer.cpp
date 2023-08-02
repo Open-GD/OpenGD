@@ -101,7 +101,7 @@ bool GarageLayer::init()
 	auto menu = Menu::create();
 	menu->setPosition({0, 0});
 
-	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [=](Node*) {
+	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [&](Node*) {
 		if (_popSceneWithTransition) 
 			GameToolbox::popSceneWithTransition(0.5f, popTransition::kTransitionShop);
 		else
@@ -111,7 +111,7 @@ bool GarageLayer::init()
 	//backBtn->setSizeMult(1.6f);
 	menu->addChild(backBtn);
 
-	auto shop = MenuItemSpriteExtra::create("shopRope_001.png", [=](Node*) {
+	auto shop = MenuItemSpriteExtra::create("shopRope_001.png", [&](Node*) {
 		_iconPrev->updateGamemode(35, IconType::kIconTypeUfo);
 	});
 
@@ -119,13 +119,13 @@ bool GarageLayer::init()
 	shop->setDestination({0, -15});
 	menu->addChild(shop);
 
-	auto shard = MenuItemSpriteExtra::create("GJ_shardsBtn_001.png", [=](Node*) {
+	auto shard = MenuItemSpriteExtra::create("GJ_shardsBtn_001.png", [&](Node*) {
 
 	});
 	shard->setPosition({30, size.height - 80});
 	menu->addChild(shard);
 
-	auto paint = MenuItemSpriteExtra::create("GJ_shardsBtn_001.png", [=](Node*) {
+	auto paint = MenuItemSpriteExtra::create("GJ_shardsBtn_001.png", [&](Node*) {
 
 	});
 	paint->setPosition({30, size.height - 120});
@@ -143,7 +143,7 @@ bool GarageLayer::init()
 	this->addChild(menu);
 
 	auto listener = ax::EventListenerKeyboard::create();
-	listener->onKeyPressed = [=](ax::EventKeyboard::KeyCode key, ax::Event*) {
+	listener->onKeyPressed = [&](ax::EventKeyboard::KeyCode key, ax::Event*) {
 		if (key == ax::EventKeyboard::KeyCode::KEY_ESCAPE) {
 			if (_popSceneWithTransition) GameToolbox::popSceneWithTransition(0.5f, popTransition::kTransitionShop);
 			else Director::getInstance()->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
@@ -205,7 +205,7 @@ void GarageLayer::setupIconSelect()
 		auto s2 = Sprite::createWithSpriteFrameName(this->getSpriteName(i, true));
 		s2->setScale(s1->getScale());
 
-		auto i1 = MenuItemSpriteExtra::create(s1, [=](Node* a)
+		auto i1 = MenuItemSpriteExtra::create(s1, [&](Node* a)
 		{
 			int tag = a->getTag();
 			int page = _modePages[tag];
@@ -260,7 +260,7 @@ void GarageLayer::setupIconSelect()
 
 		this->setupPage(_selectedMode, _modePages[gameMode]);
 	};
-	auto arrowLeftBtn = MenuItemSpriteExtra::create(arrow1, [=](Node*) {
+	auto arrowLeftBtn = MenuItemSpriteExtra::create(arrow1, [&](Node*) {
 		onChangePage(false);
 	});
 	//arrBtn1->setSizeMult(2.2f);
@@ -270,7 +270,7 @@ void GarageLayer::setupIconSelect()
 	auto arrow2 = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
 	arrow2->setScale(.8f);
 	arrow2->setFlippedX(true);
-	auto arrowRightBtn = MenuItemSpriteExtra::create(arrow2, [=](Node*) {
+	auto arrowRightBtn = MenuItemSpriteExtra::create(arrow2, [&](Node*) {
 		onChangePage(true);
 	});
 	//arrBtn2->setSizeMult(2.2f);
@@ -397,7 +397,7 @@ void GarageLayer::setupPage(IconType type, int page)
 			// browserItem->addChild(lock);
 		// }
 
-		auto btn = MenuItemSpriteExtra::create(browserItem, [=](Node* a)
+		auto btn = MenuItemSpriteExtra::create(browserItem, [&](Node* a)
 		{
 			_iconPrev->updateGamemode(a->getTag(), _selectedMode);
 			GameToolbox::log("tag: {}", a->getTag());

@@ -36,6 +36,8 @@
 
 #include "2d/Menu.h"
 
+#include "GJGameLevel.h"
+
 ax::Scene* LevelEditorLayer::scene(GJGameLevel* level) {
 	auto scene = ax::Scene::create();
 	scene->addChild(LevelEditorLayer::create(level));
@@ -143,8 +145,6 @@ void LevelEditorLayer::onEnter() {
 };
 
 void LevelEditorLayer::destroyPlayer(PlayerObject* player) {
-	printf("attempted to destroy player!\n");
-
 	if (_inPlaybackMode) PlayLayer::destroyPlayer(player);
 };
 
@@ -168,6 +168,12 @@ void LevelEditorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Even
 	break;
 	case ax::EventKeyboard::KeyCode::KEY_S: {
 		m_camDelta.y = -speed;
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_R: {
+		if (_selectedObjectReal != nullptr) {
+			_selectedObjectReal->setRotation(_selectedObjectReal->getRotation() + 90.f);
+		}
 	}
 	break;
 	case ax::EventKeyboard::KeyCode::KEY_ESCAPE: {
@@ -205,6 +211,10 @@ void LevelEditorLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Eve
 }
 
 void LevelEditorLayer::update(float delta) {
+	// printf("%f %d\n", delta, time(0));
+
+	setInstance();
+
 	PlayLayer::update(delta);
 
 	auto size = ax::Director::getInstance()->getWinSize();
@@ -236,8 +246,16 @@ void LevelEditorLayer::resetLevel() {
 }
 
 bool LevelEditorLayer::init(GJGameLevel* level) {
+	if (level->_levelString.empty() && level->_levelID > 22) {
+		level->_levelString = "H4sIAAAAAAAAC62Nyw2EMAxEGzKSx4khiBM1UMAUQAtb_JLMHnclpOUyz_Hn5TxKM7A6g4hkYWQSEEJQs3ICZ8LduRBE9mh0NuIFDoXHPQX-V6xfFX1HB7ckwX7_gCifEs0_RHbuKOYdKcxCtStVL-p80DqOso5XjJRgDPY6UlO4APMNBgu7Pik2Ibc3_hvk2yICAAA=";
+	}
+
 	if (!PlayLayer::init(level))
 		return false;
+
+	if (!_colorChannels.contains(1004)) {
+		_colorChannels[1004] = SpriteColor(ax::Color3B::WHITE, 255, false);
+	}
 
 	// DrawGridLayer::create();
 	// LevelTools::getInstance()->getAudioString();
@@ -318,11 +336,112 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		this->m_obCamPos.x = 0;
 		this->m_obCamPos.x = 0;
 		resetLevel();
-		//ax::Director::getInstance()->pushScene((ax::TransitionFade::create(0.5f, LevelInfoLayer::scene(level))));
 	});
-	button->setPosition(30, 30);
+	button->setPosition(10, 30);
+	
+	auto buttonSprite2 = ButtonSprite::create("Play", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30);
+	MenuItemSpriteExtra* button2 = MenuItemSpriteExtra::create(buttonSprite2, [this](Node* btn)
+	{
+		std::string level_data = "";
 
+		level_data += fmt::format("kA1,{},", this->_level->_musicID);
+		level_data += fmt::format("kA2,{},", (int)this->_levelSettings.gamemode);
+		level_data += fmt::format("kA3,{},", (int)this->_levelSettings.mini);
+		level_data += fmt::format("kA4,{},", this->_levelSettings.speed);
+		level_data += fmt::format("kA6,{},", this->_levelSettings._bgID);
+		level_data += fmt::format("kA7,{},", this->_levelSettings._groundID);
+		level_data += fmt::format("kA8,{},", (int)this->_levelSettings.dual);
+		level_data += fmt::format("kA9,{},", 0);
+		level_data += fmt::format("kA10,{},", (int)this->_levelSettings.twoPlayer);
+		level_data += fmt::format("kA11,{},", (int)this->_levelSettings.flipGravity);
+		level_data += fmt::format("kA13,{},kS38,", this->_levelSettings.songOffset);
+
+		for (auto [id, col] : this->_colorChannels) {
+			std::string color_data = fmt::format("1,{}_2,{}_3,{}_5,{}_6,{}_7,{}",
+				col._color.r, col._color.g, col._color.b, (int)col._blending, id, (int)col._opacity
+			);
+
+			level_data += color_data + "|";
+		}
+
+		level_data.pop_back();
+
+		level_data += ";";
+
+		for (auto object : this->_pObjects) {
+			std::string object_string = fmt::format("1,{},2,{},3,{}", object->getID(), object->getPositionX(), object->getPositionX());
+		
+			level_data += object_string + ";";
+		}
+
+		level_data.pop_back();
+
+		printf("%s\n", level_data.c_str());
+
+		auto new_level = GJGameLevel::createWithMinimumData(getLevel()->_levelName, getLevel()->_levelCreator, -1);
+	
+		new_level->_levelString = level_data;
+
+		auto scene = ax::Scene::create();
+		auto playlayer = PlayLayer::create(new_level);
+		scene->addChild(playlayer);
+
+		playlayer->setOnExitCallback([this](){
+			scheduleUpdate();
+
+			auto dir = ax::Director::getInstance();
+			auto listener = ax::EventListenerTouchOneByOne::create();
+
+			listener->setEnabled(true);
+			listener->setSwallowTouches(true);
+
+			// trigger when you start touch
+			listener->onTouchBegan = AX_CALLBACK_2(LevelEditorLayer::onTouchBegan, this);
+			listener->onTouchEnded = AX_CALLBACK_2(LevelEditorLayer::onTouchEnded, this);
+
+			// dir->getEventDispatcher()->removeEventListener(m_pHudLayer->_listener);
+
+			dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+
+			printf("test\n");
+		});
+
+		ax::Director::getInstance()->pushScene(ax::TransitionFade::create(0.5f, scene));
+	});
+	button2->setPosition(10, 10);
+
+	menu->addChild(button2);
 	menu->addChild(button);
+
+	std::vector<int> objects = {1, 8, 12, 13, 22, 23, 24, 25, 26, 27, 28};
+
+	int x = 70;
+	int y = 30;
+
+	for (int object : objects) {
+		GameObject *obj = GameObject::createFromString(fmt::format("1,{},2,0,3,0", object));
+
+		obj->setStretchEnabled(false);
+		obj->setActive(true);
+
+		auto sprite = ax::Sprite::createWithTexture(obj->getSpriteFrame()->getTexture(), obj->getSpriteFrame()->getRect(), obj->getSpriteFrame()->isRotated());
+
+		auto buttonSprite1 = ButtonSprite::create(sprite, 30, 30, 30, 1.f, false, GameToolbox::getTextureString("GJ_button_01.png"), false);
+
+		buttonSprite1->setScale(0.7f);
+
+		// auto buttonSprite1 = ButtonSprite::create("", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30);
+		MenuItemSpriteExtra* button1 = MenuItemSpriteExtra::create(buttonSprite1, [this, object](Node* btn)
+		{
+			this->_selectedObject = object;
+		});
+
+		button1->setPosition(x, y);
+
+		menu->addChild(button1);
+
+		x += 32;
+	}
 
 	this->addChild(menu, grid->getLocalZOrder() + 3);
 
@@ -335,8 +454,6 @@ void LevelEditorLayer::addObject(GameObject* obj) {
 	int section = sectionForPos(obj->getPositionX());
 
 	obj->setDontTransform(false);
-
-	printf("section: %d/%d\n", section, _sectionObjects.size());
 
 	obj->_uniqueID = _pObjects.size();
 
@@ -355,8 +472,6 @@ void LevelEditorLayer::addObject(GameObject* obj) {
 		_sectionObjects.push_back({});
 	}
 
-	printf("new section: %d/%d\n", section, _sectionObjects.size());
-
 	_sectionObjects[section].push_back(obj);
 }
 
@@ -374,18 +489,23 @@ bool LevelEditorLayer::onTouchBegan(ax::Touch* touch, ax::Event* event) {
 
 		pos.x = mapped_section * 30 + 15;
 		pos.y = mapped_y * 30 + 15;
-		
-		printf("touch! %f %f\n", pos.x, pos.y);
 
 		// 1,1,2,15,3,15,21,3,24,7
-		std::string object_string = fmt::format("1,1,2,{},3,{}", pos.x, pos.y);
+		std::string object_string = fmt::format("1,{},2,{},3,{}", _selectedObject, pos.x, pos.y);
 
 		GameObject *obj = GameObject::createFromString(object_string);
 		
 		obj->setStretchEnabled(false);
 		obj->setActive(true);
+		obj->setID(_selectedObject);
+
+		if (_selectedObjectReal != nullptr && _selectedObjectReal->getID() == obj->getID()) {
+			obj->setRotation(_selectedObjectReal->getRotation());
+		}
 
 		addObject(obj);
+
+		_selectedObjectReal = obj;
 	} else {
 		_player1->pushButton();
 		if (_isDualMode) _player2->pushButton();

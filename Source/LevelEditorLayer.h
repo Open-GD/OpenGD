@@ -30,6 +30,9 @@ private:
     bool _inPlaybackMode = false;
 
     ax::Menu *_button_playback;
+
+    int _selectedObject = 1;
+    GameObject *_selectedObjectReal = nullptr;
 public:
 
 	static ax::Scene* scene(GJGameLevel* level);

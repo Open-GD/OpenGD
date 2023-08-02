@@ -29,6 +29,8 @@
 #include "Types.h"
 #include "GameToolbox/conv.h"
 
+#include <functional>
+
 enum PlayerGamemode;
 
 class GJGameLevel;
@@ -91,6 +93,7 @@ protected:
 
 	bool m_bEndAnimation;
 
+	void setInstance();
 public:
 	int _enterEffectID = 0;
 

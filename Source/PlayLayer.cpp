@@ -513,6 +513,11 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 	t_gameObjects.join();
 }
 
+void PlayLayer::setInstance() {
+	Instance = this;
+    _instance = this;
+}
+
 bool PlayLayer::init(GJGameLevel* level)
 {
 	if (!Layer::init())
@@ -523,8 +528,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	_effectManager = EffectManager::create();
 	this->addChild(_effectManager);
 
-	Instance = this;
-    _instance = this;
+	setInstance();
 
     // initBatchNodes();
 
@@ -567,7 +571,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	{
 		auto s = BenchmarkTimer("load level");
 		if (!levelStr.empty()) {
-			levelStr = GJGameLevel::decompressLvlStr(levelStr);
+			if (levelStr.at(0) != 'k') levelStr = GJGameLevel::decompressLvlStr(levelStr);
 			loadLevel(levelStr);
 		}
 	}
@@ -1816,7 +1820,10 @@ void PlayLayer::exit()
 	if (id <= 0 || id > 22)
 		return GameToolbox::popSceneWithTransition(0.5f);
 
-	Director::getInstance()->replaceScene(
+	// GameToolbox::popSceneWithTransition(0.5f);
+
+
+	Director::getInstance()->pushScene(
 		TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_levelID - 1)));
 }
 

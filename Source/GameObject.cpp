@@ -511,8 +511,8 @@ GameObject* GameObject::createFromString(std::string_view data)
 		obj = EffectGameObject::create(frame);
 		// mylock.unlock();
 		obj->_isTrigger = true;
-		obj->_primaryInvisible = true;
-		obj->setOpacity(0);
+		// obj->_primaryInvisible = true;
+		// obj->setOpacity(0);
 	}
 	else
 	{
