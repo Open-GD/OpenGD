@@ -28,8 +28,11 @@ private:
     ax::Vec2 m_camDelta;
 
     bool _inPlaybackMode = false;
+    bool _inSwapMode = false;
 
     ax::Menu *_button_playback;
+
+    std::map<std::string, GameObject *> _objectPositionCache;
 
     int _selectedObject = 1;
     GameObject *_selectedObjectReal = nullptr;
@@ -53,7 +56,10 @@ public:
 
     void showCompleteText() override;
 
+    GameObject *findObject(float x, float y);
+
     bool onTouchBegan(ax::Touch* touch, ax::Event* event);
 	void onTouchEnded(ax::Touch* touch, ax::Event* event);
+    void onTouchMoved(ax::Touch* touch, ax::Event* event);
 	// static LevelEditorLayer* getInstance();
 };

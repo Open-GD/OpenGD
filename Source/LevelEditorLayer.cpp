@@ -70,6 +70,10 @@ void LevelEditorLayer::updateCamera(float dt) {
 		return;
 	}
 
+	extern float gameSpeed;
+
+	dt /= gameSpeed;
+
 	ax::Vec2 cam2 = m_camDelta;
 
 	cam2.x *= dt;
@@ -142,6 +146,12 @@ void LevelEditorLayer::onEnter() {
 	listener->onKeyPressed = AX_CALLBACK_2(LevelEditorLayer::onKeyPressed, this);
 	listener->onKeyReleased = AX_CALLBACK_2(LevelEditorLayer::onKeyReleased, this);
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+
+	auto current = dir->getRunningScene();
+#if SHOW_IMGUI == true
+	
+	ax::extension::ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(LevelEditorLayer::onDrawImGui, this), current);
+#endif
 };
 
 void LevelEditorLayer::destroyPlayer(PlayerObject* player) {
@@ -229,7 +239,10 @@ void LevelEditorLayer::update(float delta) {
 		_player2->setPosition(cam);
 	}
 
-	m_pBar->setPercentage(m_obCamPos.x / this->m_lastObjXPos * 100.f);
+	if (!_inPlaybackMode) m_pBar->setPercentage((m_obCamPos.x + (9.f * 30.f)) / (this->m_lastObjXPos) * 100.f);
+	else {
+		m_pBar->setPercentage(_player1->getPositionX() / (this->m_lastObjXPos) * 100.f);
+	}
 	float val = m_pBar->getPercentage();
 	m_pPercentage->setString(ax::StringUtils::format("%.02f%%", val > 100 ? 100 : val < 0 ? 0 : val));
 
@@ -252,10 +265,6 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 
 	if (!PlayLayer::init(level))
 		return false;
-
-	if (!_colorChannels.contains(1004)) {
-		_colorChannels[1004] = SpriteColor(ax::Color3B::WHITE, 255, false);
-	}
 
 	// DrawGridLayer::create();
 	// LevelTools::getInstance()->getAudioString();
@@ -322,6 +331,7 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 	// trigger when you start touch
 	listener->onTouchBegan = AX_CALLBACK_2(LevelEditorLayer::onTouchBegan, this);
 	listener->onTouchEnded = AX_CALLBACK_2(LevelEditorLayer::onTouchEnded, this);
+	listener->onTouchMoved = AX_CALLBACK_2(LevelEditorLayer::onTouchMoved	, this);
 
 	dir->getEventDispatcher()->removeEventListener(m_pHudLayer->_listener);
 
@@ -354,9 +364,11 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		level_data += fmt::format("kA9,{},", 0);
 		level_data += fmt::format("kA10,{},", (int)this->_levelSettings.twoPlayer);
 		level_data += fmt::format("kA11,{},", (int)this->_levelSettings.flipGravity);
+		level_data += fmt::format("kS29,1,{}_2,{}_3,{},", this->_colorChannels[1000]._color.r, this->_colorChannels[1000]._color.g, this->_colorChannels[1000]._color.b);
 		level_data += fmt::format("kA13,{},kS38,", this->_levelSettings.songOffset);
 
 		for (auto [id, col] : this->_colorChannels) {
+			printf("color channel %d: %d %d %d\n", id, col._color.r, col._color.g, col._color.b);
 			std::string color_data = fmt::format("1,{}_2,{}_3,{}_5,{}_6,{}_7,{}",
 				col._color.r, col._color.g, col._color.b, (int)col._blending, id, (int)col._opacity
 			);
@@ -369,7 +381,7 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		level_data += ";";
 
 		for (auto object : this->_pObjects) {
-			std::string object_string = fmt::format("1,{},2,{},3,{}", object->getID(), object->getPositionX(), object->getPositionX());
+			std::string object_string = fmt::format("1,{},2,{},3,{}", object->getID(), object->getPositionX(), object->getPositionY() - 90.f);
 		
 			level_data += object_string + ";";
 		}
@@ -386,6 +398,13 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		auto playlayer = PlayLayer::create(new_level);
 		scene->addChild(playlayer);
 
+		auto dir = ax::Director::getInstance();
+
+		dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(playlayer->m_pHudLayer->_listener, playlayer);
+
+		// unscheduleUpdate();
+		// unscheduleAllCallbacks();
+
 		playlayer->setOnExitCallback([this](){
 			scheduleUpdate();
 
@@ -398,17 +417,26 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 			// trigger when you start touch
 			listener->onTouchBegan = AX_CALLBACK_2(LevelEditorLayer::onTouchBegan, this);
 			listener->onTouchEnded = AX_CALLBACK_2(LevelEditorLayer::onTouchEnded, this);
+			listener->onTouchMoved = AX_CALLBACK_2(LevelEditorLayer::onTouchMoved, this);
 
-			// dir->getEventDispatcher()->removeEventListener(m_pHudLayer->_listener);
+			dir->getEventDispatcher()->removeEventListener(this->m_pHudLayer->_listener);
 
 			dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
-			printf("test\n");
+			ax::AudioEngine::stopAll();
+
+			updateCamera(1.f / dir->getFrameRate());
+
+			auto current = dir->getRunningScene();
+			#if SHOW_IMGUI == true
+	
+			ax::extension::ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(LevelEditorLayer::onDrawImGui, this), current);
+			#endif
 		});
 
 		ax::Director::getInstance()->pushScene(ax::TransitionFade::create(0.5f, scene));
 	});
-	button2->setPosition(10, 10);
+	button2->setPosition(10, -5);
 
 	menu->addChild(button2);
 	menu->addChild(button);
@@ -447,6 +475,8 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 
 	_button_playback = menu;
 
+	updateCamera(1.f / dir->getFrameRate());
+
 	return true;
 }
 
@@ -456,6 +486,10 @@ void LevelEditorLayer::addObject(GameObject* obj) {
 	obj->setDontTransform(false);
 
 	obj->_uniqueID = _pObjects.size();
+
+	if (obj->getPositionX() > m_lastObjXPos) {
+		m_lastObjXPos = obj->getPositionX();
+	}
 
 	_allObjects.push_back(obj);
 	_pObjects.push_back(obj);
@@ -473,11 +507,24 @@ void LevelEditorLayer::addObject(GameObject* obj) {
 	}
 
 	_sectionObjects[section].push_back(obj);
+
+	std::string key = fmt::format("{}x{}", obj->getPositionX(), obj->getPositionY());
+
+	_objectPositionCache[key] = obj;
 }
 
-bool LevelEditorLayer::onTouchBegan(ax::Touch* touch, ax::Event* event) {
-	
-	if (!_inPlaybackMode) {
+GameObject *LevelEditorLayer::findObject(float x, float y) {
+	std::string key = fmt::format("{}x{}", x, y);
+
+	if (_objectPositionCache.contains(key)) {
+		return _objectPositionCache[key];
+	}
+
+	return nullptr;
+}
+
+void LevelEditorLayer::onTouchMoved(ax::Touch* touch, ax::Event* event) {
+	if (!_inPlaybackMode && _inSwapMode) {
 		auto pos = touch->getLocation();
 
 		pos += m_obCamPos;
@@ -489,6 +536,12 @@ bool LevelEditorLayer::onTouchBegan(ax::Touch* touch, ax::Event* event) {
 
 		pos.x = mapped_section * 30 + 15;
 		pos.y = mapped_y * 30 + 15;
+
+		auto obj_existing = findObject(pos.x, pos.y + 90.f);
+
+		if (obj_existing && obj_existing->getID() == _selectedObject) {
+			return;
+		}
 
 		// 1,1,2,15,3,15,21,3,24,7
 		std::string object_string = fmt::format("1,{},2,{},3,{}", _selectedObject, pos.x, pos.y);
@@ -506,6 +559,50 @@ bool LevelEditorLayer::onTouchBegan(ax::Touch* touch, ax::Event* event) {
 		addObject(obj);
 
 		_selectedObjectReal = obj;
+		_inSwapMode = true;
+	}
+
+	return;
+}
+
+bool LevelEditorLayer::onTouchBegan(ax::Touch* touch, ax::Event* event) {
+	
+	if (!_inPlaybackMode) {
+		auto pos = touch->getLocation();
+
+		pos += m_obCamPos;
+
+		pos.y -= 90;
+
+		int mapped_section = pos.x /= 30;
+		int mapped_y = pos.y /= 30;
+
+		pos.x = mapped_section * 30 + 15;
+		pos.y = mapped_y * 30 + 15;
+
+		auto obj_existing = findObject(pos.x, pos.y + 90.f);
+
+		if (obj_existing && obj_existing->getID() == _selectedObject) {
+			return true;
+		}
+
+		// 1,1,2,15,3,15,21,3,24,7
+		std::string object_string = fmt::format("1,{},2,{},3,{}", _selectedObject, pos.x, pos.y);
+
+		GameObject *obj = GameObject::createFromString(object_string);
+		
+		obj->setStretchEnabled(false);
+		obj->setActive(true);
+		obj->setID(_selectedObject);
+
+		if (_selectedObjectReal != nullptr && _selectedObjectReal->getID() == obj->getID()) {
+			obj->setRotation(_selectedObjectReal->getRotation());
+		}
+
+		addObject(obj);
+
+		_selectedObjectReal = obj;
+		_inSwapMode = true;
 	} else {
 		_player1->pushButton();
 		if (_isDualMode) _player2->pushButton();
@@ -518,4 +615,5 @@ void LevelEditorLayer::onTouchEnded(ax::Touch* touch, ax::Event* event) {
 		_player1->releaseButton();
 		if (_isDualMode) _player2->releaseButton();
 	}
+	_inSwapMode = false;
 }

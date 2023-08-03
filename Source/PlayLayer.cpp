@@ -315,6 +315,10 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 	}); //thread
 	
 	t_colorChannels.join();
+
+	if (!_colorChannels.contains(1004)) {
+		_colorChannels[1004] = {ax::Color3B::WHITE, 255, false};
+	}
 	
 	//STOP
 	std::thread t_gameObjects([&]() {
