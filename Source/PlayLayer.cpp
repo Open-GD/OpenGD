@@ -1308,6 +1308,9 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 			{
 				GameObject* obj = section[j];
 
+				if (!obj)
+					continue;
+
 				auto objBounds = obj->getOuterBounds();
 
 				if ((objBounds.size.width <= 0 || objBounds.size.height <= 0))

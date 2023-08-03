@@ -110,7 +110,6 @@ elseif(LINUX)
          proj.linux/main.cpp
          )
     list(APPEND GAME_SOURCE ${common_content_files})
-    add_compile_options(-march=native)
 elseif(WINDOWS)
     if(NOT WINRT)
         list(APPEND GAME_HEADER

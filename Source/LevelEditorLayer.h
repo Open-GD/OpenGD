@@ -36,6 +36,8 @@ private:
 
     int _selectedObject = 1;
     GameObject *_selectedObjectReal = nullptr;
+
+    bool _shiftPressed = false;
 public:
 
 	static ax::Scene* scene(GJGameLevel* level);

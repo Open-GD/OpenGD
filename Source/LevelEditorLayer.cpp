@@ -162,6 +162,20 @@ void LevelEditorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Even
 {
 	float speed = 7.f;
 
+	float new_pos = 30.f;
+	bool new_posX = false;
+	bool new_posY = false;
+
+	if (_shiftPressed) {
+		new_pos = 2.f;
+	}
+
+	float scaling = 1.f;
+
+	if (_shiftPressed) {
+		scaling = 0.1f;
+	}
+
 	switch (keyCode)
 	{
 	case ax::EventKeyboard::KeyCode::KEY_A: {
@@ -190,9 +204,156 @@ void LevelEditorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Even
 		exit();
 	}
 	break;
+	case ax::EventKeyboard::KeyCode::KEY_SHIFT: {
+		_shiftPressed = true;
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_LEFT_ARROW: {
+		if (_selectedObjectReal) {
+			auto pos = _selectedObjectReal->getPosition();
+			new_pos = -new_pos;
+			pos.x += new_pos;
+			_selectedObjectReal->setPosition(pos);
+			_selectedObjectReal->setStartPositionX(pos.x);
+			new_posX = true;
+		}
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_RIGHT_ARROW: {
+		if (_selectedObjectReal) {
+			auto pos = _selectedObjectReal->getPosition();
+			pos.x += new_pos;
+			_selectedObjectReal->setPosition(pos);
+			_selectedObjectReal->setStartPositionX(pos.x);
+			new_posX = true;
+		}
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_UP_ARROW: {
+		if (_selectedObjectReal) {
+			auto pos = _selectedObjectReal->getPosition();
+			pos.y += new_pos;
+			_selectedObjectReal->setPosition(pos);
+			_selectedObjectReal->setStartPositionY(pos.y);
+			new_posY = true;
+		}
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_DOWN_ARROW: {
+		if (_selectedObjectReal) {
+			auto pos = _selectedObjectReal->getPosition();
+			new_pos = -new_pos;
+			pos.y += new_pos;
+			_selectedObjectReal->setPosition(pos);
+			_selectedObjectReal->setStartPositionY(pos.y);
+			new_posY = true;
+		}
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_KP_PLUS: {
+		if (_selectedObjectReal) {
+			auto scaling_orig = _selectedObjectReal->getStartScale();
+			scaling_orig.x += scaling;
+			scaling_orig.y += scaling;
+			_selectedObjectReal->setStartScale(scaling_orig);
+		}
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_KP_MINUS: {
+		if (_selectedObjectReal) {
+			auto scaling_orig = _selectedObjectReal->getStartScale();
+			scaling_orig.x -= scaling;
+			scaling_orig.y -= scaling;
+			_selectedObjectReal->setStartScale(scaling_orig);
+		}
+	}
+	break;
+	case ax::EventKeyboard::KeyCode::KEY_DELETE: {
+		if (_selectedObjectReal) {
+			ax::Vec2 current_pos = {
+				_selectedObjectReal->getPositionX(),
+				_selectedObjectReal->getPositionY()
+			};
+			std::string key = fmt::format("{}x{}", current_pos.x, current_pos.y);
+		
+			_objectPositionCache.erase(key);
+
+			std::vector<int> indexes = {-1, -1, -1};
+
+			int i = 0;
+
+			while (i < _pObjects.size()) {
+				if (_pObjects[i] == _selectedObjectReal) {
+					_pObjects[i] = nullptr;
+				}
+
+				i++;
+			}
+
+			i = 0;
+
+			while (i < _allObjects.size()) {
+				if (_allObjects[i] == _selectedObjectReal) {
+					_allObjects[i] = nullptr;
+				}
+
+				i++;
+			}
+
+			i = 0;
+
+			while (i < _sectionObjects.size()) {
+				int j = 0;
+
+				while (j < _sectionObjects[i].size()) {
+					if (_sectionObjects[i][j] == _selectedObjectReal) {
+						_sectionObjects[i][j] = nullptr;
+					}
+
+					j++;
+				}
+
+				i++;
+			}
+			
+			// _selectedObjectReal->unscheduleUpdate();
+			_selectedObjectReal->cleanup();
+			_selectedObjectReal->removeFromParentAndCleanup(true);
+			// _selectedObjectReal->removeAllChildrenWithCleanup(true);
+			_selectedObjectReal->release();
+
+			_selectedObjectReal = nullptr;
+		}
+	}
+	break;
 	default:
 		break;
 	}
+
+	if (_selectedObjectReal) {
+		ax::Vec2 current_pos = {
+			_selectedObjectReal->getPositionX(),
+			_selectedObjectReal->getPositionY()
+		};
+
+		new_pos = -new_pos;
+
+		// ax::Vec2 old_pos = {
+		// 	_selectedObjectReal->getPositionX() + (new_posX) ? new_pos : 0,
+		// 	_selectedObjectReal->getPositionY() + (new_posY) ? new_pos : 0
+		// };
+
+		ax::Vec2 old_pos = current_pos;
+
+		old_pos.x += ((new_posX) ? new_pos : 0);
+		old_pos.y += ((new_posY) ? new_pos : 0);
+
+		std::string old_key = fmt::format("{}x{}", old_pos.x, old_pos.y);
+		std::string new_key = fmt::format("{}x{}", current_pos.x, current_pos.y);
+
+		_objectPositionCache.erase(old_key);
+		_objectPositionCache[new_key] = _selectedObjectReal;
+	}	
 }
 
 void LevelEditorLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event)
@@ -215,14 +376,16 @@ void LevelEditorLayer::onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Eve
 		m_camDelta.y = 0;
 	}
 	break;
+	case ax::EventKeyboard::KeyCode::KEY_SHIFT: {
+		_shiftPressed = false;
+	}
+	break;
 	default:
 		break;
 	}
 }
 
 void LevelEditorLayer::update(float delta) {
-	// printf("%f %d\n", delta, time(0));
-
 	setInstance();
 
 	PlayLayer::update(delta);
@@ -249,6 +412,10 @@ void LevelEditorLayer::update(float delta) {
 	if (this->_colorChannels.contains(1000))
 	{
 		this->m_pBG->setColor(this->_colorChannels.at(1000)._color);
+	}
+
+	if (_selectedObjectReal) {
+		_selectedObjectReal->setColor({0, 255, 0});
 	}
 }
 
@@ -368,7 +535,6 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		level_data += fmt::format("kA13,{},kS38,", this->_levelSettings.songOffset);
 
 		for (auto [id, col] : this->_colorChannels) {
-			printf("color channel %d: %d %d %d\n", id, col._color.r, col._color.g, col._color.b);
 			std::string color_data = fmt::format("1,{}_2,{}_3,{}_5,{}_6,{}_7,{}",
 				col._color.r, col._color.g, col._color.b, (int)col._blending, id, (int)col._opacity
 			);
@@ -381,14 +547,14 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		level_data += ";";
 
 		for (auto object : this->_pObjects) {
-			std::string object_string = fmt::format("1,{},2,{},3,{}", object->getID(), object->getPositionX(), object->getPositionY() - 90.f);
+			if (!object) continue;
+			
+			std::string object_string = fmt::format("1,{},2,{},3,{},6,{},32,{}", object->getID(), object->getPositionX(), object->getPositionY() - 90.f, object->getRotation(), object->getScale());
 		
 			level_data += object_string + ";";
 		}
 
 		level_data.pop_back();
-
-		printf("%s\n", level_data.c_str());
 
 		auto new_level = GJGameLevel::createWithMinimumData(getLevel()->_levelName, getLevel()->_levelCreator, -1);
 	
@@ -441,10 +607,15 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 	menu->addChild(button2);
 	menu->addChild(button);
 
-	std::vector<int> objects = {1, 8, 12, 13, 22, 23, 24, 25, 26, 27, 28};
+	std::vector<int> objects = {1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 22, 23, 24, 25, 26, 27, 28};
 
 	int x = 70;
 	int y = 30;
+
+	auto winSize = dir->getWinSize();
+
+	int max_rows = 2;
+	int current_row = 1;
 
 	for (int object : objects) {
 		GameObject *obj = GameObject::createFromString(fmt::format("1,{},2,0,3,0", object));
@@ -469,6 +640,11 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 		menu->addChild(button1);
 
 		x += 32;
+
+		if ((x + 32) >= (int)winSize.x) {
+			x = 70;
+			y -= 32;
+		}
 	}
 
 	this->addChild(menu, grid->getLocalZOrder() + 3);
@@ -476,6 +652,12 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 	_button_playback = menu;
 
 	updateCamera(1.f / dir->getFrameRate());
+
+	for (auto object : _pObjects) {
+		std::string key = fmt::format("{}x{}", object->getPositionX(), object->getPositionY());
+
+		_objectPositionCache[key] = object;
+	}
 
 	return true;
 }
@@ -583,6 +765,7 @@ bool LevelEditorLayer::onTouchBegan(ax::Touch* touch, ax::Event* event) {
 		auto obj_existing = findObject(pos.x, pos.y + 90.f);
 
 		if (obj_existing && obj_existing->getID() == _selectedObject) {
+			_selectedObjectReal = obj_existing;
 			return true;
 		}
 
