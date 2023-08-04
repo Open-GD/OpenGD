@@ -93,6 +93,7 @@ EndLevelLayer *EndLevelLayer::create(PlayLayer *pl)
 		pRet->_createdWithoutPlaylayer = false;
 		pRet->_everyplay_included = pl->_everyplay_recorded;
 		pRet->_stars = level->_stars;
+		pRet->_testmode = pl->_testMode;
 	} else {
 		pRet->_createdWithoutPlaylayer = true;
 	}
@@ -157,6 +158,11 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	// random string
 
 	std::string_view randomText = EndLevelLayer::getRandomEndingString();
+	
+	if (_testmode) {
+		randomText = "Level Verified!";
+	}
+	
 	auto randomt = ax::Label::createWithBMFont(bigFontStr, randomText);
 	randomt->setPositionY(wsize.height / 5 - 120 - 10);
 	if (randomText.length() > 13)
@@ -211,6 +217,8 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	// stars
 
 	scheduleOnce([&](float delta) {
+		if (_stars < 1) return; 
+
 		auto starNode = ax::Node::create();
 		auto bigstar = ax::Sprite::createWithSpriteFrameName("GJ_bigStar_001.png");
 		std::string bigFontStr = GameToolbox::getTextureString("bigFont.fnt");

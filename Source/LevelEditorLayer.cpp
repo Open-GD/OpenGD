@@ -270,58 +270,35 @@ void LevelEditorLayer::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Even
 	break;
 	case ax::EventKeyboard::KeyCode::KEY_DELETE: {
 		if (_selectedObjectReal) {
+			new_pos = 65535;
+			auto pos = _selectedObjectReal->getPosition();
+			pos.y += new_pos;
+			_selectedObjectReal->setPosition(pos);
+			_selectedObjectReal->setStartPositionY(pos.y);
+			new_posY = true;
 			ax::Vec2 current_pos = {
 				_selectedObjectReal->getPositionX(),
 				_selectedObjectReal->getPositionY()
 			};
-			std::string key = fmt::format("{}x{}", current_pos.x, current_pos.y);
+
+			new_pos = -new_pos;
+
+			// ax::Vec2 old_pos = {
+			// 	_selectedObjectReal->getPositionX() + (new_posX) ? new_pos : 0,
+			// 	_selectedObjectReal->getPositionY() + (new_posY) ? new_pos : 0
+			// };
+
+			ax::Vec2 old_pos = current_pos;
+
+			old_pos.x += ((new_posX) ? new_pos : 0);
+			old_pos.y += ((new_posY) ? new_pos : 0);
+
+			std::string old_key = fmt::format("{}x{}", old_pos.x, old_pos.y);
+			std::string new_key = fmt::format("{}x{}", current_pos.x, current_pos.y);
+
+			_objectPositionCache.erase(old_key);
+			_objectPositionCache[new_key] = _selectedObjectReal;
 		
-			_objectPositionCache.erase(key);
-
-			std::vector<int> indexes = {-1, -1, -1};
-
-			int i = 0;
-
-			while (i < _pObjects.size()) {
-				if (_pObjects[i] == _selectedObjectReal) {
-					_pObjects[i] = nullptr;
-				}
-
-				i++;
-			}
-
-			i = 0;
-
-			while (i < _allObjects.size()) {
-				if (_allObjects[i] == _selectedObjectReal) {
-					_allObjects[i] = nullptr;
-				}
-
-				i++;
-			}
-
-			i = 0;
-
-			while (i < _sectionObjects.size()) {
-				int j = 0;
-
-				while (j < _sectionObjects[i].size()) {
-					if (_sectionObjects[i][j] == _selectedObjectReal) {
-						_sectionObjects[i][j] = nullptr;
-					}
-
-					j++;
-				}
-
-				i++;
-			}
-			
-			// _selectedObjectReal->unscheduleUpdate();
-			_selectedObjectReal->cleanup();
-			_selectedObjectReal->removeFromParentAndCleanup(true);
-			// _selectedObjectReal->removeAllChildrenWithCleanup(true);
-			_selectedObjectReal->release();
-
 			_selectedObjectReal = nullptr;
 		}
 	}
@@ -507,11 +484,12 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 	auto menu = ax::Menu::create();
 
 	auto buttonSprite = ButtonSprite::create("Playback", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30);
-	MenuItemSpriteExtra* button = MenuItemSpriteExtra::create(buttonSprite, [this](Node* btn)
+	MenuItemSpriteExtra* button = MenuItemSpriteExtra::create(buttonSprite, [this, dir](Node* btn)
 	{
 		this->_inPlaybackMode = !this->_inPlaybackMode;
 		this->m_obCamPos.x = 0;
 		this->m_obCamPos.x = 0;
+		this->updateCamera(1.f / dir->getFrameRate());
 		resetLevel();
 	});
 	button->setPosition(10, 30);
@@ -570,6 +548,8 @@ bool LevelEditorLayer::init(GJGameLevel* level) {
 
 		// unscheduleUpdate();
 		// unscheduleAllCallbacks();
+
+		playlayer->_testMode = true;
 
 		playlayer->setOnExitCallback([this](){
 			scheduleUpdate();

@@ -106,6 +106,7 @@ public:
 	int _attempts;
 	int _jumps;
 	bool _everyplay_recorded;
+	bool _testMode;
 
 	std::vector<bool> _coinsCollected;
 
