@@ -58,11 +58,12 @@ OpenGD is powered by [axmol](https://github.com/axmolengine/axmol), which is mai
 Required:
 - Python 3.7+
 - CMake
+- Microsoft PowerShell 7.3+
 - One of the major c++ compilers (MSVC, clang, gcc)
 
 
 > **Warning**
-> OpenGD only builds with latest release branch of axmol, which is [6896f01](https://github.com/axmolengine/axmol/commit/6896f01d3e86a189c8e72ac420c8fdda739531fd) at the moment
+> OpenGD only builds with latest release branch of axmol, which is [4753270](https://github.com/axmolengine/axmol/commit/4753270d77283be3f3635cc41126d9fb768e7272) at the moment
 
 
 <details>
@@ -71,14 +72,14 @@ Required:
 
 Clone axmol, run setup.py and restart cmd for command line variables to update
 ```
-git clone --branch release https://github.com/axmolengine/axmol
+git clone https://github.com/axmolengine/axmol
 cd axmol
-python setup.py
+pwsh setup.ps1
 ```
 
 For windows, it is recommended to build axmol separately and link it dynamically to reduce rebuilds, compile time and link time.
 
-In the axmol folder, after running setup.py:
+In the axmol folder, after running setup.ps1:
 ```
 cmake -B build_x64 -A x64 -DAX_BUILD_TESTS=OFF
 cmake --build build_x64 --config RelWithDebInfo
