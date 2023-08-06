@@ -132,7 +132,7 @@ bool RewardUnlockLayer::init(int chestID)
 	this->_mainLayer->addChild(_chestObj);
 
 	_chestObj->runAction(EaseBounceOut::create(MoveTo::create(1.0, position.operator+({0.0, _chestObj->getChildren().front()->getContentSize().x / 2.5f})))); // these coords were hardcoded bc i couldnt figure them out
-	_chestObj->runAction(Sequence::create(DelayTime::create(0.36f), CallFunc::create([=]() {AudioEngine::play2d("chestLand.ogg", false, 0.5f);}), nullptr));
+	_chestObj->runAction(Sequence::create(DelayTime::create(0.36f), CallFunc::create([&]() {AudioEngine::play2d("chestLand.ogg", false, 0.5f);}), nullptr));
 	
 	auto shake0 = DelayTime::create(1.2f);
 	auto shake1 = MoveBy::create(0.05f, {-4.0f,0.0f});
@@ -142,7 +142,7 @@ bool RewardUnlockLayer::init(int chestID)
 	auto shake5 = MoveBy::create(0.05f, {-4.0f,0.0f});
 	auto shake6 = MoveBy::create(0.05f, {4.0f,0.0f});
 	auto shake7 = DelayTime::create(0.2f);
-	auto shake8 = CallFunc::create([=]() { 
+	auto shake8 = CallFunc::create([&]() { 
 		AudioEngine::play2d("chestOpen01.ogg", false, 0.5f);
 		_chestObj->switchState(3, false);
 		sendHttpRequest(chestID);

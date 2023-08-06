@@ -203,6 +203,16 @@ void BaseGameLayer::initBatchNodes()
 	_main2BatchNodeTexture = _main2BatchNode->getTexture()->getPath();
 }
 
+bool BaseGameLayer::isObjectBlending(GameObject* obj)
+{
+	return _colorChannels.contains(obj->_mainColorChannel) && _colorChannels[obj->_mainColorChannel]._blending &&
+			   _colorChannels.contains(obj->_secColorChannel) && _colorChannels[obj->_secColorChannel]._blending ||
+		   !_colorChannels.contains(obj->_mainColorChannel) && _colorChannels.contains(obj->_secColorChannel) &&
+			   _colorChannels[obj->_secColorChannel]._blending ||
+		   !_colorChannels.contains(obj->_secColorChannel) && _colorChannels.contains(obj->_mainColorChannel) &&
+			   _colorChannels[obj->_mainColorChannel]._blending;
+}
+
 void BaseGameLayer::createObjectsFromSetup(std::string_view uncompressedLevelString)
 {
 	//TODO: this function should only recieve vector of game object strings

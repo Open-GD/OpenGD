@@ -18,21 +18,50 @@
 
 #pragma once
 
-#include "2d/Layer.h"
+#include "PlayLayer.h"
+#include "2d/Menu.h"
 
-class GJGameLevel;
-
-
-class LevelEditorLayer : public ax::Layer {
+class LevelEditorLayer : public PlayLayer {
 private:
 	bool init(GJGameLevel* level);
-	void exit();
 
-	AX_SYNTHESIZE(GJGameLevel*, _level, Level);
+    ax::Vec2 m_camDelta;
 
+    bool _inPlaybackMode = false;
+    bool _inSwapMode = false;
+
+    ax::Menu *_button_playback;
+
+    std::map<std::string, GameObject *> _objectPositionCache;
+
+    int _selectedObject = 1;
+    GameObject *_selectedObjectReal = nullptr;
+
+    bool _shiftPressed = false;
 public:
+
 	static ax::Scene* scene(GJGameLevel* level);
 	static LevelEditorLayer* create(GJGameLevel* level);
-	void onDrawImGui();
+
+    void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) override;
+	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event) override;
+
+    void addObject(GameObject* obj) override;
+
+    void resetLevel() override;
+    void updateCamera(float dt) override;
+
+    void onEnter() override;
+    void update(float delta) override;
+
+    void destroyPlayer(PlayerObject* player) override;
+
+    void showCompleteText() override;
+
+    GameObject *findObject(float x, float y);
+
+    bool onTouchBegan(ax::Touch* touch, ax::Event* event);
+	void onTouchEnded(ax::Touch* touch, ax::Event* event);
+    void onTouchMoved(ax::Touch* touch, ax::Event* event);
 	// static LevelEditorLayer* getInstance();
 };

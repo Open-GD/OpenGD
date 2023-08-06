@@ -37,6 +37,7 @@ private:
 	int _time;
     int _stars;
 	bool _everyplay_included;
+    bool _testmode;
 public:
 	static EndLevelLayer* create(PlayLayer *pl);
     static EndLevelLayer* create(int attempts, int jumps, int time, bool everyplayIncluded, int stars);

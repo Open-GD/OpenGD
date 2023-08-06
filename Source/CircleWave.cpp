@@ -66,7 +66,7 @@ bool CircleWave::init(float duration, Color4B color, float radiusMin, float radi
 		auto radAction = ActionTween::create(duration, "radius", radiusMin, radiusMax);
 		auto opacityAction = ActionTween::create(duration / 2, "opacity", 0.0, 1.0);
 		auto opacityAction2 = ActionTween::create(duration / 2, "opacity", 1.0, 0.0);
-		auto seq = Sequence::create(opacityAction, opacityAction2, CallFunc::create([=]() {
+		auto seq = Sequence::create(opacityAction, opacityAction2, CallFunc::create([&]() {
 			this->removeFromParent();
 		}), nullptr);
 		auto action = Spawn::create(radAction, seq, nullptr);
@@ -77,7 +77,7 @@ bool CircleWave::init(float duration, Color4B color, float radiusMin, float radi
 		auto radAction = EaseOut::create(ActionTween::create(duration, "radius", radiusMin, radiusMax), 2.0f);
 		auto opacityAction = EaseOut::create(ActionTween::create(duration / 2, "opacity", this->_color.a, 0.0), 2.0f);
 		auto spawn = Spawn::create(radAction, opacityAction, nullptr);
-		auto action = Sequence::create(spawn, CallFunc::create([=](){ this->removeFromParent();}), nullptr);
+		auto action = Sequence::create(spawn, CallFunc::create([&](){ this->removeFromParent();}), nullptr);
 		Director::getInstance()->getActionManager()->addAction(action, this, false);
 	}
 

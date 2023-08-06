@@ -27,9 +27,9 @@
 class EffectManager : public ax::Node
 {
 	public:
-		std::vector<GroupCommandObject*> _groupActions;
-		std::vector<GroupCommandObject*> _completedMoveActions;
-		std::deque<GroupCommandObject*> _tempCompletedActions;
+		std::vector<GroupCommandObject*> _groupActions = {};
+		std::vector<GroupCommandObject*> _completedMoveActions = {};
+		std::deque<GroupCommandObject*> _tempCompletedActions = {};
 		std::unordered_map<int, CCMoveNode*, my_string_hash> _activeMoveActions;
 
 		float _xAccel, _yAccel;

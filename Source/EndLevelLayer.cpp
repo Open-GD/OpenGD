@@ -93,6 +93,7 @@ EndLevelLayer *EndLevelLayer::create(PlayLayer *pl)
 		pRet->_createdWithoutPlaylayer = false;
 		pRet->_everyplay_included = pl->_everyplay_recorded;
 		pRet->_stars = level->_stars;
+		pRet->_testmode = pl->_testMode;
 	} else {
 		pRet->_createdWithoutPlaylayer = true;
 	}
@@ -121,7 +122,7 @@ bool EndLevelLayer::init(PlayLayer *pl)
 		pl->m_pHudLayer->addChild(_statsLayer);
 	const auto& wsize = ax::Director::getInstance()->getWinSize();
 
-	// image
+	// level complete image
 
 	auto sprite = ax::Sprite::createWithSpriteFrameName("GJ_levelComplete_001.png");
 	sprite->setScale(0.8f);
@@ -148,7 +149,7 @@ bool EndLevelLayer::init(PlayLayer *pl)
 
 	// time
 	std::chrono::seconds duration{_time};
-	std::string timeText = fmt::format("Time: {:%H:%M:%S}", duration);
+	std::string timeText = fmt::format("Time: {:%M:%S}", duration);
 	auto time = ax::Label::createWithBMFont(goldFontStr, timeText);
 	time->setPositionY(wsize.height / 5 - 75 - 10);
 	time->setScale(0.8f);
@@ -157,6 +158,11 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	// random string
 
 	std::string_view randomText = EndLevelLayer::getRandomEndingString();
+	
+	if (_testmode) {
+		randomText = "Level Verified!";
+	}
+	
 	auto randomt = ax::Label::createWithBMFont(bigFontStr, randomText);
 	randomt->setPositionY(wsize.height / 5 - 120 - 10);
 	if (randomText.length() > 13)
@@ -211,6 +217,8 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	// stars
 
 	scheduleOnce([&](float delta) {
+		if (_stars < 1) return; 
+
 		auto starNode = ax::Node::create();
 		auto bigstar = ax::Sprite::createWithSpriteFrameName("GJ_bigStar_001.png");
 		std::string bigFontStr = GameToolbox::getTextureString("bigFont.fnt");
@@ -246,6 +254,20 @@ bool EndLevelLayer::init(PlayLayer *pl)
 	scheduleOnce([&](float delta) {
 		ax::AudioEngine::play2d("highscoreGet02.ogg");
 	}, 1.2f, "starSound");
+
+    if (!_createdWithoutPlaylayer)
+    {
+        auto level = _playlayer->getLevel();
+        auto stars = level->_stars;
+        if (stars > 0) {
+            auto star_sprite = ax::Sprite::createWithSpriteFrameName("GJ_bigStar_001.png");
+            std::string stars_got = "+" + std::to_string(stars);
+
+            auto menu_layer = ax::Layer::create();
+            menu_layer->addChild(star_sprite);
+
+        }
+    }
 
 	// everyplay if possible
 

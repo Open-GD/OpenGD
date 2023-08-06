@@ -46,6 +46,8 @@ bool UILayer::init()
 	auto dir = ax::Director::getInstance();
 	auto listener = ax::EventListenerTouchOneByOne::create();
 
+	_listener = listener;
+
 	listener->setEnabled(true);
 	listener->setSwallowTouches(true);
 

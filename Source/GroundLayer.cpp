@@ -83,15 +83,15 @@ void GroundLayer::updateTweenAction(float value, std::string_view key)
 
 void GroundLayer::update(float dt)
 {
-
-	if (auto pl = PlayLayer::getInstance())
+	if (auto pl = BaseGameLayer::getInstance())
 	{
-		if (pl->m_pColorChannels.contains(1001)) _sprite->setColor(pl->m_pColorChannels.at(1001)._color);
+		if (pl->_colorChannels.contains(1001)) _sprite->setColor(pl->_colorChannels.at(1001)._color);
 	}
 
 	this->_sprite->setPositionX(this->_sprite->getPositionX() - dt * this->m_fSpeed);
 
 	if (this->_sprite->getPositionX() <= -128.0f) this->_sprite->setPositionX(0);
+	if (this->_sprite->getPositionX() >= 64.0f) this->_sprite->setPositionX(-64);
 }
 
 GroundLayer* GroundLayer::create(int groundID)

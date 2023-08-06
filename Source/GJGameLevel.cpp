@@ -23,7 +23,6 @@
 
 #include <ZipUtils.h>
 
-
 //the only thing we actually want as normal string is the class members
 static inline std::string _toString(std::string_view s) {
 	return {s.begin(), s.end()};
@@ -130,6 +129,15 @@ std::string GJGameLevel::decompressLvlStr(std::string compressedLvlStr)
 	free(a);
 
 	return levelString;
+}
+
+std::string GJGameLevel::compressLvlStr(std::string decompressedLvlStr, int gdLevelID) {
+	// ax::ZipUtils::
+	// std::string compressed_data = gzip::compress(decompressedLvlStr.c_str(), decompressedLvlStr.size());
+
+	// return compressed_data;
+
+	return decompressedLvlStr;
 }
 
 std::string GJGameLevel::getDifficultySprite(GJGameLevel* level, DifficultyType type)

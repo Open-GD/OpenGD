@@ -77,6 +77,7 @@ if(NOT DEFINED BUILD_ENGINE_DONE) # to test OpenGD into root project
     endif()
 endif()
 
+
 # The common cross-platforms source files and header files
 file(GLOB_RECURSE GAME_HEADER
     Source/*.h
@@ -123,6 +124,7 @@ elseif(WINDOWS)
         ax_setup_winrt_sources()
     endif()
     list(APPEND GAME_SOURCE ${common_content_files})
+    add_compile_options(/arch:AVX2 /d2archSSE42 /d2archAVX)
 elseif(APPLE)
     if(IOS)
         list(APPEND GAME_HEADER

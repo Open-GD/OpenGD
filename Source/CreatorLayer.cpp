@@ -115,8 +115,19 @@ bool CreatorLayer::init()
 	{
 		GameToolbox::log("tag: {}", btn->getTag());
 		switch (btn->getTag())
-		{
-			case 0:
+		{	
+			case 0: {
+				auto level = GJGameLevel::createWithMinimumData("Unnamed 0", "You", 33);
+
+				auto editor = LevelEditorLayer::scene(level);
+
+				// addChild(editor, 1000);
+
+				Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, editor));
+
+				return;
+			}
+			case 1:
 			{
 				#ifdef _WIN32
 				auto fu = ax::FileUtils::getInstance();

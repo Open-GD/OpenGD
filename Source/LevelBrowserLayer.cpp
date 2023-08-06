@@ -191,71 +191,74 @@ bool LevelBrowserLayer::init(GJSearchObject* search)
 
 void LevelBrowserLayer::onHttpRequestCompleted(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
-	listView->removeAllItems();
-	_loading->setVisible(false);
-	if (auto str = GameToolbox::getResponse(response))
+	if (this) 
 	{
-		GameToolbox::log("{}", *str);
-		//error codes -1, -2 etc
-		if((*str).length() < 5)
-			return;
-		
-		auto splits = GameToolbox::splitByDelimStringView((*str), '#');
-		auto levels = GameToolbox::splitByDelimStringView(splits[0], '|');
-		auto authorsStrings = GameToolbox::splitByDelimStringView(splits[1], '|');
-		auto songsStrings = GameToolbox::splitByDelimStringView(splits[2], ':');
-		
-		std::vector<std::vector<std::string_view>> authors, songs;
-		authors.reserve(authorsStrings.size()); //pre-allocate enough memory
-		songs.reserve(songsStrings.size());
-		// songs.reserve(songsStrings.size());
-		for(const std::string_view aStr : authorsStrings) {
-			authors.push_back(std::move(GameToolbox::splitByDelimStringView(aStr, ':')));
-		}
-
-		for(const std::string_view aStr : songsStrings) {
-			songs.push_back(std::move(GameToolbox::splitByDelimStringView(aStr, '|')));
-		}
-		
-		auto getAuthor = [&](GJGameLevel* gjlevel) -> std::string_view
+		listView->removeAllItems();
+		_loading->setVisible(false);
+		if (auto str = GameToolbox::getResponse(response))
 		{
-			for(const auto& author : authors)
-			{
-				if(GameToolbox::stoi(author[0]) == gjlevel->_playerID)
-					return author[1];
+			GameToolbox::log("{}", *str);
+			//error codes -1, -2 etc
+			if((*str).length() < 5)
+				return;
+			
+			auto splits = GameToolbox::splitByDelimStringView((*str), '#');
+			auto levels = GameToolbox::splitByDelimStringView(splits[0], '|');
+			auto authorsStrings = GameToolbox::splitByDelimStringView(splits[1], '|');
+			auto songsStrings = GameToolbox::splitByDelimStringView(splits[2], ':');
+			
+			std::vector<std::vector<std::string_view>> authors, songs;
+			authors.reserve(authorsStrings.size()); //pre-allocate enough memory
+			songs.reserve(songsStrings.size());
+			// songs.reserve(songsStrings.size());
+			for(const std::string_view aStr : authorsStrings) {
+				authors.push_back(std::move(GameToolbox::splitByDelimStringView(aStr, ':')));
 			}
-			return "-";
-		};
 
-		auto getSong = [&](GJGameLevel* gjlevel) -> std::string_view
-		{
-			// for(const auto& song : songs)
-			// {
-			// 	// for(auto s : song) GameToolbox::log("\n{}", s);
-			// 	// if(GameToolbox::stoi(song[0]) == gjlevel->_playerID)
-			// 	// 	return song[1];
-			// }
-			return "Cool catchy song";
-		};
-		
-		std::vector<GJGameLevel*> toInsert;
-		toInsert.reserve(levels.size()); //pre-allocate enough memory
-		
-		for (size_t i = 0; i < levels.size(); i++)
-		{
-			auto gjlevel = GJGameLevel::createWithResponse(levels[i]);
-			gjlevel->_levelCreator = getAuthor(gjlevel);
-			gjlevel->_songName = getSong(gjlevel);
-			toInsert.push_back(gjlevel);
+			for(const std::string_view aStr : songsStrings) {
+				songs.push_back(std::move(GameToolbox::splitByDelimStringView(aStr, '|')));
+			}
+			
+			auto getAuthor = [&](GJGameLevel* gjlevel) -> std::string_view
+			{
+				for(const auto& author : authors)
+				{
+					if(GameToolbox::stoi(author[0]) == gjlevel->_playerID)
+						return author[1];
+				}
+				return "-";
+			};
+
+			auto getSong = [&](GJGameLevel* gjlevel) -> std::string_view
+			{
+				// for(const auto& song : songs)
+				// {
+				// 	// for(auto s : song) GameToolbox::log("\n{}", s);
+				// 	// if(GameToolbox::stoi(song[0]) == gjlevel->_playerID)
+				// 	// 	return song[1];
+				// }
+				return "Cool catchy song";
+			};
+			
+			std::vector<GJGameLevel*> toInsert;
+			toInsert.reserve(levels.size()); //pre-allocate enough memory
+			
+			for (size_t i = 0; i < levels.size(); i++)
+			{
+				auto gjlevel = GJGameLevel::createWithResponse(levels[i]);
+				gjlevel->_levelCreator = getAuthor(gjlevel);
+				gjlevel->_songName = getSong(gjlevel);
+				toInsert.push_back(gjlevel);
+			}
+
+			_cachedLevels.insert({_searchObj->_page, toInsert});
+
+			fillList();
 		}
-
-		_cachedLevels.insert({_searchObj->_page, toInsert});
-
-		fillList();
-	}
-	else
-	{
-		GameToolbox::log("request failed");
+		else
+		{
+			GameToolbox::log("request failed");
+		}
 	}
 }
 
