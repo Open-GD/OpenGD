@@ -1,6 +1,3 @@
-
-
-
 <div align="center">
 
 ![issues](https://img.shields.io/github/issues/Open-GD/OpenGD?style=for-the-badge&color=blue)
@@ -37,6 +34,8 @@
 </div>
 
 
+# UNMAINTAINED
+new (unfinished) projects are [gdrender](https://github.com/maxnut/gdrender) and [gdclone](https://github.com/opstic/gdclone)
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
