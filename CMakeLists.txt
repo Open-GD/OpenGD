@@ -10,7 +10,7 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-	
+
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
@@ -20,7 +20,7 @@
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.   
+# THE SOFTWARE.
 # ****************************************************************************/
 
 cmake_minimum_required(VERSION 3.10)
@@ -28,6 +28,7 @@ set(APP_NAME OpenGD)
 
 project(${APP_NAME})
 
+if (NOT AX_PREBUILT_DIR)
 SET(AX_ENABLE_EXT_IMGUI ON)
 SET(AX_ENABLE_EXT_GUI ON)
 
@@ -42,6 +43,7 @@ SET(AX_ENABLE_EXT_LIVE2D OFF)
 SET(AX_ENABLE_EXT_EFFEKSEER OFF)
 SET(AX_ENABLE_EXT_LUA OFF)
 SET(AX_ENABLE_MSEDGE_WEBVIEW2 OFF)
+endif()
 
 if(NOT DEFINED BUILD_ENGINE_DONE) # to test OpenGD into root project
     if(XCODE)
@@ -57,23 +59,22 @@ if(NOT DEFINED BUILD_ENGINE_DONE) # to test OpenGD into root project
     set(_AX_ROOT "$ENV{AX_ROOT}")
 
     if(NOT (_AX_ROOT STREQUAL ""))
-        set(_AX_ROOT_PATH "${_AX_ROOT}")
-        file(TO_CMAKE_PATH ${_AX_ROOT_PATH} _AX_ROOT_PATH) # string(REPLACE "\\" "/" _AX_ROOT_PATH ${_AX_ROOT_PATH})
+        file(TO_CMAKE_PATH ${_AX_ROOT} _AX_ROOT)
         message(STATUS "Using system env var _AX_ROOT=${_AX_ROOT}")
     else()
-        message(FATAL_ERROR "Please run setup.py add system env var 'AX_ROOT' to specific the engine root")
+        message(FATAL_ERROR "Please run setup.ps1 add system env var 'AX_ROOT' to specific the engine root")
     endif()
 
-    set(CMAKE_MODULE_PATH ${_AX_ROOT_PATH}/cmake/Modules/)
+    set(CMAKE_MODULE_PATH ${_AX_ROOT}/cmake/Modules/)
 
     include(AXBuildSet)
     set(_AX_USE_PREBUILT FALSE)
-    if ((WIN32 OR LINUX) AND DEFINED AX_PREBUILT_DIR AND IS_DIRECTORY ${_AX_ROOT_PATH}/${AX_PREBUILT_DIR})
+    if ((WIN32 OR LINUX) AND DEFINED AX_PREBUILT_DIR AND IS_DIRECTORY ${_AX_ROOT}/${AX_PREBUILT_DIR})
         set(_AX_USE_PREBUILT TRUE)
     endif()
 
     if (NOT _AX_USE_PREBUILT)
-        add_subdirectory(${_AX_ROOT_PATH}/core ${ENGINE_BINARY_PATH}/axmol/core)
+        add_subdirectory(${_AX_ROOT}/core ${ENGINE_BINARY_PATH}/axmol/core)
     endif()
 endif()
 
@@ -107,6 +108,11 @@ if(ANDROID)
 elseif(LINUX)
     list(APPEND GAME_SOURCE
          proj.linux/main.cpp
+         )
+    list(APPEND GAME_SOURCE ${common_content_files})
+elseif(WASM)
+    list(APPEND GAME_SOURCE
+         proj.wasm/main.cpp
          )
     list(APPEND GAME_SOURCE ${common_content_files})
 elseif(WINDOWS)
@@ -185,7 +191,7 @@ endif()
 
 # The optional thirdparties(not dependent by engine)
 if (AX_WITH_YAML_CPP)
-    list(APPEND GAME_INC_DIRS "${_AX_ROOT_PATH}/thirdparty/yaml-cpp/include")
+    list(APPEND GAME_INC_DIRS "${_AX_ROOT}/thirdparty/yaml-cpp/include")
 endif()
 
 target_include_directories(${APP_NAME} PRIVATE ${GAME_INC_DIRS})
@@ -211,8 +217,8 @@ if(APPLE)
     # For code-signing, set the DEVELOPMENT_TEAM:
     #set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "GRLXXXX2K9")
 elseif(WINDOWS)
-    if((NOT _AX_USE_PREBUILT) AND (NOT WINRT))
-        ax_copy_target_dll(${APP_NAME})
+    if(NOT _AX_USE_PREBUILT)
+        ax_sync_target_dlls(${APP_NAME})
     endif()
 endif()
 
@@ -235,13 +241,12 @@ endif()
 if (_AX_USE_PREBUILT) # support windows and linux
     use_ax_compile_define(${APP_NAME})
 
-    include(${_AX_ROOT_PATH}/cmake/Modules/AXLinkHelpers.cmake)
-    ax_link_cxx_prebuilt(${APP_NAME} ${_AX_ROOT_PATH} ${AX_PREBUILT_DIR})
+    include(AXLinkHelpers)
+    ax_link_cxx_prebuilt(${APP_NAME} ${_AX_ROOT} ${AX_PREBUILT_DIR})
 endif()
 
 if (NOT DEFINED BUILD_ENGINE_DONE)
     ax_uwp_set_all_targets_deploy_min_version()
 endif()
 
-#remove this if it causes issues (fmt doesnt link for me atm)
-target_compile_definitions(${APP_NAME} PUBLIC FMT_HEADER_ONLY)
+ax_setup_app_props(${APP_NAME})
