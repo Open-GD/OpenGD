@@ -645,7 +645,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	if (levelStr.empty())
 	{
 		nlohmann::json file = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
-		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)]);
+		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)].get<std::string>());
 	}
 
 	// scope based timer

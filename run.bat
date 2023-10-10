@@ -11,7 +11,7 @@ echo Entering run.bat directory: %myDir%
 cd /d %myDir%
 
 set APP_NAME=OpenGD
-set BUILD_DIR=build
+set BUILD_DIR=build_x64
 set BUILD_CFG=%1
 
 rem Determine which build config to run

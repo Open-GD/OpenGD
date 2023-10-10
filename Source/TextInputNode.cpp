@@ -25,8 +25,8 @@
 #include <EventDispatcher.h>
 #include <ui/UITextField.h>
 
-#ifdef AX_PLATFORM_PC
-#include <platform/desktop/GLViewImpl-desktop.h>
+#if defined(AX_PLATFORM_PC) || (AX_TARGET_PLATFORM == AX_PLATFORM_WASM)
+#include <platform/GLViewImpl.h>
 #endif
 
 USING_NS_AX;
