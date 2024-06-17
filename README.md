@@ -55,44 +55,49 @@ OpenGD is powered by [axmol](https://github.com/axmolengine/axmol), which is mai
 ## Build instructions
 
 Required:
-- Python 3.7+
+- Powershell
 - CMake
-- One of the major c++ compilers (MSVC, clang, gcc)
-
-
-> **Warning**
-> OpenGD only builds with latest release branch of axmol, which is [6896f01](https://github.com/axmolengine/axmol/commit/6896f01d3e86a189c8e72ac420c8fdda739531fd) at the moment
+- C++20 Compiler (MSVC, clang or gcc)
 
 
 <details>
 
   <summary>Windows</summary>
 
-Clone axmol, run setup.py and restart cmd for command line variables to update
+### Quick start
+
+Clone axmol, run setup.ps1 and restart cmd for command line variables to update
 ```
 git clone --branch release https://github.com/axmolengine/axmol
 cd axmol
-python setup.py
+./setup.ps1
 ```
 
-For windows, it is recommended to build axmol separately and link it dynamically to reduce rebuilds, compile time and link time.
-
-In the axmol folder, after running setup.py:
+In the OpenGD folder, build with cmake as usual
 ```
-cmake -B build_x64 -A x64 -DAX_BUILD_TESTS=OFF
+cmake -B build_x64
 cmake --build build_x64 --config RelWithDebInfo
-```
-
-After axmol finished building you can run 
-```
-git clone https://github.com/Open-GD/OpenGD
-cd OpenGD
-cmake -B build -A x64 -DAX_PREBUILT_DIR=build_x64
-cmake --build build --config RelWithDebInfo
 ```
 
 > **Warning**
 > VS 2019 might not work on Windows, VS 2022 is recommended
+
+
+### Recommended setup: VSCode
+
+Required:
+  - Ninja
+  - clang (llvm)
+  - cmake-tools extension
+  - c/c++ extension
+
+Recommended: [sccache](https://github.com/mozilla/sccache) (faster re-builds)
+
+Make sure ninja and clang are on path!
+
+From cmake-tools select configuration `Ninja default` or `Ninja sccache`, then build with cmake-tools or `cmake --build build`.
+
+The VSCode setup provides support for intellisense and debugger (requires vs2022)
 
 </details>
 
@@ -104,7 +109,7 @@ Check axmol [Dev setup](https://github.com/axmolengine/axmol/blob/dev/docs/DevSe
 
 </details>
 
-To actually run the game you will need the resources from the 2.1 version of Geometry Dash.
+To actually run the game you will need the resources from the 2.2/2.1 version of Geometry Dash.
 
 <!-- LICENSE -->
 ## License
