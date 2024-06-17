@@ -105,7 +105,7 @@ bool CreatorLayer::init()
 			case 5: return "GJ_weeklyBtn_001.png";
 			case 6: return "GJ_gauntletsBtn_001.png";
 			case 7: return "GJ_featuredBtn_001.png";
-			case 8: return "GJ_fameBtn_001.png";
+			//case 8: return "GJ_fameBtn_001.png"; hall of fame was removed from 2.2
 			case 9: return "GJ_mapPacksBtn_001.png";
 			case 10: return "GJ_searchBtn_001.png";
 		}

@@ -19,13 +19,13 @@
 #include "AlertLayer.h"
 #include "CreatorLayer.h"
 
-#include <iostream>
 #include "LevelSearchLayer.h"
 #include "MenuItemSpriteExtra.h"
 #include <ui/CocosGUI.h>
 #include "LevelBrowserLayer.h"
 #include "2d/Menu.h"
 #include "GJSearchObject.h"
+#include "Object.h"
 #include "TextInputNode.h"
 #include "2d/Transition.h"
 #include "EventListenerKeyboard.h"
@@ -363,7 +363,7 @@ void LevelSearchLayer::onSearchProfile(Node* btn)
 
 
 
-void LevelSearchLayer::toggleTime(Ref* btn)
+void LevelSearchLayer::toggleTime(ax::Object* btn)
 {
 	auto label = dynamic_cast<MenuItemLabel*>(btn);
 
@@ -381,7 +381,7 @@ void LevelSearchLayer::toggleTime(Ref* btn)
 	}
 }
 
-void LevelSearchLayer::toggleDifficulty(Ref* ref)
+void LevelSearchLayer::toggleDifficulty(ax::Object* ref)
 {
 	auto btn = dynamic_cast<ax::Node*>(ref);
 
@@ -429,7 +429,9 @@ void LevelSearchLayer::toggleDifficulty(Ref* ref)
 	if (selected)
 	{
 		if(tag == 6)
-		_extraDemonsBtn->setVisible(false);
+		{
+			_extraDemonsBtn->setVisible(false);
+		}
 
 		std::erase(_selectedDifficulties, tag);
 		btn->setColor(UNSELECTED_COLOR);

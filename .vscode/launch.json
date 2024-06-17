@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${config:cmake.buildDirectory}/bin/OpenGD/OpenGD.exe",
+            "cwd": "${config:cmake.buildDirectory}/bin/OpenGD/"
+        }
+    ]
+}

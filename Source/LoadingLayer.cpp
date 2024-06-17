@@ -225,7 +225,7 @@ void LoadingLayer::loadAssets() {
 	}
 }
 
-void LoadingLayer::assetLoaded(ax::Ref*)
+void LoadingLayer::assetLoaded(ax::Object*)
 {
 	
 	this->m_nAssetsLoaded++;

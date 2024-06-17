@@ -1,8 +1,8 @@
 #/****************************************************************************
 # Copyright (c) 2013-2014 cocos2d-x.org
-# Copyright (c) 2021-2022 Bytedance Inc.
+# Copyright (c) 2019-present Axmol Engine contributors (see AUTHORS.md).
 #
-# https://axmolengine.github.io/
+# https://axmol.dev/
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,19 @@
 # THE SOFTWARE.
 # ****************************************************************************/
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
+
 set(APP_NAME OpenGD)
 
 project(${APP_NAME})
 
 if (NOT AX_PREBUILT_DIR)
+
 SET(AX_ENABLE_EXT_IMGUI ON)
 SET(AX_ENABLE_EXT_GUI ON)
+SET(AX_ENABLE_EXT_INSPECTOR ON)
+
+set(AX_EXT_HINT OFF)
 
 SET(AX_ENABLE_EXT_ASSETMANAGER OFF)
 SET(AX_ENABLE_EXT_PARTICLE3D OFF)
@@ -42,50 +47,68 @@ SET(AX_ENABLE_EXT_COCOSTUDIO OFF)
 SET(AX_ENABLE_EXT_LIVE2D OFF)
 SET(AX_ENABLE_EXT_EFFEKSEER OFF)
 SET(AX_ENABLE_EXT_LUA OFF)
+SET(AX_ENABLE_EXT_DRAWNODEEX OFF)
+SET(AX_ENABLE_EXT_SDFGEN OFF)
+
 SET(AX_ENABLE_MSEDGE_WEBVIEW2 OFF)
+SET(AX_ENABLE_MFMEDIA OFF)
+SET(AX_ENABLE_VLC_MEDIA OFF)
+SET(AX_ENABLE_WEBSOCKET OFF)
+SET(AX_ENABLE_3D OFF)
+SET(AX_ENABLE_3D_PHYSICS OFF)
+SET(AX_ENABLE_NAVMESH OFF)
+
 endif()
 
-if(NOT DEFINED BUILD_ENGINE_DONE) # to test OpenGD into root project
-    if(XCODE)
-        set(CMAKE_XCODE_GENERATE_TOP_LEVEL_PROJECT_ONLY TRUE)
-    endif()
+if(XCODE)
+    set(CMAKE_XCODE_GENERATE_TOP_LEVEL_PROJECT_ONLY TRUE)
+endif()
 
-    # config quick starter batch script run.bat for windows
-    if(WIN32)
-        file(RELATIVE_PATH CMAKE_BUILD_RELATIVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
-        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/run.bat.in" "${CMAKE_CURRENT_SOURCE_DIR}/run.bat" @ONLY)
-    endif()
+# config quick starter batch script run.bat for windows
+if(WIN32)
+    file(RELATIVE_PATH CMAKE_BUILD_RELATIVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/run.bat.in" "${CMAKE_CURRENT_SOURCE_DIR}/run.bat" @ONLY)
+endif()
 
+set(_is_axmol_embed FALSE)
+if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/axmol")
+    set(_AX_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/axmol")
+    set(_is_axmol_embed TRUE)
+    message(STATUS "Building isolated project: ${APP_NAME}")
+else()
     set(_AX_ROOT "$ENV{AX_ROOT}")
-
     if(NOT (_AX_ROOT STREQUAL ""))
         file(TO_CMAKE_PATH ${_AX_ROOT} _AX_ROOT)
         message(STATUS "Using system env var _AX_ROOT=${_AX_ROOT}")
     else()
         message(FATAL_ERROR "Please run setup.ps1 add system env var 'AX_ROOT' to specific the engine root")
     endif()
+endif()
 
-    set(CMAKE_MODULE_PATH ${_AX_ROOT}/cmake/Modules/)
+set(CMAKE_MODULE_PATH ${_AX_ROOT}/cmake/Modules/)
 
-    include(AXBuildSet)
-    set(_AX_USE_PREBUILT FALSE)
+include(AXBuildSet)
+
+set(_AX_USE_PREBUILT FALSE)
+
+if(NOT _is_axmol_embed)
     if ((WIN32 OR LINUX) AND DEFINED AX_PREBUILT_DIR AND IS_DIRECTORY ${_AX_ROOT}/${AX_PREBUILT_DIR})
         set(_AX_USE_PREBUILT TRUE)
     endif()
+endif()
 
-    if (NOT _AX_USE_PREBUILT)
-        add_subdirectory(${_AX_ROOT}/core ${ENGINE_BINARY_PATH}/axmol/core)
-    endif()
+if (NOT _AX_USE_PREBUILT)
+    add_subdirectory(${_AX_ROOT}/core ${ENGINE_BINARY_PATH}/axmol/core)
 endif()
 
 # The common cross-platforms source files and header files
 file(GLOB_RECURSE GAME_HEADER
-    Source/*.h
+    Source/*.h Source/*.hpp
     )
 file(GLOB_RECURSE GAME_SOURCE
-    Source/*.cpp
+    Source/*.cpp Source/*.c
     )
-    
+
 set(GAME_INC_DIRS
   "${CMAKE_CURRENT_SOURCE_DIR}/Source"
 )
@@ -138,13 +161,13 @@ elseif(APPLE)
 
         if (TVOS)
             set(APP_UI_RES
-                proj.ios_mac/ios/LaunchScreenBackground.png
+                proj.ios_mac/ios/targets/tvos/LaunchScreenBackground.png
                 proj.ios_mac/ios/targets/tvos/LaunchScreen.storyboard
                 proj.ios_mac/ios/targets/tvos/Images.xcassets
                 )
         else()
             set(APP_UI_RES
-                proj.ios_mac/ios/LaunchScreenBackground.png
+                proj.ios_mac/ios/targets/ios/LaunchScreenBackground.png
                 proj.ios_mac/ios/targets/ios/LaunchScreen.storyboard
                 proj.ios_mac/ios/targets/ios/Images.xcassets
                 )
@@ -160,7 +183,6 @@ elseif(APPLE)
     elseif(MACOSX)
         set(APP_UI_RES
             proj.ios_mac/mac/Icon.icns
-            proj.ios_mac/mac/Info.plist
             )
         list(APPEND GAME_SOURCE
              proj.ios_mac/mac/main.cpp
@@ -191,7 +213,7 @@ endif()
 
 # The optional thirdparties(not dependent by engine)
 if (AX_WITH_YAML_CPP)
-    list(APPEND GAME_INC_DIRS "${_AX_ROOT}/thirdparty/yaml-cpp/include")
+    list(APPEND GAME_INC_DIRS "${_AX_ROOT}/3rdparty/yaml-cpp/include")
 endif()
 
 target_include_directories(${APP_NAME} PRIVATE ${GAME_INC_DIRS})
@@ -199,10 +221,11 @@ target_include_directories(${APP_NAME} PRIVATE ${GAME_INC_DIRS})
 
 # mark app resources, resource will be copy auto after mark
 ax_setup_app_config(${APP_NAME})
+
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
     set_xcode_property(${APP_NAME} INSTALL_PATH "\$(LOCAL_APPS_DIR)")
-    set_xcode_property(${APP_NAME} PRODUCT_BUNDLE_IDENTIFIER "org.axmol.hellocpp")
+    set_xcode_property(${APP_NAME} PRODUCT_BUNDLE_IDENTIFIER "org.axmol.dummy")
 
     if(MACOSX)
         set_target_properties(${APP_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/proj.ios_mac/mac/Info.plist")
@@ -212,6 +235,7 @@ if(APPLE)
     elseif(IOS)
         set_target_properties(${APP_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/proj.ios_mac/ios/targets/ios/Info.plist")
         set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
+        set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2")
     endif()
 
     # For code-signing, set the DEVELOPMENT_TEAM:
@@ -243,10 +267,6 @@ if (_AX_USE_PREBUILT) # support windows and linux
 
     include(AXLinkHelpers)
     ax_link_cxx_prebuilt(${APP_NAME} ${_AX_ROOT} ${AX_PREBUILT_DIR})
-endif()
-
-if (NOT DEFINED BUILD_ENGINE_DONE)
-    ax_uwp_set_all_targets_deploy_min_version()
 endif()
 
 ax_setup_app_props(${APP_NAME})

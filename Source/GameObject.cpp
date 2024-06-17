@@ -506,10 +506,12 @@ GameObject* GameObject::createFromString(std::string_view data)
 	if (objectID != 1 && std::find(GameObject::_pTriggers.begin(), GameObject::_pTriggers.end(), objectID) !=
 							 GameObject::_pTriggers.end())
 	{
-		// mylock.lock();
 		obj = EffectGameObject::create(frame);
 		// mylock.unlock();
-		obj->_isTrigger = true;
+		if(obj)
+		{
+			obj->_isTrigger = true;
+		}
 	}
 	else
 	{
@@ -520,6 +522,7 @@ GameObject* GameObject::createFromString(std::string_view data)
 
 	if (!obj)
 	{
+		GameToolbox::log("Could not create object from {}", frame);
 		return nullptr;
 	}
 

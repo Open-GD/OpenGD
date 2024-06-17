@@ -24,13 +24,11 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-#include "LoadingLayer.h"
 #include "GameManager.h"
 #include "ResourcesLoadingLayer.h"
 #include "external/constants.h"
 #include "GameToolbox/log.h"
 
-#include "platform/Application.h"
 #include "platform/GLView.h"
 #include "base/Director.h"
 #include "base/EventDispatcher.h"
@@ -111,7 +109,7 @@ static void setupDesignResolution(GLView* glView)
 static void onGLFWwindowSizeCallback(GLFWwindow*, int w, int h)
 {
 	auto director = Director::getInstance();
-	auto glView = director->getOpenGLView();
+	auto glView = director->getGLView();
 
 	glView->setFrameSize(w, h);
 	setupDesignResolution(glView);
@@ -127,7 +125,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 	// initialize director
 	auto director = Director::getInstance();
-	auto glView = director->getOpenGLView();
+	auto glView = director->getGLView();
 	if (!glView)
 	{
 #ifdef AX_PLATFORM_PC
@@ -148,7 +146,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 		auto full = dynamic_cast<GLViewImpl *>(glView);
 		full->setFullscreen();
 #endif
-		director->setOpenGLView(glView);
+		director->setGLView(glView);
 	}
 
 	// display FPS stats or not.

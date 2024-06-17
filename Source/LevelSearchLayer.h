@@ -21,13 +21,14 @@
 #include <vector>
 
 #include "2d/Layer.h"
+#include "Object.h"
 
 class GJSearchObject;
 class TextInputNode;
 
 namespace ax 
 { 
-	class Ref; 
+	class Object; 
 	class Node;
 	class Menu;
 	class Scene;
@@ -35,8 +36,8 @@ namespace ax
 
 class LevelSearchLayer : public ax::Layer {
 private:
-	void toggleDifficulty(ax::Ref*);
-	void toggleTime(ax::Ref*);
+	void toggleDifficulty(ax::Object*);
+	void toggleTime(ax::Object*);
 	void onSearchProfile(ax::Node*);
 	void onSearch(ax::Node*);
 
