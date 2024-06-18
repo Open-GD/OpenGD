@@ -147,20 +147,6 @@ void ResourcesLoadingLayer::handleWindows()
 
 bool ResourcesLoadingLayer::isWindowsGDPathValid(std::string exepath)
 {
-	// Check the size of the executable file
-	HANDLE hFile = CreateFile(std::wstring(exepath.begin(), exepath.end()).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) {
-		return false;
-	}
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	//if lower than 6 mb or greater than 7mb return false
-	if (dwFileSize < 6 * 1024 * 1024 || dwFileSize >= 7 * 1024 * 1024)
-	{
-		CloseHandle(hFile);
-		return false;
-	}
-	CloseHandle(hFile);
-
 	exepath.erase(exepath.find_last_of('\\'));
 
 	if (!_fu->isDirectoryExist(fmt::format("{}\\Resources", exepath))) return false;

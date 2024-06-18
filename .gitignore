@@ -32,7 +32,7 @@
 # Workspace files are user-specific
 **/*.sublime-workspace
 **/*.sublime-project
-.vscode
+
 .vs
 
 # Ignore build folders
@@ -48,6 +48,9 @@ out
 /proj.android/.idea/*
 /proj.android/app/.cxx/*
 /proj.android/app/src/org/axmol/lib
+
+#clangd
+.cache
 
 
 Resources/*

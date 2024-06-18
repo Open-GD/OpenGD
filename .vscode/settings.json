@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "xtree": "cpp",
+        "filesystem": "cpp",
+        "future": "cpp",
+        "memory": "cpp",
+        "numeric": "cpp",
+        "ranges": "cpp",
+        "system_error": "cpp",
+        "xmemory": "cpp"
+    }
+}

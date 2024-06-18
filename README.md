@@ -1,6 +1,3 @@
-
-
-
 <div align="center">
 
 ![issues](https://img.shields.io/github/issues/Open-GD/OpenGD?style=for-the-badge&color=blue)
@@ -37,6 +34,8 @@
 </div>
 
 
+# UNMAINTAINED
+new (unfinished) projects are [gdrender](https://github.com/maxnut/gdrender) and [gdclone](https://github.com/opstic/gdclone)
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
@@ -56,45 +55,49 @@ OpenGD is powered by [axmol](https://github.com/axmolengine/axmol), which is mai
 ## Build instructions
 
 Required:
-- Python 3.7+
+- Powershell
 - CMake
-- Microsoft PowerShell 7.3+
-- One of the major c++ compilers (MSVC, clang, gcc)
-
-
-> **Warning**
-> OpenGD only builds with latest release branch of axmol, which is [4753270](https://github.com/axmolengine/axmol/commit/4753270d77283be3f3635cc41126d9fb768e7272) at the moment
+- C++20 Compiler (MSVC, clang or gcc)
 
 
 <details>
 
   <summary>Windows</summary>
 
-Clone axmol, run setup.py and restart cmd for command line variables to update
+### Quick start
+
+Clone axmol, run setup.ps1 and restart cmd for command line variables to update
 ```
 git clone https://github.com/axmolengine/axmol
 cd axmol
-pwsh setup.ps1
+./setup.ps1
 ```
 
-For windows, it is recommended to build axmol separately and link it dynamically to reduce rebuilds, compile time and link time.
-
-In the axmol folder, after running setup.ps1:
+In the OpenGD folder, build with cmake as usual
 ```
-cmake -B build_x64 -A x64 -DAX_BUILD_TESTS=OFF
+cmake -B build_x64
 cmake --build build_x64 --config RelWithDebInfo
-```
-
-After axmol finished building you can run 
-```
-git clone https://github.com/Open-GD/OpenGD
-cd OpenGD
-cmake -B build -A x64 -DAX_PREBUILT_DIR=build_x64
-cmake --build build --config RelWithDebInfo
 ```
 
 > **Warning**
 > VS 2019 might not work on Windows, VS 2022 is recommended
+
+
+### Recommended setup: VSCode
+
+Required:
+  - Ninja
+  - clang (llvm)
+  - cmake-tools extension
+  - c/c++ extension
+
+Recommended: [sccache](https://github.com/mozilla/sccache) (faster re-builds)
+
+Make sure ninja and clang are on path!
+
+From cmake-tools select configuration `Ninja default` or `Ninja sccache`, then build with cmake-tools or `cmake --build build`.
+
+The VSCode setup provides support for intellisense and debugger (requires vs2022)
 
 </details>
 
@@ -106,7 +109,7 @@ Check axmol [Dev setup](https://github.com/axmolengine/axmol/blob/dev/docs/DevSe
 
 </details>
 
-To actually run the game you will need the resources from the 2.1 version of Geometry Dash.
+To actually run the game you will need the resources from the 2.2/2.1 version of Geometry Dash.
 
 <!-- LICENSE -->
 ## License

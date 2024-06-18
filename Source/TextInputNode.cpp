@@ -17,6 +17,7 @@
 *************************************************************************/
 
 #include "TextInputNode.h"
+#include "Object.h"
 
 #include <fmt/format.h>
 #include <EventListenerTouch.h>
@@ -25,8 +26,8 @@
 #include <EventDispatcher.h>
 #include <ui/UITextField.h>
 
-#ifdef AX_PLATFORM_PC
-#include <platform/desktop/GLViewImpl-desktop.h>
+#if defined(AX_PLATFORM_PC) || (AX_TARGET_PLATFORM == AX_PLATFORM_WASM)
+#include <platform/GLViewImpl.h>
 #endif
 
 USING_NS_AX;
@@ -95,7 +96,7 @@ bool TextInputNode::init(float width, float height, std::string_view placeholder
 	}
 
 	auto touchListener = EventListenerTouchOneByOne::create();
-	_textField->addEventListener([&](Ref* re, ui::TextField::EventType event)
+	_textField->addEventListener([&](ax::Object* re, ui::TextField::EventType event)
 		{
 			switch (event)
 			{
@@ -216,13 +217,13 @@ void TextInputNode::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 		break;
 	case EventKeyboard::KeyCode::KEY_C:
 		if (_onCommandMode)
-			glfwSetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow(), _textField->getString().data());
+			glfwSetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getGLView())->getWindow(), _textField->getString().data());
 		_onCommandMode = false;
 		break;
 	case EventKeyboard::KeyCode::KEY_V:
 		if (_onCommandMode)
 		{
-			_textField->setString(sanitizeString(fmt::format("{}{}", _textField->getString(), glfwGetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView())->getWindow()))));
+			_textField->setString(sanitizeString(fmt::format("{}{}", _textField->getString(), glfwGetClipboardString(static_cast<GLViewImpl*>(Director::getInstance()->getGLView())->getWindow()))));
 			updateDisplayedLabel();
 		}
 		_onCommandMode = false;

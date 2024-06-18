@@ -27,7 +27,6 @@
 #include "LevelSelectLayer.h"
 #include "LevelTools.h"
 #include "MenuItemSpriteExtra.h"
-#include "Random.h"
 
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
@@ -35,9 +34,6 @@
 #include "external/benchmark.h"
 #include "external/json.hpp"
 #include "external/constants.h"
-
-#include <charconv>
-#include <fstream>
 
 #include "LevelDebugLayer.h"
 #include "UILayer.h"
@@ -1533,11 +1529,11 @@ void PlayLayer::onDrawImGui()
 		auto mode = glfwGetVideoMode(monitor);
 
 		if (fullscreen)
-			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
+			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getGLView())->getWindow(),
 								 monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 		else
 		{
-			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
+			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getGLView())->getWindow(),
 								 NULL, 0, 0, 1280, 720, 0);
 			glfwWindowHint(GLFW_DECORATED, true);
 		}

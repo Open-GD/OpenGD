@@ -24,8 +24,6 @@
 #include "GJGameLevel.h"
 #include "GameToolbox/conv.h"
 #include "GameToolbox/getTextureString.h"
-#include "GameToolbox/log.h"
-#include "GameToolbox/network.h"
 #include "GameToolbox/nodes.h"
 #include "ImGui/ImGuiPresenter.h"
 #include "ImGui/imgui/imgui.h"
@@ -37,13 +35,11 @@
 #else
 #define HRESULT unsigned int
 #endif
-#include "format.h"
 #include <AudioEngine.h>
 #include <Macros.h>
 
 USING_NS_AX;
 USING_NS_AX_EXT;
-using namespace ax::network;
 
 int audioId;
 
@@ -184,11 +180,11 @@ void LevelDebugLayer::onDrawImgui()
 		auto mode = glfwGetVideoMode(monitor);
 
 		if (fullscreen)
-			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
+			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getGLView())->getWindow(),
 								 monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 		else
 		{
-			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getOpenGLView())->getWindow(),
+			glfwSetWindowMonitor(static_cast<GLViewImpl*>(ax::Director::getInstance()->getGLView())->getWindow(),
 								 NULL, 0, 0, 1280, 720, 0);
 			glfwWindowHint(GLFW_DECORATED, true);
 		}

@@ -25,6 +25,7 @@
 #include "AudioEngine.h"
 #include "MenuItemSpriteExtra.h"
 
+#include "PlatformMacros.h"
 #include "PlayLayer.h"
 #include "LoadingCircle.h"
 #include "SimpleProgressBar.h"
@@ -90,17 +91,18 @@ bool MenuLayer::init()
 	
 	// GameToolbox::log("key1: {}, key2: {}, key3: {}", key, otherKey, myKey);
 	
-	
+
 	if (!Layer::init()) return false;
 
 	if (music)
 	{
-		AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+		//AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 		music = false;
 	}
 
-	_mgl = MenuGameLayer::create();
-	addChild(_mgl, -1);
+
+	//_mgl = MenuGameLayer::create();
+	//addChild(_mgl, -1);
 
 	float offsetScale = 1.13F;
 	const auto& winSize = Director::getInstance()->getWinSize();

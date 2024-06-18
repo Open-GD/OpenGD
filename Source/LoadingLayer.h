@@ -36,7 +36,7 @@ public:
 	static LoadingLayer* create();
 	bool init();
 	void loadAssets();
-	void assetLoaded(ax::Ref*);
+	void assetLoaded(ax::Object*);
 	SimpleProgressBar* _pBar;
 	
 	float m_nAssetsLoaded = 0;
