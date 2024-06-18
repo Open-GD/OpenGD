@@ -65,7 +65,7 @@ bool ResourcesLoadingLayer::init()
 		GameToolbox::log("search path: {}", a);
 	}
 	//some random files to check if theres already a path added
-	if (_fu->isFileExist("game_bg_01_001-hd.png") && _fu->isFileExist("GJ_LaunchSheet-hd.png") && _fu->isFileExist("GJ_GameSheet03-uhd.png"))
+	if (_fu->isFileExist("game_bg_01_001-hd.png") && _fu->isFileExist("GJ_LaunchSheet-hd.png") && _fu->isFileExist("GJ_GameSheet03-uhd.png") && _fu->isFileExist("player_01-hd.png"))
 	{
 		loadLoadingLayer();
 		return true;
@@ -81,6 +81,7 @@ bool ResourcesLoadingLayer::init()
 	if(auto path = _gm->get<std::string>("resources_path"); !path.empty() && _fu->isDirectoryExist(path))
 	{
 		_fu->addSearchPath(path, true);
+		_fu->addSearchPath(path + "\\icons", true);
 		loadLoadingLayer();
 		return true;
 	}
@@ -130,6 +131,7 @@ void ResourcesLoadingLayer::handleWindows()
 				exepath.erase(exepath.find_last_of('\\'));
 				std::string resourcesPath = fmt::format("{}\\Resources", exepath);
 				_fu->addSearchPath(resourcesPath, true);
+				_fu->addSearchPath(resourcesPath + "\\icons", true);
 				_gm->set<std::string>("resources_path", resourcesPath);
 				_gm->save();
 				loadLoadingLayer();
@@ -150,6 +152,7 @@ bool ResourcesLoadingLayer::isWindowsGDPathValid(std::string exepath)
 	exepath.erase(exepath.find_last_of('\\'));
 
 	if (!_fu->isDirectoryExist(fmt::format("{}\\Resources", exepath))) return false;
+	if (!_fu->isDirectoryExist(fmt::format("{}\\Resources\\icons", exepath))) return false;
 	if (!_fu->isFileExist(fmt::format("{}\\libcocos2d.dll", exepath))) return false;
 	if (!_fu->isFileExist(fmt::format("{}\\libcurl.dll", exepath))) return false;
 

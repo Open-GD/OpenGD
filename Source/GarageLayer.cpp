@@ -104,8 +104,10 @@ bool GarageLayer::init()
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_03_001.png", [&](Node*) {
 		if (_popSceneWithTransition) 
 			GameToolbox::popSceneWithTransition(0.5f, popTransition::kTransitionShop);
-		else
+		else {
+			auto director = Director::getInstance();
 			director->replaceScene(TransitionFade::create(0.5f, MenuLayer::scene()));
+		}
 	});
 	backBtn->setPosition({24, size.height - 23});
 	//backBtn->setSizeMult(1.6f);
@@ -242,11 +244,11 @@ void GarageLayer::setupIconSelect()
 	auto arrow1 = Sprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
 	arrow1->setScale(.8f);
 
-	auto onChangePage = [&](bool up)
+	auto onChangePage = [this](bool up)
 	{
 		int gameMode = selectedGameModeInt();
-		GameToolbox::log("selected: {}, gameMode: {}", (int)_selectedMode, gameMode);
-		int page = _modePages[gameMode];
+		GameToolbox::log("selected: {}, gameMode: {}", (int)this->_selectedMode, gameMode);
+		int page = this->_modePages[gameMode];
 		int maxpage = GameToolbox::getValueForGamemode(_selectedMode) / 36;
 
 		if ((!up && page <= 0) || (up && page >= maxpage))
@@ -317,7 +319,8 @@ const char* GarageLayer::getSpriteName(int id, bool actived)
 
 void GarageLayer::setupPage(IconType type, int page)
 {
-	GameToolbox::log("posx: {}, posy {}", _selectSprite->getPositionX(), _selectSprite->getPositionY());
+	if (_selectSprite != nullptr)
+		GameToolbox::log("posx: {}, posy {}", _selectSprite->getPositionX(), _selectSprite->getPositionY());
 	GameToolbox::log("page: {}", page);
 	_selectedMode = type;
 	// aqui robtop hace cosas con funciones del gamemanager, ni idea
@@ -338,7 +341,8 @@ void GarageLayer::setupPage(IconType type, int page)
 	int selectedForGameMode = GameManager::getInstance()->getSelectedIcon(_selectedMode);
 	GameToolbox::log("selectedForGameMode: {}", selectedForGameMode);
 
-	_selectSprite->setVisible(false);
+	if (_selectSprite != nullptr)
+		_selectSprite->setVisible(false);
 	GameToolbox::log("i: {}, max: {}", i, max);
 	for (;i <= max; i++)
 	{

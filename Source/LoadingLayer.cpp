@@ -35,6 +35,8 @@
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/rand.h"
 
+#include "fmt/format.h"
+
 USING_NS_AX;
 
 
@@ -155,7 +157,7 @@ bool LoadingLayer::init() {
 	_sprFrameCache->removeSpriteFrames();
 	_textureCache->removeAllTextures();
 
-	size_t totalAssets = fonts.size() + plists.size() + pngs.size();
+	size_t totalAssets = fonts.size() + plists.size() + pngs.size() + getPlayerIconsSize() + getShipIconsSize() + getPlayerBallIconsSize() + getBirdIconsSize();
 	this->m_nTotalAssets = static_cast<int>(totalAssets);
 	
 	_textureCache->addImage(GameToolbox::getTextureString("GJ_LaunchSheet.png"));
@@ -223,6 +225,8 @@ void LoadingLayer::loadAssets() {
 		Label::createWithBMFont(GameToolbox::getTextureString(fnt), "someText");
 		this->assetLoaded(nullptr);
 	}
+
+	loadIcons();
 }
 
 void LoadingLayer::assetLoaded(ax::Object*)
@@ -235,4 +239,58 @@ void LoadingLayer::assetLoaded(ax::Object*)
 	if(m_nAssetsLoaded == m_nTotalAssets) {
 		Director::getInstance()->replaceScene(MenuLayer::scene());
 	}
+}
+
+void LoadingLayer::loadIcons()
+{
+	for (int i = 0; i < getPlayerIconsSize(); i++) {
+		std::string plist = StringUtils::format("player_%02d.plist", i);
+
+		GameToolbox::log("player icon plist {}", plist);
+
+		_sprFrameCache->addSpriteFramesWithFile(GameToolbox::getTextureString(plist));
+		this->assetLoaded(nullptr);
+	}
+	for (int i = 0; i < getShipIconsSize(); i++) {
+		std::string plist = StringUtils::format("ship_%02d.plist", i);
+
+		GameToolbox::log("ship icon plist {}", plist);
+
+		_sprFrameCache->addSpriteFramesWithFile(GameToolbox::getTextureString(plist));
+		this->assetLoaded(nullptr);
+	}
+	for (int i = 0; i < getPlayerBallIconsSize(); i++) {
+		std::string plist = StringUtils::format("player_ball_%02d.plist", i);
+
+		GameToolbox::log("player ball icon plist {}", plist);
+
+		_sprFrameCache->addSpriteFramesWithFile(GameToolbox::getTextureString(plist));
+		this->assetLoaded(nullptr);
+	}
+	for (int i = 0; i < getBirdIconsSize(); i++) {
+		std::string plist = StringUtils::format("bird_%02d.plist", i);
+
+		GameToolbox::log("bird icon plist {}", plist);
+
+		_sprFrameCache->addSpriteFramesWithFile(GameToolbox::getTextureString(plist));
+		this->assetLoaded(nullptr);
+	}
+}
+
+int LoadingLayer::getPlayerIconsSize()
+{
+	return 135;
+	// return 14;
+}
+int LoadingLayer::getShipIconsSize()
+{
+	return 51;
+}
+int LoadingLayer::getPlayerBallIconsSize()
+{
+	return 43;
+}
+int LoadingLayer::getBirdIconsSize()
+{
+	return 35;
 }

@@ -30,6 +30,13 @@ namespace ax
 
 
 class LoadingLayer : public ax::Layer {
+private:
+	void loadIcons();
+
+	int getPlayerIconsSize();
+	int getShipIconsSize();
+	int getPlayerBallIconsSize();
+	int getBirdIconsSize();
 public:
 	const char* getSplash();
 	static ax::Scene* scene();
