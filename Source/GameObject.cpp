@@ -38,10 +38,16 @@ bool GameObject::init(std::string_view frame, std::string_view glowFrame)
 		return true;
 
 	if (frame.empty())
+	{
+		// GameToolbox::log("false cuz frame is empty");
 		return false;
+	}
 
 	if (!Sprite::initWithSpriteFrameName(fmt::format("{}.png", frame)))
+	{
+		// GameToolbox::log("false cuz sprite failed");
 		return false;
+	}
 
 	_pOuterBounds = Rect();
 	_pInnerBounds = Rect();

@@ -178,7 +178,7 @@ void LevelPage::onPlay(Node* btn)
 	if (LevelPage::replacingScene)
 		return;
 
-	ax::Scene* scene = _openBGL ? LevelDebugLayer::scene(_level) : PlayLayer::scene(_level);
+	ax::Scene* scene = PlayLayer::scene(_level);
 	ax::AudioEngine::stopAll();
 	ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
 	ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, scene));
