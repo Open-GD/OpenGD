@@ -68,7 +68,7 @@ Required:
 
 Clone axmol, run setup.ps1 and restart cmd for command line variables to update
 ```
-git clone --branch release https://github.com/axmolengine/axmol
+git clone https://github.com/axmolengine/axmol
 cd axmol
 ./setup.ps1
 ```

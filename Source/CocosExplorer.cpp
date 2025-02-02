@@ -70,10 +70,12 @@ void highlight(ax::Node* node, bool selected)
 	{
 		auto camera = Camera::getDefaultCamera();
 
-		const ax::Mat4& viewMatrix = camera->getViewMatrix();
-		const ax::Point offset(viewMatrix.m[3], viewMatrix.m[7]);
-		bb_min -= offset;
-		bb_max -= offset;
+		if (camera) {
+			const ax::Mat4& viewMatrix = camera->getViewMatrix();
+			const ax::Point offset(viewMatrix.m[3], viewMatrix.m[7]);
+			bb_min -= offset;
+			bb_max -= offset;
+		}
 
 		camera_parent = camera_parent->getParent();
 	}
@@ -255,8 +257,12 @@ void drawProperties()
 			groupText += fmt::format("{} ", i);
 			opacityMultiplier *= BaseGameLayer::getInstance()->_groups[i]._alpha;
 		}
-		ImGui::Text(fmt::format("Groups: {}", groupText).c_str());
-		ImGui::Text(fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier).c_str());
+
+		std::string groups_string = fmt::format("Groups: {}", groupText);
+		std::string opacitymul_string = fmt::format("Opacity Multiplier (groups): {}", opacityMultiplier);
+
+		ImGui::Text("%s", groups_string.c_str());
+		ImGui::Text("%s", opacitymul_string.c_str());
 
 		float hsv1[3], hsv2[3];
 		bool check1, check2, check3, check4;

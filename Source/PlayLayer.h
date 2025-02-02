@@ -29,6 +29,8 @@
 #include "Types.h"
 #include "GameToolbox/conv.h"
 
+#include <functional>
+
 enum PlayerGamemode;
 
 class GJGameLevel;
@@ -47,18 +49,18 @@ namespace ax
 }
 
 
-class PlayLayer : public ax::Layer
+class PlayLayer : public BaseGameLayer
 {
-  private:
-	bool init(GJGameLevel* level);
+protected:
+	bool init(GJGameLevel* level) override;
 	void onEnter() override;
 	void onExit() override;
 	void onDrawImGui();
-	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
-	void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	virtual void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
+	virtual void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 	void createLevelEnd();
 
-	void fillColorChannel(std::span<std::string_view> colorString, int id);
+	ax::Node* cameraFollow;
 
 	ax::Sprite* m_pBG;
 	GroundLayer *_bottomGround, *_ceiling;
@@ -71,8 +73,6 @@ class PlayLayer : public ax::Layer
 
 	std::vector<GameObject*> _pObjects;
 
-	std::vector<std::vector<GameObject*>> m_pSectionObjects;
-
 	float m_fCameraYCenter;
 	float m_lastObjXPos = 570.0f;
 	bool m_bFirstAttempt = true;
@@ -82,14 +82,10 @@ class PlayLayer : public ax::Layer
 	float m_fEndOfLevel = FLT_MAX;
 	float m_fShakeIntensity = 1;
 
-	int _prevSection, _nextSection;
-
 	bool m_bIsJumpPressed;
 
 	SimpleProgressBar* m_pBar;
 	ax::Label* m_pPercentage;
-
-	LevelSettings _levelSettings;
 
 	//----IMGUI DEBUG MEMBERS----
 	bool m_freezePlayer;
@@ -97,6 +93,7 @@ class PlayLayer : public ax::Layer
 
 	bool m_bEndAnimation;
 
+	void setInstance();
 public:
 	int _enterEffectID = 0;
 
@@ -109,44 +106,26 @@ public:
 	int _attempts;
 	int _jumps;
 	bool _everyplay_recorded;
+	bool _testMode;
 
 	std::vector<bool> _coinsCollected;
 
-	PlayerObject* _player1;
-	PlayerObject* _player2;
-
 	bool _isDualMode;
 
-	std::string _mainBatchNodeTexture = "GJ_GameSheet.png";
-	std::string _main2BatchNodeTexture = "GJ_GameSheet02.png";
-
-	ax::SpriteBatchNode *_mainBatchNodeB4, *_mainBatchNodeB3, *_mainBatchNodeB2, *_mainBatchNodeB1, *_mainBatchNodeT1,
-		*_mainBatchNodeT2, *_mainBatchNodeT3;
-	ax::SpriteBatchNode *_blendingBatchNodeB4, *_blendingBatchNodeB3, *_blendingBatchNodeB2, *_blendingBatchNodeB1,
-		*_blendingBatchNodeT1, *_blendingBatchNodeT2, *_blendingBatchNodeT3;
-	ax::SpriteBatchNode* _main2BatchNode;
-	ax::SpriteBatchNode* _glowBatchNode;
-	ax::ParticleBatchNode* _particleBatchNode;
-
-	std::unordered_map<int, SpriteColor, my_string_hash> m_pColorChannels, _originalColors;
-	std::unordered_map<int, GroupProperties, my_string_hash> _groups;
-
-	AX_SYNTHESIZE(GJGameLevel*, _pLevel, Level);
-
-	void destroyPlayer(PlayerObject* player);
+	virtual void destroyPlayer(PlayerObject* player);
 
 	void loadLevel(std::string_view levelStr);
 
 	void spawnCircle();
 	void showEndLayer();
-	void showCompleteText();
+	virtual void showCompleteText();
 
 	void update(float delta) override;
-	void updateCamera(float dt);
+	virtual void updateCamera(float dt);
 	void updateVisibility();
 	void moveCameraToPos(ax::Vec2);
 	void changeGameMode(GameObject* obj, PlayerObject* player, PlayerGamemode gameMode);
-	void resetLevel();
+	virtual void resetLevel();
 	void exit();
 
 	void tweenBottomGround(float y);
@@ -158,8 +137,6 @@ public:
 
 	void applyEnterEffect(GameObject* obj);
 	float getRelativeMod(ax::Vec2 objPos, float v1, float v2, float v3);
-	
-	bool isObjectBlending(GameObject* obj);
 
 	int sectionForPos(float x);
 

@@ -24,12 +24,15 @@ namespace ax
 { 
 	class Touch; 
 	class Event;
+    class EventListenerTouchOneByOne;
 }
 
 class UILayer : public ax::Layer {
 public:
 	static UILayer* create();
 	bool init();
+
+    ax::EventListenerTouchOneByOne *_listener;
 
 	bool onTouchBegan(ax::Touch* touch, ax::Event* event);
 	void onTouchEnded(ax::Touch* touch, ax::Event* event);

@@ -148,16 +148,15 @@ void LevelDebugLayer::onEnter()
 
 	dir->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
-	ImGuiPresenter::getInstance()->addRenderLoop("#playlayer", AX_CALLBACK_0(LevelDebugLayer::onDrawImgui, this),
+	ImGuiPresenter::getInstance()->addRenderLoop("#leveldebuglayer", AX_CALLBACK_0(LevelDebugLayer::onDrawImgui, this),
 												 dir->getRunningScene());
 }
 
 void LevelDebugLayer::onExit()
 {
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
-	ImGuiPresenter::getInstance()->removeRenderLoop("#playlayer");
+	ImGuiPresenter::getInstance()->removeRenderLoop("#leveldebuglayer");
 	this->unscheduleUpdate();
-
 	Layer::onExit();
 }
 

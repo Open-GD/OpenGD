@@ -101,6 +101,7 @@ if (NOT _AX_USE_PREBUILT)
     add_subdirectory(${_AX_ROOT}/core ${ENGINE_BINARY_PATH}/axmol/core)
 endif()
 
+
 # The common cross-platforms source files and header files
 file(GLOB_RECURSE GAME_HEADER
     Source/*.h Source/*.hpp
@@ -152,6 +153,7 @@ elseif(WINDOWS)
         ax_setup_winrt_sources()
     endif()
     list(APPEND GAME_SOURCE ${common_content_files})
+    add_compile_options(/arch:AVX2 /d2archSSE42 /d2archAVX)
 elseif(APPLE)
     if(IOS)
         list(APPEND GAME_HEADER

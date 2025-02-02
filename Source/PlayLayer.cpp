@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU General Public License    
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*************************************************************************/
+*************************f************************************************/
 
 #include "PlayLayer.h"
 #include "AudioEngine.h"
@@ -61,14 +61,12 @@ int monitorN = 0;
 
 static PlayLayer* Instance = nullptr;
 
-ax::Node* cameraFollow;
-
 Scene* PlayLayer::scene(GJGameLevel* level)
 {
-	return LevelDebugLayer::scene(level);
-	//auto scene = Scene::create();
-	//scene->addChild(PlayLayer::create(level));
-	//return scene;
+	// return LevelDebugLayer::scene(level);
+	auto scene = Scene::create();
+	scene->addChild(PlayLayer::create(level));
+	return scene;
 }
 
 void PlayLayer::showCompleteText()
@@ -125,9 +123,9 @@ void PlayLayer::showCompleteText()
 	// })));
 	for (int i = 0; i < 9; i++)
 	{
-		scheduleOnce([=](float d) { spawnCircle(); }, 0.16f * i, "playlayer_circles");
+		scheduleOnce([&](float d) { spawnCircle(); }, 0.16f * i, "playlayer_circles");
 	}
-	scheduleOnce([=](float d) { showEndLayer(); }, 1.5f, "playlayer_levelend");
+	scheduleOnce([&](float d) { showEndLayer(); }, 1.5f, "playlayer_levelend");
 }			
 
 void PlayLayer::spawnCircle()
@@ -172,26 +170,6 @@ PlayLayer* PlayLayer::create(GJGameLevel* level)
 	return nullptr;
 }
 
-
-void PlayLayer::fillColorChannel(std::span<std::string_view> colorString, int id)
-{
-	for (size_t j = 0; j < colorString.size() - 1; j += 2)
-	{
-		switch (GameToolbox::stoi(colorString[j]))
-		{
-		case 1:
-			m_pColorChannels.insert({id, SpriteColor(ax::Color3B(GameToolbox::stof(colorString[j + 1]), 0, 0), 255, 0)});
-			break;
-		case 2:
-			m_pColorChannels.at(id)._color.g = GameToolbox::stof(colorString[j + 1]);
-			break;
-		case 3:
-			m_pColorChannels.at(id)._color.b = GameToolbox::stof(colorString[j + 1]);
-			break;
-		}
-	}
-}
-
 void PlayLayer::loadLevel(std::string_view levelStr)
 {
 
@@ -206,27 +184,27 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 		{
 			if (levelData[i] == "kS1")
 			{
-				m_pColorChannels.insert({1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
+				_colorChannels.insert({1000, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
 			}
 			else if (levelData[i] == "kS2")
 			{
-				m_pColorChannels.at(1000)._color.g = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1000)._color.g = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS3")
 			{
-				m_pColorChannels.at(1000)._color.b = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1000)._color.b = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS4")
 			{
-				m_pColorChannels.insert({1001, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
+				_colorChannels.insert({1001, SpriteColor(ax::Color3B(GameToolbox::stof(levelData[i + 1]), 0, 0), 255, 0)});
 			}
 			else if (levelData[i] == "kS5")
 			{
-				m_pColorChannels.at(1001)._color.g = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1001)._color.g = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS6")
 			{
-				m_pColorChannels.at(1001)._color.b = GameToolbox::stof(levelData[i + 1]);
+				_colorChannels.at(1001)._color.b = GameToolbox::stof(levelData[i + 1]);
 			}
 			else if (levelData[i] == "kS29")
 			{
@@ -286,7 +264,7 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 							break;
 						}
 					}
-					m_pColorChannels.insert({key, col});
+					_colorChannels.insert({key, col});
 				}
 			}
 			else if (levelData[i] == "kA6")
@@ -333,223 +311,226 @@ void PlayLayer::loadLevel(std::string_view levelStr)
 	}); //thread
 	
 	t_colorChannels.join();
+
+	if (!_colorChannels.contains(1004)) {
+		_colorChannels[1004] = {ax::Color3B::WHITE, 255, false};
+	}
 	
 	//STOP
 	std::thread t_gameObjects([&]() {
-		
-		
-	m_pColorChannels[1005]._color = _player1->getMainColor();
-	m_pColorChannels[1005]._blending = true;
-	m_pColorChannels[1006]._color = _player1->getSecondaryColor();
-	m_pColorChannels[1006]._blending = true;
-	m_pColorChannels[1010]._color = Color3B::BLACK;
-	m_pColorChannels[1007]._color = getLightBG();
+		_colorChannels[1005]._color = _player1->getMainColor();
+		_colorChannels[1005]._blending = true;
+		_colorChannels[1006]._color = _player1->getSecondaryColor();
+		_colorChannels[1006]._blending = true;
+		_colorChannels[1010]._color = Color3B::BLACK;
+		_colorChannels[1007]._color = getLightBG();
 
-	_originalColors = std::unordered_map<int, SpriteColor, my_string_hash>(m_pColorChannels);
+		_originalColors = _colorChannels;
 
-	for (std::string_view data : objData)
-	{
-		auto d = GameToolbox::splitByDelimStringView(data, ',');
-
-		GameObject* obj = nullptr;
-
-		Hitbox hb = {0, 0, 0, 0};
-
-		for (size_t i = 0; i < d.size() - 1; i += 2)
+		for (std::string_view data : objData)
 		{
-			int key = GameToolbox::stoi(d[i]);
+			auto d = GameToolbox::splitByDelimStringView(data, ',');
 
-			if (key != 1 && obj == nullptr)
-				break;
+			GameObject* obj = nullptr;
 
-			switch (key)
+			Hitbox hb = {0, 0, 0, 0};
+
+			for (size_t i = 0; i < d.size() - 1; i += 2)
 			{
-			case 1:
-			{
-				int id = GameToolbox::stoi(d[i + 1]);
+				int key = GameToolbox::stoi(d[i]);
 
-				if (!GameObject::_pBlocks.contains(id))
-					continue;
-
-				std::string_view frame = GameObject::_pBlocks.at(id);
-
-				if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
-					std::end(GameObject::_pTriggers))
-				{
-					obj = EffectGameObject::create(frame);
-					obj->_isTrigger = true;
-				}
-				else
-					obj = GameObject::create(frame, GameObject::getGlowFrame(id));
-
-				if (obj == nullptr)
+				if (key != 1 && obj == nullptr)
 					break;
 
-				AX_SAFE_RETAIN(obj);
-
-				obj->setStretchEnabled(false);
-				obj->setActive(true);
-				obj->setID(id);
-
-				// obj->setupColors();
-
-				obj->customSetup();
-
-				if (GameObject::_pHitboxes.contains(id))
-					hb = GameObject::_pHitboxes.at(id);
-				if (GameObject::_pHitboxRadius.contains(id))
-					obj->_radius = GameObject::_pHitboxRadius.at(id);
-
-				obj->_uniqueID = _pObjects.size();
-
-				_pObjects.push_back(obj);
-			}
-			break;
-			case 2:
-				obj->setPositionX(GameToolbox::stof(d[i + 1]));
-				break;
-			case 3:
-				obj->setPositionY(GameToolbox::stof(d[i + 1]) + 90.0f);
-				break;
-			case 4:
-				obj->setScaleX(-1.f * GameToolbox::stoi(d[i + 1]));
-				break;
-			case 5:
-				obj->setScaleY(-1.f * GameToolbox::stoi(d[i + 1]));
-				break;
-			case 6:
-				obj->setRotation(GameToolbox::stof(d[i + 1]));
-				break;
-			case 7:
-				dynamic_cast<EffectGameObject*>(obj)->_color.r = GameToolbox::stof(d[i + 1]);
-				break;
-			case 8:
-				dynamic_cast<EffectGameObject*>(obj)->_color.g = GameToolbox::stof(d[i + 1]);
-				break;
-			case 9:
-				dynamic_cast<EffectGameObject*>(obj)->_color.b = GameToolbox::stof(d[i + 1]);
-				break;
-			case 10:
-				dynamic_cast<EffectGameObject*>(obj)->_duration = GameToolbox::stof(d[i + 1]);
-				break;
-			case 21:
-				obj->_mainColorChannel = GameToolbox::stoi(d[i + 1]);
-				break;
-			case 22:
-				obj->_secColorChannel = GameToolbox::stoi(d[i + 1]);
-				break;
-			case 23:
-				dynamic_cast<EffectGameObject*>(obj)->_targetColorId = GameToolbox::stof(d[i + 1]);
-				break;
-			case 24:
-				obj->_zLayer = GameToolbox::stoi(d[i + 1]);
-				break;
-			case 25:
-				obj->setGlobalZOrder(GameToolbox::stoi(d[i + 1]));
-				break;
-			case 32:
-				obj->setScaleX(obj->getScaleX() * GameToolbox::stof(d[i + 1]));
-				obj->setScaleY(obj->getScaleY() * GameToolbox::stof(d[i + 1]));
-				break;
-			case 35:
-				dynamic_cast<EffectGameObject*>(obj)->_opacity = GameToolbox::stof(d[i + 1]);
-				break;
-			case 45:
-				dynamic_cast<EffectGameObject*>(obj)->_fadeIn = GameToolbox::stof(d[i + 1]);
-				break;
-			case 46:
-				dynamic_cast<EffectGameObject*>(obj)->_hold = GameToolbox::stof(d[i + 1]);
-				break;
-			case 47:
-				dynamic_cast<EffectGameObject*>(obj)->_fadeOut = GameToolbox::stof(d[i + 1]);
-				break;
-			case 48:
-				dynamic_cast<EffectGameObject*>(obj)->_pulseMode = GameToolbox::stoi(d[i + 1]);
-				break;
-			case 49: {
-				auto hsv = GameToolbox::splitByDelimStringView(d[i + 1], 'a');
-				auto trigger = dynamic_cast<EffectGameObject*>(obj);
-				trigger->_hsv.h = GameToolbox::stof(hsv[0]);
-				trigger->_hsv.s = GameToolbox::stof(hsv[1]);
-				trigger->_hsv.v = GameToolbox::stof(hsv[2]);
-				trigger->_hsv.sChecked = GameToolbox::stof(hsv[3]);
-				trigger->_hsv.vChecked = GameToolbox::stof(hsv[4]);
-			}
-			break;
-			case 50:
-				dynamic_cast<EffectGameObject*>(obj)->_copiedColorId = GameToolbox::stoi(d[i + 1]);
-				break;
-			case 52:
-				dynamic_cast<EffectGameObject*>(obj)->_pulseType = GameToolbox::stoi(d[i + 1]);
-				break;
-			case 51:
-				if (obj->_isTrigger)
-					dynamic_cast<EffectGameObject*>(obj)->_targetGroupId = GameToolbox::stoi(d[i + 1]);
-				break;
-			case 57: {
-				auto groups = GameToolbox::splitByDelimStringView(data, '.');
-				for (auto group : groups)
+				switch (key)
 				{
-					int g = GameToolbox::stoi(group);
-					_groups[g]._objects.push_back(obj);
-					obj->_groups.push_back(g);
+				case 1:
+				{
+					int id = GameToolbox::stoi(d[i + 1]);
+
+					if (!GameObject::_pBlocks.contains(id))
+						continue;
+
+					std::string_view frame = GameObject::_pBlocks.at(id);
+
+					if (std::find(std::begin(GameObject::_pTriggers), std::end(GameObject::_pTriggers), id) !=
+						std::end(GameObject::_pTriggers))
+					{
+						obj = EffectGameObject::create(frame);
+						obj->_isTrigger = true;
+					}
+					else
+						obj = GameObject::create(frame, GameObject::getGlowFrame(id));
+
+					if (obj == nullptr)
+						break;
+
+					AX_SAFE_RETAIN(obj);
+
+					obj->setStretchEnabled(false);
+					obj->setActive(true);
+					obj->setID(id);
+
+					// obj->setupColors();
+
+					obj->customSetup();
+
+					if (GameObject::_pHitboxes.contains(id))
+						hb = GameObject::_pHitboxes.at(id);
+					if (GameObject::_pHitboxRadius.contains(id))
+						obj->_radius = GameObject::_pHitboxRadius.at(id);
+
+					obj->_uniqueID = _pObjects.size();
+
+					_pObjects.push_back(obj);
 				}
 				break;
-			}
-			case 67: // dont enter
-			case 64: // dont exit
-				obj->setDontTransform(true);
+				case 2:
+					obj->setPositionX(GameToolbox::stof(d[i + 1]));
+					break;
+				case 3:
+					obj->setPositionY(GameToolbox::stof(d[i + 1]) + 90.0f);
+					break;
+				case 4:
+					obj->setScaleX(-1.f * GameToolbox::stoi(d[i + 1]));
+					break;
+				case 5:
+					obj->setScaleY(-1.f * GameToolbox::stoi(d[i + 1]));
+					break;
+				case 6:
+					obj->setRotation(GameToolbox::stof(d[i + 1]));
+					break;
+				case 7:
+					dynamic_cast<EffectGameObject*>(obj)->_color.r = GameToolbox::stof(d[i + 1]);
+					break;
+				case 8:
+					dynamic_cast<EffectGameObject*>(obj)->_color.g = GameToolbox::stof(d[i + 1]);
+					break;
+				case 9:
+					dynamic_cast<EffectGameObject*>(obj)->_color.b = GameToolbox::stof(d[i + 1]);
+					break;
+				case 10:
+					dynamic_cast<EffectGameObject*>(obj)->_duration = GameToolbox::stof(d[i + 1]);
+					break;
+				case 21:
+					obj->_mainColorChannel = GameToolbox::stoi(d[i + 1]);
+					break;
+				case 22:
+					obj->_secColorChannel = GameToolbox::stoi(d[i + 1]);
+					break;
+				case 23:
+					dynamic_cast<EffectGameObject*>(obj)->_targetColorId = GameToolbox::stof(d[i + 1]);
+					break;
+				case 24:
+					obj->_zLayer = GameToolbox::stoi(d[i + 1]);
+					break;
+				case 25:
+					obj->setGlobalZOrder(GameToolbox::stoi(d[i + 1]));
+					break;
+				case 32:
+					obj->setScaleX(obj->getScaleX() * GameToolbox::stof(d[i + 1]));
+					obj->setScaleY(obj->getScaleY() * GameToolbox::stof(d[i + 1]));
+					break;
+				case 35:
+					dynamic_cast<EffectGameObject*>(obj)->_opacity = GameToolbox::stof(d[i + 1]);
+					break;
+				case 45:
+					dynamic_cast<EffectGameObject*>(obj)->_fadeIn = GameToolbox::stof(d[i + 1]);
+					break;
+				case 46:
+					dynamic_cast<EffectGameObject*>(obj)->_hold = GameToolbox::stof(d[i + 1]);
+					break;
+				case 47:
+					dynamic_cast<EffectGameObject*>(obj)->_fadeOut = GameToolbox::stof(d[i + 1]);
+					break;
+				case 48:
+					dynamic_cast<EffectGameObject*>(obj)->_pulseMode = GameToolbox::stoi(d[i + 1]);
+					break;
+				case 49: {
+					auto hsv = GameToolbox::splitByDelimStringView(d[i + 1], 'a');
+					auto trigger = dynamic_cast<EffectGameObject*>(obj);
+					trigger->_hsv.h = GameToolbox::stof(hsv[0]);
+					trigger->_hsv.s = GameToolbox::stof(hsv[1]);
+					trigger->_hsv.v = GameToolbox::stof(hsv[2]);
+					trigger->_hsv.sChecked = GameToolbox::stof(hsv[3]);
+					trigger->_hsv.vChecked = GameToolbox::stof(hsv[4]);
+				}
 				break;
+				case 50:
+					dynamic_cast<EffectGameObject*>(obj)->_copiedColorId = GameToolbox::stoi(d[i + 1]);
+					break;
+				case 52:
+					dynamic_cast<EffectGameObject*>(obj)->_pulseType = GameToolbox::stoi(d[i + 1]);
+					break;
+				case 51:
+					if (obj->_isTrigger)
+						dynamic_cast<EffectGameObject*>(obj)->_targetGroupId = GameToolbox::stoi(d[i + 1]);
+					break;
+				case 57: {
+					auto groups = GameToolbox::splitByDelimStringView(data, '.');
+					for (auto group : groups)
+					{
+						int g = GameToolbox::stoi(group);
+						_groups[g]._objects.push_back(obj);
+						obj->_groups.push_back(g);
+					}
+					break;
+				}
+				case 67: // dont enter
+				case 64: // dont exit
+					obj->setDontTransform(true);
+					break;
+				}
 			}
-		}
-		if (obj)
-		{
-			ax::Mat4 tr;
-			ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
-			switch (obj->getGameObjectType())
+			if (obj)
 			{
-			default:
+				ax::Mat4 tr;
+				ax::Rect rec = {hb.x, hb.y, hb.w, hb.h};
+				switch (obj->getGameObjectType())
+				{
+				default:
 
-				tr.rotate(obj->getRotationQuat());
+					tr.rotate(obj->getRotationQuat());
 
-				tr.scale(obj->getScaleX() * (obj->isFlippedX() ? -1.f : 1.f),
-						 obj->getScaleY() * (obj->isFlippedY() ? -1.f : 1.f), 1);
+					tr.scale(obj->getScaleX() * (obj->isFlippedX() ? -1.f : 1.f),
+							obj->getScaleY() * (obj->isFlippedY() ? -1.f : 1.f), 1);
 
-				rec = RectApplyTransform(rec, tr);
+					rec = RectApplyTransform(rec, tr);
 
-				obj->setOuterBounds(Rect(obj->getPosition() + Vec2(rec.origin.x, rec.origin.y) + Vec2(15, 15),
-										 {rec.size.width, rec.size.height}));
-				break;
-			case kGameObjectTypeDecoration:
-			case kGameObjectTypeSpecial:
-				break;
+					obj->setOuterBounds(Rect(obj->getPosition() + Vec2(rec.origin.x, rec.origin.y) + Vec2(15, 15),
+											{rec.size.width, rec.size.height}));
+					break;
+				case kGameObjectTypeDecoration:
+				case kGameObjectTypeSpecial:
+					break;
+				}
+				obj->setStartPosition(obj->getPosition());
+				obj->setStartScaleX(obj->getScaleX());
+				obj->setStartScaleY(obj->getScaleY());
 			}
-			obj->setStartPosition(obj->getPosition());
-			obj->setStartScaleX(obj->getScaleX());
-			obj->setStartScaleY(obj->getScaleY());
 		}
-	}
 	});
 	t_gameObjects.join();
 }
 
-bool PlayLayer::isObjectBlending(GameObject* obj)
-{
-	return m_pColorChannels.contains(obj->_mainColorChannel) && m_pColorChannels[obj->_mainColorChannel]._blending &&
-			   m_pColorChannels.contains(obj->_secColorChannel) && m_pColorChannels[obj->_secColorChannel]._blending ||
-		   !m_pColorChannels.contains(obj->_mainColorChannel) && m_pColorChannels.contains(obj->_secColorChannel) &&
-			   m_pColorChannels[obj->_secColorChannel]._blending ||
-		   !m_pColorChannels.contains(obj->_secColorChannel) && m_pColorChannels.contains(obj->_mainColorChannel) &&
-			   m_pColorChannels[obj->_mainColorChannel]._blending;
+void PlayLayer::setInstance() {
+	Instance = this;
+    _instance = this;
 }
 
 bool PlayLayer::init(GJGameLevel* level)
 {
 	if (!Layer::init())
 		return false;
+	
 	setLevel(level);
 
-	Instance = this;
+	_effectManager = EffectManager::create();
+	this->addChild(_effectManager);
+
+	setInstance();
+
+    // initBatchNodes();
 
 	auto winSize = Director::getInstance()->getWinSize();
 
@@ -557,67 +538,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	dn->setPosition({-15, -15});
 	addChild(dn, 99999);
 
-	_blendingBatchNodeB4 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_blendingBatchNodeB4, -23);
-	_blendingBatchNodeB4->setBlendFunc(GameToolbox::getBlending());
-
-	_mainBatchNodeB4 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_mainBatchNodeB4, -22);
-
-	_blendingBatchNodeB3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_blendingBatchNodeB3, -16);
-	_blendingBatchNodeB3->setBlendFunc(GameToolbox::getBlending());
-
-	_mainBatchNodeB3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_mainBatchNodeB3, -15);
-
-	_blendingBatchNodeB2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_blendingBatchNodeB2, -9);
-	_blendingBatchNodeB2->setBlendFunc(GameToolbox::getBlending());
-
-	_mainBatchNodeB2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_mainBatchNodeB2, -8);
-
-	_blendingBatchNodeB1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_blendingBatchNodeB1, -2);
-	_blendingBatchNodeB1->setBlendFunc(GameToolbox::getBlending());
-
-	_mainBatchNodeB1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_mainBatchNodeB1, -1);
-
-	_blendingBatchNodeT1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_blendingBatchNodeT1, 2);
-	_blendingBatchNodeT1->setBlendFunc(GameToolbox::getBlending());
-
-	_mainBatchNodeT1 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_mainBatchNodeT1, 3);
-
-	_blendingBatchNodeT2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_blendingBatchNodeT2, 9);
-	_blendingBatchNodeT2->setBlendFunc(GameToolbox::getBlending());
-
-	_mainBatchNodeT2 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_mainBatchNodeT2, 10);
-
-	_blendingBatchNodeT3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_blendingBatchNodeT3, 24);
-	_blendingBatchNodeT3->setBlendFunc(GameToolbox::getBlending());
-
-	_mainBatchNodeT3 = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_mainBatchNodeTexture), 50);
-	this->addChild(_mainBatchNodeT3, 25);
-
-	_glowBatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString("GJ_GameSheetGlow.png"), 150);
-	this->addChild(_glowBatchNode);
-	_glowBatchNode->setBlendFunc(GameToolbox::getBlending());
-
-	_main2BatchNode = ax::SpriteBatchNode::create(GameToolbox::getTextureString(_main2BatchNodeTexture), 150);
-	this->addChild(_main2BatchNode);
-
-	//_particleBatchNode = ax::ParticleBatchNode::create("square.png", 30);
-	// addChild(_particleBatchNode);
-
-	_mainBatchNodeTexture = _mainBatchNodeT3->getTexture()->getPath();
-	_main2BatchNodeTexture = _main2BatchNode->getTexture()->getPath();
+	initBatchNodes();
 
 	this->_player1 = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
 	this->_player1->setPosition({-20, 105});
@@ -641,14 +562,18 @@ bool PlayLayer::init(GJGameLevel* level)
 	if (levelStr.empty())
 	{
 		nlohmann::json file = nlohmann::json::parse(FileUtils::getInstance()->getStringFromFile("Custom/mainLevels.json"));
-		levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)].get<std::string>());
+		if (file.contains(std::to_string(level->_levelID))) {
+			levelStr = fmt::format("H4sIAAAAAAAAA{}", file[std::to_string(level->_levelID)].get<std::string>());
+		}
 	}
 
 	// scope based timer
 	{
 		auto s = BenchmarkTimer("load level");
-		levelStr = GJGameLevel::decompressLvlStr(levelStr);
-		loadLevel(levelStr);
+		if (!levelStr.empty()) {
+			if (levelStr.at(0) != 'k') levelStr = GJGameLevel::decompressLvlStr(levelStr);
+			loadLevel(levelStr);
+		}
 	}
 
 	this->_bottomGround = GroundLayer::create(_groundID);
@@ -676,8 +601,8 @@ bool PlayLayer::init(GJGameLevel* level)
 	this->m_pBG->setPosition(winSize.x / 2, winSize.y / 4);
 	this->addChild(this->m_pBG, -100);
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
+	if (this->_colorChannels.contains(1000))
+		this->m_pBG->setColor(this->_colorChannels.at(1000)._color);
 	this->_bottomGround->update(0);
 
 	if (_pObjects.size() != 0)
@@ -697,22 +622,22 @@ bool PlayLayer::init(GJGameLevel* level)
 		{
 			// GameToolbox::log("i = {}", i);
 			std::vector<GameObject*> vec;
-			m_pSectionObjects.push_back(vec);
+			_sectionObjects.push_back(vec);
 		}
 
 		for (GameObject* object : _pObjects)
 		{
 			int section = sectionForPos(object->getPositionX());
-			m_pSectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
+			_sectionObjects[section - 1 < 0 ? 0 : section - 1].push_back(object);
 
-			if (m_pColorChannels.contains(object->_mainColorChannel) &&
-				m_pColorChannels[object->_mainColorChannel]._blending)
+			if (_colorChannels.contains(object->_mainColorChannel) &&
+				_colorChannels[object->_mainColorChannel]._blending)
 			{
 				object->setBlendFunc(GameToolbox::getBlending());
 			}
 
-			if (m_pColorChannels.contains(object->_secColorChannel) &&
-				m_pColorChannels[object->_secColorChannel]._blending)
+			if (_colorChannels.contains(object->_secColorChannel) &&
+				_colorChannels[object->_secColorChannel]._blending)
 			{
 				for (auto s : object->_childSprites)
 					s->setBlendFunc(GameToolbox::getBlending());
@@ -753,7 +678,7 @@ bool PlayLayer::init(GJGameLevel* level)
 	updateVisibility();
 
 	scheduleOnce(
-		[=](float d) {
+		[&](float d) {
 			if (levelValid)
 			{
 				incrementTime();
@@ -781,7 +706,7 @@ double lastY = 0;
 void PlayLayer::incrementTime()
 {
 	scheduleOnce(
-		[=](float d) {
+		[&](float d) {
 			_secondsSinceStart++;
 			incrementTime();
 		},
@@ -809,10 +734,10 @@ void PlayLayer::update(float dt)
 
 	auto winSize = Director::getInstance()->getWinSize();
 
-	this->m_pColorChannels.at(1005)._color = this->_player1->getMainColor();
-	this->m_pColorChannels.at(1006)._color = this->_player1->getSecondaryColor();
+	if (this->_colorChannels.contains(1005)) this->_colorChannels.at(1005)._color = this->_player1->getMainColor();
+	if (this->_colorChannels.contains(1006)) this->_colorChannels.at(1006)._color = this->_player1->getSecondaryColor();
 
-	m_pColorChannels[1007]._color = getLightBG();
+	_colorChannels[1007]._color = getLightBG();
 
 	if (!m_freezePlayer && (!this->_player1->isDead() || !this->_player2->isDead()))
 	{
@@ -860,18 +785,17 @@ void PlayLayer::update(float dt)
 	if (_isDualMode && _player2->_currentGamemode == PlayerGamemodeShip)
 		_player2->updateShipRotation(step);
 
-	m_pColorChannels[1005]._color = _player1->getMainColor();
-	m_pColorChannels[1006]._color = _player1->getSecondaryColor();
+	_colorChannels[1005]._color = _player1->getMainColor();
+	_colorChannels[1006]._color = _player1->getSecondaryColor();
 }
 
 ax::Color3B PlayLayer::getLightBG()
 {
-	return m_pColorChannels[1000]._color;
+	return _colorChannels[1000]._color;
 }
 
 void PlayLayer::destroyPlayer(PlayerObject* player)
 {
-
 	if (player->isDead() || player->noclip)
 		return;
 
@@ -880,7 +804,7 @@ void PlayLayer::destroyPlayer(PlayerObject* player)
 	player->stopRotation();
 	player->setVisible(false);
 
-	scheduleOnce([=](float d) { resetLevel(); }, 1.f, "playlayer_restart");
+	scheduleOnce([&](float d) { resetLevel(); }, 1.f, "playlayer_restart");
 }
 
 void PlayLayer::updateCamera(float dt)
@@ -1058,9 +982,9 @@ void PlayLayer::updateVisibility()
 	{
 		if (i >= 0)
 		{
-			if (i < m_pSectionObjects.size())
+			if (i < _sectionObjects.size())
 			{
-				auto section = m_pSectionObjects[i];
+				auto section = _sectionObjects[i];
 				for (size_t j = 0; j < section.size(); j++)
 				{
 					GameObject* obj = section[j];
@@ -1168,9 +1092,9 @@ void PlayLayer::updateVisibility()
 		}
 	}
 
-	if (_prevSection - 1 >= 0 && m_pSectionObjects.size() != 0 && _prevSection <= m_pSectionObjects.size())
+	if (_prevSection - 1 >= 0 && _sectionObjects.size() != 0 && _prevSection <= _sectionObjects.size())
 	{
-		auto section = m_pSectionObjects[_prevSection - 1];
+		auto section = _sectionObjects[_prevSection - 1];
 		for (size_t j = 0; j < section.size(); j++)
 		{
 			section[j]->setActive(false);
@@ -1372,13 +1296,16 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 
 	for (int i = current_section - 2; i < current_section + 1; i++)
 	{
-		if (i < m_pSectionObjects.size() && i >= 0)
+		if (i < _sectionObjects.size() && i >= 0)
 		{
-			std::vector<GameObject*> section = m_pSectionObjects[i];
+			std::vector<GameObject*> section = _sectionObjects[i];
 
 			for (int j = 0; j < section.size(); j++)
 			{
 				GameObject* obj = section[j];
+
+				if (!obj)
+					continue;
 
 				auto objBounds = obj->getOuterBounds();
 
@@ -1411,7 +1338,7 @@ void PlayLayer::checkCollisions(PlayerObject* player, float dt)
 						renderRect(objBounds, ax::Color4B::BLUE);
 					}
 
-					if (playerOuterBounds.intersectsRect(objBounds) && !obj->hasBeenActiavedByPlayer(player))
+					if (playerOuterBounds.intersectsRect(objBounds) && !obj->hasBeenActivatedByPlayer(player))
 					{
 						switch (obj->getGameObjectType())
 						{
@@ -1645,9 +1572,9 @@ void PlayLayer::onDrawImGui()
 	if (ImGui::InputFloat("FPS", &fps))
 		Director::getInstance()->setAnimationInterval(1.0f / fps);
 
-	ImGui::Text("Sections: %zu", m_pSectionObjects.size());
-	if (m_pSectionObjects.size() > 0 && sectionForPos(_player1->getPositionX()) - 1 < m_pSectionObjects.size())
-		ImGui::Text("Current Section Size: %zu", m_pSectionObjects[sectionForPos(_player1->getPositionX()) <= 0
+	ImGui::Text("Sections: %li", _sectionObjects.size());
+	if (_sectionObjects.size() > 0 && sectionForPos(_player1->getPositionX()) - 1 < _sectionObjects.size())
+		ImGui::Text("Current Section Size: %li", _sectionObjects[sectionForPos(_player1->getPositionX()) <= 0
 																	  ? 0
 																	  : sectionForPos(_player1->getPositionX()) - 1]
 													.size());
@@ -1781,13 +1708,17 @@ void PlayLayer::resetLevel()
 
 	dir->getActionManager()->removeAllActions();
 
-	m_pColorChannels = std::unordered_map<int, SpriteColor, my_string_hash>(_originalColors);
+	_colorChannels = _originalColors;
 
 	_prevSection = -1;
 	_nextSection = -1;
 
-	if (this->m_pColorChannels.contains(1000))
-		this->m_pBG->setColor(this->m_pColorChannels.at(1000)._color);
+	if (this->_colorChannels.contains(1000))
+		this->m_pBG->setColor(this->_colorChannels.at(1000)._color);
+	else {
+		this->m_pBG->setColor(ax::Color3B::GRAY);
+		this->_colorChannels[1000]._color = ax::Color3B::GRAY;
+	}
 	this->_bottomGround->update(0);
 	this->_ceiling->update(0);
 
@@ -1852,6 +1783,11 @@ void PlayLayer::exit()
 	unscheduleAllCallbacks();
 	_player1->unscheduleAllCallbacks();
 	_player2->unscheduleAllCallbacks();
+	_bottomGround->unscheduleUpdate();
+	if (_ceiling)
+	{
+		_ceiling->unscheduleUpdate();
+	}
 
 	int size = _pObjects.size();
 	for (int i = 0; i < size; i++)
@@ -1877,6 +1813,7 @@ void PlayLayer::exit()
 	}
 
 	Instance = nullptr;
+	BaseGameLayer::_instance = nullptr;
 
 	AudioEngine::stopAll();
 	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
@@ -1886,7 +1823,10 @@ void PlayLayer::exit()
 	if (id <= 0 || id > 22)
 		return GameToolbox::popSceneWithTransition(0.5f);
 
-	Director::getInstance()->replaceScene(
+	// GameToolbox::popSceneWithTransition(0.5f);
+
+
+	Director::getInstance()->pushScene(
 		TransitionFade::create(0.5f, LevelSelectLayer::scene(getLevel()->_levelID - 1)));
 }
 

@@ -59,3 +59,7 @@ Content*
 !Content/Custom
 
 CMakeCache.txt
+
+# clion
+cmake-build-*
+.idea

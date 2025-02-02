@@ -262,7 +262,7 @@ void PlayerObject::update(float dt)
 			if (_particles1Activated && !getActionByTag(2))
 			{
 				Sequence* action = Sequence::create(
-					DelayTime::create(0.06f), CallFunc::create([=]() {
+					DelayTime::create(1.f / 16.5f), CallFunc::create([&]() {
 						if (_particles1Activated) dragEffect1->pauseEmissions();
 						_particles1Activated = false;
 					}),
@@ -788,7 +788,9 @@ topCollision:
 		}
 	}
 death:
-	if (playerRectI.intersectsRect(rect)) static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer(this);
+	if (playerRectI.intersectsRect(rect) && !obj->_isTrigger) {
+		static_cast<PlayLayer*>(getPlayLayer())->destroyPlayer(this);
+	}
 }
 
 void PlayerObject::setGamemode(PlayerGamemode mode)

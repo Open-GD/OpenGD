@@ -285,7 +285,7 @@ bool LevelInfoLayer::init(GJGameLevel* level)
 	this->addChild(buttonsMenu);
 
 	auto listener = EventListenerKeyboard::create();
-	listener->onKeyPressed = [=](EventKeyboard::KeyCode key, Event*) {
+	listener->onKeyPressed = [&](EventKeyboard::KeyCode key, Event*) {
 		switch (key) {
 		case EventKeyboard::KeyCode::KEY_SPACE:
 			if (level->_levelString.empty()) break;

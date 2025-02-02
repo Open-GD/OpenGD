@@ -20,8 +20,10 @@
 #include "MenuItemSpriteExtra.h"
 #include "core/ui/UIScale9Sprite.h"
 #include "PlayLayer.h"
-#include "LevelDebugLayer.h"
 #include <AudioEngine.h>
+
+#include "LevelDebugLayer.h"
+#include "LevelEditorLayer.h"
 
 #include "2d/Label.h"
 #include "2d/Menu.h"
@@ -32,6 +34,8 @@
 #include "GameToolbox/log.h"
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/rand.h"
+
+#include "ButtonSprite.h"
 
 bool LevelPage::replacingScene = false;
 
@@ -149,6 +153,21 @@ bool LevelPage::init(GJGameLevel* level)
 	auto levelMenu = ax::Menu::create();
 	levelMenu->addChild(mainBtn);
 	levelMenu->setPosition({ winSize.width / 2.f, winSize.height / 2.f + 60 });
+	auto buttonSprite = ButtonSprite::create("editor", 0x32, 0, 0.6, false, GameToolbox::getTextureString("bigFont.fnt"), GameToolbox::getTextureString("GJ_button_01.png"), 30);
+	MenuItemSpriteExtra* button = MenuItemSpriteExtra::create(buttonSprite, [this](Node* btn)
+	{
+		if (LevelPage::replacingScene)
+			return;
+
+		ax::Scene* scene = LevelEditorLayer::scene(_level);
+		ax::AudioEngine::stopAll();
+		ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
+		ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, scene));
+		LevelPage::replacingScene = true;
+		MenuLayer::music = false;
+	});
+	button->setPositionY(70);
+	levelMenu->addChild(button);
 	addChild(levelMenu);
 	
 	return true;
@@ -159,7 +178,7 @@ void LevelPage::onPlay(Node* btn)
 	if (LevelPage::replacingScene)
 		return;
 
-	ax::Scene* scene = _openBGL ? LevelDebugLayer::scene(_level) : PlayLayer::scene(_level);
+	ax::Scene* scene = PlayLayer::scene(_level);
 	ax::AudioEngine::stopAll();
 	ax::AudioEngine::play2d("playSound_01.ogg", false, 0.2f);
 	ax::Director::getInstance()->replaceScene(ax::TransitionFade::create(0.5f, scene));
