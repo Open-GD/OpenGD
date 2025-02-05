@@ -17,19 +17,12 @@
 *************************************************************************/
 
 #pragma once
-#include <span>
 #include <string_view>
 #include <vector>
 
-#include "2d/Layer.h"
 #include "EventKeyboard.h"
 #include "BaseGameLayer.h"
-#include "SpriteColor.h"
-#include "PlatformMacros.h"
-#include "Types.h"
-#include "GameToolbox/conv.h"
 
-#include <functional>
 
 enum PlayerGamemode;
 

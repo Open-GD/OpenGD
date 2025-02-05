@@ -33,7 +33,6 @@
 #include "base/Director.h"
 #include "GameToolbox/log.h"
 #include "GameToolbox/getTextureString.h"
-#include "GameToolbox/rand.h"
 
 #include "ButtonSprite.h"
 

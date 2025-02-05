@@ -33,7 +33,7 @@ class CreatorLayer : public ax::Scene {
 public:
 	static ax::Scene* scene();
 	static CreatorLayer* create();
-	bool init();
+	bool init() override;
 	
 	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
 

@@ -101,7 +101,6 @@ if (NOT _AX_USE_PREBUILT)
     add_subdirectory(${_AX_ROOT}/core ${ENGINE_BINARY_PATH}/axmol/core)
 endif()
 
-
 # The common cross-platforms source files and header files
 file(GLOB_RECURSE GAME_HEADER
     Source/*.h Source/*.hpp
@@ -153,7 +152,6 @@ elseif(WINDOWS)
         ax_setup_winrt_sources()
     endif()
     list(APPEND GAME_SOURCE ${common_content_files})
-    add_compile_options(/arch:AVX2 /d2archSSE42 /d2archAVX)
 elseif(APPLE)
     if(IOS)
         list(APPEND GAME_HEADER
@@ -206,7 +204,7 @@ else()
     add_library(${APP_NAME} SHARED ${APP_SOURCES})
     # whole archive for jni
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
-    config_android_shared_libs("org.axmol.lib" "${CMAKE_CURRENT_SOURCE_DIR}/proj.android/app/src")
+    config_android_shared_libs("dev.axmol.lib" "${CMAKE_CURRENT_SOURCE_DIR}/proj.android/app/src")
 endif()
 
 if (NOT _AX_USE_PREBUILT)
@@ -227,7 +225,7 @@ ax_setup_app_config(${APP_NAME})
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
     set_xcode_property(${APP_NAME} INSTALL_PATH "\$(LOCAL_APPS_DIR)")
-    set_xcode_property(${APP_NAME} PRODUCT_BUNDLE_IDENTIFIER "org.axmol.dummy")
+    set_xcode_property(${APP_NAME} PRODUCT_BUNDLE_IDENTIFIER "dev.axmol.dummy")
 
     if(MACOSX)
         set_target_properties(${APP_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/proj.ios_mac/mac/Info.plist")

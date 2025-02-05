@@ -1572,9 +1572,9 @@ void PlayLayer::onDrawImGui()
 	if (ImGui::InputFloat("FPS", &fps))
 		Director::getInstance()->setAnimationInterval(1.0f / fps);
 
-	ImGui::Text("Sections: %li", _sectionObjects.size());
+	ImGui::Text("Sections: %zu", _sectionObjects.size());
 	if (_sectionObjects.size() > 0 && sectionForPos(_player1->getPositionX()) - 1 < _sectionObjects.size())
-		ImGui::Text("Current Section Size: %li", _sectionObjects[sectionForPos(_player1->getPositionX()) <= 0
+		ImGui::Text("Current Section Size: %zu", _sectionObjects[sectionForPos(_player1->getPositionX()) <= 0
 																	  ? 0
 																	  : sectionForPos(_player1->getPositionX()) - 1]
 													.size());

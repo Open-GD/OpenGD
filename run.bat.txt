@@ -1,1 +1,1 @@
-RelWithDebInfo
+Release

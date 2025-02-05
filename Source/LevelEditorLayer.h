@@ -23,7 +23,7 @@
 
 class LevelEditorLayer : public PlayLayer {
 private:
-	bool init(GJGameLevel* level);
+	bool init(GJGameLevel* level) override;
 
     ax::Vec2 m_camDelta;
 

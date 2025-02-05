@@ -52,7 +52,7 @@ public:
 	static ax::Scene* scene(GJGameLevel*);
 	void onEnter() override;
 	void onExit() override;
-	bool init(GJGameLevel*);
+	bool init(GJGameLevel*) override;
 	virtual void exit();
 	void update(float delta) override;
 	void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* event);
