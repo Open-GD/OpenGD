@@ -63,14 +63,14 @@ bool SecretLayer2::init()
 
 	auto backBtn = MenuItemSpriteExtra::create("GJ_arrow_01_001.png", [](Node*) {
 		Director::getInstance()->replaceScene(TransitionFade::create(.5, CreatorLayer::scene()));
-		AudioEngine::stopAll();
-		AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+		//AudioEngine::stopAll();
+		//AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 	});
 	backBtn->setPosition(menu->convertToNodeSpace({ 24.0, winSize.height - 23.0f }));
 	menu->addChild(backBtn);
 
-    AudioEngine::stopAll();
-    AudioEngine::play2d("secretLoop02.mp3", true, 0.2f);
+    //AudioEngine::stopAll();
+    //AudioEngine::play2d("secretLoop02.mp3", true, 0.2f);
 
     Sprite* gradient = Sprite::create("GJ_gradientBG.png");
     gradient->setAnchorPoint({0.0f, 0.0f});
@@ -96,8 +96,8 @@ void SecretLayer2::onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event* e
 	{
 	case EventKeyboard::KeyCode::KEY_BACK:
 		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, CreatorLayer::scene()));
-		AudioEngine::stopAll();
-		AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+		//AudioEngine::stopAll();
+		//AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 		break;
 	default:
 		break;

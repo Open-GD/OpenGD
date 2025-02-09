@@ -63,3 +63,4 @@ CMakeCache.txt
 # clion
 cmake-build-*
 .idea
+mod.json

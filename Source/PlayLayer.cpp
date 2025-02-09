@@ -26,6 +26,7 @@
 #include "LevelPage.h"
 #include "LevelSelectLayer.h"
 #include "LevelTools.h"
+#include "Logging.h"
 #include "MenuItemSpriteExtra.h"
 
 #include "ImGui/ImGuiPresenter.h"
@@ -63,6 +64,7 @@ static PlayLayer* Instance = nullptr;
 
 Scene* PlayLayer::scene(GJGameLevel* level)
 {
+    setLogLevel(LogLevel::Verbose);
 	// return LevelDebugLayer::scene(level);
 	auto scene = Scene::create();
 	scene->addChild(PlayLayer::create(level));
@@ -540,24 +542,24 @@ bool PlayLayer::init(GJGameLevel* level)
 
 	initBatchNodes();
 
-	this->_player1 = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
-	this->_player1->setPosition({-20, 105});
-	_main2BatchNode->addChild(this->_player1, 3);
-	this->_player1->setAnchorPoint({0, 0});
+	_player1 = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
+	_player1->setPosition({-20, 105});
+	addChild(this->_player1, 3);
+	_player1->setAnchorPoint({0, 0});
 
 	_player1->setMainColor({125, 255, 0});
 	_player1->setSecondaryColor({0, 255, 255});
 
-	this->_player2 = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
-	this->_player2->setPosition({-20, 105});
-	_main2BatchNode->addChild(this->_player2, 3);
-	this->_player2->setAnchorPoint({0, 0});
+	_player2 = PlayerObject::create(GameToolbox::randomInt(1, 12), this);
+	_player2->setPosition({-20, 105});
+	addChild(this->_player2, 3);
+	_player2->setAnchorPoint({0, 0});
 
 	_player2->setMainColor({125, 255, 0});
 	_player2->setSecondaryColor({0, 255, 255});
 
 	// std::string levelStr = FileUtils::getInstance()->getStringFromFile("level.txt");
-	std::string levelStr = level->_levelString;
+	std::string& levelStr = level->_levelString;
 
 	if (levelStr.empty())
 	{

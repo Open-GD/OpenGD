@@ -19,10 +19,8 @@
 #include "LoadingLayer.h"
 
 #include "MenuLayer.h"
-#include "CocosExplorer.h"
 #include "GameManager.h"
 
-#include "external/constants.h"
 #include <array>
 #include "2d/SpriteFrameCache.h"
 #include "Director.h"
@@ -35,7 +33,6 @@
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/rand.h"
 
-#include "fmt/format.h"
 
 USING_NS_AX;
 
@@ -194,11 +191,6 @@ bool LoadingLayer::init() {
 	this->addChild(_pBar);
 	
 	this->runAction(Sequence::create(DelayTime::create(0), CallFunc::create([this]() { this->loadAssets(); }), nullptr));
-	
-#if SHOW_IMGUI == true
-	CocosExplorer::openForever();
-#endif
-	
 
 	GameToolbox::log("quality medium: {}, scale factor {}", GameManager::getInstance()->isMedium(), dir->getContentScaleFactor());
 	
@@ -245,8 +237,11 @@ void LoadingLayer::loadIcons()
 {
 	for (int i = 0; i < getPlayerIconsSize(); i++) {
 		std::string plist = StringUtils::format("player_%02d.plist", i);
+        std::string image = StringUtils::format("player_%02d.png", i);
 
-		GameToolbox::log("player icon plist {}", plist);
+        std::string imageExt = GameToolbox::getTextureString(image);
+		GameToolbox::log("player icon image {}", imageExt);
+		_textureCache->addImage(imageExt);
 
 		_sprFrameCache->addSpriteFramesWithFile(GameToolbox::getTextureString(plist));
 		this->assetLoaded(nullptr);

@@ -18,14 +18,14 @@
 
 #include "MenuLayer.h"
 
+#include "GJGameLevel.h"
 #include "GarageLayer.h"
+#include "Inspector/Inspector.h"
 #include "MenuGameLayer.h"
 #include "CreatorLayer.h"
 #include "AlertLayer.h"
-#include "AudioEngine.h"
 #include "MenuItemSpriteExtra.h"
 
-#include "PlatformMacros.h"
 #include "PlayLayer.h"
 #include "LoadingCircle.h"
 #include "SimpleProgressBar.h"
@@ -48,10 +48,13 @@
 #include "GameToolbox/getTextureString.h"
 #include "GameToolbox/keyboard.h"
 
+
 /*
 #include "ColoursPalette.h"
 #include "ListLayer.h"
 #include "GJMoreGamesLayer.h"
+#include <iostream>
+#include <stdexcept>
 */
 
 USING_NS_AX;
@@ -144,32 +147,32 @@ bool MenuLayer::init()
 	if(!gm->_openedGarage)
 	{
 		auto spr = Sprite::createWithSpriteFrameName("GJ_chrSel_001.png");
-		spr->setPosition({-150.0f, -50.0f});
-		mainButtonMenu->addChild(spr);
+		spr->setPosition(mainButtonMenu->convertToWorldSpace({-150.0f, -50.0f}));
+		addChild(spr);
 	}
 	GameToolbox::log("gm->_openedCreator) {}", gm->_openedCreator);
 	if(!gm->_openedCreator)
 	{
 		auto spr = Sprite::createWithSpriteFrameName("GJ_lvlEdit_001.png");
-		spr->setPosition({150.0f, -50.0f});
-		mainButtonMenu->addChild(spr);
+		spr->setPosition(mainButtonMenu->convertToWorldSpace({150.0f, -50.0f}));
+		addChild(spr);
 	}
-
 
 	auto rbBtn = MenuItemSpriteExtra::create("robtoplogo_small.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
 	auto fbBtn = MenuItemSpriteExtra::create("gj_fbIcon_001.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
 	auto twBtn = MenuItemSpriteExtra::create("gj_twIcon_001.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
 	auto ytBtn = MenuItemSpriteExtra::create("gj_ytIcon_001.png", [&](Node* btn) { Application::getInstance()->openURL("http://www.robtopgames.com"); });
 	
+    
+    auto socialMenu = Menu::create(rbBtn, fbBtn, twBtn, ytBtn, nullptr);
+    addChild(socialMenu);
+    socialMenu->setPosition({50, 24});
+
 	rbBtn->setScale(0.8f);
 	fbBtn->setScale(0.8f);
 	twBtn->setScale(0.8f);
 	ytBtn->setScale(0.8f);
 
-	auto socialMenu = Menu::create(rbBtn, fbBtn, twBtn, ytBtn, nullptr);
-	socialMenu->setPosition({50, 24});
-	addChild(socialMenu);
-	
 	Vec2 fbPos {socialMenu->convertToNodeSpace({22, 55})};
 	
 	fbBtn->setPosition(fbPos);
@@ -189,7 +192,9 @@ bool MenuLayer::init()
 	//static_cast<ax::Sprite*>(achievementsBtn->getSprite())->setStretchEnabled(false);
 
 	auto optionsBtn = MenuItemSpriteExtra::create("GJ_optionsBtn_001.png", [&](Node* btn) {
-		addChild(OptionsLayer::create());
+		//addChild(OptionsLayer::create());
+        auto x = GJGameLevel::createWithMinimumData("test", "test", 1);
+        Director::getInstance()->replaceScene(PlayLayer::scene(x));
 	});
 	
 	auto statsBtn = MenuItemSpriteExtra::create("GJ_statsBtn_001.png", [&](Node* btn) {
@@ -233,17 +238,9 @@ bool MenuLayer::init()
 	mainButtonMenu->addChild(_profileBtn);
 	
 	_profileLabel = Label::createWithBMFont(GameToolbox::getTextureString("goldFont.fnt"), "Player");
-	_profileLabel->setPosition({profilePos.x + 2.0f, profilePos.y + 36.0f});
+	_profileLabel->setPosition(mainButtonMenu->convertToWorldSpace({profilePos.x + 2.0f, profilePos.y + 36.0f}));
 	_profileLabel->setScale(.8); //no setScale in 2.1 but oversized for some reason in opengd
-	mainButtonMenu->addChild(_profileLabel);
-	
-	//TODO: add option to game manager when profile is done
-	if(true)
-	{
-		auto spr = Sprite::createWithSpriteFrameName("GJ_viewProfileTxt_001.png");
-		spr->setPosition({profilePos.x + 76.0f, profilePos.y - 1.0f});
-		addChild(spr);
-	}
+	addChild(_profileLabel);
 	
 	auto dailyRewardBtn = MenuItemSpriteExtra::create("GJ_dailyRewardBtn_001.png", [](Node*){RewardsPage::create()->show();});
 	dailyRewardBtn->setPosition(bottomMenu->convertToNodeSpace({winSize.width - 40.0f, winSize.height / 2 + 20.0f}));
@@ -267,6 +264,11 @@ bool MenuLayer::init()
 		}
 	});
 
+    scheduleOnce([this](float){
+        auto ins = extension::Inspector::getInstance();
+        ins->openForCurrentScene();
+        ins->setAutoAddToScenes(true);
+    }, 0, "menulayer add inspector");
 
 	return true;
 }

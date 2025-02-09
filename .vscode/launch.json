@@ -2,11 +2,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C++ Launch",
-            "type": "cppvsdbg",
+            "name": "Launch OpenGD",
+            "type": "lldb",
             "request": "launch",
-            "program": "${config:cmake.buildDirectory}/bin/OpenGD/OpenGD.exe",
-            "cwd": "${config:cmake.buildDirectory}/bin/OpenGD/"
+            "program": "${workspaceFolder}/build/bin/OpenGD/OpenGD.exe",
+            "cwd": "${workspaceFolder}/build/bin/OpenGD"
+        },
+        {
+            "name": "Build and Launch OpenGD",
+            "type": "lldb",
+            "preLaunchTask": "Build cmake simple",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/OpenGD/OpenGD.exe",
+            "cwd": "${workspaceFolder}/build/bin/OpenGD"
         }
     ]
 }

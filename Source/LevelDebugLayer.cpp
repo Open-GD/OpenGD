@@ -570,9 +570,9 @@ void LevelDebugLayer::updateVisibility()
 void LevelDebugLayer::exit()
 {
 
-	AudioEngine::stopAll();
-	AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
-	AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
+	//AudioEngine::stopAll();
+	//AudioEngine::play2d("quitSound_01.ogg", false, 0.1f);
+	//AudioEngine::play2d("menuLoop.mp3", true, 0.2f);
 
 	unscheduleUpdate();
 
