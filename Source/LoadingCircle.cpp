@@ -54,9 +54,14 @@ bool LoadingCircle::init()
 }
 void LoadingCircle::update(float delta) 
 {
-	if(m_pCircle) {
+	if(m_pCircle) 
+	{
 		float rot = m_pCircle->getRotation();
 		rot += delta * 60 * 4;
+		if (rot > 360) 
+		{
+	        	rot -= 360;
+	        }
 		m_pCircle->setRotation(rot);
 	}
 }
