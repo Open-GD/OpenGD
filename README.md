@@ -4,7 +4,7 @@
 ![forks](https://img.shields.io/github/forks/Open-GD/OpenGD?style=for-the-badge)
 ![stars](https://img.shields.io/github/stars/Open-GD/OpenGD?style=for-the-badge&color=blue)
 ![LICENSE](https://img.shields.io/github/license/Open-GD/OpenGD?style=for-the-badge&color=blue)
-<a href="https://discord.gg/">
+<a href="https://discord.gg/gcbuuR4JWg">
 <img src="https://dcbadge.vercel.app/api/server/gcbuuR4JWg">
 </a>
 </div>
